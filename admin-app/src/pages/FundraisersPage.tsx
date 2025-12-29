@@ -1,6 +1,6 @@
 
 import { useQuery } from '@tanstack/react-query'
-import { Users, ExternalLink } from 'lucide-react'
+import { Users } from 'lucide-react'
 
 interface Fundraiser {
     id: number

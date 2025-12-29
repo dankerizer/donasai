@@ -82,7 +82,9 @@ function wpd_enqueue_admin_assets( $hook ) {
 	// Dev Mode (needs WPD_DEV_MODE constant)
 	if ( defined( 'WPD_DEV_MODE' ) && WPD_DEV_MODE ) {
 		// Vite Dev Server
-		wp_enqueue_script( 'wpd-admin-dev', 'http://localhost:3001/src/main.tsx', array(), WPD_VERSION, true );
+		wp_enqueue_script( 'wpd-vite-client', 'http://localhost:3001/@vite/client', array(), null, true );
+		wp_enqueue_script( 'wpd-admin-dev', 'http://localhost:3001/src/main.tsx', array( 'wpd-vite-client' ), null, true );
+		
 		// Need to inject React Refresh for Vite HMR
 		add_action('admin_head', function() {
 			echo '<script type="module">
@@ -93,6 +95,14 @@ function wpd_enqueue_admin_assets( $hook ) {
 				window.__vite_plugin_react_preamble_installed__ = true
 			</script>';
 		});
+
+		// Add type="module" to dev scripts
+		add_filter( 'script_loader_tag', function( $tag, $handle, $src ) {
+			if ( in_array( $handle, array( 'wpd-vite-client', 'wpd-admin-dev' ) ) ) {
+				return '<script type="module" src="' . esc_url( $src ) . '"></script>';
+			}
+			return $tag;
+		}, 10, 3 );
 	} else {
 		// Production Build
 		$manifest_path = WPD_PLUGIN_PATH . 'build/.vite/manifest.json';

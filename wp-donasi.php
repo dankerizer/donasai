@@ -22,6 +22,9 @@ define( 'WPD_VERSION', '1.0.0' );
 define( 'WPD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'WPD_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WPD_TABLE_PREFIX', 'wpd_' );
+if(!defined('WPD_DEV_MODE')) {
+    define('WPD_DEV_MODE', false);
+}
 
 // Include Bootstrap
 require_once WPD_PLUGIN_PATH . 'includes/bootstrap.php';
