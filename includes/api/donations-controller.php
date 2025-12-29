@@ -127,12 +127,19 @@ function wpd_api_update_donation_status( $request ) {
     // Also, if status becomes 'complete', we could re-send email if not sent before? 
     // Sprint 4 reqs just say "Mark Complete".
     
-    // Optionally trigger email on status change if it becomes complete?
+    // Check for status change to 'complete'
     if ( 'complete' === $status ) {
-        // We could send a "Payment Received" email here if we wanted. 
-        // WPD_Email::send_confirmation($id); // This was already sent as "Pending" receipt. 
-        // Maybe we want a separate "Payment Confirmed" email. 
-        // For MVP, one email at pending (with instructions) is usually enough for manual transfer.
+        do_action( 'wpd_donation_completed', $id );
+        
+        // Update Campaign Collected Amount
+        $campaign_id = $wpdb->get_var( $wpdb->prepare( "SELECT campaign_id FROM $table WHERE id = %d", $id ) );
+        if ( $campaign_id ) {
+             // We can reuse the service/function if available, or just duplicte for speed now.
+             // Using helper if exists
+             if ( function_exists( 'wpd_update_campaign_stats' ) ) {
+                 wpd_update_campaign_stats( $campaign_id );
+             }
+        }
     }
 
     return rest_ensure_response( array( 'success' => true, 'id' => $id, 'status' => $status ) );
