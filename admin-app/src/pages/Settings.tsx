@@ -6,7 +6,10 @@ export default function Settings() {
     const [formData, setFormData] = useState({
         bank_name: '',
         account_number: '',
-        account_name: ''
+        account_name: '',
+        midtrans_enabled: false,
+        midtrans_production: false,
+        midtrans_server_key: ''
     })
     const [success, setSuccess] = useState('')
 
@@ -14,11 +17,7 @@ export default function Settings() {
     const { } = useQuery({
         queryKey: ['settings'],
         queryFn: async () => {
-            const response = await fetch('/wp-json/wpd/v1/settings', {
-                headers: { 'X-WP-Nonce': (window as any).wpdSettings?.nonce }
-            })
-            if (!response.ok) throw new Error('Failed to fetch settings')
-            return response.json()
+            // ... existing
         }
     })
 
@@ -31,7 +30,15 @@ export default function Settings() {
             });
             const data = await response.json();
             if (data.bank) {
-                setFormData(data.bank);
+                setFormData(prev => ({ ...prev, ...data.bank }));
+            }
+            if (data.midtrans) {
+                setFormData(prev => ({
+                    ...prev,
+                    midtrans_enabled: data.midtrans.enabled === true || data.midtrans.enabled === '1',
+                    midtrans_production: data.midtrans.is_production === true || data.midtrans.is_production === '1',
+                    midtrans_server_key: data.midtrans.server_key
+                }));
             }
             return data;
         }
@@ -41,13 +48,26 @@ export default function Settings() {
     // Update Settings
     const mutation = useMutation({
         mutationFn: async (data: any) => {
+            const payload = {
+                bank: {
+                    bank_name: data.bank_name,
+                    account_number: data.account_number,
+                    account_name: data.account_name
+                },
+                midtrans: {
+                    enabled: data.midtrans_enabled,
+                    is_production: data.midtrans_production,
+                    server_key: data.midtrans_server_key
+                }
+            };
+
             const response = await fetch('/wp-json/wpd/v1/settings', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-WP-Nonce': (window as any).wpdSettings?.nonce
                 },
-                body: JSON.stringify({ bank: data })
+                body: JSON.stringify(payload)
             })
             if (!response.ok) throw new Error('Failed to save settings')
             return response.json()
@@ -127,6 +147,63 @@ export default function Settings() {
                         </button>
                     </div>
                 </form>
+
+            </div>
+
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 max-w-2xl">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Payment Gateway (Midtrans)</h3>
+
+                <form onSubmit={(e) => { e.preventDefault(); mutation.mutate(formData); }} className="space-y-4">
+                    <div className="flex items-center space-x-3">
+                        <input
+                            type="checkbox"
+                            id="midtrans_enabled"
+                            checked={formData.midtrans_enabled}
+                            onChange={(e) => setFormData(prev => ({ ...prev, midtrans_enabled: e.target.checked }))}
+                            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <label htmlFor="midtrans_enabled" className="text-sm font-medium text-gray-700">
+                            Enable Midtrans Gateway
+                        </label>
+                    </div>
+
+                    <div className="flex items-center space-x-3">
+                        <input
+                            type="checkbox"
+                            id="midtrans_production"
+                            checked={formData.midtrans_production}
+                            onChange={(e) => setFormData(prev => ({ ...prev, midtrans_production: e.target.checked }))}
+                            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <label htmlFor="midtrans_production" className="text-sm font-medium text-gray-700">
+                            Production Mode (Uncheck for Sandbox)
+                        </label>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Server Key
+                        </label>
+                        <input
+                            type="password"
+                            value={formData.midtrans_server_key}
+                            onChange={(e) => setFormData(prev => ({ ...prev, midtrans_server_key: e.target.value }))}
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="SB-Mid-server-xxxx..."
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Found in your Midtrans Dashboard &gt; Settings &gt; Access Keys.</p>
+                    </div>
+
+                    <div className="pt-4">
+                        <button
+                            type="submit"
+                            disabled={mutation.isPending}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50"
+                        >
+                            {mutation.isPending ? 'Saving...' : 'Save Settings'}
+                        </button>
+                    </div>
+                </form>
             </div>
 
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 max-w-2xl">
@@ -146,6 +223,6 @@ export default function Settings() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

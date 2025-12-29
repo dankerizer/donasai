@@ -27,8 +27,11 @@ function wpd_api_settings_permission() {
 
 function wpd_api_get_settings() {
 	$bank = get_option( 'wpd_settings_bank', array( 'bank_name' => '', 'account_number' => '', 'account_name' => '' ) );
+	$midtrans = get_option( 'wpd_settings_midtrans', array( 'enabled' => false, 'is_production' => false, 'server_key' => '' ) );
+	
 	return rest_ensure_response( array(
-		'bank' => $bank,
+		'bank'     => $bank,
+		'midtrans' => $midtrans,
 	) );
 }
 
@@ -42,6 +45,15 @@ function wpd_api_update_settings( $request ) {
 			'account_name'   => sanitize_text_field( $params['bank']['account_name'] ?? '' ),
 		);
 		update_option( 'wpd_settings_bank', $bank_data );
+	}
+
+	if ( isset( $params['midtrans'] ) ) {
+		$mid_data = array(
+			'enabled'       => ! empty( $params['midtrans']['enabled'] ),
+			'is_production' => ! empty( $params['midtrans']['is_production'] ),
+			'server_key'    => sanitize_text_field( $params['midtrans']['server_key'] ?? '' ),
+		);
+		update_option( 'wpd_settings_midtrans', $mid_data );
 	}
 
 	return wpd_api_get_settings();

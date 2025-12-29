@@ -15,12 +15,18 @@ require_once WPD_PLUGIN_PATH . 'includes/metabox.php';
 // Gateways
 require_once WPD_PLUGIN_PATH . 'includes/gateways/interface.php';
 require_once WPD_PLUGIN_PATH . 'includes/gateways/manual.php';
+require_once WPD_PLUGIN_PATH . 'includes/gateways/midtrans.php';
 require_once WPD_PLUGIN_PATH . 'includes/services/gateway-registry.php';
 
 // Services
 require_once WPD_PLUGIN_PATH . 'includes/services/donation.php';
 require_once WPD_PLUGIN_PATH . 'includes/services/email.php';
 require_once WPD_PLUGIN_PATH . 'includes/functions-frontend.php';
+
+// Register Gateways
+add_action( 'wpd_register_gateways', function() {
+    WPD_Gateway_Registry::register_gateway( new WPD_Gateway_Midtrans() );
+});
 
 // Initialize
 // Initialize
