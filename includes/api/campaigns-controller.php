@@ -75,6 +75,10 @@ function wpd_api_create_donation( $request ) {
 
 	// 3. Process Payment Gateway
 	$gateway = WPD_Gateway_Registry::get_gateway( $method );
+    
+    // Trigger Action
+    do_action( 'wpd_donation_created', $donation_id );
+
 	if ( $gateway ) {
 		$result = $gateway->process_payment( array(
 			'donation_id' => $donation_id,

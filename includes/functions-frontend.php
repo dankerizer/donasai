@@ -232,3 +232,59 @@ function wpd_shortcode_fundraiser_stats() {
     return ob_get_clean();
 }
 add_shortcode( 'wpd_fundraiser_stats', 'wpd_shortcode_fundraiser_stats' );
+
+/**
+ * User Profile Shortcode [wpd_profile]
+ */
+function wpd_shortcode_profile() {
+    if ( ! is_user_logged_in() ) {
+        return '<p>' . __( 'Silakan <a href="' . wp_login_url( get_permalink() ) . '">login</a> untuk mengedit profil Anda.', 'wp-donasi' ) . '</p>';
+    }
+
+    // Handle Form Submission
+    if ( isset( $_POST['wpd_profile_submit'] ) && isset( $_POST['wpd_profile_nonce'] ) ) {
+        if ( ! wp_verify_nonce( $_POST['wpd_profile_nonce'], 'wpd_profile_update' ) ) {
+            wp_die( 'Security check failed' );
+        }
+
+        $user_id = get_current_user_id();
+        $name    = sanitize_text_field( $_POST['display_name'] );
+        $phone   = sanitize_text_field( $_POST['phone'] );
+        $pass1   = $_POST['pass1'];
+        $pass2   = $_POST['pass2'];
+
+        // Update User
+        $user_data = array(
+            'ID'           => $user_id,
+            'display_name' => $name,
+        );
+
+        if ( ! empty( $pass1 ) ) {
+            if ( $pass1 === $pass2 ) {
+                $user_data['user_pass'] = $pass1;
+            } else {
+                 $_POST['wpd_profile_error'] = 'Password tidak cocok.';
+                 // Allow execution to continue to display form with error
+            }
+        }
+
+        if ( ! isset( $_POST['wpd_profile_error'] ) ) {
+            wp_update_user( $user_data );
+            update_user_meta( $user_id, '_wpd_phone', $phone );
+
+            // Redirect to avoid resubmission
+            wp_safe_redirect( add_query_arg( 'updated', 'true' ) );
+            exit;
+        }
+    }
+
+    // Pass error to template if exists
+    if ( isset( $_POST['wpd_profile_error'] ) ) {
+        echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">' . esc_html( $_POST['wpd_profile_error'] ) . '</div>';
+    }
+
+    ob_start();
+    include WPD_PLUGIN_PATH . 'frontend/templates/profile.php';
+    return ob_get_clean();
+}
+add_shortcode( 'wpd_profile', 'wpd_shortcode_profile' );

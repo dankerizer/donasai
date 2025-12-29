@@ -43,8 +43,15 @@ if ( isset( $_GET['donation_success'] ) && $_GET['donation_success'] == 1 ) {
 					<?php the_post_thumbnail( 'large' ); ?>
 				</div>
 			<?php endif; ?>
-
-			<h1 class="wpd-campaign-title"><?php the_title(); ?></h1>
+                <?php 
+                $is_verified = get_post_meta( get_the_ID(), '_wpd_is_verified', true );
+                ?>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                    <?php the_title(); ?>
+                    <?php if ( $is_verified ) : ?>
+                        <svg class="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M10 15.172l9.192-9.193 1.415 1.414L10 18l-6.364-6.364 1.414-1.414z"/></svg>
+                    <?php endif; ?>
+                </h1>
 			
 			<div class="wpd-campaign-stats-mobile wpd-hide-desktop">
 				<!-- Progress bar for mobile if needed -->

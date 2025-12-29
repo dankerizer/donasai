@@ -92,6 +92,11 @@ function wpd_handle_donation_submission() {
         // Update Campaign Collected Amount
 		wpd_update_campaign_stats( $campaign_id );
 		
+        // Trigger Created Action (for Emails)
+        if ( isset( $result['donation_id'] ) ) {
+            do_action( 'wpd_donation_created', $result['donation_id'] );
+        }
+
 		// Update Fundraiser Stats if applicable
 		if ( $fundraiser_id > 0 ) {
 		    $fundraiser_service = new WPD_Fundraiser_Service();
