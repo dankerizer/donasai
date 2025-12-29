@@ -42,7 +42,23 @@ Berikut draft PRD untuk **wp-donasi** (versi freemium: free di wp.org + Pro berb
 
 ## 3. Product Features
 
-### 3.1. Campaign Management
+### 3.1. Campaign Management (Enhanced)
+
+**Deskripsi:**
+
+- Custom Post Type `wpd_campaign`.  
+- Setiap campaign punya landing page dengan informasi lengkap + progress bar + form donasi.
+- **Support Tipe Campaign Khusus:**
+    - **Zakat:** Kalkulator otomatis (Zakat Maal, Penghasilan, Fitrah) terintegrasi di form.
+    - **Qurban/Aqiqah:** Sistem "Packages" (misal: Kambing A, Sapi B) dengan harga tetap per unit.
+    - **Wakaf:** Support wakaf tunai dan wakaf aset.
+
+**Data utama:**
+
+- Title, slug, excerpt, content.
+- Target amount, collected amount, deadline, status.
+- **Urgency Tools:** Countdown timer (Tahun/Bulan/Hari), Progress bar styles.
+- **Social Proof:** "Doa Donatur" widget, running text donasi terbaru.
 
 **Deskripsi:**
 
@@ -95,7 +111,20 @@ Berikut draft PRD untuk **wp-donasi** (versi freemium: free di wp.org + Pro berb
 
 ***
 
-### 3.3. Payment Processing
+### 3.3. Payment Processing & Notifications
+
+**Deskripsi:**
+
+- Abstraksi payment gateway dengan interface tunggal.
+- **WhatsApp Integration:**
+    - "Flying Button" melayang untuk chat CS/Admin.
+    - Notifikasi WhatsApp otomatis (via gateway atau direct link WA).
+- Minimal support free:  
+  - Offline transfer.
+  - 1 gateway global.
+
+**Entity:**
+
 
 **Deskripsi:**
 
@@ -164,6 +193,27 @@ Berikut draft PRD untuk **wp-donasi** (versi freemium: free di wp.org + Pro berb
 
 - Donor bisa download receipt/PDF.[13][8]
 - Kelola recurring donations (pause/cancel).[8]
+
+***
+
+### 3.5. Fundraising & Affiliate System (New)
+
+**Deskripsi:**
+
+- Memungkinkan user mendaftar sebagai fundraiser untuk campaign tertentu.
+- Setiap fundraiser mendapat **Referral Link** unik (`?ref=username`).
+- **Fundraiser Dashboard:**
+    - Statistik klik dan donasi yang masuk via link mereka.
+    - Leaderboard "Top Fundraiser" di halaman campaign.
+    - (Pro) Sistem komisi/reward (persentase atau fix).
+
+### 3.6. Marketing & Analytics (New)
+
+**Deskripsi:**
+
+- **Pixel Integration:** Input ID untuk Facebook Pixel, TikTok Pixel, Google Tag Manager.
+- **Conversion Tracking:** Event "Donate" otomatis tertembak saat transaksi sukses.
+- **Social Proof Popup:** Notifikasi kecil "Ahmad baru saja berdonasi Rp 50.000" di pojok layar (fomo effect).
 
 ***
 

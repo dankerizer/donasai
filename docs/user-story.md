@@ -7,7 +7,9 @@ Berikut **User Stories wp-donasi** yang sudah dipecah per role dan prioritas (MV
 1. **Admin Lembaga** (masjid, NGO, sekolah) - primary user
 2. **Donatur** (pengunjung yang mau donasi)
 3. **Developer/Agency** (bikin website untuk lembaga)
-4. **Super Admin** (kelola Pro license)
+3. **Fundraiser** (User yang menyebarkan link donasi)
+4. **Developer/Agency** (bikin website untuk lembaga)
+5. **Super Admin** (kelola Pro license)
 
 ---
 
@@ -40,6 +42,16 @@ Acceptance: Bulk/manual status change + notification [web:81]
 ### Donatur
 
 ```
+As a Donatur (Zakat),
+I want to calculate my Zakat Maal/Penghasilan automatically
+So that I know exactly how much I should pay
+Acceptance: Zakat calculator form embedded in campaign [web:25]
+
+As a Donatur (Qurban),
+I want to choose "Type A" or "Type B" animal packages
+So that I can easily buy Qurban without inputting manual amount
+Acceptance: Radio button selection for packages [web:45]
+
 As a Donatur, 
 I want to see list of active campaigns with progress bar
 So that I can choose which campaign to support
@@ -59,6 +71,20 @@ As a Donatur,
 I want email confirmation after successful donation
 So that I have proof of my contribution
 Acceptance: Email template with campaign details & amount [web:81]
+```
+
+### Fundraiser (New)
+
+```
+As a Fundraiser,
+I want to register for a campaign and get a unique referral link
+So that I can help spread the campaign and track my impact
+Acceptance: Registration button "Jadi Fundraiser", generate URL ?ref=username
+
+As a Fundraiser,
+I want to see a leaderboard of top fundraisers
+So that I feel motivated to search for more donations
+Acceptance: Widget "Top Pejuang Kebaikan" on campaign page
 ```
 
 ### Developer/Agency
@@ -91,6 +117,16 @@ As an Admin Lembaga,
 I want advanced donor reports (LTV, campaign favorites, segments)
 So that I can plan targeted fundraising campaigns
 Acceptance: Donor CRM mini view, export per segment [web:45][web:89]
+
+As an Admin Lembaga, 
+I want to set up Facebook & TikTok Pixels
+So that I can track ads conversion effectively
+Acceptance: Settings input for Pixel IDs, auto-fire events
+
+As an Admin Lembaga,
+I want to enable "Flying Button" WhatsApp
+So that donors can easily ask questions
+Acceptance: Floating button implementation with custom message
 
 As an Admin Lembaga, 
 I want recurring donations (monthly/yearly)

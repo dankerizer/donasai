@@ -3,7 +3,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Dashboard from './pages/Dashboard'
 import DonationsPage from './pages/DonationsPage'
 import SettingsPage from './pages/Settings'
-import { LayoutDashboard, Heart, Settings as SettingsIcon } from 'lucide-react'
+import FundraisersPage from './pages/FundraisersPage'
+import { LayoutDashboard, Heart, Settings as SettingsIcon, Users } from 'lucide-react'
 import clsx from 'clsx'
 
 const queryClient = new QueryClient()
@@ -24,6 +25,7 @@ function AppLayout() {
   const navItems = [
     { label: 'Dashboard', path: '/', icon: LayoutDashboard },
     { label: 'Donations', path: '/donations', icon: Heart },
+    { label: 'Fundraisers', path: '/fundraisers', icon: Users },
     { label: 'Settings', path: '/settings', icon: SettingsIcon },
   ]
 
@@ -62,6 +64,7 @@ function AppLayout() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/donations" element={<DonationsPage />} />
+          <Route path="/fundraisers" element={<FundraisersPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>

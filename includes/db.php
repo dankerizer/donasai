@@ -51,4 +51,36 @@ function wpd_create_tables() {
 	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 	dbDelta( $sql_donations );
 	dbDelta( $sql_meta );
+
+	// New Tables for Features (Fundraising & Tracking)
+	$table_fundraisers = $wpdb->prefix . 'wpd_fundraisers';
+	$table_logs        = $wpdb->prefix . 'wpd_referral_logs';
+
+	$sql_fundraisers = "CREATE TABLE $table_fundraisers (
+		id bigint(20) NOT NULL AUTO_INCREMENT,
+		user_id bigint(20) NOT NULL,
+		campaign_id bigint(20) NOT NULL,
+		referral_code varchar(50) NOT NULL,
+		total_donations decimal(12,2) DEFAULT 0,
+		donation_count int(11) DEFAULT 0,
+		is_active tinyint(1) DEFAULT 1,
+		created_at datetime DEFAULT CURRENT_TIMESTAMP,
+		PRIMARY KEY (id),
+		UNIQUE KEY code (referral_code),
+		KEY user_campaign (user_id, campaign_id)
+	) $charset_collate;";
+
+	$sql_logs = "CREATE TABLE $table_logs (
+		id bigint(20) NOT NULL AUTO_INCREMENT,
+		fundraiser_id bigint(20) NOT NULL,
+		campaign_id bigint(20) NOT NULL,
+		ip_address varchar(100) NULL,
+		user_agent varchar(255) NULL,
+		created_at datetime DEFAULT CURRENT_TIMESTAMP,
+		PRIMARY KEY (id),
+		KEY fundraiser_id (fundraiser_id)
+	) $charset_collate;";
+
+	dbDelta( $sql_fundraisers );
+	dbDelta( $sql_logs );
 }

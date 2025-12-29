@@ -116,6 +116,33 @@ CREATE TABLE {$wpdb->prefix}wpd_campaign_meta (
     meta_value longtext,
     PRIMARY KEY (campaign_id, meta_key)
 );
+
+-- wpd_fundraisers (New: Affiliate/Fundraiser System)
+CREATE TABLE {$wpdb->prefix}wpd_fundraisers (
+    id bigint(20) NOT NULL AUTO_INCREMENT,
+    user_id bigint(20) NOT NULL,
+    campaign_id bigint(20) NOT NULL,
+    referral_code varchar(50) NOT NULL, -- e.g. "ahmad123"
+    total_donations decimal(12,2) DEFAULT 0,
+    donation_count int(11) DEFAULT 0,
+    is_active tinyint(1) DEFAULT 1,
+    created_at datetime DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY code (referral_code),
+    KEY user_campaign (user_id, campaign_id)
+);
+
+-- wpd_referral_logs (New: Tracking clicks/views)
+CREATE TABLE {$wpdb->prefix}wpd_referral_logs (
+    id bigint(20) NOT NULL AUTO_INCREMENT,
+    fundraiser_id bigint(20) NOT NULL,
+    campaign_id bigint(20) NOT NULL,
+    ip_address varchar(100) NULL,
+    user_agent varchar(255) NULL,
+    created_at datetime DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY fundraiser_id (fundraiser_id)
+);
 ```
 
 ### 3.2 Custom Post Type: `wpd_campaign`
@@ -128,6 +155,11 @@ CREATE TABLE {$wpdb->prefix}wpd_campaign_meta (
 - _wpd_status (active,closed)
 - _wpd_collected_amount (decimal, auto-updated)
 - _featured (yes/no)
+- _wpd_type (donation, zakat, qurban, wakaf)
+- _wpd_packages (json: [{name, price}, ...]) -- for Qurban
+- _wpd_zakat_settings (json)
+- _wpd_pixel_ids (json: {fb, tiktok, gtm})
+- _wpd_whatsapp_settings (json: {number, message})
 ```
 
 ***
@@ -144,6 +176,8 @@ CREATE TABLE {$wpdb->prefix}wpd_campaign_meta (
 /campaigns/{id}    GET  - Single campaign
 /donations         GET  - Donor donations (auth required)
 /stats             GET  - Admin stats (auth + capability)
+/fundraisers       GET, POST - Fundraiser registration & stats
+/track             POST - Log referral visits
 ```
 
 **Authentication:** WP REST nonce + user capability check.

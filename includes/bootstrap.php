@@ -29,5 +29,6 @@ require_once WPD_PLUGIN_PATH . 'includes/metabox.php';
 require_once WPD_PLUGIN_PATH . 'includes/admin/menu.php';
 require_once WPD_PLUGIN_PATH . 'includes/api/donations-controller.php';
 require_once WPD_PLUGIN_PATH . 'includes/api/settings-controller.php';
+require_once WPD_PLUGIN_PATH . 'includes/api/fundraisers-controller.php';
 // Initialize Headers/Hooks
 add_action( 'init', 'wpd_register_cpt' );
