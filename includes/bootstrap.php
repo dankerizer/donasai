@@ -12,6 +12,7 @@ require_once WPD_PLUGIN_PATH . 'includes/db.php';
 require_once WPD_PLUGIN_PATH . 'includes/cpt.php';
 require_once WPD_PLUGIN_PATH . 'includes/metabox.php';
 require_once WPD_PLUGIN_PATH . 'includes/admin/menu.php';
+require_once WPD_PLUGIN_PATH . 'includes/admin/dashboard-widget.php';
 
 // Gateways
 require_once WPD_PLUGIN_PATH . 'includes/gateways/interface.php';

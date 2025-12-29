@@ -94,7 +94,7 @@ class WPD_Subscription_Service {
             $wpdb->update( $table, array( 'next_payment_date' => $next_date ), array( 'id' => $sub->id ) );
             
             // Log/Create Pending Donation (Stub)
-            error_log( "Processed renewal for Subscription #{$sub->id}" );
+            // error_log( "Processed renewal for Subscription #{$sub->id}" );
         }
     }
 }

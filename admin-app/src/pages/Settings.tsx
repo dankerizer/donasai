@@ -260,16 +260,16 @@ export default function Settings() {
                 <h3 className="text-lg font-medium text-gray-900 mb-4">Shortcodes Cheatsheet</h3>
                 <div className="space-y-3">
                     <div className="p-3 bg-gray-50 rounded border border-gray-200">
+                        <code className="text-blue-600 font-bold block mb-1">[wpd_profile]</code>
+                        <p className="text-sm text-gray-600">Displays the user profile edit form (Name, Phone, Password).</p>
+                    </div>
+                    <div className="p-3 bg-gray-50 rounded border border-gray-200">
                         <code className="text-blue-600 font-bold block mb-1">[wpd_my_donations]</code>
                         <p className="text-sm text-gray-600">Displays the donation history for the logged-in user.</p>
                     </div>
                     <div className="p-3 bg-gray-50 rounded border border-gray-200">
                         <code className="text-blue-600 font-bold block mb-1">[wpd_fundraiser_stats]</code>
                         <p className="text-sm text-gray-600">Displays the fundraiser dashboard (stats & referral links) for the logged-in user.</p>
-                    </div>
-                    <div className="p-3 bg-gray-50 rounded border border-gray-200">
-                        <code className="text-blue-600 font-bold block mb-1">[wpd_campaign id="123"]</code>
-                        <p className="text-sm text-gray-600">Embeds a donation form for a specific campaign ID.</p>
                     </div>
                 </div>
             </div>

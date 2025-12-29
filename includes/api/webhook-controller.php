@@ -20,9 +20,9 @@ function wpd_api_midtrans_webhook( $request ) {
     $params = $request->get_json_params();
     
     // Log for debugging
-    if ( defined('WP_DEBUG') && WP_DEBUG ) {
-        error_log( 'Midtrans Webhook: ' . print_r( $params, true ) );
-    }
+    // if ( defined('WP_DEBUG') && WP_DEBUG ) {
+    //     error_log( 'Midtrans Webhook: ' . print_r( $params, true ) );
+    // }
 
     $gateway = new WPD_Gateway_Midtrans();
     $result = $gateway->handle_webhook( $params );
