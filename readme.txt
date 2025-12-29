@@ -1,6 +1,6 @@
 === wp-donasi ===
-Contributors: yourname
-Donate link: https://example.com/donate
+Contributors: Hadie Danker
+Donate link: https://donasi.xyz/donate
 Tags: donation, fundraising, charity, manual payment
 Requires at least: 6.0
 Tested up to: 6.4
