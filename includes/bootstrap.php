@@ -31,7 +31,7 @@ add_action( 'wpd_register_gateways', function() {
 
 // Initialize
 add_action( 'init', array( 'WPD_Gateway_Registry', 'init' ), 5 );
-add_action( 'init', array( 'WPD_Email', 'init' ) );
+add_action( 'init', array( 'WPD_Email', 'init' ), 5 );
 
 require_once WPD_PLUGIN_PATH . 'includes/services/subscription.php';
 require_once WPD_PLUGIN_PATH . 'includes/api/donations-controller.php';

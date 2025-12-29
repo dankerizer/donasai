@@ -51,10 +51,7 @@ class WPD_Gateway_Manual implements WPD_Gateway {
 
         $donation_id = $wpdb->insert_id;
 
-        // Send Email
-        if ( class_exists( 'WPD_Email' ) ) {
-            WPD_Email::send_confirmation( $donation_id );
-        }
+        // Email Sending is handled by 'wpd_donation_created' action in controller/services
 
         // Return success with redirect URL
         $redirect_url = add_query_arg( 
