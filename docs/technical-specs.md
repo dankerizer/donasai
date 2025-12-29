@@ -102,9 +102,10 @@ CREATE TABLE {$wpdb->prefix}wpd_donations (
     is_anonymous tinyint(1) DEFAULT 0,
     created_at datetime DEFAULT CURRENT_TIMESTAMP,
     updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    fundraiser_id bigint(20) DEFAULT 0,
     PRIMARY KEY (id),
     KEY campaign_id (campaign_id),
-    KEY user_id (user_id),
+	KEY user_id (user_id),
     KEY status (status),
     KEY created_at (created_at)
 ) {$wpdb->get_charset_collate()};
@@ -379,6 +380,16 @@ WP Admin → Donasi (main menu)
 ├── Donations (React SPA)          /admin.php?page=wpd-donations  
 └── Settings (React SPA)           /admin.php?page=wpd-settings
 ```
+
+***
+
+## 11. Shortcodes
+
+| Shortcode | Description | Attributes |
+|-----------|-------------|------------|
+| `[wpd_campaign id="123"]` | Embeds a donation form and progress bar for a specific campaign. | `id` (required): Campaign ID |
+| `[wpd_my_donations]` | Displays a dashboard for the logged-in user showing their donation history. | None |
+| `[wpd_fundraiser_stats]` | Displays the fundraiser dashboard (referral links, stats) for the logged-in user. | None |
 
 ***
 

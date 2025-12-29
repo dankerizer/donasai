@@ -67,9 +67,76 @@ if ( isset( $_GET['donation_success'] ) && $_GET['donation_success'] == 1 ) {
 				</div>
 
 				<div class="wpd-form-embed">
+				<div class="wpd-form-embed">
 					<?php echo wpd_get_donation_form_html( $campaign_id ); ?>
 				</div>
+
+				<!-- Fundraiser Action -->
+				<div class="wpd-fundraiser-section" style="margin-top:20px; text-align:center; padding-top:20px; border-top:1px solid #eee;">
+				    <?php if ( is_user_logged_in() ) : ?>
+				        <button type="button" class="button wpd-btn-outline" onclick="wpdRegisterFundraiser(<?php echo $campaign_id; ?>)" style="width:100%; border:1px solid #059669; color:#059669; background:white;">
+				            <?php _e( 'Daftar Jadi Fundraiser', 'wp-donasi' ); ?>
+				        </button>
+				    <?php else : ?>
+				        <p style="font-size:13px;">
+				            <a href="<?php echo wp_login_url( get_permalink() ); ?>" style="color:#059669; text-decoration:underline;">Login</a> untuk menjadi Fundraiser.
+				        </p>
+				    <?php endif; ?>
+				</div>
 			</div>
+			
+			<!-- Fundraiser Modal (Hidden) -->
+			<div id="wpd-fundraiser-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:99999; align-items:center; justify-content:center;">
+			    <div style="background:white; padding:25px; border-radius:10px; width:90%; max-width:400px; position:relative;">
+			        <button onclick="document.getElementById('wpd-fundraiser-modal').style.display='none'" style="position:absolute; top:10px; right:15px; border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
+			        
+			        <h3 style="margin-top:0;">Fundraiser Registered!</h3>
+			        <p>Bagikan link ini untuk mendapatkan komisi/pahala:</p>
+			        
+			        <input type="text" id="wpd-ref-link" readonly style="width:100%; padding:10px; background:#f9f9f9; border:1px solid #ddd; margin-bottom:15px; font-size:14px;">
+			        
+			        <button class="button" onclick="wpdCopyRef()" style="width:100%; margin-bottom:10px;">Copy Link</button>
+			        <a id="wpd-wa-share" href="#" target="_blank" class="button" style="display:block; width:100%; text-align:center; background:#25D366; color:white; border:none;">Share ke WhatsApp</a>
+			    </div>
+			</div>
+
+			<script>
+			function wpdRegisterFundraiser(campaignId) {
+			    var nonce = '<?php echo wp_create_nonce( 'wp_rest' ); ?>';
+			    
+			    fetch('/wp-json/wpd/v1/fundraisers', {
+			        method: 'POST',
+			        headers: {
+			            'Content-Type': 'application/json',
+			            'X-WP-Nonce': nonce
+			        },
+			        body: JSON.stringify({ campaign_id: campaignId })
+			    })
+			    .then(response => response.json())
+			    .then(data => {
+			        if (data.referral_link) {
+			            var modal = document.getElementById('wpd-fundraiser-modal');
+			            modal.style.display = 'flex';
+			            
+			            document.getElementById('wpd-ref-link').value = data.referral_link;
+			            
+			            // Setup WA Share
+			            var text = "Yuk bantu donasi di campaign ini: " + data.referral_link;
+			            document.getElementById('wpd-wa-share').href = "https://wa.me/?text=" + encodeURIComponent(text);
+			        } else {
+			            alert('Error: ' + (data.message || 'Something went wrong'));
+			        }
+			    })
+			    .catch(err => alert('Error connecting to server'));
+			}
+			
+			function wpdCopyRef() {
+			    var copyText = document.getElementById("wpd-ref-link");
+			    copyText.select();
+			    document.execCommand("copy");
+			    alert("Link copied!");
+			}
+			</script>
 		</div>
 	</div>
 </div>

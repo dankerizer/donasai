@@ -162,3 +162,65 @@ function wpd_track_referral() {
     }
 }
 add_action( 'template_redirect', 'wpd_track_referral' );
+
+/**
+ * Fundraiser Stats Shortcode [wpd_fundraiser_stats]
+ */
+function wpd_shortcode_fundraiser_stats() {
+    if ( ! is_user_logged_in() ) {
+        return '<p>' . __( 'Silakan login untuk melihat statistik fundraiser Anda.', 'wp-donasi' ) . '</p>';
+    }
+    
+    global $wpdb;
+    $user_id = get_current_user_id();
+    $table_fundraisers = $wpdb->prefix . 'wpd_fundraisers';
+    
+    // Get all campaigns user is fundraising for
+    $results = $wpdb->get_results( $wpdb->prepare(
+        "SELECT f.*, p.post_title 
+         FROM $table_fundraisers f
+         JOIN {$wpdb->posts} p ON f.campaign_id = p.ID
+         WHERE f.user_id = %d
+         ORDER BY f.created_at DESC",
+        $user_id
+    ) );
+    
+    if ( empty( $results ) ) {
+        return '<p>' . __( 'Anda belum mendaftar sebagai fundraiser untuk campaign apapun.', 'wp-donasi' ) . '</p>';
+    }
+    
+    ob_start();
+    ?>
+    <div class="wpd-fundraiser-dashboard">
+        <h3><?php _e( 'Statistik Kampanye Anda', 'wp-donasi' ); ?></h3>
+        <table class="wpd-table" style="width:100%; border-collapse:collapse; margin-top:15px;">
+            <thead>
+                <tr style="background:#f9fafb; text-align:left; border-bottom:1px solid #ddd;">
+                    <th style="padding:10px;">Campaign</th>
+                    <th style="padding:10px;">Link Referral</th>
+                    <th style="padding:10px;">Visit</th>
+                    <th style="padding:10px;">Donasi</th>
+                    <th style="padding:10px;">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ( $results as $row ) : 
+                    // Get visit count (lazy query, ideally should act stored count or cached)
+                    $visit_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(id) FROM {$wpdb->prefix}wpd_referral_logs WHERE fundraiser_id = %d", $row->id ) );
+                    $link = add_query_arg( 'ref', $row->referral_code, get_permalink( $row->campaign_id ) );
+                ?>
+                <tr style="border-bottom:1px solid #eee;">
+                    <td style="padding:10px;"><strong><?php echo esc_html( $row->post_title ); ?></strong></td>
+                    <td style="padding:10px;"><input type="text" value="<?php echo esc_url( $link ); ?>" readonly style="width:100%; font-size:12px; padding:5px; background:#f9f9f9; border:1px solid #ddd;" onclick="this.select()"></td>
+                    <td style="padding:10px;"><?php echo intval( $visit_count ); ?></td>
+                    <td style="padding:10px;"><?php echo intval( $row->donation_count ); ?></td>
+                    <td style="padding:10px; color:#059669; font-weight:bold;">Rp <?php echo number_format( $row->total_donations, 0, ',', '.' ); ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode( 'wpd_fundraiser_stats', 'wpd_shortcode_fundraiser_stats' );
