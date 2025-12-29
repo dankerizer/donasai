@@ -20,7 +20,7 @@ add_action( 'rest_api_init', function () {
 	// POST /donations/{id} (Update Status)
 	register_rest_route( 'wpd/v1', '/donations/(?P<id>\d+)', array(
 		'methods'             => 'POST',
-		'callback'            => 'wpd_api_update_donation_status',
+		'callback'            => 'wpd_api_update_donation',
 		'permission_callback' => function () {
 			return current_user_can( 'manage_options' );
 		},
@@ -98,22 +98,40 @@ function wpd_api_export_donations( $request ) {
     exit;
 }
 
-function wpd_api_update_donation_status( $request ) {
+function wpd_api_update_donation( $request ) {
     global $wpdb;
     $table = $wpdb->prefix . 'wpd_donations';
     $id    = $request['id'];
     $params = $request->get_json_params();
-    $status = isset( $params['status'] ) ? sanitize_text_field( $params['status'] ) : '';
+    
+    $data_to_update = array();
+    $format = array();
 
-    if ( empty( $status ) ) {
-        return new WP_Error( 'missing_status', 'Status is required', array( 'status' => 400 ) );
+    // Fields allowed to be updated
+    $allowed_fields = array( 'status', 'name', 'email', 'phone', 'amount', 'note' );
+
+    foreach ( $allowed_fields as $field ) {
+        if ( isset( $params[ $field ] ) ) {
+            $value = $params[ $field ];
+            if ( 'amount' === $field ) {
+                $data_to_update[ $field ] = (float) $value;
+                $format[] = '%f';
+            } else {
+                $data_to_update[ $field ] = sanitize_text_field( $value );
+                $format[] = '%s';
+            }
+        }
+    }
+
+    if ( empty( $data_to_update ) ) {
+        return new WP_Error( 'no_data', 'No data to update', array( 'status' => 400 ) );
     }
 
     $updated = $wpdb->update( 
         $table, 
-        array( 'status' => $status ), 
+        $data_to_update, 
         array( 'id' => $id ), 
-        array( '%s' ), 
+        $format, 
         array( '%d' ) 
     );
 
@@ -121,28 +139,39 @@ function wpd_api_update_donation_status( $request ) {
         return new WP_Error( 'db_error', 'Could not update donation', array( 'status' => 500 ) );
     }
 
-    // If status is completed, we might want to ensure campaign stats are correct or re-trigger email? 
-    // For now, just simplistic update.
-    
-    // Also, if status becomes 'complete', we could re-send email if not sent before? 
-    // Sprint 4 reqs just say "Mark Complete".
-    
-    // Check for status change to 'complete'
-    if ( 'complete' === $status ) {
+    // Check for status change to 'complete' if status was in the payload
+    if ( isset( $data_to_update['status'] ) && 'complete' === $data_to_update['status'] ) {
         do_action( 'wpd_donation_completed', $id );
         
         // Update Campaign Collected Amount
         $campaign_id = $wpdb->get_var( $wpdb->prepare( "SELECT campaign_id FROM $table WHERE id = %d", $id ) );
         if ( $campaign_id ) {
-             // We can reuse the service/function if available, or just duplicte for speed now.
-             // Using helper if exists
              if ( function_exists( 'wpd_update_campaign_stats' ) ) {
                  wpd_update_campaign_stats( $campaign_id );
              }
         }
     }
 
-    return rest_ensure_response( array( 'success' => true, 'id' => $id, 'status' => $status ) );
+    // Return updated data
+    $updated_row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $table WHERE id = %d", $id ) );
+    
+    return rest_ensure_response( array( 
+        'success' => true, 
+        'id'      => $id, 
+        'message' => 'Donation updated',
+        'data'    => array(
+			'id'              => $updated_row->id,
+			'name'            => $updated_row->name,
+            'email'           => $updated_row->email,
+            'phone'           => $updated_row->phone,
+			'amount'          => (float) $updated_row->amount,
+			'status'          => $updated_row->status,
+            'payment_method'  => $updated_row->payment_method,
+            'gateway_txn_id'  => $updated_row->gateway_txn_id,
+            'note'            => $updated_row->note,
+			'date'            => $updated_row->created_at,
+        )
+    ) );
 }
 
 function wpd_api_get_donations( $request ) {
@@ -154,11 +183,16 @@ function wpd_api_get_donations( $request ) {
 	// Format data for frontend
 	$data = array_map( function( $row ) {
 		return array(
-			'id'      => $row->id,
-			'name'    => $row->name,
-			'amount'  => (float) $row->amount,
-			'status'  => $row->status,
-			'date'    => $row->created_at,
+			'id'              => $row->id,
+			'name'            => $row->name,
+            'email'           => $row->email,
+            'phone'           => $row->phone,
+			'amount'          => (float) $row->amount,
+			'status'          => $row->status,
+            'payment_method'  => $row->payment_method,
+            'gateway_txn_id'  => $row->gateway_txn_id,
+            'note'            => $row->note,
+			'date'            => $row->created_at,
 		);
 	}, $results );
 
