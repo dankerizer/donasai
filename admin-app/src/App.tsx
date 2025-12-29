@@ -1,5 +1,6 @@
-import { HashRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
+import { HashRouter, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import Dashboard from './pages/Dashboard'
 import DonationsPage from './pages/DonationsPage'
 import SettingsPage from './pages/Settings'
@@ -21,6 +22,18 @@ function App() {
 
 function AppLayout() {
   const location = useLocation()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const settings = (window as any).wpdSettings;
+    // Check if we have an initial path and we are currently at root (default)
+    // We also check if the hash is empty to avoid overriding direct bookmarks
+    if (settings?.initialPath && (location.pathname === '/' || location.pathname === '')) {
+      if (settings.initialPath !== '/') {
+        navigate(settings.initialPath, { replace: true });
+      }
+    }
+  }, []);
 
   const navItems = [
     { label: 'Dashboard', path: '/', icon: LayoutDashboard },

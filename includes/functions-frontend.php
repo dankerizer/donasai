@@ -20,6 +20,22 @@ function wpd_template_loader( $template ) {
     }
 
 	if ( is_singular( 'wpd_campaign' ) ) {
+        // Payment Page (?donate=1)
+        if ( isset( $_GET['donate'] ) ) {
+            $payment_template = WPD_PLUGIN_PATH . 'frontend/templates/payment.php';
+            if ( file_exists( $payment_template ) ) {
+                return $payment_template;
+            }
+        }
+        
+        // Success Page (?donation_success=1)
+        if ( isset( $_GET['donation_success'] ) ) {
+            $success_template = WPD_PLUGIN_PATH . 'frontend/templates/payment-success.php';
+            if ( file_exists( $success_template ) ) {
+                return $success_template;
+            }
+        }
+
 		$plugin_template = WPD_PLUGIN_PATH . 'frontend/templates/campaign-single.php';
 		if ( file_exists( $plugin_template ) ) {
 			return $plugin_template;
@@ -71,6 +87,23 @@ function wpd_enqueue_frontend_assets() {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'wpd_enqueue_frontend_assets' );
+
+/**
+ * Get Recent Donors
+ */
+function wpd_get_recent_donors( $campaign_id, $limit = 10 ) {
+    global $wpdb;
+    $table = $wpdb->prefix . 'wpd_donations';
+    
+    // Only completed donations
+    $results = $wpdb->get_results( $wpdb->prepare( 
+        "SELECT * FROM $table WHERE campaign_id = %d AND status = 'complete' ORDER BY created_at DESC LIMIT %d", 
+        $campaign_id, 
+        $limit 
+    ) );
+    
+    return $results;
+}
 
 /**
  * Get Donation Form HTML

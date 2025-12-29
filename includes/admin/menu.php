@@ -60,6 +60,15 @@ function wpd_register_admin_menu() {
 
 	add_submenu_page(
 		'wpd-dashboard',
+		__( 'Fundraisers', 'wp-donasi' ),
+		__( 'Fundraisers', 'wp-donasi' ),
+		'manage_options',
+		'wpd-fundraisers',
+		'wpd_render_admin_app' // Same React App
+	);
+
+	add_submenu_page(
+		'wpd-dashboard',
 		__( 'Settings', 'wp-donasi' ),
 		__( 'Settings', 'wp-donasi' ),
 		'manage_options',
@@ -141,10 +150,30 @@ function wpd_enqueue_admin_assets( $hook ) {
 		}
 	}
 
+	// Determine Initial Path based on Page Slug
+	$current_page = isset( $_GET['page'] ) ? $_GET['page'] : 'wpd-dashboard';
+	$initial_path = '/';
+	
+	switch ( $current_page ) {
+		case 'wpd-donations':
+			$initial_path = '/donations';
+			break;
+		case 'wpd-fundraisers':
+			$initial_path = '/fundraisers';
+			break;
+		case 'wpd-settings':
+			$initial_path = '/settings';
+			break;
+		default:
+			$initial_path = '/';
+			break;
+	}
+
 	// Localize Script for Nonce/Settings
 	wp_localize_script( defined( 'WPD_DEV_MODE' ) && WPD_DEV_MODE ? 'wpd-admin-dev' : 'wpd-admin-app', 'wpdSettings', array(
 		'root'  => esc_url_raw( rest_url() ),
 		'nonce' => wp_create_nonce( 'wp_rest' ),
+		'initialPath' => $initial_path
 	) );
 }
 add_action( 'admin_enqueue_scripts', 'wpd_enqueue_admin_assets' );

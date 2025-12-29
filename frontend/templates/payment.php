@@ -1,0 +1,52 @@
+<?php
+/**
+ * Payment Page Template
+ * Triggered by ?donate=1 on Campaign URL
+ */
+
+get_header();
+
+$campaign_id = get_the_ID();
+?>
+
+<div class="wpd-container" style="max-width:600px; margin:0 auto; padding:40px 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+    
+    <!-- Back Button -->
+    <a href="<?php echo get_permalink(); ?>" style="display:inline-flex; align-items:center; text-decoration:none; color:#6b7280; font-size:14px; margin-bottom:20px;">
+        <svg style="width:16px; height:16px; margin-right:5px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        Kembali ke Campaign
+    </a>
+
+    <!-- Header -->
+    <div style="text-align:center; margin-bottom:30px;">
+        <h1 style="font-size:24px; font-weight:700; color:#111827; margin:0 0 10px 0;">
+            <?php _e( 'Data Donasi', 'wp-donasi' ); ?>
+        </h1>
+        <p style="color:#6b7280; margin:0; font-size:16px;">
+            Anda akan berdonasi untuk <br>
+            <strong style="color:#059669;"><?php the_title(); ?></strong>
+        </p>
+    </div>
+
+    <!-- Form Container -->
+    <div style="background:white; border-radius:16px; box-shadow:0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1); border:1px solid #e5e7eb; padding:30px; overflow:hidden;">
+        
+        <?php echo wpd_get_donation_form_html( $campaign_id ); ?>
+
+    </div>
+
+    <!-- Footer Trust -->
+    <div style="text-align:center; margin-top:30px; color:#9ca3af; font-size:12px;">
+         <div style="display:flex; justify-content:center; gap:15px; margin-bottom:10px;">
+             <!-- Icons placeholders -->
+             <span>🔒 Secure Payment</span>
+             <span>🛡️ Verified Campaign</span>
+         </div>
+         &copy; <?php echo date('Y'); ?> <?php bloginfo('name'); ?>
+    </div>
+
+</div>
+
+<?php
+get_footer();
+?>
