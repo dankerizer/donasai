@@ -82,6 +82,29 @@ function wpd_create_tables() {
 		KEY fundraiser_id (fundraiser_id)
 	) $charset_collate;";
 
+	// wpd_subscriptions
+	$table_subscriptions = $wpdb->prefix . 'wpd_subscriptions';
+	$sql_subscriptions = "CREATE TABLE $table_subscriptions (
+		id bigint(20) NOT NULL AUTO_INCREMENT,
+		user_id bigint(20) NOT NULL,
+		campaign_id bigint(20) NOT NULL,
+		amount decimal(12,2) NOT NULL,
+		status enum('active','cancelled','paused') DEFAULT 'active',
+		frequency enum('monthly','yearly') DEFAULT 'monthly',
+		next_payment_date datetime NOT NULL,
+		created_at datetime DEFAULT CURRENT_TIMESTAMP,
+		updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+		PRIMARY KEY (id),
+		KEY user_id (user_id),
+		KEY status (status)
+	) $charset_collate;";
+
 	dbDelta( $sql_fundraisers );
 	dbDelta( $sql_logs );
+	dbDelta( $sql_subscriptions );
+
+	// Update Donations Table with subscription_id
+	if ( ! $wpdb->get_results( "SHOW COLUMNS FROM $table_donations LIKE 'subscription_id'" ) ) {
+		$wpdb->query( "ALTER TABLE $table_donations ADD COLUMN subscription_id bigint(20) DEFAULT 0 AFTER fundraiser_id" );
+	}
 }

@@ -60,6 +60,18 @@ function wpd_handle_donation_submission() {
     // Check for Fundraiser Cookie
     $fundraiser_id = isset( $_COOKIE['wpd_ref'] ) ? intval( $_COOKIE['wpd_ref'] ) : 0;
     
+    // Check Subscription
+    $subscription_id = 0;
+    if ( isset( $_POST['is_recurring'] ) && $_POST['is_recurring'] == 1 && is_user_logged_in() ) {
+        $sub_service = new WPD_Subscription_Service();
+        $subscription_id = $sub_service->create_subscription( 
+            get_current_user_id(), 
+            $campaign_id, 
+            $amount, 
+            'monthly' 
+        );
+    }
+
     // Process Payment
     $donation_data = array(
         'campaign_id'   => $campaign_id,
@@ -70,6 +82,7 @@ function wpd_handle_donation_submission() {
         'note'          => $note,
         'is_anonymous'  => $is_anon,
         'fundraiser_id' => $fundraiser_id,
+        'subscription_id' => $subscription_id,
         'metadata'      => json_encode( $metadata ),
     );
 

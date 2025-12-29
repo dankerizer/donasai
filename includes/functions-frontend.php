@@ -11,6 +11,14 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Template Loader for Custom Post Types
  */
 function wpd_template_loader( $template ) {
+    // Check for Receipt
+    if ( isset( $_GET['wpd_receipt'] ) ) {
+        $receipt_template = WPD_PLUGIN_PATH . 'frontend/templates/receipt.php';
+        if ( file_exists( $receipt_template ) ) {
+            return $receipt_template;
+        }
+    }
+
 	if ( is_singular( 'wpd_campaign' ) ) {
 		$plugin_template = WPD_PLUGIN_PATH . 'frontend/templates/campaign-single.php';
 		if ( file_exists( $plugin_template ) ) {

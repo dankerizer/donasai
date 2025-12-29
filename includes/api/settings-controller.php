@@ -28,10 +28,12 @@ function wpd_api_settings_permission() {
 function wpd_api_get_settings() {
 	$bank = get_option( 'wpd_settings_bank', array( 'bank_name' => '', 'account_number' => '', 'account_name' => '' ) );
 	$midtrans = get_option( 'wpd_settings_midtrans', array( 'enabled' => false, 'is_production' => false, 'server_key' => '' ) );
-	
+	$license  = get_option( 'wpd_license', array( 'key' => '', 'status' => 'inactive' ) );
+    
 	return rest_ensure_response( array(
 		'bank'     => $bank,
 		'midtrans' => $midtrans,
+        'license'  => $license,
 	) );
 }
 
@@ -55,6 +57,14 @@ function wpd_api_update_settings( $request ) {
 		);
 		update_option( 'wpd_settings_midtrans', $mid_data );
 	}
+
+    if ( isset( $params['license'] ) ) {
+        $key = sanitize_text_field( $params['license']['key'] ?? '' );
+        // Simple Stub Validation
+        $status = ( strpos( $key, 'PRO-' ) === 0 ) ? 'active' : 'inactive';
+        
+        update_option( 'wpd_license', array( 'key' => $key, 'status' => $status ) );
+    }
 
 	return wpd_api_get_settings();
 }

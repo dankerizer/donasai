@@ -25,6 +25,9 @@ if ( isset( $_GET['donation_success'] ) && $_GET['donation_success'] == 1 ) {
         echo '<p>' . __( 'Silahkan cek email Anda untuk instruksi pembayaran.', 'wp-donasi' ) . '</p>';
     }
 
+    // Receipt Link
+    echo '<p style="margin-top:10px;"><a href="' . home_url( '/?wpd_receipt=' . $donation_id ) . '" target="_blank" class="button" style="background:#4b5563; color:white; padding:5px 10px; font-size:12px; border-radius:4px; text-decoration:none;">' . __( 'Cetak Receipt', 'wp-donasi' ) . '</a></p>';
+
     echo '<p style="margin-top:15px;"><a href="' . get_permalink() . '" class="button">' . __( 'Kembali ke Campaign', 'wp-donasi' ) . '</a></p>';
     echo '</div>';
 }

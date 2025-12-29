@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 require_once WPD_PLUGIN_PATH . 'includes/db.php';
 require_once WPD_PLUGIN_PATH . 'includes/cpt.php';
 require_once WPD_PLUGIN_PATH . 'includes/metabox.php';
+require_once WPD_PLUGIN_PATH . 'includes/admin/menu.php';
 
 // Gateways
 require_once WPD_PLUGIN_PATH . 'includes/gateways/interface.php';
@@ -29,13 +30,13 @@ add_action( 'wpd_register_gateways', function() {
 });
 
 // Initialize
-// Initialize
 add_action( 'init', array( 'WPD_Gateway_Registry', 'init' ), 5 );
 
-require_once WPD_PLUGIN_PATH . 'includes/metabox.php';
-require_once WPD_PLUGIN_PATH . 'includes/admin/menu.php';
+require_once WPD_PLUGIN_PATH . 'includes/services/subscription.php';
 require_once WPD_PLUGIN_PATH . 'includes/api/donations-controller.php';
 require_once WPD_PLUGIN_PATH . 'includes/api/settings-controller.php';
+require_once WPD_PLUGIN_PATH . 'includes/api/campaigns-controller.php';
 require_once WPD_PLUGIN_PATH . 'includes/api/fundraisers-controller.php';
+require_once WPD_PLUGIN_PATH . 'includes/api/subscriptions-controller.php';
 // Initialize Headers/Hooks
 add_action( 'init', 'wpd_register_cpt' );

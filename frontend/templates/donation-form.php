@@ -102,6 +102,15 @@ $packages = json_decode( $packages, true );
 			<textarea name="donor_note" class="wpd-textarea" rows="2"></textarea>
 		</div>
 
+        <!-- Recurring Option (Only if not Zakat/Qurban and logged in) -->
+        <?php if ( is_user_logged_in() && $type !== 'zakat' && $type !== 'qurban' ) : ?>
+		<div class="wpd-form-group wpd-checkbox-group" style="background:#f0fdf4; padding:10px; border-radius:6px; border:1px solid #bbf7d0;">
+			<input type="checkbox" name="is_recurring" id="is_recurring" value="1">
+			<label for="is_recurring" style="color:#166534; font-weight:600;"><?php _e( 'Jadikan Donasi Rutin (Bulanan)', 'wp-donasi' ); ?></label>
+            <p style="font-size:11px; margin-left:25px; margin-top:2px; color:#15803d;">Anda akan mendapatkan notifikasi tagihan setiap bulan.</p>
+		</div>
+        <?php endif; ?>
+
 		<div class="wpd-form-group wpd-checkbox-group">
 			<input type="checkbox" name="is_anonymous" id="is_anonymous" value="1">
 			<label for="is_anonymous"><?php _e( 'Sembunyikan nama saya (Hamba Allah)', 'wp-donasi' ); ?></label>
