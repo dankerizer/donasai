@@ -48,6 +48,65 @@ function wpd_campaign_options_callback( $post ) {
 			<label for="wpd_deadline"><strong><?php _e( 'Deadline', 'wp-donasi' ); ?></strong></label><br>
 			<input type="date" name="wpd_deadline" id="wpd_deadline" value="<?php echo esc_attr( $deadline ); ?>" class="widefat" style="max-width: 300px;">
 		</p>
+
+		<hr>
+
+		<?php 
+		$type = get_post_meta( $post->ID, '_wpd_type', true ); 
+		$pixels = get_post_meta( $post->ID, '_wpd_pixel_ids', true );
+		$whatsapp = get_post_meta( $post->ID, '_wpd_whatsapp_settings', true );
+
+		if ( ! is_array( $pixels ) ) $pixels = [];
+		if ( ! is_array( $whatsapp ) ) $whatsapp = [];
+		?>
+
+		<p>
+			<label for="wpd_type"><strong><?php _e( 'Campaign Type', 'wp-donasi' ); ?></strong></label><br>
+			<select name="wpd_type" id="wpd_type" class="widefat" style="max-width: 300px;">
+				<option value="donation" <?php selected( $type, 'donation' ); ?>>General Donation</option>
+				<option value="zakat" <?php selected( $type, 'zakat' ); ?>>Zakat (Calculator)</option>
+				<option value="qurban" <?php selected( $type, 'qurban' ); ?>>Qurban (Packages)</option>
+				<option value="wakaf" <?php selected( $type, 'wakaf' ); ?>>Wakaf</option>
+			</select>
+		</p>
+
+		<div id="wpd_packages_wrapper" style="<?php echo $type !== 'qurban' ? 'display:none;' : ''; ?>">
+			<h4>Qurban Packages (JSON)</h4>
+			<p class="description">Format: <code>[{"name":"Type A", "price":2500000}, ...]</code></p>
+			<?php $packages = get_post_meta( $post->ID, '_wpd_packages', true ); ?>
+			<textarea name="wpd_packages" id="wpd_packages" class="widefat" rows="5"><?php echo esc_textarea( $packages ); ?></textarea>
+		</div>
+
+		<script>
+		document.getElementById('wpd_type').addEventListener('change', function(e) {
+			var wrapper = document.getElementById('wpd_packages_wrapper');
+			if (e.target.value === 'qurban') {
+				wrapper.style.display = 'block';
+			} else {
+				wrapper.style.display = 'none';
+			}
+		});
+		</script>
+
+		<h4>Marketing Pixels</h4>
+		<p>
+			<label for="wpd_pixel_fb">Facebook Pixel ID</label><br>
+			<input type="text" name="wpd_pixel_ids[fb]" id="wpd_pixel_fb" value="<?php echo esc_attr( $pixels['fb'] ?? '' ); ?>" class="widefat" style="max-width: 300px;">
+		</p>
+		<p>
+			<label for="wpd_pixel_tiktok">TikTok Pixel ID</label><br>
+			<input type="text" name="wpd_pixel_ids[tiktok]" id="wpd_pixel_tiktok" value="<?php echo esc_attr( $pixels['tiktok'] ?? '' ); ?>" class="widefat" style="max-width: 300px;">
+		</p>
+
+		<h4>WhatsApp Support (Flying Button)</h4>
+		<p>
+			<label for="wpd_wa_number">Number (e.g. 6281...)</label><br>
+			<input type="text" name="wpd_whatsapp_settings[number]" id="wpd_wa_number" value="<?php echo esc_attr( $whatsapp['number'] ?? '' ); ?>" class="widefat" style="max-width: 300px;">
+		</p>
+		<p>
+			<label for="wpd_wa_message">Default Message</label><br>
+			<textarea name="wpd_whatsapp_settings[message]" id="wpd_wa_message" class="widefat" style="max-width: 300px;"><?php echo esc_textarea( $whatsapp['message'] ?? '' ); ?></textarea>
+		</p>
 	</div>
 	<?php
 }
@@ -78,6 +137,26 @@ function wpd_save_campaign_options( $post_id ) {
 
 	if ( isset( $_POST['wpd_deadline'] ) ) {
 		update_post_meta( $post_id, '_wpd_deadline', sanitize_text_field( $_POST['wpd_deadline'] ) );
+	}
+
+	if ( isset( $_POST['wpd_type'] ) ) {
+		update_post_meta( $post_id, '_wpd_type', sanitize_text_field( $_POST['wpd_type'] ) );
+	}
+
+	if ( isset( $_POST['wpd_packages'] ) ) {
+		// Save as raw JSON string, but maybe validate json? For MVP just sanitize textarea
+		// sanitize_textarea_field sends it as string.
+		update_post_meta( $post_id, '_wpd_packages', sanitize_textarea_field( $_POST['wpd_packages'] ) );
+	}
+
+	if ( isset( $_POST['wpd_pixel_ids'] ) && is_array( $_POST['wpd_pixel_ids'] ) ) {
+		$pixels = array_map( 'sanitize_text_field', $_POST['wpd_pixel_ids'] );
+		update_post_meta( $post_id, '_wpd_pixel_ids', $pixels );
+	}
+
+	if ( isset( $_POST['wpd_whatsapp_settings'] ) && is_array( $_POST['wpd_whatsapp_settings'] ) ) {
+		$wa = array_map( 'sanitize_text_field', $_POST['wpd_whatsapp_settings'] );
+		update_post_meta( $post_id, '_wpd_whatsapp_settings', $wa );
 	}
 }
 add_action( 'save_post', 'wpd_save_campaign_options' );
