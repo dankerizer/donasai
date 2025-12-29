@@ -57,16 +57,20 @@ function wpd_handle_donation_submission() {
         $metadata['qurban_names'] = array_map( 'sanitize_text_field', $_POST['qurban_names'] );
     }
 
+    // Check for Fundraiser Cookie
+    $fundraiser_id = isset( $_COOKIE['wpd_ref'] ) ? intval( $_COOKIE['wpd_ref'] ) : 0;
+    
     // Process Payment
     $donation_data = array(
-        'campaign_id'  => $campaign_id,
-        'amount'       => $amount,
-        'name'         => $name,
-        'email'        => $email,
-        'phone'        => $phone,
-        'note'         => $note,
-        'is_anonymous' => $is_anon,
-        'metadata'     => json_encode( $metadata ),
+        'campaign_id'   => $campaign_id,
+        'amount'        => $amount,
+        'name'          => $name,
+        'email'         => $email,
+        'phone'         => $phone,
+        'note'          => $note,
+        'is_anonymous'  => $is_anon,
+        'fundraiser_id' => $fundraiser_id,
+        'metadata'      => json_encode( $metadata ),
     );
 
     $result = $gateway->process_payment( $donation_data );
@@ -74,6 +78,12 @@ function wpd_handle_donation_submission() {
     if ( $result['success'] ) {
         // Update Campaign Collected Amount
 		wpd_update_campaign_stats( $campaign_id );
+		
+		// Update Fundraiser Stats if applicable
+		if ( $fundraiser_id > 0 ) {
+		    $fundraiser_service = new WPD_Fundraiser_Service();
+		    $fundraiser_service->record_donation( $fundraiser_id, $amount );
+		}
         
         // Redirect
         if ( ! empty( $result['redirect_url'] ) ) {

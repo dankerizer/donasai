@@ -137,3 +137,28 @@ function wpd_footer_whatsapp() {
     }
 }
 add_action( 'wp_footer', 'wpd_footer_whatsapp' );
+
+/**
+ * Handle Referral Tracking
+ */
+function wpd_track_referral() {
+    if ( is_admin() ) return;
+    
+    if ( isset( $_GET['ref'] ) ) {
+        $ref_code = sanitize_text_field( $_GET['ref'] );
+        $service = new WPD_Fundraiser_Service();
+        $fundraiser = $service->get_by_code( $ref_code );
+        
+        if ( $fundraiser ) {
+            // Set Cookie for 30 days
+            setcookie( 'wpd_ref', $fundraiser->id, time() + ( 30 * DAY_IN_SECONDS ), COOKIEPATH, COOKIE_DOMAIN );
+            
+            // Log visit if we are on a campaign page (or maybe log all?)
+            // If the ref link points to a single campaign, log it.
+            if ( is_singular( 'wpd_campaign' ) ) {
+                $service->track_visit( $fundraiser->id, get_the_ID() );
+            }
+        }
+    }
+}
+add_action( 'template_redirect', 'wpd_track_referral' );

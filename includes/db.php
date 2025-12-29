@@ -31,6 +31,7 @@ function wpd_create_tables() {
 		metadata longtext NULL,
 		note text NULL,
 		is_anonymous tinyint(1) DEFAULT 0,
+		fundraiser_id bigint(20) DEFAULT 0,
 		created_at datetime DEFAULT CURRENT_TIMESTAMP,
 		updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 		PRIMARY KEY (id),

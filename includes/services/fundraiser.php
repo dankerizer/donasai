@@ -104,4 +104,26 @@ class WPD_Fundraiser_Service {
 			$campaign_id, $limit
 		) );
 	}
+
+	/**
+	 * Log a visit from a referral link
+	 */
+	public function track_visit( $fundraiser_id, $campaign_id ) {
+		global $wpdb;
+		$table_logs = $wpdb->prefix . 'wpd_referral_logs';
+		
+		// Simple unique check: limit 1 log per IP per hour? Or just log all?
+		// For MVP log all, but in prod we'd want to throttle.
+		
+		$ip_address = $_SERVER['REMOTE_ADDR'] ?? '';
+		$user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+
+		$wpdb->insert( $table_logs, [
+			'fundraiser_id' => $fundraiser_id,
+			'campaign_id' => $campaign_id,
+			'ip_address' => substr( $ip_address, 0, 100 ),
+			'user_agent' => substr( $user_agent, 0, 255 ),
+			'created_at' => current_time( 'mysql' )
+		] );
+	}
 }
