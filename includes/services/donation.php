@@ -33,44 +33,43 @@ function wpd_handle_donation_submission() {
 		wp_die( 'Please provide valid amount, name, and email.' );
 	}
 
-	// Manual Payment Only (Free Version)
-    $gateway_id = 'manual';
-
-	global $wpdb;
-	$table_donations = $wpdb->prefix . 'wpd_donations';
-
-	$data = array(
-		'campaign_id'    => $campaign_id,
-		'user_id'        => get_current_user_id() ? get_current_user_id() : null,
-		'name'           => $name,
-		'email'          => $email,
-		'phone'          => $phone,
-		'amount'         => $amount,
-		'currency'       => 'IDR',
-		'payment_method' => $gateway_id,
-		'status'         => 'pending',
-		'note'           => $note,
-		'is_anonymous'   => $is_anon,
-		'created_at'     => current_time( 'mysql' ),
-	);
-
-	$format = array( '%d', '%d', '%s', '%s', '%s', '%f', '%s', '%s', '%s', '%s', '%d', '%s' );
-
-	$wpdb->insert( $table_donations, $data, $format );
-	$donation_id = $wpdb->insert_id;
-
-	if ( $donation_id ) {
-		// Update Campaign Collected Amount
-		wpd_update_campaign_stats( $campaign_id );
-		
-        // Send Email Notification
-        WPD_Email::send_confirmation( $donation_id );
-
-        // Redirect to success URL with payment instruction flag
-        $redirect_url = add_query_arg( array( 'donation_success' => 1, 'donation_id' => $donation_id, 'method' => 'manual' ), get_permalink( $campaign_id ) );
-        wp_safe_redirect( $redirect_url );
-        exit;
+	if ( $amount <= 0 || empty( $name ) || empty( $email ) ) {
+		wp_die( 'Please provide valid amount, name, and email.' );
 	}
+
+    // Get Gateway
+    $gateway_id = isset( $_POST['payment_method'] ) ? sanitize_text_field( $_POST['payment_method'] ) : 'manual';
+    $gateway    = WPD_Gateway_Registry::get_gateway( $gateway_id );
+
+    if ( ! $gateway ) {
+        wp_die( 'Invalid payment method.' );
+    }
+
+    // Process Payment
+    $donation_data = array(
+        'campaign_id'  => $campaign_id,
+        'amount'       => $amount,
+        'name'         => $name,
+        'email'        => $email,
+        'phone'        => $phone,
+        'note'         => $note,
+        'is_anonymous' => $is_anon,
+    );
+
+    $result = $gateway->process_payment( $donation_data );
+
+    if ( $result['success'] ) {
+        // Update Campaign Collected Amount
+		wpd_update_campaign_stats( $campaign_id );
+        
+        // Redirect
+        if ( ! empty( $result['redirect_url'] ) ) {
+            wp_safe_redirect( $result['redirect_url'] );
+            exit;
+        }
+    } else {
+        wp_die( 'Payment failed: ' . $result['message'] );
+    }
 }
 add_action( 'init', 'wpd_handle_donation_submission' );
 

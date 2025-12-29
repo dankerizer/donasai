@@ -10,23 +10,19 @@ $progress    = wpd_get_campaign_progress( $campaign_id );
 
 // Check for Success Message
 if ( isset( $_GET['donation_success'] ) && $_GET['donation_success'] == 1 ) {
-    $bank_settings = get_option( 'wpd_settings_bank', array() );
-    $bank_name = isset($bank_settings['bank_name']) ? $bank_settings['bank_name'] : '';
-    $account_number = isset($bank_settings['account_number']) ? $bank_settings['account_number'] : '';
-    $account_name = isset($bank_settings['account_name']) ? $bank_settings['account_name'] : '';
-
     echo '<div class="wpd-success-message" style="background:#d1fae5; color:#065f46; padding:20px; margin:20px 0; border-radius:8px; text-align:center;">';
     echo '<h3>' . __( 'Terima Kasih atas Donasi Anda!', 'wp-donasi' ) . '</h3>';
-    echo '<p>' . __( 'Mohon selesaikan pembayaran Anda dengan transfer ke:', 'wp-donasi' ) . '</p>';
     
-    if ( ! empty( $bank_name ) && ! empty( $account_number ) ) {
-        echo '<div style="background:#fff; padding:15px; border-radius:8px; display:inline-block; margin-top:10px; border:1px solid #ddd;">';
-        echo '<strong>' . esc_html( $bank_name ) . '</strong><br>';
-        echo '<span style="font-size:1.2em; letter-spacing:1px;">' . esc_html( $account_number ) . '</span><br>';
-        echo 'a.n ' . esc_html( $account_name );
-        echo '</div>';
+    // Dynamic Instructions based on Gateway
+    $method = isset( $_GET['method'] ) ? sanitize_text_field( $_GET['method'] ) : 'manual';
+    $donation_id = isset( $_GET['donation_id'] ) ? intval( $_GET['donation_id'] ) : 0;
+    
+    $gateway = WPD_Gateway_Registry::get_gateway( $method );
+    
+    if ( $gateway && $donation_id ) {
+        echo $gateway->get_payment_instructions( $donation_id );
     } else {
-         echo '<p><em>' . __( 'Silahkan hubungi admin untuk informasi rekening.', 'wp-donasi' ) . '</em></p>';
+        echo '<p>' . __( 'Silahkan cek email Anda untuk instruksi pembayaran.', 'wp-donasi' ) . '</p>';
     }
 
     echo '<p style="margin-top:15px;"><a href="' . get_permalink() . '" class="button">' . __( 'Kembali ke Campaign', 'wp-donasi' ) . '</a></p>';

@@ -1,7 +1,7 @@
 import { HashRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Dashboard from './pages/Dashboard'
-import Donations from './pages/Donations'
+import DonationsPage from './pages/DonationsPage'
 import SettingsPage from './pages/Settings'
 import { LayoutDashboard, Heart, Settings as SettingsIcon } from 'lucide-react'
 import clsx from 'clsx'
@@ -61,7 +61,7 @@ function AppLayout() {
       <main className="flex-1 p-8">
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/donations" element={<Donations />} />
+          <Route path="/donations" element={<DonationsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>

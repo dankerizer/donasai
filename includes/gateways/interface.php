@@ -8,28 +8,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 interface WPD_Gateway {
-	/**
-	 * Get Gateway ID
-	 * @return string
-	 */
-	public function get_id();
+    /**
+     * Get unique gateway ID (e.g. 'manual', 'midtrans')
+     */
+    public function get_id(): string;
 
-	/**
-	 * Get Gateway Name
-	 * @return string
-	 */
-	public function get_name();
+    /**
+     * Get display name (e.g. 'Bank Transfer')
+     */
+    public function get_name(): string;
 
-	/**
-	 * Is Gateway Active?
-	 * @return bool
-	 */
-	public function is_active();
+    /**
+     * Is this gateway active?
+     */
+    public function is_active(): bool;
 
-	/**
-	 * Process Payment
-	 * @param array $donation_data
-	 * @return array ['success' => bool, 'redirect_url' => string, 'message' => string]
-	 */
-	public function process_payment( $donation_data );
+    /**
+     * Process the payment
+     * Should return array with 'success' => bool, 'donation_id' => int, 'redirect_url' => string
+     */
+    public function process_payment( $donation_data ): array;
+
+    /**
+     * Get payment instructions HTML
+     */
+    public function get_payment_instructions( $donation_id ): string;
 }

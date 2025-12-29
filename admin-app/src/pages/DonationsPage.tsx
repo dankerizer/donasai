@@ -12,7 +12,7 @@ interface Donation {
     date: string
 }
 
-export default function Donations() {
+export default function DonationsPage() {
     const queryClient = useQueryClient()
 
     const { data: donations, isLoading } = useQuery({
