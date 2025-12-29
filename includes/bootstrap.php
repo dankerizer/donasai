@@ -44,3 +44,15 @@ require_once WPD_PLUGIN_PATH . 'includes/api/subscriptions-controller.php';
 require_once WPD_PLUGIN_PATH . 'includes/api/webhook-controller.php';
 // Initialize Headers/Hooks
 add_action( 'init', 'wpd_register_cpt' );
+
+// Register Rewrite Endpoint for Payment
+add_action( 'init', function() {
+    $payment_slug = get_option('wpd_settings_general')['payment_slug'] ?? 'pay';
+    add_rewrite_endpoint( $payment_slug, EP_PERMALINK );
+    
+    // Check if flush is needed
+    if ( get_option( 'wpd_rewrite_flush_needed' ) ) {
+        flush_rewrite_rules();
+        delete_option( 'wpd_rewrite_flush_needed' );
+    }
+} );

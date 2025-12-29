@@ -20,8 +20,10 @@ function wpd_template_loader( $template ) {
     }
 
 	if ( is_singular( 'wpd_campaign' ) ) {
-        // Payment Page (?donate=1)
-        if ( isset( $_GET['donate'] ) ) {
+        $payment_slug = get_option('wpd_settings_general')['payment_slug'] ?? 'pay';
+        
+        // Payment Page (?donate=1 OR /slug/pay)
+        if ( isset( $_GET['donate'] ) || get_query_var( $payment_slug ) !== '' ) {
             $payment_template = WPD_PLUGIN_PATH . 'frontend/templates/payment.php';
             if ( file_exists( $payment_template ) ) {
                 return $payment_template;
@@ -321,3 +323,70 @@ function wpd_shortcode_profile() {
     return ob_get_clean();
 }
 add_shortcode( 'wpd_profile', 'wpd_shortcode_profile' );
+
+/**
+ * Donation Confirmation Shortcode [wpd_confirmation_form]
+ */
+function wpd_shortcode_confirmation_form() {
+    $success = false;
+    $error   = '';
+
+    if ( isset( $_POST['wpd_confirm_submit'] ) && isset( $_POST['_wpnonce'] ) ) {
+        if ( ! wp_verify_nonce( $_POST['_wpnonce'], 'wpd_confirm_payment' ) ) {
+            $error = 'Security check failed.';
+        } else {
+            global $wpdb;
+            $donation_id = intval( $_POST['donation_id'] );
+            $amount      = intval( str_replace( '.', '', $_POST['amount'] ) ); // Remove dots
+            
+            // Verify Donation Exists
+            $donation = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wpd_donations WHERE id = %d", $donation_id ) );
+
+            if ( ! $donation ) {
+                $error = 'ID Donasi tidak ditemukan.';
+            } else {
+                // Handle File Upload
+                if ( ! function_exists( 'wp_handle_upload' ) ) {
+                    require_once( ABSPATH . 'wp-admin/includes/file.php' );
+                }
+
+                $uploadedfile = $_FILES['proof_file'];
+                $upload_overrides = array( 'test_form' => false );
+
+                $movefile = wp_handle_upload( $uploadedfile, $upload_overrides );
+
+                if ( $movefile && ! isset( $movefile['error'] ) ) {
+                    $proof_url = $movefile['url'];
+                    
+                    // Update Donation Meta
+                    // Note: Ideally use a helper function or meta table if strictly following schema, 
+                    // but we can use metadata column (JSON) in wpd_donations table.
+                    $metadata = json_decode( $donation->metadata, true );
+                    if ( ! is_array( $metadata ) ) $metadata = array();
+                    
+                    $metadata['proof_url'] = $proof_url;
+                    $metadata['confirmed_at'] = current_time('mysql');
+                    $metadata['confirmed_amount'] = $amount; // For verification
+
+                    $wpdb->update( 
+                        "{$wpdb->prefix}wpd_donations", 
+                        array( 
+                            'metadata' => json_encode( $metadata ),
+                            'status'   => 'on-hold' // Mark as On Hold / Review
+                        ),
+                        array( 'id' => $donation_id ) 
+                    );
+
+                    $success = true;
+                } else {
+                    $error = 'Gagal upload file: ' . $movefile['error'];
+                }
+            }
+        }
+    }
+
+    ob_start();
+    include WPD_PLUGIN_PATH . 'frontend/templates/confirmation-form.php';
+    return ob_get_clean();
+}
+add_shortcode( 'wpd_confirmation_form', 'wpd_shortcode_confirmation_form' );

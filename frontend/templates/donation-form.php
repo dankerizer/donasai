@@ -116,7 +116,18 @@ $packages = json_decode( $packages, true );
 		</div>
 	<?php endif; ?>
 
-	<form method="post" action="" class="wpd-form">
+	<?php
+        $settings = get_option('wpd_settings_donation', []);
+        $gen_settings = get_option('wpd_settings_general', []);
+        
+        $min_amount = $settings['min_amount'] ?? 10000;
+        $anon_label = $settings['anonymous_label'] ?? 'Hamba Allah';
+        $presets_str = $settings['presets'] ?? '50000,100000,200000,500000';
+        $presets = array_map('intval', explode(',', $presets_str));
+        $remove_branding = ! empty( $gen_settings['remove_branding'] );
+    ?>
+    
+    <form method="post" action="" class="wpd-form">
 		<?php wp_nonce_field( 'wpd_donate_action', 'wpd_donate_nonce' ); ?>
 		<input type="hidden" name="wpd_action" value="submit_donation">
 		<input type="hidden" name="campaign_id" value="<?php echo esc_attr( $campaign_id ); ?>">
@@ -172,17 +183,19 @@ $packages = json_decode( $packages, true );
             <?php else : ?>
                 <!-- Standard Presets -->
                 <div class="wpd-amount-presets">
-                    <button type="button" class="wpd-btn-preset" onclick="setWpdAmount(50000)">Rp 50.000</button>
-                    <button type="button" class="wpd-btn-preset" onclick="setWpdAmount(100000)">Rp 100.000</button>
-                    <button type="button" class="wpd-btn-preset" onclick="setWpdAmount(200000)">Rp 200.000</button>
-                    <button type="button" class="wpd-btn-preset" onclick="setWpdAmount(500000)">Rp 500.000</button>
+                    <?php foreach($presets as $p): ?>
+                        <button type="button" class="wpd-btn-preset" onclick="setWpdAmount(<?php echo $p; ?>)">Rp <?php echo number_format($p, 0, ',', '.'); ?></button>
+                    <?php endforeach; ?>
                 </div>
             <?php endif; ?>
 
 			<div style="position:relative;">
                 <span style="position:absolute; left:15px; top:50%; transform:translateY(-50%); color:#9ca3af; font-weight:600;">Rp</span>
-			    <input type="number" name="amount" id="wpd-amount-input" class="wpd-input" style="padding-left:45px; font-weight:bold; color:#111827;" placeholder="<?php echo $type === 'zakat' ? '0' : 'Masukkan nominal lainnya'; ?>" required min="10000" <?php echo $type === 'zakat' ? 'readonly' : ''; ?>>
+			    <input type="number" name="amount" id="wpd-amount-input" class="wpd-input" style="padding-left:45px; font-weight:bold; color:#111827;" placeholder="<?php echo $type === 'zakat' ? '0' : 'Masukkan nominal lainnya'; ?>" required min="<?php echo esc_attr($min_amount); ?>" <?php echo $type === 'zakat' ? 'readonly' : ''; ?>>
             </div>
+            <?php if($type !== 'zakat'): ?>
+                <p style="font-size:12px; color:#6b7280; margin-top:5px;">Minimal donasi: Rp <?php echo number_format($min_amount, 0, ',', '.'); ?></p>
+            <?php endif; ?>
 		</div>
 
 		<!-- Donor Info -->
@@ -203,29 +216,20 @@ $packages = json_decode( $packages, true );
             </div>
         </div>
 
-        <!-- Recurring Option (Only if not Zakat/Qurban and logged in) -->
-        <!-- <?php if ( is_user_logged_in() && $type !== 'zakat' && $type !== 'qurban' ) : ?>
-		<div class="wpd-form-group wpd-checkbox-group" style="background:#f0fdf4; padding:15px; border-radius:8px; border:1px solid #bbf7d0; margin-bottom:20px;">
-			<input type="checkbox" name="is_recurring" id="is_recurring" value="1">
-            <div style="flex:1;">
-			    <label for="is_recurring" style="color:#166534; font-weight:700; display:block;"><?php _e( 'Rutinkan Donasi Ini', 'wp-donasi' ); ?></label>
-                <p style="font-size:12px; margin:2px 0 0; color:#15803d;">Otomatis donasi setiap bulan dengan nominal yang sama.</p>
-            </div>
-		</div>
-        <?php endif; ?> -->
-
 		<div class="wpd-form-group wpd-checkbox-group">
 			<input type="checkbox" name="is_anonymous" id="is_anonymous" value="1">
-			<label for="is_anonymous"><?php _e( 'Sembunyikan nama saya (Hamba Allah)', 'wp-donasi' ); ?></label>
+			<label for="is_anonymous"><?php printf( __( 'Sembunyikan nama saya (%s)', 'wp-donasi' ), esc_html($anon_label) ); ?></label>
 		</div>
 
 		<button type="submit" class="wpd-btn-submit">
 			<?php _e( 'Lanjut Pembayaran', 'wp-donasi' ); ?>
 		</button>
         
-        <div style="text-align:center; margin-top:20px; font-size:12px; color:#9ca3af;">
-            Secure payment powered by wp-donasi
-        </div>
+        <?php if(!$remove_branding): ?>
+            <div style="text-align:center; margin-top:20px; font-size:12px; color:#9ca3af;">
+                Secure payment powered by wp-donasi
+            </div>
+        <?php endif; ?>
 	</form>
 
 	<script>

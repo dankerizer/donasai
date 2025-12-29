@@ -118,7 +118,16 @@ $is_verified = get_post_meta( get_the_ID(), '_wpd_is_verified', true );
                     </div>
 
                     <!-- CTA Buttons -->
-                    <a href="<?php echo add_query_arg( 'donate', '1', get_permalink() ); ?>" style="display:block; width:100%; background:#ec4899; color:white; font-weight:700; text-align:center; padding:14px; border-radius:8px; text-decoration:none; font-size:18px; margin-bottom:15px; box-shadow: 0 4px 6px rgba(236, 72, 153, 0.3);">
+                    <?php 
+                        $payment_slug = get_option('wpd_settings_general')['payment_slug'] ?? 'pay';
+                        global $wp_rewrite;
+                        if ( $wp_rewrite->using_permalinks() ) {
+                            $donate_link = user_trailingslashit( get_permalink() . $payment_slug );
+                        } else {
+                            $donate_link = add_query_arg( $payment_slug, '1', get_permalink() );
+                        }
+                    ?>
+                    <a href="<?php echo esc_url( $donate_link ); ?>" style="display:block; width:100%; background:#ec4899; color:white; font-weight:700; text-align:center; padding:14px; border-radius:8px; text-decoration:none; font-size:18px; margin-bottom:15px; box-shadow: 0 4px 6px rgba(236, 72, 153, 0.3);">
                         Donasi Sekarang
                     </a>
 

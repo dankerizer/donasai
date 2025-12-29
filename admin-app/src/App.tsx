@@ -5,7 +5,8 @@ import Dashboard from './pages/Dashboard'
 import DonationsPage from './pages/DonationsPage'
 import SettingsPage from './pages/Settings'
 import FundraisersPage from './pages/FundraisersPage'
-import { LayoutDashboard, Heart, Settings as SettingsIcon, Users } from 'lucide-react'
+import Confirmations from './pages/Confirmations'
+import { LayoutDashboard, Heart, Settings as SettingsIcon, Users, CheckCircle } from 'lucide-react'
 import clsx from 'clsx'
 
 const queryClient = new QueryClient()
@@ -38,6 +39,7 @@ function AppLayout() {
   const navItems = [
     { label: 'Dashboard', path: '/', icon: LayoutDashboard },
     { label: 'Donations', path: '/donations', icon: Heart },
+    { label: 'Confirmations', path: '/confirmations', icon: CheckCircle },
     { label: 'Fundraisers', path: '/fundraisers', icon: Users },
     { label: 'Settings', path: '/settings', icon: SettingsIcon },
   ]
@@ -89,6 +91,7 @@ function AppLayout() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/donations" element={<DonationsPage />} />
+          <Route path="/confirmations" element={<Confirmations />} />
           <Route path="/fundraisers" element={<FundraisersPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>

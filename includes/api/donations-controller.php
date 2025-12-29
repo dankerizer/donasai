@@ -214,6 +214,7 @@ function wpd_api_get_donations( $request ) {
             'payment_method'  => $row->payment_method,
             'gateway_txn_id'  => $row->gateway_txn_id,
             'note'            => $row->note,
+            'metadata'        => json_decode( $row->metadata, true ),
 			'date'            => $row->created_at,
 		);
 	}, $results );
