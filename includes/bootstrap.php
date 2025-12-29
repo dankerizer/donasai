@@ -23,7 +23,8 @@ require_once WPD_PLUGIN_PATH . 'includes/services/email.php';
 require_once WPD_PLUGIN_PATH . 'includes/functions-frontend.php';
 
 // Initialize
-add_action( 'init', array( 'WPD_Gateway_Registry', 'init' ) );
+// Initialize
+add_action( 'init', array( 'WPD_Gateway_Registry', 'init' ), 5 );
 
 require_once WPD_PLUGIN_PATH . 'includes/metabox.php';
 require_once WPD_PLUGIN_PATH . 'includes/admin/menu.php';
