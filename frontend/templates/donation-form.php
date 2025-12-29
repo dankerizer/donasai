@@ -55,10 +55,23 @@ $packages = json_decode( $packages, true );
                     <p style="font-size:12px; margin-bottom:5px;">Pilih Hewan Qurban:</p>
                     <?php foreach ( $packages as $pkg ) : ?>
                         <label style="display:block; padding:10px; border:1px solid #ddd; margin-bottom:5px; border-radius:6px; cursor:pointer;">
-                            <input type="radio" name="qurban_package" value="<?php echo esc_attr( $pkg['price'] ); ?>" onclick="setWpdAmount(this.value)"> 
+                            <input type="radio" name="qurban_package" draggable="false" value="<?php echo esc_attr( $pkg['price'] ); ?>" onclick="selectQurbanPackage(this.value, '<?php echo esc_js($pkg['name']); ?>')"> 
                             <strong><?php echo esc_html( $pkg['name'] ); ?></strong> - Rp <?php echo number_format( (float)$pkg['price'], 0, ',', '.' ); ?>
                         </label>
                     <?php endforeach; ?>
+                    
+                    <div id="qurban_qty_wrapper" style="display:none; margin-top:10px; padding-top:10px; border-top:1px dashed #ddd;">
+                        <label style="font-size:12px;">Jumlah Qurban</label>
+                        <input type="number" name="qurban_qty" id="qurban_qty" class="wpd-input" value="1" min="1" onchange="updateQurbanTotal()" oninput="updateQurbanTotal()">
+                        
+                        <div id="qurban_names_wrapper" style="margin-top:10px;">
+                            <label style="font-size:12px;">Nama Pekurban (Opsional)</label>
+                            <p style="font-size:10px; color:#666; margin-top:0;">* Jika dikosongkan, akan menggunakan nama donatur utama.</p>
+                            <div id="qurban_names_container">
+                                <!-- Dynamic Inputs -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             <?php else : ?>
                 <!-- Standard Presets -->
@@ -100,6 +113,8 @@ $packages = json_decode( $packages, true );
 	</form>
 
 	<script>
+		var currentQurbanPrice = 0;
+
 		function setWpdAmount(amount) {
 			document.getElementById('wpd-amount-input').value = amount;
 		}
@@ -123,6 +138,43 @@ $packages = json_decode( $packages, true );
 		    }
 		    
 		    document.getElementById('wpd-amount-input').value = Math.ceil(amount);
+		}
+		
+		function selectQurbanPackage(price, name) {
+		    currentQurbanPrice = parseFloat(price);
+		    document.getElementById('qurban_qty_wrapper').style.display = 'block';
+		    updateQurbanTotal();
+		}
+		
+		function updateQurbanTotal() {
+		    var qty = parseInt(document.getElementById('qurban_qty').value) || 1;
+		    if(qty < 1) qty = 1;
+		    
+		    var total = currentQurbanPrice * qty;
+		    document.getElementById('wpd-amount-input').value = total;
+		    
+		    renderQurbanNames(qty);
+		}
+		
+		function renderQurbanNames(qty) {
+		    var container = document.getElementById('qurban_names_container');
+		    // We want to preserve existing values if user increases qty
+		    // But simple approach: check current inputs, map values, re-render
+		    var existingInputs = container.querySelectorAll('input');
+		    var values = [];
+		    existingInputs.forEach(function(input) {
+		        values.push(input.value);
+		    });
+		    
+		    container.innerHTML = '';
+		    
+		    for (var i = 0; i < qty; i++) {
+		        var val = values[i] || '';
+		        var div = document.createElement('div');
+		        div.style.marginBottom = '5px';
+		        div.innerHTML = '<input type="text" name="qurban_names[]" class="wpd-input" placeholder="Nama Pekurban ' + (i+1) + '" value="' + val + '" style="font-size:13px; padding:6px;">';
+		        container.appendChild(div);
+		    }
 		}
 	</script>
 </div>

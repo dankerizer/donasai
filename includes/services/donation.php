@@ -45,6 +45,18 @@ function wpd_handle_donation_submission() {
         wp_die( 'Invalid payment method.' );
     }
 
+    // Capture Metadata
+    $metadata = [];
+    if ( isset( $_POST['qurban_package'] ) ) {
+        $metadata['qurban_package'] = sanitize_text_field( $_POST['qurban_package'] );
+    }
+    if ( isset( $_POST['qurban_qty'] ) ) {
+        $metadata['qurban_qty'] = intval( $_POST['qurban_qty'] );
+    }
+    if ( isset( $_POST['qurban_names'] ) && is_array( $_POST['qurban_names'] ) ) {
+        $metadata['qurban_names'] = array_map( 'sanitize_text_field', $_POST['qurban_names'] );
+    }
+
     // Process Payment
     $donation_data = array(
         'campaign_id'  => $campaign_id,
@@ -54,6 +66,7 @@ function wpd_handle_donation_submission() {
         'phone'        => $phone,
         'note'         => $note,
         'is_anonymous' => $is_anon,
+        'metadata'     => json_encode( $metadata ),
     );
 
     $result = $gateway->process_payment( $donation_data );

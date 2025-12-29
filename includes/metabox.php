@@ -70,22 +70,70 @@ function wpd_campaign_options_callback( $post ) {
 			</select>
 		</p>
 
-		<div id="wpd_packages_wrapper" style="<?php echo $type !== 'qurban' ? 'display:none;' : ''; ?>">
-			<h4>Qurban Packages (JSON)</h4>
-			<p class="description">Format: <code>[{"name":"Type A", "price":2500000}, ...]</code></p>
+		<div id="wpd_packages_wrapper" style="<?php echo $type !== 'qurban' ? 'display:none;' : ''; ?>; margin-top:20px; background:#f0f0f1; padding:15px; border-radius:5px;">
+			<h4 style="margin-top:0;">Qurban Packages</h4>
+			<p class="description">Add packages for donors to choose from.</p>
+			
+			<div id="wpd_packages_container"></div>
+			
+			<button type="button" class="button" onclick="wpdAddPackage()">+ Add Package</button>
+			
+			<!-- Hidden input to store the JSON -->
 			<?php $packages = get_post_meta( $post->ID, '_wpd_packages', true ); ?>
-			<textarea name="wpd_packages" id="wpd_packages" class="widefat" rows="5"><?php echo esc_textarea( $packages ); ?></textarea>
+			<textarea name="wpd_packages" id="wpd_packages_json" style="display:none;"><?php echo esc_textarea( $packages ); ?></textarea>
 		</div>
 
 		<script>
+		// Listener for Type Toggle
 		document.getElementById('wpd_type').addEventListener('change', function(e) {
 			var wrapper = document.getElementById('wpd_packages_wrapper');
-			if (e.target.value === 'qurban') {
-				wrapper.style.display = 'block';
-			} else {
-				wrapper.style.display = 'none';
-			}
+			wrapper.style.display = e.target.value === 'qurban' ? 'block' : 'none';
 		});
+
+		// Initialize Packages
+		var packagesData = <?php echo $packages ? $packages : '[]'; ?>;
+		var container = document.getElementById('wpd_packages_container');
+
+		function renderPackages() {
+			container.innerHTML = '';
+			packagesData.forEach(function(pkg, index) {
+				var row = document.createElement('div');
+				row.style.marginBottom = '10px';
+				row.style.display = 'flex';
+				row.style.gap = '10px';
+				row.style.alignItems = 'center';
+
+				row.innerHTML = `
+					<input type="text" placeholder="Package Name (e.g. Sapi A)" value="${pkg.name}" onchange="updatePackage(${index}, 'name', this.value)" style="flex:2;">
+					<input type="number" placeholder="Price (Rp)" value="${pkg.price}" onchange="updatePackage(${index}, 'price', this.value)" style="flex:1;">
+					<button type="button" class="button" onclick="removePackage(${index})" style="color:#b32d2e; border-color:#b32d2e;">&times;</button>
+				`;
+				container.appendChild(row);
+			});
+			updateJson();
+		}
+
+		function wpdAddPackage() {
+			packagesData.push({name: '', price: ''});
+			renderPackages();
+		}
+
+		function removePackage(index) {
+			packagesData.splice(index, 1);
+			renderPackages();
+		}
+
+		function updatePackage(index, key, value) {
+			packagesData[index][key] = value;
+			updateJson();
+		}
+
+		function updateJson() {
+			document.getElementById('wpd_packages_json').value = JSON.stringify(packagesData);
+		}
+
+		// Initial Render
+		renderPackages();
 		</script>
 
 		<h4>Marketing Pixels</h4>
