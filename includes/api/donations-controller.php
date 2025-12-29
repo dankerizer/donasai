@@ -68,7 +68,29 @@ function wpd_api_get_stats() {
 function wpd_api_export_donations( $request ) {
     global $wpdb;
     $table = $wpdb->prefix . 'wpd_donations';
-    $results = $wpdb->get_results( "SELECT * FROM $table ORDER BY created_at DESC", ARRAY_A );
+    
+    // Check Nonce (as we using directly in href)
+    $nonce = isset( $_GET['_wpnonce'] ) ? $_GET['_wpnonce'] : '';
+    if ( ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+        // Just die if direct access without valid nonce
+        wp_die( 'Invalid nonce' );
+    }
+
+    $where = "1=1";
+    $args = array();
+
+    if ( isset( $_GET['campaign_id'] ) ) {
+        $where .= " AND campaign_id = %d";
+        $args[] = intval( $_GET['campaign_id'] );
+    }
+
+    if ( ! empty( $args ) ) {
+        $query = $wpdb->prepare( "SELECT * FROM $table WHERE $where ORDER BY created_at DESC", $args );
+    } else {
+        $query = "SELECT * FROM $table ORDER BY created_at DESC";
+    }
+
+    $results = $wpdb->get_results( $query, ARRAY_A );
 
     $filename = 'donations-export-' . date('Y-m-d') . '.csv';
     header( 'Content-Type: text/csv' );

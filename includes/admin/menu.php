@@ -40,6 +40,14 @@ function wpd_register_admin_menu() {
 		'edit.php?post_type=wpd_campaign'
 	);
 
+	add_submenu_page(
+		'wpd-dashboard',
+		__( 'Categories', 'wp-donasi' ),
+		__( 'Categories', 'wp-donasi' ),
+		'manage_options',
+		'edit-tags.php?taxonomy=donation_category&post_type=wpd_campaign'
+	);
+
 
 	add_submenu_page(
 		'wpd-dashboard',
@@ -60,6 +68,18 @@ function wpd_register_admin_menu() {
 	);
 }
 add_action( 'admin_menu', 'wpd_register_admin_menu' );
+
+/**
+ * Keep Menu Open for Taxonomy
+ */
+function wpd_menu_highlight( $parent_file ) {
+    global $current_screen;
+    if ( isset( $current_screen->taxonomy ) && 'donation_category' === $current_screen->taxonomy ) {
+        return 'wpd-dashboard';
+    }
+    return $parent_file;
+}
+add_filter( 'parent_file', 'wpd_menu_highlight' );
 
 /**
  * Render Admin App Container

@@ -58,4 +58,30 @@ function wpd_register_cpt() {
 		'show_in_rest'          => true,
 	);
 	register_post_type( 'wpd_campaign', $args );
+
+	// Register Taxonomy
+	$tax_labels = array(
+		'name'              => _x( 'Categories', 'taxonomy general name', 'wp-donasi' ),
+		'singular_name'     => _x( 'Category', 'taxonomy singular name', 'wp-donasi' ),
+		'search_items'      => __( 'Search Categories', 'wp-donasi' ),
+		'all_items'         => __( 'All Categories', 'wp-donasi' ),
+		'parent_item'       => __( 'Parent Category', 'wp-donasi' ),
+		'parent_item_colon' => __( 'Parent Category:', 'wp-donasi' ),
+		'edit_item'         => __( 'Edit Category', 'wp-donasi' ),
+		'update_item'       => __( 'Update Category', 'wp-donasi' ),
+		'add_new_item'      => __( 'Add New Category', 'wp-donasi' ),
+		'new_item_name'     => __( 'New Category Name', 'wp-donasi' ),
+		'menu_name'         => __( 'Categories', 'wp-donasi' ),
+	);
+
+	$tax_args = array(
+		'hierarchical'      => true,
+		'labels'            => $tax_labels,
+		'show_ui'           => true,
+		'show_admin_column' => true, // AUTO-ADDS COLUMN
+		'query_var'         => true,
+		'rewrite'           => array( 'slug' => 'donation-category' ),
+	);
+
+	register_taxonomy( 'donation_category', array( 'wpd_campaign' ), $tax_args );
 }

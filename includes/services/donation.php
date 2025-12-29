@@ -129,7 +129,11 @@ function wpd_update_campaign_stats( $campaign_id ) {
 	
 	$total = $wpdb->get_var( $wpdb->prepare( "SELECT SUM(amount) FROM $table WHERE campaign_id = %d AND status = 'complete'", $campaign_id ) );
 	
+    // Count Unique Donors (by email) for completed donations
+    $donor_count = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(DISTINCT email) FROM $table WHERE campaign_id = %d AND status = 'complete'", $campaign_id ) );
+
 	update_post_meta( $campaign_id, '_wpd_collected_amount', $total );
+    update_post_meta( $campaign_id, '_wpd_donor_count', $donor_count );
 }
 
 /**
