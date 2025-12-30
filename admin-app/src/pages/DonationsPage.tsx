@@ -97,17 +97,45 @@ export default function DonationsPage() {
         }
     });
 
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+
+    const getExportUrl = () => {
+        let url = `/wp-json/wpd/v1/export/donations?_wpnonce=${(window as any).wpdSettings?.nonce}`;
+        if (startDate) url += `&start_date=${startDate}`;
+        if (endDate) url += `&end_date=${endDate}`;
+        return url;
+    };
+
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <h2 className="text-2xl font-bold text-gray-800">Donasi</h2>
-                <a
-                    href={`/wp-json/wpd/v1/export/donations?_wpnonce=${(window as any).wpdSettings?.nonce}`}
-                    target="_blank"
-                    className="px-4 py-2 bg-gray-800 text-white! rounded-lg hover:bg-gray-900 font-medium text-sm flex items-center gap-2"
-                >
-                    Ekspor CSV
-                </a>
+
+                <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="date"
+                            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                        />
+                        <span className="text-gray-400">-</span>
+                        <input
+                            type="date"
+                            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                        />
+                    </div>
+                    <a
+                        href={getExportUrl()}
+                        target="_blank"
+                        className="px-4 py-2 bg-gray-800 text-white! rounded-lg hover:bg-gray-900 font-medium text-sm flex items-center gap-2"
+                    >
+                        Ekspor CSV
+                    </a>
+                </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

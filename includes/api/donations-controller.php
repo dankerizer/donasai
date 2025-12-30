@@ -84,6 +84,16 @@ function wpd_api_export_donations( $request ) {
         $args[] = intval( $_GET['campaign_id'] );
     }
 
+    if ( isset( $_GET['start_date'] ) && !empty( $_GET['start_date'] ) ) {
+        $where .= " AND created_at >= %s";
+        $args[] = sanitize_text_field( $_GET['start_date'] ) . ' 00:00:00';
+    }
+
+    if ( isset( $_GET['end_date'] ) && !empty( $_GET['end_date'] ) ) {
+        $where .= " AND created_at <= %s";
+        $args[] = sanitize_text_field( $_GET['end_date'] ) . ' 23:59:59';
+    }
+
     if ( ! empty( $args ) ) {
         $query = $wpdb->prepare( "SELECT * FROM $table WHERE $where ORDER BY created_at DESC", $args );
     } else {
