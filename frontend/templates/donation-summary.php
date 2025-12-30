@@ -23,14 +23,15 @@ $campaign_id = $donation->campaign_id;
 $title = get_the_title( $campaign_id );
 $amount = $donation->amount;
 $status = $donation->status; // pending, complete, failed, on-hold
-$gateway_id = $donation->gateway;
+// Use 'gateway' if set (e.g. midtrans), otherwise fallback to 'payment_method' (e.g. manual)
+$gateway_id = !empty($donation->gateway) ? $donation->gateway : $donation->payment_method;
 
 // Get Gateway Instance
 $gateway = WPD_Gateway_Registry::get_gateway( $gateway_id );
 
 // Colors from settings
-$primary_color = get_option('wpd_appearance_brand_color', '#059669'); // Default Emerald
-$button_color = get_option('wpd_appearance_button_color', '#ec4899'); // Default Pink
+$primary_color = get_option('wpd_appearance_brand_color', '#059669'); // Emerald
+$button_color = get_option('wpd_appearance_button_color', '#ec4899'); // Pink
 
 ?>
 <!DOCTYPE html>
@@ -38,180 +39,392 @@ $button_color = get_option('wpd_appearance_button_color', '#ec4899'); // Default
 <head>
     <meta charset="<?php bloginfo( 'charset' ); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Terima Kasih - <?php echo esc_html( $title ); ?></title>
     <?php wp_head(); ?>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
         :root {
             --wpd-primary: <?php echo esc_attr($primary_color); ?>;
             --wpd-btn: <?php echo esc_attr($button_color); ?>;
+            --wpd-bg: #f8fafc;
+            --wpd-card-bg: #ffffff;
+            --wpd-text-main: #0f172a;
+            --wpd-text-muted: #64748b;
         }
-        body { margin: 0; padding: 0; background: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        .wpd-summary-card {
-            background: white;
-            max-width: 600px;
-            margin: 40px auto;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-            overflow: hidden;
-            border: 1px solid #e5e7eb;
-        }
-        @media (max-width: 640px) {
-            .wpd-summary-card { margin: 0; border-radius: 0; min-height: 100vh; }
-        }
-        .wpd-header {
-            background: #ecfdf5;
-            padding: 40px 30px;
-            text-align: center;
-            border-bottom: 1px solid #d1fae5;
-        }
-        .wpd-header.pending { background: #fffbeb; border-color: #fef3c7; }
-        .wpd-header.failed { background: #fef2f2; border-color: #fee2e2; }
 
-        .wpd-icon-circle {
+        body { 
+            margin: 0; padding: 0; 
+            background: var(--wpd-bg); 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--wpd-text-main);
+        }
+
+        /* Ambient Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; height: 300px;
+            background: linear-gradient(180deg, rgba(var(--wpd-primary-rgb), 0.1) 0%, transparent 100%); /* Fallback */
+            background: linear-gradient(180deg, #ecfdf5 0%, transparent 100%);
+            z-index: -1;
+        }
+
+        .wpd-container {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+        }
+
+        .wpd-card {
+            background: var(--wpd-card-bg);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0,0,0,0.02);
+            overflow: hidden;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        /* Status Section */
+        .wpd-status-hero {
+            padding: 40px 30px 30px;
+            text-align: center;
+            background: #fff;
+            position: relative;
+        }
+        
+        .wpd-icon-wrapper {
             width: 80px; height: 80px;
-            margin: 0 auto 20px;
-            background: #10b981;
+            margin: 0 auto 24px;
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            color: white;
-            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+            font-size: 32px;
+            position: relative;
         }
-        .wpd-header.pending .wpd-icon-circle { background: #f59e0b; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3); }
-        .wpd-header.failed .wpd-icon-circle { background: #ef4444; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); }
-
-        .wpd-status-title { font-size: 24px; font-weight: 800; color: #064e3b; margin: 0 0 10px; }
-        .wpd-status-desc { color: #047857; margin: 0; font-size: 16px; }
-
-        .wpd-header.pending .wpd-status-title { color: #92400e; }
-        .wpd-header.pending .wpd-status-desc { color: #b45309; }
         
-        .wpd-content { padding: 30px; }
-        .wpd-section-title { font-size: 16px; font-weight: 700; color: #374151; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        .wpd-detail-row { display: flex; justify-content: space-between; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed #e5e7eb; }
-        .wpd-detail-row:last-child { border-bottom: none; }
-        .wpd-detail-label { color: #6b7280; font-size: 14px; }
-        .wpd-detail-value { color: #111827; font-weight: 600; font-size: 14px; text-align: right; }
+        /* Status Colors */
+        .status-complete .wpd-icon-wrapper { background: #d1fae5; color: #059669; }
+        .status-pending .wpd-icon-wrapper { background: #fef3c7; color: #d97706; }
+        .status-failed .wpd-icon-wrapper { background: #fee2e2; color: #dc2626; }
 
-        .wpd-total-box {
-            background: #f9fafb;
-            padding: 20px;
-            border-radius: 12px;
-            display: flex; justify-content: space-between; align-items: center;
-            margin-top: 10px;
+        .wpd-icon-wrapper svg { width: 40px; height: 40px; stroke-width: 2.5; }
+
+        .wpd-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin: 0 0 8px;
+            letter-spacing: -0.02em;
+            color: var(--wpd-text-main);
         }
-        .wpd-total-label { font-weight: 600; color: #374151; }
-        .wpd-total-amount { font-size: 24px; font-weight: 800; color: var(--wpd-primary); }
+        
+        .wpd-subtitle {
+            font-size: 15px;
+            color: var(--wpd-text-muted);
+            line-height: 1.5;
+            margin: 0;
+            font-weight: 500;
+        }
 
-        .wpd-instructions {
+        /* Ticket / Instruction Styling */
+        .wpd-ticket {
+            background: #f8fafc;
+            margin: 0 24px 24px;
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px dashed #cbd5e1;
+            position: relative;
+        }
+
+        /* Cutout Effect */
+        .wpd-ticket::before, .wpd-ticket::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 20px; height: 20px;
             background: #fff;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 30px;
+            border-radius: 50%;
+            transform: translateY(-50%);
+            box-shadow: inset 0 0 0 1px rgba(226, 232, 240, 0.8); /* Match card border simulation */
+        }
+        .wpd-ticket::before { left: -35px; } /* Push outside padding */
+        .wpd-ticket::after { right: -35px; }
+
+        .wpd-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #94a3b8;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: block;
         }
 
-        .wpd-btn {
-            display: block; width: 100%;
-            padding: 15px;
+        .wpd-bank-info {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .wpd-bank-logo {
+            font-weight: 800;
+            font-size: 18px;
+            color: #1e293b;
+        }
+        .wpd-account-number {
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 16px;
+            color: #334155;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        .wpd-copy-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--wpd-primary);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .wpd-copy-btn:hover { background: #f1f5f9; }
+
+        /* Details List */
+        .wpd-details {
+            padding: 0 30px 30px;
+        }
+        
+        .wpd-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+        }
+        .wpd-row:last-child { border-bottom: none; }
+        
+        .wpd-row-label { color: var(--wpd-text-muted); font-weight: 500; }
+        .wpd-row-value { color: var(--wpd-text-main); font-weight: 600; text-align: right; }
+
+        .wpd-total {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .wpd-total-label { font-size: 16px; font-weight: 700; color: var(--wpd-text-main); }
+        .wpd-total-value { font-size: 24px; font-weight: 800; color: var(--wpd-primary); letter-spacing: -0.03em; }
+
+        /* Actions */
+        .wpd-actions {
+            padding: 0 30px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .btn-primary {
             background: var(--wpd-btn);
             color: white;
-            text-align: center;
-            border-radius: 10px;
-            font-weight: 700;
-            text-decoration: none;
-            margin-top: 15px;
-            transition: opacity 0.2s;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3); /* Pink glow matches default btn */
         }
-        .wpd-btn:hover { opacity: 0.9; }
-        .wpd-btn-secondary { background: #e5e7eb; color: #374151; }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(236, 72, 153, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--wpd-text-main);
+            border: 1px solid #cbd5e1;
+        }
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+        
+        .btn-ghost {
+            background: transparent;
+            color: var(--wpd-text-muted);
+            font-size: 14px;
+            padding: 10px;
+        }
+        .btn-ghost:hover { color: var(--wpd-primary); }
+
+        /* Animation */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .wpd-card { animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+
     </style>
 </head>
-<body <?php body_class('wpd-thankyou-page'); ?>>
+<body class="status-<?php echo esc_attr($status); ?>">
 
-<div class="wpd-summary-card">
-    
-    <!-- Status Header -->
-    <?php if ( $status == 'complete' ) : ?>
-        <div class="wpd-header">
-            <div class="wpd-icon-circle">
-                <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-            </div>
-            <h1 class="wpd-status-title">Terima Kasih!</h1>
-            <p class="wpd-status-desc">Donasi Anda telah berhasil diverifikasi.</p>
-        </div>
-    <?php elseif ( $status == 'pending' ) : ?>
-        <div class="wpd-header pending">
-            <div class="wpd-icon-circle">
-                <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-            <h1 class="wpd-status-title">Menunggu Pembayaran</h1>
-            <p class="wpd-status-desc">Mohon selesaikan pembayaran Anda.</p>
-        </div>
-    <?php else : ?>
-        <div class="wpd-header failed">
-            <div class="wpd-icon-circle">
-                <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </div>
-            <h1 class="wpd-status-title">Donasi Gagal</h1>
-            <p class="wpd-status-desc">Mohon maaf, terjadi kesalahan.</p>
-        </div>
-    <?php endif; ?>
-
-    <div class="wpd-content">
+<div class="wpd-container">
+    <div class="wpd-card">
         
-        <!-- Payment Instructions (If Pending) -->
+        <!-- Hero Status -->
+        <div class="wpd-status-hero">
+            <div class="wpd-icon-wrapper">
+                <?php if ( $status == 'complete' ) : ?>
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+                <?php elseif ( $status == 'failed' ) : ?>
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                <?php else : ?>
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <?php endif; ?>
+            </div>
+            
+            <h1 class="wpd-title">
+                <?php 
+                if ($status == 'complete') echo 'Donasi Berhasil!';
+                elseif ($status == 'failed') echo 'Mohon Maaf';
+                else echo 'Selesaikan Pembayaran'; 
+                ?>
+            </h1>
+            
+            <p class="wpd-subtitle">
+                <?php 
+                if ($status == 'complete') echo 'Terima kasih atas kontribusi Anda.';
+                elseif ($status == 'failed') echo 'Transaksi Anda gagal diproses.';
+                else echo 'Transfer sesuai nominal di bawah ini.'; 
+                ?>
+            </p>
+        </div>
+
+        <!-- Payment Instructions (Ticket Style) -->
         <?php if ( $status == 'pending' && $gateway ) : ?>
-            <div class="wpd-section-title">Instruksi Pembayaran</div>
-            <div class="wpd-instructions">
-                <?php echo $gateway->get_payment_instructions( $donation_id ); ?>
+            <div class="wpd-ticket">
+                <span class="wpd-label">Instruksi Pembayaran</span>
+                
+                <!-- This output needs to be clean. We will trust the gateway output but wrap it nicely if possible, 
+                     or rewrite the Manual gateway output method next to return cleaner HTML/Array.
+                     For now, let's output it and handle raw HTML carefully. -->
+                <div class="gateway-instruction-content">
+                     <?php echo $gateway->get_payment_instructions( $donation_id ); ?>
+                </div>
             </div>
         <?php endif; ?>
 
-        <!-- Donation Details -->
-        <div class="wpd-section-title">Detail Donasi</div>
-        
-        <div class="wpd-detail-row">
-            <span class="wpd-detail-label">ID Donasi</span>
-            <span class="wpd-detail-value">#<?php echo $donation_id; ?></span>
-        </div>
-        <div class="wpd-detail-row">
-            <span class="wpd-detail-label">Program</span>
-            <span class="wpd-detail-value"><?php echo esc_html( $title ); ?></span>
-        </div>
-        <div class="wpd-detail-row">
-            <span class="wpd-detail-label">Tanggal</span>
-            <span class="wpd-detail-value"><?php echo date_i18n( 'd M Y, H:i', strtotime( $donation->created_at ) ); ?></span>
-        </div>
-        <div class="wpd-detail-row">
-            <span class="wpd-detail-label">Donatur</span>
-            <span class="wpd-detail-value"><?php echo $donation->is_anonymous ? 'Hamba Allah' : esc_html( $donation->name ); ?></span>
+        <!-- Details -->
+        <div class="wpd-details">
+            <div class="wpd-row">
+                <span class="wpd-row-label">No. Referensi</span>
+                <span class="wpd-row-value">#<?php echo $donation_id; ?></span>
+            </div>
+            <div class="wpd-row">
+                <span class="wpd-row-label">Program</span>
+                <span class="wpd-row-value"><?php echo esc_html( $title ); ?></span>
+            </div>
+            <div class="wpd-row">
+                <span class="wpd-row-label">Tanggal</span>
+                <span class="wpd-row-value"><?php echo date_i18n( 'd M Y, H:i', strtotime( $donation->created_at ) ); ?></span>
+            </div>
+            <div class="wpd-row">
+                <span class="wpd-row-label">Atas Nama</span>
+                <span class="wpd-row-value"><?php echo $donation->is_anonymous ? 'Hamba Allah' : esc_html( $donation->name ); ?></span>
+            </div>
+
+            <div class="wpd-total">
+                <span class="wpd-total-label">Total Donasi</span>
+                <span class="wpd-total-value">Rp <?php echo number_format( $amount, 0, ',', '.' ); ?></span>
+            </div>
         </div>
 
-        <div class="wpd-total-box">
-            <span class="wpd-total-label">Total Donasi</span>
-            <span class="wpd-total-amount">Rp <?php echo number_format( $amount, 0, ',', '.' ); ?></span>
-        </div>
-
-        <div style="margin-top: 30px;">
+        <!-- Actions -->
+        <div class="wpd-actions">
             <?php if ( $status == 'complete' ) : ?>
-                <a href="<?php echo home_url( '/?wpd_receipt=' . $donation_id ); ?>" target="_blank" class="wpd-btn wpd-btn-secondary" style="margin-bottom: 10px;">
+                <a href="<?php echo home_url( '/?wpd_receipt=' . $donation_id ); ?>" target="_blank" class="btn btn-secondary">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right:8px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     Download Kwitansi
                 </a>
             <?php endif; ?>
-            
-            <a href="<?php echo get_permalink( $campaign_id ); ?>" class="wpd-btn">
+
+            <?php if ( $status == 'pending' && $gateway_id == 'manual' ) : ?>
+                <a href="#" onclick="confirmPayment()" class="btn btn-primary">Konfirmasi Pembayaran</a>
+            <?php endif; ?>
+
+            <a href="<?php echo get_permalink( $campaign_id ); ?>" class="btn btn-ghost">
                 Kembali ke Halaman Program
             </a>
-            
-             <?php if ( $status == 'pending' && $gateway_id == 'manual' ) : ?>
-                <div style="margin-top: 15px; text-align: center; font-size: 13px; color: #6b7280;">
-                    Sudah transfer? <a href="#" onclick="alert('Silakan hubungi admin untuk konfirmasi manual atau kirim bukti via WhatsApp.')">Konfirmasi Pembayaran</a>
-                </div>
-            <?php endif; ?>
         </div>
 
     </div>
 </div>
+
+<script>
+    // Confetti Effect for Complete Status
+    <?php if ( $status == 'complete' ) : ?>
+    window.addEventListener('load', () => {
+        var count = 200;
+        var defaults = {
+            origin: { y: 0.7 },
+            zIndex: 9999
+        };
+
+        function fire(particleRatio, opts) {
+            confetti(Object.assign({}, defaults, opts, {
+                particleCount: Math.floor(count * particleRatio)
+            }));
+        }
+
+        fire(0.25, { spread: 26, startVelocity: 55 });
+        fire(0.2, { spread: 60 });
+        fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+        fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+        fire(0.1, { spread: 120, startVelocity: 45 });
+    });
+    <?php endif; ?>
+
+    function confirmPayment() {
+        // Simple prompt or redirect to WhatsApp
+        const phone = "<?php echo get_option('wpd_settings_general')['whatsapp_number'] ?? ''; ?>"; // Ideally fetch from settings
+        let url = '';
+        if(phone) {
+             const cleanPhone = phone.replace(/\D/g,'');
+             const text = encodeURIComponent("Halo Admin, saya sudah transfer untuk donasi #<?php echo $donation_id; ?> sebesar Rp <?php echo number_format($amount,0,',','.'); ?>. Mohon dicek. Terima kasih.");
+             url = `https://wa.me/${cleanPhone}?text=${text}`;
+             window.open(url, '_blank');
+        } else {
+            alert('Silakan hubungi admin untuk konfirmasi.');
+        }
+    }
+
+    // Copy to Clipboard (will be used by manual gateway HTML)
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Nomor rekening disalin!');
+        });
+    }
+</script>
 
 <?php wp_footer(); ?>
 </body>

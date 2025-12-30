@@ -113,12 +113,11 @@ class WPD_Gateway_Midtrans implements WPD_Gateway {
 
         } else {
             // MOCK MODE (Sandbox Simulation if no key)
-            $mock_url = get_permalink( $donation_data['campaign_id'] ) . '?donation_success=1&method=midtrans&donation_id=' . $donation_id . '&mock=true';
-            
+            // Return null so the Service handles the default "Thank You" page redirect (consistent with Manual)
             return array(
                 'success'      => true,
                 'donation_id'  => $donation_id,
-                'redirect_url' => $mock_url
+                'redirect_url' => null 
             );
         }
     }

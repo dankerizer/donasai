@@ -71,15 +71,21 @@ class WPD_Gateway_Manual implements WPD_Gateway {
         $account_name = isset($options['account_name']) ? $options['account_name'] : 'Yayasan';
 
         return "
-            <div class='bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-6'>
-                <h3 class='font-bold text-lg mb-2 text-yellow-800'>Instruksi Pembayaran</h3>
-                <p class='text-sm text-yellow-700 mb-2'>Silakan transfer ke rekening berikut:</p>
-                <div class='font-mono bg-white p-3 rounded border border-yellow-100'>
-                    <p><strong>{$bank_name}</strong></p>
-                    <p class='text-xl'>{$account_number}</p>
-                    <p>a.n {$account_name}</p>
+            <div style='margin-bottom:10px; color:#475569; font-size:14px; font-weight:500;'>Silakan transfer ke rekening berikut:</div>
+            
+            <div class='wpd-bank-info'>
+                <div class='wpd-bank-logo'>" . esc_html( $bank_name ) . "</div>
+                <div style='text-align:right'>
+                    <div class='wpd-account-number'>" . esc_html( $account_number ) . "</div>
+                    <div style='font-size:12px; color:#64748b;'>a.n " . esc_html( $account_name ) . "</div>
                 </div>
-                <p class='text-sm text-yellow-700 mt-2'>Setelah transfer, donasi Anda akan diverifikasi admin dalam 1x24 jam.</p>
+                <button class='wpd-copy-btn' onclick='copyToClipboard(\"" . esc_attr( $account_number ) . "\")'>
+                    <svg width='16' height='16' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z'/></svg>
+                </button>
+            </div>
+            
+            <div style='margin-top:15px; font-size:13px; color:#64748b; line-height:1.4;'>
+                Donasi akan diverifikasi otomatis setelah bukti transfer dikirim/dikonfirmasi.
             </div>
         ";
     }

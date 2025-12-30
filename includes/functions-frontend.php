@@ -37,14 +37,10 @@ function wpd_template_loader( $template ) {
         // Thank You Page (?thank-you=ID OR /slug/thank-you/ID)
         $thankyou_slug = get_option('wpd_settings_general')['thankyou_slug'] ?? 'thank-you';
         
-        // LOGGING
-        file_put_contents( WP_CONTENT_DIR . '/wpd-debug.log', "Template Loader Check: " . $thankyou_slug . " => " . (get_query_var( $thankyou_slug ) ?: 'FALSE') . "\n", FILE_APPEND );
-
         // Use get_query_var to be robust
         if ( get_query_var( $thankyou_slug ) ) {
             $summary_template = WPD_PLUGIN_PATH . 'frontend/templates/donation-summary.php';
             if ( file_exists( $summary_template ) ) {
-                file_put_contents( WP_CONTENT_DIR . '/wpd-debug.log', "Loading Summary Template\n", FILE_APPEND );
                 return $summary_template;
             }
         }
@@ -73,9 +69,6 @@ add_filter( 'template_include', 'wpd_template_loader' );
 function wpd_disable_canonical_redirect( $redirect_url ) {
     $thankyou_slug = get_option('wpd_settings_general')['thankyou_slug'] ?? 'thank-you';
     
-    // DEBUG LOG
-    file_put_contents( WP_CONTENT_DIR . '/wpd-debug.log', "Canonical Check: " . (get_query_var( $thankyou_slug ) ?: 'FALSE') . "\n", FILE_APPEND );
-
     if ( get_query_var( $thankyou_slug ) ) {
         return false;
     }

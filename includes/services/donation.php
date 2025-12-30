@@ -118,18 +118,19 @@ function wpd_handle_donation_submission() {
 
         // Default Redirect to Thank You Page
         $thankyou_slug = get_option('wpd_settings_general')['thankyou_slug'] ?? 'thank-you';
-        $base_url = get_permalink( $campaign_id );
         
-        if ( get_option('permalink_structure') ) {
-             // Pretty Permalinks: /campaign/slug/thank-you/ID/
-             $redirect_url = user_trailingslashit( trailingslashit( $base_url ) . $thankyou_slug . '/' . $result['donation_id'] );
+        $campaign_slug = get_option('wpd_settings_general')['campaign_slug'] ?? 'campaign';
+        $post_name     = get_post_field( 'post_name', $campaign_id );
+        
+        if ( $post_name ) {
+             // Force Pretty URL Construction: /campaign/post-slug/thank-you/donation-id/
+             $base_path = "$campaign_slug/$post_name/$thankyou_slug/" . $result['donation_id'];
+             $redirect_url = home_url( user_trailingslashit( $base_path ) );
         } else {
-             // Plain Permalinks: /?p=123&thank-you=ID
-             $redirect_url = add_query_arg( $thankyou_slug, $result['donation_id'], $base_url );
+             // Fallback to plain if post_name missing (rare)
+             $redirect_url = add_query_arg( $thankyou_slug, $result['donation_id'], get_permalink( $campaign_id ) );
         }
         
-        file_put_contents( WP_CONTENT_DIR . '/wpd-debug.log', "Redirecting to: " . $redirect_url . "\n", FILE_APPEND );
-
         wp_safe_redirect( $redirect_url );
         exit;
     } else {
