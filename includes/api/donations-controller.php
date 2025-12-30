@@ -65,22 +65,14 @@ function wpd_api_get_stats() {
     ) );
 }
 
-function wpd_api_export_donations( $request ) {
-    global $wpdb;
-    $table = $wpdb->prefix . 'wpd_donations';
-    
-    // Check Nonce (as we using directly in href)
-    $nonce = isset( $_GET['_wpnonce'] ) ? $_GET['_wpnonce'] : '';
-    if ( ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
-        // Just die if direct access without valid nonce
-        wp_die( 'Invalid nonce' );
-    }
-
+// Helper to build WHERE clause
+function wpd_build_donations_where_clause( $params ) {
     $where = "1=1";
     $args = array();
 
-    if ( isset( $_GET['campaign_id'] ) && !empty( $_GET['campaign_id'] ) ) {
-        $ids = array_map( 'intval', explode( ',', $_GET['campaign_id'] ) );
+    // Campaign ID (comma separated)
+    if ( ! empty( $params['campaign_id'] ) ) {
+        $ids = array_map( 'intval', explode( ',', $params['campaign_id'] ) );
         if ( ! empty( $ids ) ) {
             $placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
             $where .= " AND campaign_id IN ($placeholders)";
@@ -88,8 +80,9 @@ function wpd_api_export_donations( $request ) {
         }
     }
 
-    if ( isset( $_GET['status'] ) && !empty( $_GET['status'] ) ) {
-        $statuses = array_map( 'sanitize_text_field', explode( ',', $_GET['status'] ) );
+    // Status (comma separated)
+    if ( ! empty( $params['status'] ) ) {
+        $statuses = array_map( 'sanitize_text_field', explode( ',', $params['status'] ) );
         if ( ! empty( $statuses ) ) {
             $placeholders = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
             $where .= " AND status IN ($placeholders)";
@@ -97,18 +90,43 @@ function wpd_api_export_donations( $request ) {
         }
     }
 
-    if ( isset( $_GET['start_date'] ) && !empty( $_GET['start_date'] ) ) {
+    // Start Date
+    if ( ! empty( $params['start_date'] ) ) {
         $where .= " AND created_at >= %s";
-        $args[] = sanitize_text_field( $_GET['start_date'] ) . ' 00:00:00';
+        $args[] = sanitize_text_field( $params['start_date'] ) . ' 00:00:00';
     }
 
-    if ( isset( $_GET['end_date'] ) && !empty( $_GET['end_date'] ) ) {
+    // End Date
+    if ( ! empty( $params['end_date'] ) ) {
         $where .= " AND created_at <= %s";
-        $args[] = sanitize_text_field( $_GET['end_date'] ) . ' 23:59:59';
+        $args[] = sanitize_text_field( $params['end_date'] ) . ' 23:59:59';
     }
 
-    if ( ! empty( $args ) ) {
-        $query = $wpdb->prepare( "SELECT * FROM $table WHERE $where ORDER BY created_at DESC", $args );
+    return array( 'where' => $where, 'args' => $args );
+}
+
+function wpd_api_export_donations( $request ) {
+    global $wpdb;
+    $table = $wpdb->prefix . 'wpd_donations';
+    
+    // Check Nonce (as we using directly in href)
+    $nonce = isset( $_GET['_wpnonce'] ) ? $_GET['_wpnonce'] : '';
+    if ( ! wp_verify_nonce( $nonce, 'wp_rest' ) ) {
+        wp_die( 'Invalid nonce' );
+    }
+
+    // Build Query
+    $params = array(
+        'campaign_id' => isset($_GET['campaign_id']) ? $_GET['campaign_id'] : '',
+        'status'      => isset($_GET['status']) ? $_GET['status'] : '',
+        'start_date'  => isset($_GET['start_date']) ? $_GET['start_date'] : '',
+        'end_date'    => isset($_GET['end_date']) ? $_GET['end_date'] : '',
+    );
+    
+    $query_parts = wpd_build_donations_where_clause( $params );
+    
+    if ( ! empty( $query_parts['args'] ) ) {
+        $query = $wpdb->prepare( "SELECT * FROM $table WHERE {$query_parts['where']} ORDER BY created_at DESC", $query_parts['args'] );
     } else {
         $query = "SELECT * FROM $table ORDER BY created_at DESC";
     }
@@ -223,7 +241,23 @@ function wpd_api_get_donations( $request ) {
 	global $wpdb;
 	$table = $wpdb->prefix . 'wpd_donations';
 	
-	$results = $wpdb->get_results( "SELECT * FROM $table ORDER BY created_at DESC" );
+    // Build Query
+    $params = array(
+        'campaign_id' => $request->get_param('campaign_id'),
+        'status'      => $request->get_param('status'),
+        'start_date'  => $request->get_param('start_date'),
+        'end_date'    => $request->get_param('end_date'),
+    );
+    
+    $query_parts = wpd_build_donations_where_clause( $params );
+    
+    if ( ! empty( $query_parts['args'] ) ) {
+        $query = $wpdb->prepare( "SELECT * FROM $table WHERE {$query_parts['where']} ORDER BY created_at DESC", $query_parts['args'] );
+    } else {
+        $query = "SELECT * FROM $table ORDER BY created_at DESC";
+    }
+
+	$results = $wpdb->get_results( $query );
 	
 	// Format data for frontend
 	$data = array_map( function( $row ) {

@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { clsx } from 'clsx'
-import { CheckCircle, Eye, Pencil, Save, X } from 'lucide-react'
+import { CheckCircle, Eye, Pencil, Save, X, ChevronDown } from 'lucide-react'
 
 // Mock Data Type
 interface Donation {
@@ -55,10 +55,34 @@ export default function DonationsPage() {
         setEditFormData({});
     };
 
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+    const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+    const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
+    const [isCampaignDropdownOpen, setIsCampaignDropdownOpen] = useState(false);
+
+    const toggleStatus = (status: string) => {
+        setSelectedStatuses(prev =>
+            prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status]
+        );
+    };
+
+    const toggleCampaign = (id: string) => {
+        setSelectedCampaigns(prev =>
+            prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+        );
+    };
+
     const { data: donations, isLoading } = useQuery({
-        queryKey: ['donations'],
+        queryKey: ['donations', startDate, endDate, selectedStatuses, selectedCampaigns],
         queryFn: async () => {
-            const response = await fetch('/wp-json/wpd/v1/donations', {
+            const params = new URLSearchParams();
+            if (startDate) params.append('start_date', startDate);
+            if (endDate) params.append('end_date', endDate);
+            if (selectedStatuses.length > 0) params.append('status', selectedStatuses.join(','));
+            if (selectedCampaigns.length > 0) params.append('campaign_id', selectedCampaigns.join(','));
+
+            const response = await fetch(`/wp-json/wpd/v1/donations?${params.toString()}`, {
                 headers: { 'X-WP-Nonce': (window as any).wpdSettings?.nonce }
             });
             if (!response.ok) return [];
@@ -109,16 +133,7 @@ export default function DonationsPage() {
         }
     });
 
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
-    const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-    const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
 
-    const toggleStatus = (status: string) => {
-        setSelectedStatuses(prev =>
-            prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status]
-        );
-    };
 
     const getExportUrl = () => {
         let url = `/wp-json/wpd/v1/export/donations?_wpnonce=${(window as any).wpdSettings?.nonce}`;
@@ -137,82 +152,116 @@ export default function DonationsPage() {
                 </div>
 
                 {/* Filter Bar */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-wrap gap-4 items-end">
+                {/* Filter Bar */}
+                <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-5">
 
-                    {/* Date Range */}
-                    <div className="flex flex-col gap-1">
-                        <label className="text-xs font-semibold text-gray-500 uppercase">Periode</label>
-                        <div className="flex items-center gap-2">
-                            <input
-                                type="date"
-                                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                            />
-                            <span className="text-gray-400">-</span>
-                            <input
-                                type="date"
-                                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                                value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
-                            />
+                    <div className="flex flex-wrap gap-6 items-end">
+                        {/* Date Range */}
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide">Periode</label>
+                            <div className="flex items-center gap-2 bg-gray-50 p-1 rounded-lg border border-gray-200">
+                                <input
+                                    type="date"
+                                    className="px-2 py-1.5 bg-transparent border-none text-sm focus:ring-0 text-gray-700 w-[130px] outline-none"
+                                    value={startDate}
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                />
+                                <span className="text-gray-400 font-medium">-</span>
+                                <input
+                                    type="date"
+                                    className="px-2 py-1.5 bg-transparent border-none text-sm focus:ring-0 text-gray-700 w-[130px] outline-none"
+                                    value={endDate}
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Status Filter */}
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide">Status</label>
+                            <div className="flex gap-2">
+                                {['pending', 'complete', 'failed'].map(status => {
+                                    const isSelected = selectedStatuses.includes(status);
+                                    return (
+                                        <button
+                                            key={status}
+                                            onClick={() => toggleStatus(status)}
+                                            className={clsx(
+                                                "px-3 py-2 rounded-lg text-sm font-medium border transition-all flex items-center gap-1.5",
+                                                isSelected
+                                                    ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-200"
+                                                    : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
+                                            )}
+                                        >
+                                            {status === 'complete' ? 'Selesai' : status === 'pending' ? 'Menunggu' : 'Gagal'}
+                                            {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
 
-                    {/* Status Filter */}
-                    <div className="flex flex-col gap-1">
-                        <label className="text-xs font-semibold text-gray-500 uppercase">Status</label>
-                        <div className="flex gap-2">
-                            {['pending', 'complete', 'failed'].map(status => (
+                    <div className="flex flex-wrap sm:flex-nowrap justify-between items-end gap-4 border-t border-gray-100 pt-4">
+                        {/* Campaign Filter (Custom Dropdown) */}
+                        <div className="flex flex-col gap-1.5 w-full sm:w-auto relative">
+                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide">Kampanye</label>
+                            <div className="relative">
                                 <button
-                                    key={status}
-                                    onClick={() => toggleStatus(status)}
-                                    className={clsx(
-                                        "px-3 py-2 rounded-lg text-sm font-medium border transition-colors capitalize",
-                                        selectedStatuses.includes(status)
-                                            ? "bg-blue-50 border-blue-200 text-blue-700"
-                                            : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
-                                    )}
+                                    onClick={() => setIsCampaignDropdownOpen(!isCampaignDropdownOpen)}
+                                    className="w-full sm:w-[300px] flex justify-between items-center px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 hover:border-gray-400 focus:ring-2 focus:ring-blue-100 transition-colors text-left"
                                 >
-                                    {status === 'complete' ? 'Selesai' : status === 'pending' ? 'Menunggu' : 'Gagal'}
-                                    {selectedStatuses.includes(status) && <span className="ml-1 text-blue-500">✓</span>}
+                                    <span className="truncate">
+                                        {selectedCampaigns.length === 0
+                                            ? 'Semua Kampanye'
+                                            : `${selectedCampaigns.length} Kampanye Terpilih`}
+                                    </span>
+                                    <ChevronDown size={16} className={clsx("text-gray-400 transition-transform", isCampaignDropdownOpen && "rotate-180")} />
                                 </button>
-                            ))}
+
+                                {isCampaignDropdownOpen && (
+                                    <>
+                                        <div
+                                            className="fixed inset-0 z-10"
+                                            onClick={() => setIsCampaignDropdownOpen(false)}
+                                        />
+                                        <div className="absolute top-full mt-2 left-0 w-full sm:w-[300px] bg-white border border-gray-200 rounded-xl shadow-xl z-20 max-h-[300px] overflow-y-auto p-2">
+                                            {campaigns && campaigns.map((c: any) => (
+                                                <label
+                                                    key={c.id}
+                                                    className="flex items-start gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
+                                                >
+                                                    <div className="relative flex items-center mt-0.5">
+                                                        <input
+                                                            type="checkbox"
+                                                            className="peer h-4 w-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500"
+                                                            checked={selectedCampaigns.includes(String(c.id))}
+                                                            onChange={() => toggleCampaign(String(c.id))}
+                                                        />
+                                                    </div>
+                                                    <span className="text-sm text-gray-700 leading-snug select-none">{c.title}</span>
+                                                </label>
+                                            ))}
+                                            {(!campaigns || campaigns.length === 0) && (
+                                                <div className="p-3 text-sm text-gray-500 text-center">Tidak ada kampanye aktif</div>
+                                            )}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Campaign Filter */}
-                    <div className="flex flex-col gap-1 min-w-[200px]">
-                        <label className="text-xs font-semibold text-gray-500 uppercase">Kampanye</label>
-                        <select
-                            multiple
-                            className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 h-[42px]"
-                            value={selectedCampaigns}
-                            onChange={(e) => {
-                                const options = Array.from(e.target.selectedOptions, option => option.value);
-                                setSelectedCampaigns(options);
-                            }}
-                            style={{ height: '42px', overflow: 'hidden' }} // Simple multiselect visual
-                            title="Tahan Ctrl/Cmd untuk memilih banyak"
+                        <div className="grow"></div>
+
+                        <a
+                            href={getExportUrl()}
+                            target="_blank"
+                            className="w-full sm:w-auto px-6 py-2.5 bg-gray-900 text-white! rounded-xl hover:bg-black font-bold text-sm flex justify-center items-center gap-2 shadow-lg hover:shadow-xl transition-all active:scale-95"
                         >
-                            {campaigns && campaigns.map((c: any) => (
-                                <option key={c.id} value={c.id}>{c.title}</option>
-                            ))}
-                            {(!campaigns || campaigns.length === 0) && <option disabled>Memuat...</option>}
-                        </select>
-                        <span className="text-[10px] text-gray-400">Tahan Ctrl/Cmd untuk memilih banyak</span>
+                            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                            Download CSV
+                        </a>
                     </div>
-
-                    <div className="grow"></div>
-
-                    <a
-                        href={getExportUrl()}
-                        target="_blank"
-                        className="px-6 py-2.5 bg-gray-800 text-white! rounded-lg hover:bg-gray-900 font-bold text-sm flex items-center gap-2 shadow-lg shadow-gray-200 transition-transform active:scale-95"
-                    >
-                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-                        Ekspor Data
-                    </a>
                 </div>
             </div>
 
