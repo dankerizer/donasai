@@ -449,38 +449,3 @@ function wpd_shortcode_confirmation_form() {
     return ob_get_clean();
 }
 add_shortcode( 'wpd_confirmation_form', 'wpd_shortcode_confirmation_form' );
-
-/**
- * Donation Form Shortcode [wpd_donation_form]
- */
-function wpd_shortcode_donation_form() {
-    // Determine Campaign ID
-    $campaign_id = 0;
-    
-    // Check URL parameter
-    if ( isset( $_GET['campaign_id'] ) ) {
-        $campaign_id = intval( $_GET['campaign_id'] );
-    }
-
-    // Determine current campaign in loop? 
-    // Not really applicable if this shortcode is on a generic 'Pay' page.
-    
-    // If no campaign ID, what to show? Error or just empty?
-    if ( ! $campaign_id ) {
-        return '<p class="wpd-error">' . __( 'Campaign ID missing.', 'wp-donasi' ) . '</p>';
-    }
-
-    // Set global query for template (backward compatibility with template parts if they depend on it)
-    set_query_var( 'campaign_id', $campaign_id );
-    
-    // We can also pass it directly to template via include scope.
-    // However, existing donation-form.php might expect to just run.
-    
-    // IMPORTANT: donation-form.php handles logic by itself? Or is it just a view?
-    // Let's check wpd_get_donation_form_html usage.
-    
-    ob_start();
-    include WPD_PLUGIN_PATH . 'frontend/templates/donation-form.php';
-    return ob_get_clean();
-}
-add_shortcode( 'wpd_donation_form', 'wpd_shortcode_donation_form' );

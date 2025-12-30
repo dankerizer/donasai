@@ -15,7 +15,6 @@ export default function Settings() {
         payment_slug: 'pay',
         remove_branding: false,
         confirmation_page: '',
-        payment_page: '', // New Field
         // Donation
         min_amount: 10000,
         presets: '50000,100000,200000,500000',
@@ -66,7 +65,6 @@ export default function Settings() {
                 payment_slug: data.general?.payment_slug || 'pay',
                 remove_branding: data.general?.remove_branding === true || data.general?.remove_branding === '1',
                 confirmation_page: data.general?.confirmation_page || '',
-                payment_page: data.general?.payment_page || '',
                 // Donation
                 min_amount: data.donation?.min_amount || 10000,
                 presets: data.donation?.presets || '50000,100000,200000,500000',
@@ -107,8 +105,7 @@ export default function Settings() {
                     campaign_slug: data.campaign_slug,
                     payment_slug: data.payment_slug,
                     remove_branding: data.remove_branding,
-                    confirmation_page: data.confirmation_page,
-                    payment_page: data.payment_page
+                    confirmation_page: data.confirmation_page
                 },
                 donation: {
                     min_amount: data.min_amount,
@@ -342,24 +339,6 @@ export default function Settings() {
                                             </select>
                                             <p className="mt-1 text-xs text-gray-500">
                                                 Halaman ini harus berisi shortcode <code>[wpd_confirmation_form]</code>.
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                Halaman Pembayaran (Optional)
-                                            </label>
-                                            <select
-                                                value={formData.payment_page || ''}
-                                                onChange={(e) => setFormData({ ...formData, payment_page: e.target.value })}
-                                                className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                            >
-                                                <option value="">-- Default (/pay) --</option>
-                                                {pages.map((page: any) => (
-                                                    <option key={page.id} value={page.id}>{page.title}</option>
-                                                ))}
-                                            </select>
-                                            <p className="mt-1 text-xs text-gray-500">
-                                                Jika dipilih, donatur akan diarahkan ke halaman ini untuk membayar (misal: /bayar). Halaman ini harus berisi shortcode <code>[wpd_donation_form]</code>.
                                             </p>
                                         </div>
                                     </div>

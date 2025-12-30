@@ -39,7 +39,6 @@ $campaign_id = get_the_ID();
 $is_verified = get_post_meta( $campaign_id, '_wpd_is_verified', true );
 $progress = function_exists('wpd_get_campaign_progress') ? wpd_get_campaign_progress( $campaign_id ) : array('collected'=>0, 'target'=>0, 'percentage'=>0);
 $donors = function_exists('wpd_get_recent_donors') ? wpd_get_recent_donors( $campaign_id, 10 ) : array();
-
 ?>
 
 <div class="wpd-container" style="max-width:1100px; margin:0 auto; padding:20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
@@ -196,13 +195,7 @@ $donors = function_exists('wpd_get_recent_donors') ? wpd_get_recent_donors( $cam
                     <!-- CTA Buttons -->
                     <?php 
                         global $wp_rewrite;
-                        $general_settings = get_option('wpd_settings_general');
-                        $payment_page_id = $general_settings['payment_page'] ?? '';
-                        
-                        if ( ! empty( $payment_page_id ) ) {
-                            // Use configure payment page
-                            $donate_link = add_query_arg( 'campaign_id', $campaign_id, get_permalink( $payment_page_id ) );
-                        } elseif ( $wp_rewrite->using_permalinks() ) {
+                        if ( $wp_rewrite->using_permalinks() ) {
                             $donate_link = user_trailingslashit( get_permalink() . $payment_slug );
                         } else {
                             $donate_link = add_query_arg( $payment_slug, '1', get_permalink() );
@@ -286,17 +279,10 @@ $donors = function_exists('wpd_get_recent_donors') ? wpd_get_recent_donors( $cam
 
     <!-- Mobile Sticky CTA -->
     <?php 
-        // Logic reused from sidebar for consistency
-        $payment_slug = $general_settings['payment_slug'] ?? 'pay';
-        $payment_page_id = $general_settings['payment_page'] ?? '';
-        
-        if ( ! empty( $payment_page_id ) ) {
-            $donate_link_sticky = add_query_arg( 'campaign_id', $campaign_id, get_permalink( $payment_page_id ) );
-        } elseif ( $wp_rewrite->using_permalinks() ) {
-            $donate_link_sticky = user_trailingslashit( get_permalink() . $payment_slug ); 
-        } else {
-             $donate_link_sticky = add_query_arg( $payment_slug, '1', get_permalink() );
-        }
+        $payment_slug = get_option('wpd_settings_general')['payment_slug'] ?? 'pay';
+        $donate_link_sticky = $wp_rewrite->using_permalinks() 
+            ? user_trailingslashit( get_permalink() . $payment_slug ) 
+            : add_query_arg( $payment_slug, '1', get_permalink() );
     ?>
     <div class="wpd-mobile-cta">
         <div>
