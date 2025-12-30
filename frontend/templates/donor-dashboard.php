@@ -108,7 +108,7 @@ $donations       = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table_don
                             </td>
                             <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6; font-weight:600; color:#111827;">Rp <?php echo number_format( $sub->amount, 0, ',', '.' ); ?></td>
                             <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6; font-size:13px;">
-                                / <?php echo ucfirst( $sub->frequency ); ?><br>
+                                / <?php echo ucfirst( $sub->billing_interval ); ?><br>
                                 <span style="font-size:11px; color:#6b7280;">Berikutnya: <?php echo date_i18n( 'd M Y', strtotime( $sub->next_payment_date ) ); ?></span>
                             </td>
                             <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6;">

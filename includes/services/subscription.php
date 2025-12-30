@@ -12,11 +12,11 @@ class WPD_Subscription_Service {
     /**
      * Create a new subscription
      */
-    public function create_subscription( $user_id, $campaign_id, $amount, $frequency = 'monthly' ) {
+    public function create_subscription( $user_id, $campaign_id, $amount, $frequency = 'month' ) {
         global $wpdb;
         $table = $wpdb->prefix . 'wpd_subscriptions';
 
-        $next_date = ( $frequency === 'yearly' ) 
+        $next_date = ( $frequency === 'year' ) 
             ? date( 'Y-m-d H:i:s', strtotime( '+1 year' ) ) 
             : date( 'Y-m-d H:i:s', strtotime( '+1 month' ) );
 
@@ -25,7 +25,7 @@ class WPD_Subscription_Service {
             'campaign_id'       => $campaign_id,
             'amount'            => $amount,
             'status'            => 'active',
-            'frequency'         => $frequency,
+            'billing_interval'  => $frequency,
             'next_payment_date' => $next_date,
             'created_at'        => current_time( 'mysql' )
         );
@@ -87,7 +87,7 @@ class WPD_Subscription_Service {
             // Update next_payment_date
             
             // For MVP, just update date to avoid loop
-            $next_date = ( $sub->frequency === 'yearly' ) 
+            $next_date = ( $sub->billing_interval === 'year' ) 
                 ? date( 'Y-m-d H:i:s', strtotime( '+1 year' ) ) 
                 : date( 'Y-m-d H:i:s', strtotime( '+1 month' ) );
                 

@@ -31,6 +31,10 @@ export default function Settings() {
         midtrans_enabled: false,
         midtrans_production: false,
         midtrans_server_key: '',
+        // Pro Midtrans
+        pro_midtrans_server_key: '',
+        pro_midtrans_client_key: '',
+        pro_midtrans_production: false,
         // Organization
         org_name: '',
         org_address: '',
@@ -81,6 +85,10 @@ export default function Settings() {
                 midtrans_enabled: data.midtrans?.enabled === true || data.midtrans?.enabled === '1',
                 midtrans_production: data.midtrans?.is_production === true || data.midtrans?.is_production === '1',
                 midtrans_server_key: data.midtrans?.server_key || '',
+                // Pro Midtrans
+                pro_midtrans_server_key: data.midtrans?.pro_server_key || '',
+                pro_midtrans_client_key: data.midtrans?.pro_client_key || '',
+                pro_midtrans_production: data.midtrans?.pro_is_production === true,
                 // Organization
                 org_name: data.organization?.org_name || '',
                 org_address: data.organization?.org_address || '',
@@ -125,7 +133,11 @@ export default function Settings() {
                 midtrans: {
                     enabled: data.midtrans_enabled,
                     is_production: data.midtrans_production,
-                    server_key: data.midtrans_server_key
+                    server_key: data.midtrans_server_key,
+                    // Pro keys
+                    pro_server_key: data.pro_midtrans_server_key,
+                    pro_client_key: data.pro_midtrans_client_key,
+                    pro_is_production: data.pro_midtrans_production
                 },
                 organization: {
                     org_name: data.org_name,
@@ -474,25 +486,60 @@ export default function Settings() {
                                             <label htmlFor="midtrans_enabled" className="text-sm font-medium text-gray-700">Aktifkan Midtrans</label>
                                         </div>
 
-                                        <div className="flex items-center space-x-3">
-                                            <input
-                                                type="checkbox"
-                                                id="midtrans_production"
-                                                checked={formData.midtrans_production}
-                                                onChange={(e) => setFormData(prev => ({ ...prev, midtrans_production: e.target.checked }))}
-                                                className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                                            />
-                                            <label htmlFor="midtrans_production" className="text-sm font-medium text-gray-700">Mode Produksi</label>
+                                        {/* Pro Settings */}
+                                        <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                                            <h4 className="text-sm font-bold text-purple-800 mb-3 flex items-center gap-2">
+                                                <Crown size={14} /> Pengaturan Lanjutan (Pro)
+                                            </h4>
+
+                                            <div className="space-y-4">
+                                                <div className="flex items-center space-x-3">
+                                                    <input
+                                                        type="checkbox"
+                                                        id="pro_midtrans_production"
+                                                        checked={formData.pro_midtrans_production}
+                                                        onChange={(e) => setFormData(prev => ({ ...prev, pro_midtrans_production: e.target.checked }))}
+                                                        className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                                                    />
+                                                    <label htmlFor="pro_midtrans_production" className="text-sm font-medium text-purple-900">Mode Produksi (Pro)</label>
+                                                </div>
+
+                                                <div className="grid md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-xs font-medium text-purple-900 mb-1">Server Key (Pro)</label>
+                                                        <input
+                                                            type="password"
+                                                            className="w-full p-2 border border-purple-200 rounded-lg font-mono text-xs bg-white"
+                                                            value={formData.pro_midtrans_server_key}
+                                                            onChange={e => setFormData({ ...formData, pro_midtrans_server_key: e.target.value })}
+                                                            placeholder="Override Free Key..."
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs font-medium text-purple-900 mb-1">Client Key (Pro)</label>
+                                                        <input
+                                                            type="text"
+                                                            className="w-full p-2 border border-purple-200 rounded-lg font-mono text-xs bg-white"
+                                                            value={formData.pro_midtrans_client_key}
+                                                            onChange={e => setFormData({ ...formData, pro_midtrans_client_key: e.target.value })}
+                                                            placeholder="Override Free Key..."
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <p className="text-xs text-purple-700">Kunci ini akan menimpa pengaturan versi gratis jika diisi.</p>
+                                            </div>
                                         </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Server Key</label>
+                                        <div className={clsx("opacity-50 pointer-events-none")}>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Server Key (Gratis)</label>
                                             <input
                                                 type="password"
-                                                className="w-full p-2 border border-gray-300 rounded-lg font-mono text-sm"
+                                                className="w-full p-2 border border-gray-300 rounded-lg font-mono text-sm bg-gray-100"
                                                 value={formData.midtrans_server_key}
-                                                onChange={e => setFormData({ ...formData, midtrans_server_key: e.target.value })}
+                                                readOnly
+                                                placeholder="Key Standar..."
                                             />
+                                            <p className="text-xs text-gray-500 mt-1">Gunakan Pro Key di atas untuk fungsionalitas penuh.</p>
                                         </div>
                                     </div>
                                 </div>

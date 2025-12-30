@@ -30,6 +30,15 @@ function wpd_api_get_settings() {
 	$midtrans = get_option( 'wpd_settings_midtrans', array( 'enabled' => false, 'is_production' => false, 'server_key' => '' ) );
 	$license  = get_option( 'wpd_license', array( 'key' => '', 'status' => 'inactive' ) );
     
+    // Check real Pro License from Pro Plugin if available
+    if ( defined('WPD_PRO_VERSION') ) {
+        $real_license_status = get_option( 'wpd_pro_license_status' );
+        if( $real_license_status === 'valid' ) {
+            $license['status'] = 'active';
+            $license['key'] = get_option( 'wpd_pro_license_key', '' );
+        }
+    }
+
 	$organization = get_option( 'wpd_settings_organization', array( 'org_name' => '', 'org_address' => '', 'org_phone' => '', 'org_email' => '', 'org_logo' => '' ) );
     $notifications = get_option( 'wpd_settings_notifications', array( 'opt_in_email' => get_option('admin_email'), 'opt_in_whatsapp' => '' ) );
     
@@ -37,6 +46,20 @@ function wpd_api_get_settings() {
     $general = get_option( 'wpd_settings_general', array( 'campaign_slug' => 'campaign', 'payment_slug' => 'pay', 'remove_branding' => false, 'confirmation_page' => '' ) );
     $donation = get_option( 'wpd_settings_donation', array( 'min_amount' => 10000, 'presets' => '50000,100000,200000,500000', 'anonymous_label' => 'Hamba Allah', 'create_user' => false ) );
     $appearance = get_option( 'wpd_settings_appearance', array( 'brand_color' => '#059669', 'button_color' => '#ec4899' ) );
+
+    // Pro Settings (Midtrans Override)
+    if ( $license['status'] === 'active' ) {
+        $pro_server = get_option('wpd_pro_midtrans_server_key');
+        $pro_client = get_option('wpd_pro_midtrans_client_key');
+        $pro_is_prod = get_option('wpd_pro_midtrans_is_production');
+        $pro_intervals = get_option('wpd_pro_recurring_intervals', ['month', 'year']);
+
+        if($pro_server) $midtrans['pro_server_key'] = $pro_server;
+        if($pro_client) $midtrans['pro_client_key'] = $pro_client;
+        if($pro_is_prod) $midtrans['pro_is_production'] = ($pro_is_prod == '1');
+        
+        $donation['recurring_intervals'] = $pro_intervals;
+    }
 
     // Get all pages for dropdown
     $pages = get_pages();
@@ -80,6 +103,11 @@ function wpd_api_update_settings( $request ) {
 			'server_key'    => sanitize_text_field( $params['midtrans']['server_key'] ?? '' ),
 		);
 		update_option( 'wpd_settings_midtrans', $mid_data );
+        
+        // Save Pro fields if present
+        if( isset( $params['midtrans']['pro_server_key'] ) ) update_option( 'wpd_pro_midtrans_server_key', sanitize_text_field( $params['midtrans']['pro_server_key'] ) );
+        if( isset( $params['midtrans']['pro_client_key'] ) ) update_option( 'wpd_pro_midtrans_client_key', sanitize_text_field( $params['midtrans']['pro_client_key'] ) );
+        if( isset( $params['midtrans']['pro_is_production'] ) ) update_option( 'wpd_pro_midtrans_is_production', !empty($params['midtrans']['pro_is_production']) ? '1' : '0' );
 	}
 
 	if ( isset( $params['organization'] ) ) {
@@ -118,6 +146,10 @@ function wpd_api_update_settings( $request ) {
             'create_user'     => ! empty( $params['donation']['create_user'] ), // Pro
         );
         update_option( 'wpd_settings_donation', $don_data );
+        
+        if( isset( $params['donation']['recurring_intervals'] ) && is_array( $params['donation']['recurring_intervals'] ) ) {
+            update_option( 'wpd_pro_recurring_intervals', array_map('sanitize_text_field', $params['donation']['recurring_intervals']) );
+        }
     }
 
     if ( isset( $params['notifications'] ) ) {
@@ -138,10 +170,23 @@ function wpd_api_update_settings( $request ) {
 
     if ( isset( $params['license'] ) ) {
         $key = sanitize_text_field( $params['license']['key'] ?? '' );
-        // Simple Stub Validation
-        $status = ( strpos( $key, 'PRO-' ) === 0 ) ? 'active' : 'inactive';
         
-        update_option( 'wpd_license', array( 'key' => $key, 'status' => $status ) );
+        // If Pro Plugin is active, use its real validation stub
+        if( defined('WPD_PRO_VERSION') ) {
+             update_option( 'wpd_pro_license_key', $key );
+             // Simulate Validation for now (or call Pro class)
+             if( !empty($key) ) {
+                 update_option( 'wpd_pro_license_status', 'valid' );
+                 $status = 'active';
+             } else {
+                 update_option( 'wpd_pro_license_status', 'invalid' );
+                 $status = 'inactive';
+             }
+        } else {
+            // Legacy Stub from Free
+            $status = ( strpos( $key, 'PRO-' ) === 0 ) ? 'active' : 'inactive';
+            update_option( 'wpd_license', array( 'key' => $key, 'status' => $status ) );
+        }
     }
 
 	return wpd_api_get_settings();
