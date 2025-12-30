@@ -1,18 +1,18 @@
 # GEMINI.md - Project Context & Rules
 
-This file serves as the primary directive for the AI agent (Antigravity/GEMINI) when working on the `wp-donasi` project.
+This file serves as the primary directive for the AI agent (Antigravity/GEMINI) when working on the `donasai` project.
 
 ## 1. Documentation Authority
-You MUST strictly follow the documentation in `wp-content/plugins/wp-donasi/docs/`. These documents are the single source of truth:
+You MUST strictly follow the documentation in `wp-content/plugins/donasai/docs/`. These documents are the single source of truth:
 
-*   **[prd.md](file:///Users/hsi/Dev/pribadi/wp-donasi/wp-content/plugins/wp-donasi/docs/prd.md)**: Product Requirements Document. Defines scope, features (Free vs Pro), and non-goals.
-*   **[technical-specs.md](file:///Users/hsi/Dev/pribadi/wp-donasi/wp-content/plugins/wp-donasi/docs/technical-specs.md)**: Technical Specifications. Defines:
+*   **[prd.md](file:///Users/hsi/Dev/pribadi/donasai/wp-content/plugins/donasai/docs/prd.md)**: Product Requirements Document. Defines scope, features (Free vs Pro), and non-goals.
+*   **[technical-specs.md](file:///Users/hsi/Dev/pribadi/donasai/wp-content/plugins/donasai/docs/technical-specs.md)**: Technical Specifications. Defines:
     *   File & Folder Structure
     *   Database Schema (tables: `wpd_donations`, `wpd_campaign_meta`)
     *   Technology Stack (PHP 7.4+, React + Vite + TS for Admin, Tailwind)
     *   API Endpoints
     *   Code Standards
-*   **[user-story.md](file:///Users/hsi/Dev/pribadi/wp-donasi/wp-content/plugins/wp-donasi/docs/user-story.md)**: User Stories & Sprint Priorities.
+*   **[user-story.md](file:///Users/hsi/Dev/pribadi/donasai/wp-content/plugins/donasai/docs/user-story.md)**: User Stories & Sprint Priorities.
 
 ## 2. Critical Rules
 1.  **Do NOT deviate** from the folder structure defined in `technical-specs.md`.

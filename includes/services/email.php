@@ -34,9 +34,9 @@ class WPD_Email {
         $blog_name = get_bloginfo( 'name' );
         
         if ( $type === 'complete' ) {
-            $subject = sprintf( __( 'Pembayaran Diterima #%d - %s', 'wp-donasi' ), $donation->id, $blog_name );
+            $subject = sprintf( __( 'Pembayaran Diterima #%d - %s', 'donasai' ), $donation->id, $blog_name );
         } else {
-            $subject = sprintf( __( 'Menunggu Pembayaran #%d - %s', 'wp-donasi' ), $donation->id, $blog_name );
+            $subject = sprintf( __( 'Menunggu Pembayaran #%d - %s', 'donasai' ), $donation->id, $blog_name );
         }
         
 		$headers = array( 'Content-Type: text/html; charset=UTF-8' );
@@ -66,39 +66,39 @@ class WPD_Email {
 			<div class="container">
 				<div class="header">
                     <?php if ( $type === 'complete' ) : ?>
-					    <h2 style="color:#059669;"><?php _e( 'Pembayaran Berhasil!', 'wp-donasi' ); ?></h2>
+					    <h2 style="color:#059669;"><?php _e( 'Pembayaran Berhasil!', 'donasai' ); ?></h2>
                     <?php else : ?>
-                        <h2 style="color:#d97706;"><?php _e( 'Menunggu Pembayaran', 'wp-donasi' ); ?></h2>
+                        <h2 style="color:#d97706;"><?php _e( 'Menunggu Pembayaran', 'donasai' ); ?></h2>
                     <?php endif; ?>
 				</div>
 				<div class="content">
-					<p><?php printf( __( 'Halo %s,', 'wp-donasi' ), esc_html( $donation->name ) ); ?></p>
+					<p><?php printf( __( 'Halo %s,', 'donasai' ), esc_html( $donation->name ) ); ?></p>
 					
                     <?php if ( $type === 'complete' ) : ?>
-                        <p><?php _e( 'Terima kasih! Donasi Anda telah kami terima.', 'wp-donasi' ); ?></p>
+                        <p><?php _e( 'Terima kasih! Donasi Anda telah kami terima.', 'donasai' ); ?></p>
                     <?php else : ?>
-                        <p><?php _e( 'Terima kasih telah melakukan pemesanan donasi. Mohon segera selesaikan pembayaran Anda.', 'wp-donasi' ); ?></p>
+                        <p><?php _e( 'Terima kasih telah melakukan pemesanan donasi. Mohon segera selesaikan pembayaran Anda.', 'donasai' ); ?></p>
                     <?php endif; ?>
 
 					<p><strong><?php echo esc_html( $campaign_title ); ?></strong></p>
 					
 					<ul>
-						<li><?php _e( 'Nominal:', 'wp-donasi' ); ?> <span class="amount">Rp <?php echo number_format( $donation->amount, 0, ',', '.' ); ?></span></li>
-						<li><?php _e( 'ID Donasi:', 'wp-donasi' ); ?> #<?php echo $donation->id; ?></li>
+						<li><?php _e( 'Nominal:', 'donasai' ); ?> <span class="amount">Rp <?php echo number_format( $donation->amount, 0, ',', '.' ); ?></span></li>
+						<li><?php _e( 'ID Donasi:', 'donasai' ); ?> #<?php echo $donation->id; ?></li>
 					</ul>
 
 					<?php if ( $type === 'pending' && 'manual' === $donation->payment_method ) : 
                         $bank_settings = get_option( 'wpd_settings_bank', array() );
                     ?>
 						<div style="background:#fef3c7; padding:15px; border-radius:5px; margin-top:15px;">
-							<strong><?php _e( 'Silakan Transfer ke:', 'wp-donasi' ); ?></strong><br>
+							<strong><?php _e( 'Silakan Transfer ke:', 'donasai' ); ?></strong><br>
 							<?php echo esc_html( $bank_settings['bank_name'] ?? '' ); ?>: <?php echo esc_html( $bank_settings['account_number'] ?? '' ); ?><br>
                             a.n <?php echo esc_html( $bank_settings['account_name'] ?? '' ); ?>
 						</div>
 					<?php endif; ?>
 
                     <?php if ( $type === 'complete' ) : ?>
-                        <p><a href="<?php echo home_url( '/?wpd_receipt=' . $donation->id ); ?>" class="btn"><?php _e( 'Download E-Receipt', 'wp-donasi' ); ?></a></p>
+                        <p><a href="<?php echo home_url( '/?wpd_receipt=' . $donation->id ); ?>" class="btn"><?php _e( 'Download E-Receipt', 'donasai' ); ?></a></p>
                     <?php endif; ?>
 
 				</div>

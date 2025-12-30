@@ -1,6 +1,6 @@
-# wp-donasi: Free vs Pro Features
+# donasai: Free vs Pro Features
 
-Berikut adalah perbandingan fitur antara **wp-donasi Free** (tersedia di WordPress.org) dan **wp-donasi Pro** (Add-on berbayar).
+Berikut adalah perbandingan fitur antara **donasai Free** (tersedia di WordPress.org) dan **donasai Pro** (Add-on berbayar).
 
 ## Tabel Perbandingan Singkat
 

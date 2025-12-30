@@ -12,8 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function wpd_register_admin_menu() {
 	add_menu_page(
-		__( 'Donasi', 'wp-donasi' ),
-		__( 'Donasi', 'wp-donasi' ),
+		__( 'Donasai', 'donasai' ),
+		__( 'Donasai', 'donasai' ),
 		'manage_options',
 		'wpd-dashboard',
 		'wpd_render_admin_app',
@@ -23,8 +23,8 @@ function wpd_register_admin_menu() {
 
 	add_submenu_page(
 		'wpd-dashboard',
-		__( 'Dashboard', 'wp-donasi' ),
-		__( 'Dashboard', 'wp-donasi' ),
+		__( 'Dashboard', 'donasai' ),
+		__( 'Dashboard', 'donasai' ),
 		'manage_options',
 		'wpd-dashboard',
 		'wpd_render_admin_app'
@@ -34,16 +34,16 @@ function wpd_register_admin_menu() {
     // Manual add to ensure order
 	add_submenu_page(
 		'wpd-dashboard',
-		__( 'Campaigns', 'wp-donasi' ),
-		__( 'Campaigns', 'wp-donasi' ),
+		__( 'Campaigns', 'donasai' ),
+		__( 'Campaigns', 'donasai' ),
 		'manage_options',
 		'edit.php?post_type=wpd_campaign'
 	);
 
 	add_submenu_page(
 		'wpd-dashboard',
-		__( 'Categories', 'wp-donasi' ),
-		__( 'Categories', 'wp-donasi' ),
+		__( 'Categories', 'donasai' ),
+		__( 'Categories', 'donasai' ),
 		'manage_options',
 		'edit-tags.php?taxonomy=donation_category&post_type=wpd_campaign'
 	);
@@ -51,8 +51,8 @@ function wpd_register_admin_menu() {
 
 	add_submenu_page(
 		'wpd-dashboard',
-		__( 'Donations', 'wp-donasi' ),
-		__( 'Donations', 'wp-donasi' ),
+		__( 'Donations', 'donasai' ),
+		__( 'Donations', 'donasai' ),
 		'manage_options',
 		'wpd-donations',
 		'wpd_render_admin_app' // Same React App
@@ -60,8 +60,8 @@ function wpd_register_admin_menu() {
 
 	add_submenu_page(
 		'wpd-dashboard',
-		__( 'Fundraisers', 'wp-donasi' ),
-		__( 'Fundraisers', 'wp-donasi' ),
+		__( 'Fundraisers', 'donasai' ),
+		__( 'Fundraisers', 'donasai' ),
 		'manage_options',
 		'wpd-fundraisers',
 		'wpd_render_admin_app' // Same React App
@@ -69,8 +69,8 @@ function wpd_register_admin_menu() {
 
 	add_submenu_page(
 		'wpd-dashboard',
-		__( 'Settings', 'wp-donasi' ),
-		__( 'Settings', 'wp-donasi' ),
+		__( 'Settings', 'donasai' ),
+		__( 'Settings', 'donasai' ),
 		'manage_options',
 		'wpd-settings',
 		'wpd_render_admin_app' // Same React App

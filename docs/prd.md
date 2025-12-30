@@ -1,10 +1,10 @@
-Berikut draft PRD untuk **wp-donasi** (versi freemium: free di wp.org + Pro berbayar), sudah menggabungkan konsep campaign + form + payment + dashboard + arsitektur React/Tailwind.
+Berikut draft PRD untuk **donasai** (versi freemium: free di wp.org + Pro berbayar), sudah menggabungkan konsep campaign + form + payment + dashboard + arsitektur React/Tailwind.
 
 ***
 
 ## 1. Overview
 
-**Nama Produk:** wp-donasi  
+**Nama Produk:** donasai  
 **Tipe:** Plugin WordPress donasi/fundraising freemium (Free di WordPress.org, Pro sebagai add-on).[1][2]
 
 **Tujuan utama:**
@@ -161,7 +161,7 @@ Berikut draft PRD untuk **wp-donasi** (versi freemium: free di wp.org + Pro berb
 
 **Stack:**
 
-- React + TypeScript + shadcn UI untuk halaman admin plugin `wp-donasi`.[11][10]
+- React + TypeScript + shadcn UI untuk halaman admin plugin `donasai`.[11][10]
 - Tailwind untuk styling; asset dibundle dan hanya di-enqueue di halaman plugin.[14][12]
 
 **Fitur tampilan (Free):**
@@ -254,7 +254,7 @@ Berikut draft PRD untuk **wp-donasi** (versi freemium: free di wp.org + Pro berb
 ### 5.2. Arsitektur Plugin
 
 - Struktur folder:  
-  - `wp-donasi.php` (main plugin file).  
+  - `donasai.php` (main plugin file).  
   - `/includes` (CPT, DB, services, REST API).  
   - `/admin-app` (React+TS source).  
   - `/build/admin` (admin bundle JS/CSS).  
@@ -307,7 +307,7 @@ Berikut draft PRD untuk **wp-donasi** (versi freemium: free di wp.org + Pro berb
 
 
 
-## wp-donasi Free vs Pro
+## donasai Free vs Pro
 
 | Area                | Fitur                                                       | Free (wp.org)                                                                 | Pro (Berbayar)                                                                                 |
 |---------------------|-------------------------------------------------------------|-------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
@@ -347,7 +347,7 @@ Berikut draft PRD untuk **wp-donasi** (versi freemium: free di wp.org + Pro berb
 
 Kalau mau, bisa lanjut dibuatkan:
 
-- Draft copy untuk landing page “wp-donasi Pro” berdasarkan tabel ini, atau  
+- Draft copy untuk landing page “donasai Pro” berdasarkan tabel ini, atau  
 - Breakdown task teknis per baris fitur (supaya gampang kamu feed ke AI untuk generate kode modul per modul).
 
 [1](https://wordpress.org/plugins/give/)

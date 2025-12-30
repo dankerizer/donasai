@@ -186,7 +186,7 @@ export default function Settings() {
             <div className="bg-linear-to-r from-purple-600 to-indigo-600 rounded-xl p-6 text-white flex justify-between items-center shadow-lg">
                 <div>
                     <h3 className="text-xl font-bold flex items-center gap-2">
-                        <Crown className="text-yellow-300" /> Upgrade ke WP Donasi Pro
+                        <Crown className="text-yellow-300" /> Upgrade ke Donasai Pro
                     </h3>
                     <p className="opacity-90 mt-1">Buka Donasi Berulang, Notifikasi WhatsApp, dan Konfirmasi AI.</p>
                 </div>
@@ -359,7 +359,7 @@ export default function Settings() {
                                             onChange={() => setShowProModal(true)}
                                             className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                                         />
-                                        <label className="text-sm font-medium text-gray-700">Hapus Branding "Powered by WP Donasi"</label>
+                                        <label className="text-sm font-medium text-gray-700">Hapus Branding "Powered by Donasai"</label>
                                     </div>
                                 </div>
                             </div>

@@ -56,7 +56,7 @@ function AppLayout() {
                 <div className="bg-blue-600 p-1.5 rounded-lg">
                   <Heart className="text-white w-5 h-5" />
                 </div>
-                <h1 className="text-lg font-bold text-gray-800 tracking-tight">wp-donasi</h1>
+                <h1 className="text-lg font-bold text-gray-800 tracking-tight">Donasai</h1>
               </div>
             </div>
 

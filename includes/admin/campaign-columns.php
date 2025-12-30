@@ -15,15 +15,15 @@ function wpd_campaign_columns( $columns ) {
 
     // Insert Image after Checkbox
     $new_columns['cb'] = $columns['cb'];
-    $new_columns['thumb'] = __( 'Image', 'wp-donasi' );
+    $new_columns['thumb'] = __( 'Image', 'donasai' );
     $new_columns['title'] = $columns['title']; // Includes "Edit | Quick Edit | Trash"
     
     // Add custom columns
-    $new_columns['donation_category'] = __( 'Category', 'wp-donasi' ); // Should be auto-added by register_taxonomy, but good to ensure order
-    $new_columns['stats']             = __( 'Stats', 'wp-donasi' );
-    $new_columns['dates']             = __( 'Campaign Dates', 'wp-donasi' );
-    $new_columns['campaigner']        = __( 'Campaigner', 'wp-donasi' );
-    $new_columns['wpd_actions']       = __( 'Actions', 'wp-donasi' );
+    $new_columns['donation_category'] = __( 'Category', 'donasai' ); // Should be auto-added by register_taxonomy, but good to ensure order
+    $new_columns['stats']             = __( 'Stats', 'donasai' );
+    $new_columns['dates']             = __( 'Campaign Dates', 'donasai' );
+    $new_columns['campaigner']        = __( 'Campaigner', 'donasai' );
+    $new_columns['wpd_actions']       = __( 'Actions', 'donasai' );
 
     // Optional: Keep date, author if needed, or remove to simplify
     // $new_columns['date'] = $columns['date']; 

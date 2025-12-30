@@ -6,7 +6,7 @@
 $user_id = get_current_user_id();
 
 if ( ! $user_id ) {
-	echo '<p>' . __( 'Please login to view your donations.', 'wp-donasi' ) . '</p>';
+	echo '<p>' . __( 'Please login to view your donations.', 'donasai' ) . '</p>';
 	return;
 }
 
@@ -16,12 +16,12 @@ $donations       = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table_don
 ?>
 
 <div class="wpd-donor-dashboard">
-	<h3><?php _e( 'Riwayat Donasi Saya', 'wp-donasi' ); ?></h3>
+	<h3><?php _e( 'Riwayat Donasi Saya', 'donasai' ); ?></h3>
 
 	<?php if ( empty( $donations ) ) : ?>
 		<div style="background:#f9fafb; padding:40px; text-align:center; border-radius:8px; border:1px solid #e5e7eb;">
-			<p style="color:#6b7280; font-size:16px; margin-bottom:20px;"><?php _e( 'Belum ada riwayat donasi.', 'wp-donasi' ); ?></p>
-			<a href="<?php echo home_url('/campaigns'); ?>" class="button" style="background:#2563eb; color:white; padding:10px 20px; text-decoration:none; border-radius:6px;"><?php _e( 'Mulai Berdonasi', 'wp-donasi' ); ?></a>
+			<p style="color:#6b7280; font-size:16px; margin-bottom:20px;"><?php _e( 'Belum ada riwayat donasi.', 'donasai' ); ?></p>
+			<a href="<?php echo home_url('/campaigns'); ?>" class="button" style="background:#2563eb; color:white; padding:10px 20px; text-decoration:none; border-radius:6px;"><?php _e( 'Mulai Berdonasi', 'donasai' ); ?></a>
 		</div>
 	<?php else : ?>
 		<div style="overflow-x:auto;">
@@ -29,11 +29,11 @@ $donations       = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table_don
 				<thead style="background:#f9fafb; color:#374151;">
 					<tr>
 						<th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;">#ID</th>
-						<th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Tanggal', 'wp-donasi' ); ?></th>
-						<th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Campaign', 'wp-donasi' ); ?></th>
-						<th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Nominal', 'wp-donasi' ); ?></th>
-						<th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Status', 'wp-donasi' ); ?></th>
-						<th style="padding:12px 16px; text-align:right; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Aksi', 'wp-donasi' ); ?></th>
+						<th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Tanggal', 'donasai' ); ?></th>
+						<th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Campaign', 'donasai' ); ?></th>
+						<th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Nominal', 'donasai' ); ?></th>
+						<th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Status', 'donasai' ); ?></th>
+						<th style="padding:12px 16px; text-align:right; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Aksi', 'donasai' ); ?></th>
 					</tr>
 				</thead>
 				<tbody style="background:white;">
@@ -70,7 +70,7 @@ $donations       = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table_don
 </div>
 
 <div class="wpd-subscription-dashboard" style="margin-top:40px;">
-    <h3><?php _e( 'Langganan Rutin Saya', 'wp-donasi' ); ?></h3>
+    <h3><?php _e( 'Langganan Rutin Saya', 'donasai' ); ?></h3>
 
     <?php 
     $table_subs = $wpdb->prefix . 'wpd_subscriptions';
@@ -85,18 +85,18 @@ $donations       = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table_don
     ?>
 
     <?php if ( empty( $subscriptions ) ) : ?>
-        <p style="color:#6b7280; font-size:14px;"><?php _e( 'Belum ada donasi rutin aktif.', 'wp-donasi' ); ?></p>
+        <p style="color:#6b7280; font-size:14px;"><?php _e( 'Belum ada donasi rutin aktif.', 'donasai' ); ?></p>
     <?php else : ?>
         <div style="overflow-x:auto;">
             <table class="wpd-table" style="width:100%; border-collapse:separate; border-spacing:0; border:1px solid #e5e7eb; border-radius:8px; overflow:hidden;">
                 <thead style="background:#f9fafb; color:#374151;">
                     <tr>
                         <th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;">#ID</th>
-                        <th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Campaign', 'wp-donasi' ); ?></th>
-                        <th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Nominal', 'wp-donasi' ); ?></th>
-                        <th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Jadwal', 'wp-donasi' ); ?></th>
-                        <th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Status', 'wp-donasi' ); ?></th>
-                        <th style="padding:12px 16px; text-align:right; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Aksi', 'wp-donasi' ); ?></th>
+                        <th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Campaign', 'donasai' ); ?></th>
+                        <th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Nominal', 'donasai' ); ?></th>
+                        <th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Jadwal', 'donasai' ); ?></th>
+                        <th style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Status', 'donasai' ); ?></th>
+                        <th style="padding:12px 16px; text-align:right; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;"><?php _e( 'Aksi', 'donasai' ); ?></th>
                     </tr>
                 </thead>
                 <tbody style="background:white;">
@@ -118,7 +118,7 @@ $donations       = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table_don
                             </td>
                             <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6; text-align:right;">
                                 <?php if ( 'active' === $sub->status ) : ?>
-                                    <button onclick="wpdCancelSub(<?php echo $sub->id; ?>)" class="button-small" style="background:#fee2e2; color:#991b1b; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;"><?php _e( 'Batalkan', 'wp-donasi' ); ?></button>
+                                    <button onclick="wpdCancelSub(<?php echo $sub->id; ?>)" class="button-small" style="background:#fee2e2; color:#991b1b; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;"><?php _e( 'Batalkan', 'donasai' ); ?></button>
                                 <?php else: ?>
                                     <span style="color:#9ca3af; font-size:11px;">-</span>
                                 <?php endif; ?>
@@ -132,7 +132,7 @@ $donations       = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM $table_don
     
     <script>
     function wpdCancelSub(id) {
-        if(!confirm('<?php _e("Yakin ingin membatalkan donasi rutin ini?", "wp-donasi"); ?>')) return;
+        if(!confirm('<?php _e("Yakin ingin membatalkan donasi rutin ini?", "donasai"); ?>')) return;
         
         var nonce = '<?php echo wp_create_nonce( 'wp_rest' ); ?>';
         fetch('/wp-json/wpd/v1/subscriptions/' + id + '/cancel', {

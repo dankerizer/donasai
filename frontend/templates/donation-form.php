@@ -71,6 +71,7 @@ $presets = array_map('intval', $presets);
 
             <!-- SECTION: NOMINAL -->
             <div class="wpd-section">
+                <?php do_action( 'wpd_form_before_amount', $campaign_id ); ?>
                 <label class="wpd-label-heading">Masukkan Nominal Donasi</label>
                 
                 <?php if ( $type === 'zakat' ) : ?>

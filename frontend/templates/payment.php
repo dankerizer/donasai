@@ -20,7 +20,7 @@ $campaign_id = get_the_ID();
     <!-- Header -->
     <div style="text-align:center; margin-bottom:30px;">
         <h1 style="font-size:24px; font-weight:700; color:#111827; margin:0 0 10px 0;">
-            <?php _e( 'Data Donasi', 'wp-donasi' ); ?>
+            <?php _e( 'Data Donasi', 'donasai' ); ?>
         </h1>
         <p style="color:#6b7280; margin:0; font-size:16px;">
             Anda akan berdonasi untuk <br>

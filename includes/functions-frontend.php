@@ -84,7 +84,7 @@ function wpd_get_template_part( $slug, $name = null ) {
 
     // Look in yourtheme/slug-name.php
     if ( $name ) {
-        $template = locate_template( array( "wp-donasi/{$slug}-{$name}.php", "{$slug}-{$name}.php" ) );
+        $template = locate_template( array( "donasai/{$slug}-{$name}.php", "{$slug}-{$name}.php" ) );
     }
 
     // Get default slug-name.php
@@ -94,7 +94,7 @@ function wpd_get_template_part( $slug, $name = null ) {
 
     // If not found, look for slug.php
     if ( ! $template ) {
-        $template = locate_template( array( "wp-donasi/{$slug}.php", "{$slug}.php" ) );
+        $template = locate_template( array( "donasai/{$slug}.php", "{$slug}.php" ) );
     }
     
     // Default slug.php
@@ -112,7 +112,7 @@ function wpd_get_template_part( $slug, $name = null ) {
  */
 function wpd_enqueue_frontend_assets() {
 	if ( is_singular( 'wpd_campaign' ) ) {
-		wp_enqueue_style( 'wp-donasi-frontend', WPD_PLUGIN_URL . 'frontend/assets/frontend.css', array(), WPD_VERSION );
+		wp_enqueue_style( 'donasai-frontend', WPD_PLUGIN_URL . 'frontend/assets/frontend.css', array(), WPD_VERSION );
 		// Ensure Tailwind/Utility classes are handled. For MVP without build step, we might write raw CSS or use CDN for quick demo (not recommended for production plugin, but okay for MVP dev).
 		// Better: write custom CSS in frontend.css that mimics Tailwind utilities needed.
 	}
@@ -251,7 +251,7 @@ add_action( 'template_redirect', 'wpd_track_referral' );
  */
 function wpd_shortcode_fundraiser_stats() {
     if ( ! is_user_logged_in() ) {
-        return '<p>' . __( 'Silakan login untuk melihat statistik fundraiser Anda.', 'wp-donasi' ) . '</p>';
+        return '<p>' . __( 'Silakan login untuk melihat statistik fundraiser Anda.', 'donasai' ) . '</p>';
     }
     
     global $wpdb;
@@ -269,13 +269,13 @@ function wpd_shortcode_fundraiser_stats() {
     ) );
     
     if ( empty( $results ) ) {
-        return '<p>' . __( 'Anda belum mendaftar sebagai fundraiser untuk campaign apapun.', 'wp-donasi' ) . '</p>';
+        return '<p>' . __( 'Anda belum mendaftar sebagai fundraiser untuk campaign apapun.', 'donasai' ) . '</p>';
     }
     
     ob_start();
     ?>
     <div class="wpd-fundraiser-dashboard">
-        <h3><?php _e( 'Statistik Kampanye Anda', 'wp-donasi' ); ?></h3>
+        <h3><?php _e( 'Statistik Kampanye Anda', 'donasai' ); ?></h3>
         <table class="wpd-table" style="width:100%; border-collapse:collapse; margin-top:15px;">
             <thead>
                 <tr style="background:#f9fafb; text-align:left; border-bottom:1px solid #ddd;">
@@ -313,7 +313,7 @@ add_shortcode( 'wpd_fundraiser_stats', 'wpd_shortcode_fundraiser_stats' );
  */
 function wpd_shortcode_profile() {
     if ( ! is_user_logged_in() ) {
-        return '<p>' . __( 'Silakan <a href="' . wp_login_url( get_permalink() ) . '">login</a> untuk mengedit profil Anda.', 'wp-donasi' ) . '</p>';
+        return '<p>' . __( 'Silakan <a href="' . wp_login_url( get_permalink() ) . '">login</a> untuk mengedit profil Anda.', 'donasai' ) . '</p>';
     }
 
     // Handle Form Submission

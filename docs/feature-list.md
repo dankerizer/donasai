@@ -1,8 +1,8 @@
-Berikut **feature list wp-donasi** yang dipisah jelas antara Free dan Pro, sinkron dengan landscape plugin donasi modern seperti GiveWP/Charitable.[1][2][3]
+Berikut **feature list donasai** yang dipisah jelas antara Free dan Pro, sinkron dengan landscape plugin donasi modern seperti GiveWP/Charitable.[1][2][3]
 
 ***
 
-## wp-donasi Free (untuk wp.org)
+## donasai Free (untuk wp.org)
 
 **Campaign & tampilan**
 
@@ -54,7 +54,7 @@ Berikut **feature list wp-donasi** yang dipisah jelas antara Free dan Pro, sinkr
 
 ***
 
-## wp-donasi Pro (Add-on Berbayar)
+## donasai Pro (Add-on Berbayar)
 
 **Campaign & tampilan lanjutan**
 

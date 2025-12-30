@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 function wpd_register_meta_boxes() {
 	add_meta_box(
 		'wpd_campaign_options',
-		__( 'Campaign Options', 'wp-donasi' ),
+		__( 'Campaign Options', 'donasai' ),
 		'wpd_campaign_options_callback',
 		'wpd_campaign',
 		'normal',
@@ -34,18 +34,18 @@ function wpd_campaign_options_callback( $post ) {
 	?>
 	<div class="wpd-meta-box">
 		<p>
-			<label for="wpd_target_amount"><strong><?php _e( 'Target Amount (Rp)', 'wp-donasi' ); ?></strong></label><br>
+			<label for="wpd_target_amount"><strong><?php _e( 'Target Amount (Rp)', 'donasai' ); ?></strong></label><br>
 			<input type="number" name="wpd_target_amount" id="wpd_target_amount" value="<?php echo esc_attr( $target ); ?>" class="widefat" style="max-width: 300px;">
 		</p>
 		
 		<p>
-			<label for="wpd_collected_amount"><strong><?php _e( 'Collected Amount (Rp)', 'wp-donasi' ); ?></strong></label><br>
+			<label for="wpd_collected_amount"><strong><?php _e( 'Collected Amount (Rp)', 'donasai' ); ?></strong></label><br>
 			<input type="text" value="<?php echo esc_attr( number_format( (float) $collected, 0, ',', '.' ) ); ?>" class="widefat" style="max-width: 300px;" readonly>
-			<span class="description"><?php _e( 'Auto-calculated from donations. Read-only.', 'wp-donasi' ); ?></span>
+			<span class="description"><?php _e( 'Auto-calculated from donations. Read-only.', 'donasai' ); ?></span>
 		</p>
 
 		<p>
-			<label for="wpd_deadline"><strong><?php _e( 'Deadline', 'wp-donasi' ); ?></strong></label><br>
+			<label for="wpd_deadline"><strong><?php _e( 'Deadline', 'donasai' ); ?></strong></label><br>
 			<input type="date" name="wpd_deadline" id="wpd_deadline" value="<?php echo esc_attr( $deadline ); ?>" class="widefat" style="max-width: 300px;">
 		</p>
 
@@ -61,7 +61,7 @@ function wpd_campaign_options_callback( $post ) {
 		?>
 
 		<p>
-			<label for="wpd_type"><strong><?php _e( 'Campaign Type', 'wp-donasi' ); ?></strong></label><br>
+			<label for="wpd_type"><strong><?php _e( 'Campaign Type', 'donasai' ); ?></strong></label><br>
 			<select name="wpd_type" id="wpd_type" class="widefat" style="max-width: 300px;">
 				<option value="donation" <?php selected( $type, 'donation' ); ?>>General Donation</option>
 				<option value="zakat" <?php selected( $type, 'zakat' ); ?>>Zakat (Calculator)</option>

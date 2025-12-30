@@ -2,9 +2,9 @@
 ## 1. Plugin Metadata & Requirements
 
 ```php
-// wp-donasi.php header
+// donasai.php header
 /*
-Plugin Name: wp-donasi - Donation & Fundraising
+Plugin Name: donasai - Donation & Fundraising
 Plugin URI: https://donasi.xyz/wp
 Description: Modern WordPress donation plugin with campaign management, payment gateways, and React dashboard.
 Version: 1.0.0
@@ -13,7 +13,7 @@ Requires at least: 6.4
 Tested up to: 6.6
 Requires PHP: 7.4
 License: GPL v2 or later
-Text Domain: wp-donasi
+Text Domain: donasai
 Domain Path: /languages
 */
 
@@ -35,8 +35,8 @@ Constants:
 ## 2. Folder Structure
 
 ```
-wp-donasi/
-├── wp-donasi.php                 # Main plugin file
+donasai/
+├── donasai.php                 # Main plugin file
 ├── readme.txt                    # WP.org readme
 ├── uninstall.php                 # Cleanup on uninstall
 ├── includes/
@@ -191,7 +191,7 @@ CREATE TABLE {$wpdb->prefix}wpd_referral_logs (
 
 ```json
 {
-  "name": "wp-donasi-admin",
+  "name": "donasai-admin",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -249,11 +249,11 @@ export default defineConfig({
 ```php
 // Development mode
 if (WP_DEBUG && defined('WPD_DEV_MODE')) {
-    wp_enqueue_script('wp-donasi-admin', 'http://localhost:3001/admin.js');
+    wp_enqueue_script('donasai-admin', 'http://localhost:3001/admin.js');
 } else {
     // Production
-    wp_enqueue_script('wp-donasi-admin', WPD_PLUGIN_URL . 'build/admin.js', ['wp-element']);
-    wp_enqueue_style('wp-donasi-admin', WPD_PLUGIN_URL . 'build/admin.css');
+    wp_enqueue_script('donasai-admin', WPD_PLUGIN_URL . 'build/admin.js', ['wp-element']);
+    wp_enqueue_style('donasai-admin', WPD_PLUGIN_URL . 'build/admin.css');
 }
 ```
 

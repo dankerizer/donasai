@@ -1,16 +1,17 @@
 <?php
 /**
- * Plugin Name: wp-donasi - Donation & Fundraising
- * Plugin URI: https://donasi.xyz/wp
- * Description: Modern WordPress donation plugin with campaign management, payment gateways, and React dashboard.
- * Version: 1.0.0
- * Author: Hadie Danker
+ * Plugin Name:       Donasai
+ * Plugin URI:        https://donasai.com
+ * Description:       Platform donasi dan penggalangan dana WordPress lengkap untuk yayasan, masjid, dan komunitas.
+ * Version:           1.0.0
+ * Author:            Hadie Danker
+ * Author URI:        https://donasai.com
  * Requires at least: 6.4
- * Tested up to: 6.6
- * Requires PHP: 7.4
- * License: GPL v2 or later
- * Text Domain: wp-donasi
- * Domain Path: /languages
+ * Tested up to:      6.6
+ * Requires PHP:      7.4
+ * License:           GPL v2 or later
+ * Text Domain:       donasai
+ * Domain Path:       /languages
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

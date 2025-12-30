@@ -104,7 +104,7 @@ export default function DonationsPage() {
                 <a
                     href={`/wp-json/wpd/v1/export/donations?_wpnonce=${(window as any).wpdSettings?.nonce}`}
                     target="_blank"
-                    className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 font-medium text-sm flex items-center gap-2"
+                    className="px-4 py-2 bg-gray-800 text-white! rounded-lg hover:bg-gray-900 font-medium text-sm flex items-center gap-2"
                 >
                     Ekspor CSV
                 </a>

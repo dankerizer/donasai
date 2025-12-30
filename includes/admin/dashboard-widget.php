@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 function wpd_add_dashboard_widgets() {
 	wp_add_dashboard_widget(
 		'wpd_dashboard_widget',
-		'WP Donasi Overview',
+		'Donasai Overview',
 		'wpd_dashboard_widget_render'
 	);
 }
