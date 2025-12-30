@@ -13,6 +13,51 @@ $is_verified = get_post_meta( get_the_ID(), '_wpd_is_verified', true );
 
 <div class="wpd-container" style="max-width:1100px; margin:0 auto; padding:20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
 
+    <style>
+        /* Progress Bar Animation */
+        @keyframes wpdProgressFill {
+            from { width: 0; }
+            to { width: var(--wpd-progress-width); }
+        }
+        .wpd-progress-bar-fill {
+            transition: width 1.5s ease-out;
+            animation: wpdProgressFill 1.5s ease-out forwards;
+        }
+
+        /* Responsive Mobile Sticky CTA */
+        .wpd-mobile-cta {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+            z-index: 9999;
+            border-top: 1px solid #e5e7eb;
+        }
+        @media (max-width: 768px) {
+            .wpd-mobile-cta {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 15px;
+            }
+            .wpd-sidebar-col {
+                display: none; /* Hide sidebar on mobile if we have sticky CTA, or keep it but move below content */
+            }
+            /* Adjust main col to full width */
+            .wpd-main-col {
+                flex: 0 0 100% !important;
+            }
+            /* Add padding to bottom of body so content isn't hidden behind sticky CTA */
+            body {
+                padding-bottom: 80px;
+            }
+        }
+    </style>
+
     <!-- Main Layout Grid -->
     <div class="wpd-campaign-grid" style="display:flex; flex-wrap:wrap; gap:30px;">
         
@@ -105,7 +150,7 @@ $is_verified = get_post_meta( get_the_ID(), '_wpd_is_verified', true );
                 <div style="background:white; border-radius:12px; box-shadow:0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); padding:24px; border:1px solid #e5e7eb; margin-bottom:20px;">
                     
                     <div style="margin-bottom:20px;">
-                         <div style="font-size:32px; font-weight:700; color:#059669; line-height:1;">
+                         <div style="font-size:32px; font-weight:700; color:var(--wpd-primary); line-height:1;">
                             Rp <?php echo number_format( $progress['collected'], 0, ',', '.' ); ?>
                          </div>
                          <div style="font-size:14px; color:#6b7280; margin-top:5px;">
@@ -114,7 +159,7 @@ $is_verified = get_post_meta( get_the_ID(), '_wpd_is_verified', true );
                     </div>
 
                     <div style="background:#e5e7eb; height:8px; border-radius:4px; margin-bottom:24px; overflow:hidden;">
-                        <div style="background:#059669; height:100%; border-radius:4px; width:<?php echo esc_attr( $progress['percentage'] ); ?>%;"></div>
+                        <div class="wpd-progress-bar-fill" style="background:var(--wpd-primary); height:100%; border-radius:4px; --wpd-progress-width:<?php echo esc_attr( $progress['percentage'] ); ?>%; width:0;"></div>
                     </div>
 
                     <!-- CTA Buttons -->
@@ -127,7 +172,7 @@ $is_verified = get_post_meta( get_the_ID(), '_wpd_is_verified', true );
                             $donate_link = add_query_arg( $payment_slug, '1', get_permalink() );
                         }
                     ?>
-                    <a href="<?php echo esc_url( $donate_link ); ?>" style="display:block; width:100%; background:#ec4899; color:white; font-weight:700; text-align:center; padding:14px; border-radius:8px; text-decoration:none; font-size:18px; margin-bottom:15px; box-shadow: 0 4px 6px rgba(236, 72, 153, 0.3);">
+                    <a href="<?php echo esc_url( $donate_link ); ?>" style="display:block; width:100%; background:var(--wpd-btn); color:white; font-weight:700; text-align:center; padding:14px; border-radius:8px; text-decoration:none; font-size:18px; margin-bottom:15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
                         Donasi Sekarang
                     </a>
 
@@ -201,6 +246,23 @@ $is_verified = get_post_meta( get_the_ID(), '_wpd_is_verified', true );
             <button class="button" onclick="wpdCopyRef()" style="width:100%; margin-bottom:10px; background:#2563eb; color:white; border:none; padding:10px; border-radius:4px;">Copy Link</button>
             <a id="wpd-wa-share" href="#" target="_blank" class="button" style="display:block; width:100%; text-align:center; background:#25D366; color:white; border:none; padding:10px; border-radius:4px; text-decoration:none;">Share ke WhatsApp</a>
         </div>
+    </div>
+
+    <!-- Mobile Sticky CTA -->
+    <?php 
+        $payment_slug = get_option('wpd_settings_general')['payment_slug'] ?? 'pay';
+        $donate_link_sticky = $wp_rewrite->using_permalinks() 
+            ? user_trailingslashit( get_permalink() . $payment_slug ) 
+            : add_query_arg( $payment_slug, '1', get_permalink() );
+    ?>
+    <div class="wpd-mobile-cta">
+        <div>
+            <div style="font-size:12px; color:#6b7280; margin-bottom:2px;">Terkumpul</div>
+            <div style="font-size:16px; font-weight:700; color:#059669;">Rp <?php echo number_format( $progress['collected'], 0, ',', '.' ); ?></div>
+        </div>
+        <a href="<?php echo esc_url( $donate_link_sticky ); ?>" style="background:var(--wpd-btn); color:white; font-weight:700; padding:12px 24px; border-radius:8px; text-decoration:none; font-size:16px;">
+            Donasi Sekarang
+        </a>
     </div>
 
     <!-- Scripts -->

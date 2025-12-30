@@ -24,6 +24,7 @@ require_once WPD_PLUGIN_PATH . 'includes/services/gateway-registry.php';
 // Services
 require_once WPD_PLUGIN_PATH . 'includes/services/donation.php';
 require_once WPD_PLUGIN_PATH . 'includes/services/email.php';
+require_once WPD_PLUGIN_PATH . 'includes/frontend/css-loader.php'; // Load Dynamic CSS
 require_once WPD_PLUGIN_PATH . 'includes/functions-frontend.php';
 
 // Register Gateways

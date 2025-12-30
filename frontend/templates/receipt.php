@@ -94,10 +94,65 @@ $settings_bank  = get_option( 'wpd_settings_bank', [] );
     <div class="footer">
         <p>Terima kasih atas donasi Anda. Semoga berkah.</p>
         <p><?php echo get_bloginfo( 'url' ); ?></p>
+        
+        <!-- WhatsApp Share -->
+        <?php 
+            $wa_text = urlencode( "Saya baru saja berdonasi untuk campaign *$campaign_title*. Yuk bantu juga! " . get_permalink($donation->campaign_id) );
+            $wa_link = "https://wa.me/?text=$wa_text";
+        ?>
+        <div style="margin-top:20px;">
+            <a href="<?php echo esc_url($wa_link); ?>" target="_blank" style="display:inline-block; background:#25D366; color:white; padding:8px 16px; border-radius:20px; text-decoration:none; font-weight:600; font-size:14px;">
+                Share ke WhatsApp
+            </a>
+        </div>
     </div>
 
     <a href="#" onclick="window.print(); return false;" class="print-btn">Print Receipt</a>
 </div>
+
+<!-- Simple Confetti Canvas -->
+<canvas id="confetti" style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:999;"></canvas>
+
+<script>
+    // Simple Confetti Script
+    (function() {
+        if('<?php echo $donation->status; ?>' !== 'complete') return;
+        
+        const canvas = document.getElementById('confetti');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const pieces = [];
+        const colors = ['#f00', '#0f0', '#00f', '#ff0', '#0ff', '#f0f'];
+        
+        for(let i=0; i<100; i++) {
+            pieces.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                size: Math.random() * 5 + 5,
+                speed: Math.random() * 5 + 2
+            });
+        }
+        
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for(let i=0; i<pieces.length; i++) {
+                const p = pieces[i];
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+                p.y += p.speed;
+                if(p.y > canvas.height) p.y = -20;
+            }
+            requestAnimationFrame(draw);
+        }
+        
+        // Only run for 5 seconds
+        draw();
+        setTimeout(() => { canvas.style.display = 'none'; }, 5000);
+    })();
+</script>
 
 </body>
 </html>

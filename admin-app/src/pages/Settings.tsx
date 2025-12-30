@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Check, X, Building, CreditCard, Bell, Star, Crown, Heart } from 'lucide-react'
+import { Check, X, Building, CreditCard, Bell, Star, Crown, Heart, Palette, Lock } from 'lucide-react'
 import clsx from 'clsx'
 
 export default function Settings() {
@@ -19,6 +19,9 @@ export default function Settings() {
         presets: '50000,100000,200000,500000',
         anonymous_label: 'Hamba Allah',
         create_user: false,
+        // Appearance
+        brand_color: '#059669',
+        button_color: '#ec4899',
         // Bank
         bank_name: '',
         account_number: '',
@@ -60,6 +63,9 @@ export default function Settings() {
                 presets: data.donation?.presets || '50000,100000,200000,500000',
                 anonymous_label: data.donation?.anonymous_label || 'Hamba Allah',
                 create_user: data.donation?.create_user === true || data.donation?.create_user === '1',
+                // Appearance
+                brand_color: data.appearance?.brand_color || '#059669',
+                button_color: data.appearance?.button_color || '#ec4899',
                 // Bank
                 bank_name: data.bank?.bank_name || '',
                 account_number: data.bank?.account_number || '',
@@ -98,6 +104,10 @@ export default function Settings() {
                     presets: data.presets,
                     anonymous_label: data.anonymous_label,
                     create_user: data.create_user
+                },
+                appearance: {
+                    brand_color: data.brand_color,
+                    button_color: data.button_color
                 },
                 bank: {
                     bank_name: data.bank_name,
@@ -150,6 +160,7 @@ export default function Settings() {
         { id: 'donation', label: 'Donation Settings', icon: Heart },
         { id: 'payment', label: 'Payment', icon: CreditCard },
         { id: 'notifications', label: 'Notifications', icon: Bell },
+        { id: 'appearance', label: 'Appearance', icon: Palette },
     ]
 
     return (
@@ -492,6 +503,73 @@ export default function Settings() {
                                         <li>Daily summary via Email.</li>
                                         <li>Failed payment alerts.</li>
                                     </ul>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* APPEARANCE TAB */}
+                        {activeTab === 'appearance' && (
+                            <div className="space-y-8">
+                                <div>
+                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Theme Colors</h3>
+                                    <div className="grid gap-6 md:grid-cols-2">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Primary Brand Color</label>
+                                            <div className="flex items-center gap-3">
+                                                <input
+                                                    type="color"
+                                                    value={formData.brand_color}
+                                                    onChange={e => setFormData({ ...formData, brand_color: e.target.value })}
+                                                    className="h-10 w-20 p-1 rounded border border-gray-300 cursor-pointer"
+                                                />
+                                                <span className="text-sm text-gray-500 font-mono uppercase">{formData.brand_color}</span>
+                                            </div>
+                                            <p className="text-xs text-gray-500 mt-2">Used for badges, amounts, and progress bars.</p>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Button Color</label>
+                                            <div className="flex items-center gap-3">
+                                                <input
+                                                    type="color"
+                                                    value={formData.button_color}
+                                                    onChange={e => setFormData({ ...formData, button_color: e.target.value })}
+                                                    className="h-10 w-20 p-1 rounded border border-gray-300 cursor-pointer"
+                                                />
+                                                <span className="text-sm text-gray-500 font-mono uppercase">{formData.button_color}</span>
+                                            </div>
+                                            <p className="text-xs text-gray-500 mt-2">Main CTA buttons (Donate, Submit).</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Pro Teasers */}
+                                <div className="border-t border-gray-200 pt-6">
+                                    <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                                        Advanced Styling <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>
+                                    </h3>
+                                    <div className="grid gap-4 md:grid-cols-2 opacity-60">
+                                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 relative cursor-pointer" onClick={() => setShowProModal(true)}>
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div className="font-medium text-gray-900">Typography</div>
+                                                <Lock size={14} className="text-gray-400" />
+                                            </div>
+                                            <p className="text-sm text-gray-500">Custom Google Fonts and size controls.</p>
+                                        </div>
+                                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 relative cursor-pointer" onClick={() => setShowProModal(true)}>
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div className="font-medium text-gray-900">Dark Mode</div>
+                                                <Lock size={14} className="text-gray-400" />
+                                            </div>
+                                            <p className="text-sm text-gray-500">Enable site-wide dark mode support.</p>
+                                        </div>
+                                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 relative cursor-pointer" onClick={() => setShowProModal(true)}>
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div className="font-medium text-gray-900">Border Radius</div>
+                                                <Lock size={14} className="text-gray-400" />
+                                            </div>
+                                            <p className="text-sm text-gray-500">Global control for rounded corners.</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         )}

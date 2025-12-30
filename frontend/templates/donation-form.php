@@ -59,16 +59,21 @@ $packages = json_decode( $packages, true );
             transition: all 0.2s;
             font-size: 14px;
         }
-        .wpd-btn-preset:hover {
-            border-color: #3b82f6;
-            color: #2563eb;
+        .wpd-btn-preset:hover, .wpd-btn-preset.active {
+            border-color: var(--wpd-primary);
+            color: var(--wpd-primary);
             background: #eff6ff;
+            font-weight: 600;
         }
+        .wpd-copy-btn {
+            background:#f3f4f6; border:1px solid #d1d5db; color:#4b5563; padding:4px 8px; border-radius:4px; font-size:12px; cursor:pointer; margin-left:8px;
+        }
+        .wpd-copy-btn:hover { background:#e5e7eb; }
         .wpd-btn-submit {
             display: block;
             width: 100%;
             padding: 16px;
-            background: #ec4899; /* Pink to match reference or Brand Color */
+            background: var(--wpd-btn); /* Pink to match reference or Brand Color */
             color: white;
             font-weight: 700;
             border: none;
@@ -77,10 +82,10 @@ $packages = json_decode( $packages, true );
             cursor: pointer;
             transition: background 0.2s;
             margin-top: 30px;
-            box-shadow: 0 4px 6px -1px rgba(236, 72, 153, 0.3);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         .wpd-btn-submit:hover {
-            background: #db2777;
+            background: var(--wpd-btn-hover);
         }
         .wpd-checkbox-group {
             display: flex;
@@ -184,7 +189,9 @@ $packages = json_decode( $packages, true );
                 <!-- Standard Presets -->
                 <div class="wpd-amount-presets">
                     <?php foreach($presets as $p): ?>
-                        <button type="button" class="wpd-btn-preset" onclick="setWpdAmount(<?php echo $p; ?>)">Rp <?php echo number_format($p, 0, ',', '.'); ?></button>
+                        					<button type="button" class="wpd-btn-preset" onclick="selectPreset(<?php echo $p; ?>, this)">
+						Rp <?php echo number_format( $p, 0, ',', '.' ); ?>
+					</button>
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>
@@ -241,6 +248,16 @@ $packages = json_decode( $packages, true );
             // (Buttons are type=button so safe)
 		}
 
+		    function selectPreset(amount, btn) {
+        document.getElementById('wpd-amount-input').value = amount;
+        
+        // Remove active class from all buttons
+        const buttons = document.querySelectorAll('.wpd-btn-preset');
+        buttons.forEach(b => b.classList.remove('active'));
+        
+        // Add active class to clicked button
+        if(btn) btn.classList.add('active');
+    }
 		function toggleZakatType(type) {
              document.getElementById('zakat_wealth_row').style.display = type === 'maal' ? 'block' : 'none';
              document.getElementById('zakat_income_row').style.display = type === 'income' ? 'block' : 'none';

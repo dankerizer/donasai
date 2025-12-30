@@ -36,6 +36,7 @@ function wpd_api_get_settings() {
     // New Settings
     $general = get_option( 'wpd_settings_general', array( 'campaign_slug' => 'campaign', 'payment_slug' => 'pay', 'remove_branding' => false ) );
     $donation = get_option( 'wpd_settings_donation', array( 'min_amount' => 10000, 'presets' => '50000,100000,200000,500000', 'anonymous_label' => 'Hamba Allah', 'create_user' => false ) );
+    $appearance = get_option( 'wpd_settings_appearance', array( 'brand_color' => '#059669', 'button_color' => '#ec4899' ) );
 
 	return rest_ensure_response( array(
 		'bank'         => $bank,
@@ -44,7 +45,8 @@ function wpd_api_get_settings() {
         'organization' => $organization,
         'notifications'=> $notifications,
         'general'      => $general,
-        'donation'     => $donation
+        'donation'     => $donation,
+        'appearance'   => $appearance
 	) );
 }
 
@@ -112,6 +114,14 @@ function wpd_api_update_settings( $request ) {
             'opt_in_whatsapp' => sanitize_text_field( $params['notifications']['opt_in_whatsapp'] ?? '' ),
         );
         update_option( 'wpd_settings_notifications', $notif_data );
+    }
+
+    if ( isset( $params['appearance'] ) ) {
+        $appearance_data = array(
+            'brand_color'  => sanitize_hex_color( $params['appearance']['brand_color'] ?? '#059669' ),
+            'button_color' => sanitize_hex_color( $params['appearance']['button_color'] ?? '#ec4899' ),
+        );
+        update_option( 'wpd_settings_appearance', $appearance_data );
     }
 
     if ( isset( $params['license'] ) ) {
