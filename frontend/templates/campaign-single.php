@@ -33,6 +33,13 @@ if ( isset( $wp_query->query_vars[ $payment_slug ] ) ) {
 }
 
 get_header();
+
+// Initialize Campaign Data
+$campaign_id = get_the_ID();
+$is_verified = get_post_meta( $campaign_id, '_wpd_is_verified', true );
+$progress = function_exists('wpd_get_campaign_progress') ? wpd_get_campaign_progress( $campaign_id ) : array('collected'=>0, 'target'=>0, 'percentage'=>0);
+$donors = function_exists('wpd_get_recent_donors') ? wpd_get_recent_donors( $campaign_id, 10 ) : array();
+
 ?>
 
 <div class="wpd-container" style="max-width:1100px; margin:0 auto; padding:20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
