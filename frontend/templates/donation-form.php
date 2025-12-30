@@ -622,6 +622,69 @@ function updateQurbanTotal() {
     let price = document.querySelector('input[name="qurban_package"]:checked').value;
     document.getElementById('amount').value = qty * price;
 }
+
+// --- MIDTRANS SNAP INTREGRATION ---
+<?php
+$midtrans = WPD_Gateway_Registry::get_gateway('midtrans');
+$snap_active = $midtrans && $midtrans->is_active();
+$client_key = $snap_active && method_exists($midtrans, 'get_client_key') ? $midtrans->get_client_key() : '';
+$is_prod = $snap_active && method_exists($midtrans, 'is_production') ? $midtrans->is_production() : false;
+$snap_url = $is_prod ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js';
+
+if( $snap_active && !empty($client_key) ): 
+?>
+    // Load Snap JS
+    const script = document.createElement('script');
+    script.src = "<?php echo $snap_url; ?>";
+    script.setAttribute('data-client-key', "<?php echo esc_js($client_key); ?>");
+    document.body.appendChild(script);
+
+    document.getElementById('donationForm').addEventListener('submit', function(e) {
+        // Only hijack if Midtrans is selected
+        const method = document.querySelector('input[name="payment_method"]:checked').value;
+        if( method !== 'midtrans' ) return;
+
+        e.preventDefault();
+        const btn = document.querySelector('.wpd-btn-primary');
+        const originalText = btn.innerText;
+        btn.innerText = 'Memproses...';
+        btn.disabled = true;
+
+        const formData = new FormData(this);
+        formData.append('wpd_ajax', '1');
+
+        fetch(window.location.href, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(res => {
+            if(res.success) {
+                if(res.data.is_midtrans && res.data.snap_token) {
+                    window.snap.pay(res.data.snap_token, {
+                        onSuccess: function(result){ window.location.href = res.data.redirect_url; },
+                        onPending: function(result){ window.location.href = res.data.redirect_url; },
+                        onError: function(result){ alert("Payment Failed!"); btn.disabled = false; btn.innerText = originalText; },
+                        onClose: function(){ btn.disabled = false; btn.innerText = originalText; }
+                    });
+                } else {
+                    // Fallback redirect
+                    if(res.data.redirect_url) window.location.href = res.data.redirect_url;
+                }
+            } else {
+                alert('Error: ' + res.data.message);
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Terjadi kesalahan koneksi.');
+            btn.disabled = false;
+            btn.innerText = originalText;
+        });
+    });
+<?php endif; ?>
 </script>
 
 <?php if ( is_admin_bar_showing() ) : ?>

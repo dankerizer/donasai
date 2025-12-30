@@ -18,16 +18,39 @@ class WPD_Gateway_Midtrans implements WPD_Gateway {
     }
 
     public function is_active(): bool {
+        // Check Pro Settings first
+        $pro_server_key = get_option( 'wpd_pro_midtrans_server_key' );
+        if ( ! empty( $pro_server_key ) ) {
+            return true;
+        }
+        
+        // Fallback to Free Settings (if any)
         $settings = get_option( 'wpd_settings_midtrans', [] );
         return ! empty( $settings['enabled'] );
+    }
+
+    public function get_client_key() {
+        return get_option( 'wpd_pro_midtrans_client_key' ); // Pro only for now
+    }
+
+    public function is_production() {
+        return get_option( 'wpd_pro_midtrans_is_production' ) == '1';
     }
 
     public function process_payment( $donation_data ): array {
         global $wpdb;
         $table_donations = $wpdb->prefix . 'wpd_donations';
-        $settings = get_option( 'wpd_settings_midtrans', [] );
-        $server_key = isset( $settings['server_key'] ) ? $settings['server_key'] : '';
-        $is_production = isset( $settings['is_production'] ) ? $settings['is_production'] : false;
+        
+        // Get Credentials (Pro Priority)
+        $server_key = get_option( 'wpd_pro_midtrans_server_key' );
+        $is_production = $this->is_production();
+
+        // Fallback (Free)
+        if ( empty( $server_key ) ) {
+             $settings = get_option( 'wpd_settings_midtrans', [] );
+             $server_key = isset( $settings['server_key'] ) ? $settings['server_key'] : '';
+             $is_production = isset( $settings['is_production'] ) ? $settings['is_production'] : false;
+        }
 
         // 1. Save Donation as Pending First
         $data = array(
@@ -94,7 +117,7 @@ class WPD_Gateway_Midtrans implements WPD_Gateway {
 
             $body = json_decode( wp_remote_retrieve_body( $response ), true );
             
-            if ( isset( $body['redirect_url'] ) ) {
+            if ( isset( $body['token'] ) ) {
                 // Update donation with gateway info
                 $wpdb->update( 
                     $table_donations, 
@@ -105,10 +128,12 @@ class WPD_Gateway_Midtrans implements WPD_Gateway {
                 return array(
                     'success'      => true,
                     'donation_id'  => $donation_id,
-                    'redirect_url' => $body['redirect_url']
+                    'is_midtrans'  => true,
+                    'snap_token'   => $body['token'],
+                    'redirect_url' => $body['redirect_url'] // Fallback
                 );
             } else {
-                return array( 'success' => false, 'message' => 'Failed to get Snap URL' );
+                return array( 'success' => false, 'message' => 'Failed to get Snap Token. Check Server Key.' );
             }
 
         } else {

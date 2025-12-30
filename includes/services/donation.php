@@ -110,6 +110,11 @@ function wpd_handle_donation_submission() {
 		    $fundraiser_service->record_donation( $fundraiser_id, $amount );
 		}
         
+        // Handle AJAX/JSON Response
+        if ( isset( $_POST['wpd_ajax'] ) && $_POST['wpd_ajax'] == '1' ) {
+            wp_send_json_success( $result );
+        }
+
         // Redirect
         if ( ! empty( $result['redirect_url'] ) ) {
             wp_safe_redirect( $result['redirect_url'] );
@@ -134,6 +139,9 @@ function wpd_handle_donation_submission() {
         wp_safe_redirect( $redirect_url );
         exit;
     } else {
+        if ( isset( $_POST['wpd_ajax'] ) && $_POST['wpd_ajax'] == '1' ) {
+            wp_send_json_error( array( 'message' => $result['message'] ) );
+        }
         wp_die( 'Payment failed: ' . $result['message'] );
     }
 }
