@@ -97,43 +97,121 @@ export default function DonationsPage() {
         }
     });
 
+    // Fetch Campaigns List
+    const { data: campaigns } = useQuery({
+        queryKey: ['campaigns-list'],
+        queryFn: async () => {
+            const response = await fetch('/wp-json/wpd/v1/campaigns/list', {
+                headers: { 'X-WP-Nonce': (window as any).wpdSettings?.nonce }
+            });
+            if (!response.ok) return [];
+            return response.json();
+        }
+    });
+
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+    const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+    const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
+
+    const toggleStatus = (status: string) => {
+        setSelectedStatuses(prev =>
+            prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status]
+        );
+    };
 
     const getExportUrl = () => {
         let url = `/wp-json/wpd/v1/export/donations?_wpnonce=${(window as any).wpdSettings?.nonce}`;
         if (startDate) url += `&start_date=${startDate}`;
         if (endDate) url += `&end_date=${endDate}`;
+        if (selectedStatuses.length > 0) url += `&status=${selectedStatuses.join(',')}`;
+        if (selectedCampaigns.length > 0) url += `&campaign_id=${selectedCampaigns.join(',')}`;
         return url;
     };
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h2 className="text-2xl font-bold text-gray-800">Donasi</h2>
+            <div className="flex flex-col gap-4">
+                <div className="flex justify-between items-center">
+                    <h2 className="text-2xl font-bold text-gray-800">Donasi</h2>
+                </div>
 
-                <div className="flex flex-wrap items-center gap-3">
-                    <div className="flex items-center gap-2">
-                        <input
-                            type="date"
-                            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                        />
-                        <span className="text-gray-400">-</span>
-                        <input
-                            type="date"
-                            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
-                        />
+                {/* Filter Bar */}
+                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-wrap gap-4 items-end">
+
+                    {/* Date Range */}
+                    <div className="flex flex-col gap-1">
+                        <label className="text-xs font-semibold text-gray-500 uppercase">Periode</label>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="date"
+                                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                            />
+                            <span className="text-gray-400">-</span>
+                            <input
+                                type="date"
+                                className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                            />
+                        </div>
                     </div>
+
+                    {/* Status Filter */}
+                    <div className="flex flex-col gap-1">
+                        <label className="text-xs font-semibold text-gray-500 uppercase">Status</label>
+                        <div className="flex gap-2">
+                            {['pending', 'complete', 'failed'].map(status => (
+                                <button
+                                    key={status}
+                                    onClick={() => toggleStatus(status)}
+                                    className={clsx(
+                                        "px-3 py-2 rounded-lg text-sm font-medium border transition-colors capitalize",
+                                        selectedStatuses.includes(status)
+                                            ? "bg-blue-50 border-blue-200 text-blue-700"
+                                            : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
+                                    )}
+                                >
+                                    {status === 'complete' ? 'Selesai' : status === 'pending' ? 'Menunggu' : 'Gagal'}
+                                    {selectedStatuses.includes(status) && <span className="ml-1 text-blue-500">✓</span>}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Campaign Filter */}
+                    <div className="flex flex-col gap-1 min-w-[200px]">
+                        <label className="text-xs font-semibold text-gray-500 uppercase">Kampanye</label>
+                        <select
+                            multiple
+                            className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 h-[42px]"
+                            value={selectedCampaigns}
+                            onChange={(e) => {
+                                const options = Array.from(e.target.selectedOptions, option => option.value);
+                                setSelectedCampaigns(options);
+                            }}
+                            style={{ height: '42px', overflow: 'hidden' }} // Simple multiselect visual
+                            title="Tahan Ctrl/Cmd untuk memilih banyak"
+                        >
+                            {campaigns && campaigns.map((c: any) => (
+                                <option key={c.id} value={c.id}>{c.title}</option>
+                            ))}
+                            {(!campaigns || campaigns.length === 0) && <option disabled>Memuat...</option>}
+                        </select>
+                        <span className="text-[10px] text-gray-400">Tahan Ctrl/Cmd untuk memilih banyak</span>
+                    </div>
+
+                    <div className="grow"></div>
+
                     <a
                         href={getExportUrl()}
                         target="_blank"
-                        className="px-4 py-2 bg-gray-800 text-white! rounded-lg hover:bg-gray-900 font-medium text-sm flex items-center gap-2"
+                        className="px-6 py-2.5 bg-gray-800 text-white! rounded-lg hover:bg-gray-900 font-bold text-sm flex items-center gap-2 shadow-lg shadow-gray-200 transition-transform active:scale-95"
                     >
-                        Ekspor CSV
+                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                        Ekspor Data
                     </a>
                 </div>
             </div>

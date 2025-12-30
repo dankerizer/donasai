@@ -79,9 +79,22 @@ function wpd_api_export_donations( $request ) {
     $where = "1=1";
     $args = array();
 
-    if ( isset( $_GET['campaign_id'] ) ) {
-        $where .= " AND campaign_id = %d";
-        $args[] = intval( $_GET['campaign_id'] );
+    if ( isset( $_GET['campaign_id'] ) && !empty( $_GET['campaign_id'] ) ) {
+        $ids = array_map( 'intval', explode( ',', $_GET['campaign_id'] ) );
+        if ( ! empty( $ids ) ) {
+            $placeholders = implode( ',', array_fill( 0, count( $ids ), '%d' ) );
+            $where .= " AND campaign_id IN ($placeholders)";
+            $args = array_merge( $args, $ids );
+        }
+    }
+
+    if ( isset( $_GET['status'] ) && !empty( $_GET['status'] ) ) {
+        $statuses = array_map( 'sanitize_text_field', explode( ',', $_GET['status'] ) );
+        if ( ! empty( $statuses ) ) {
+            $placeholders = implode( ',', array_fill( 0, count( $statuses ), '%s' ) );
+            $where .= " AND status IN ($placeholders)";
+            $args = array_merge( $args, $statuses );
+        }
     }
 
     if ( isset( $_GET['start_date'] ) && !empty( $_GET['start_date'] ) ) {

@@ -14,7 +14,39 @@ add_action( 'rest_api_init', function () {
 		'callback'            => 'wpd_api_create_donation',
 		'permission_callback' => '__return_true', // Public endpoint
 	) );
+	// GET /campaigns/list (For Dropdowns)
+	register_rest_route( 'wpd/v1', '/campaigns/list', array(
+		'methods'             => 'GET',
+		'callback'            => 'wpd_api_get_campaigns_list',
+		'permission_callback' => function () {
+            // Allow logged in users with capability (e.g. admins/donors?) 
+            // For now restricted to manage_options for admin usage
+			return current_user_can( 'manage_options' );
+		},
+	) );
 } );
+
+function wpd_api_get_campaigns_list() {
+    $args = array(
+        'post_type'      => 'wpd_campaign',
+        'post_status'    => 'publish',
+        'posts_per_page' => -1,
+        'fields'         => 'ids' 
+    );
+    $query = new WP_Query( $args );
+    
+    $campaigns = array();
+    if ( $query->have_posts() ) {
+        foreach ( $query->posts as $id ) {
+            $campaigns[] = array(
+                'id'    => $id,
+                'title' => get_the_title( $id )
+            );
+        }
+    }
+    
+    return rest_ensure_response( $campaigns );
+}
 
 function wpd_api_create_donation( $request ) {
 	global $wpdb;
