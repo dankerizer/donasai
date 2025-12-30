@@ -175,18 +175,48 @@ $presets = array_map('intval', $presets);
                 <label class="wpd-label-heading">Metode Pembayaran</label>
                 
                 <div class="wpd-payment-list">
-                    <!-- Manual -->
-                    <label class="wpd-payment-item">
-                        <input type="radio" name="payment_method" value="manual" checked>
-                        <div class="wpd-payment-box">
-                            <div class="wpd-payment-icon">🏦</div>
-                            <div class="wpd-payment-details">
-                                <div class="title">Transfer Bank Manual</div>
-                                <div class="desc">Verifikasi manual dalam 1x24 jam</div>
+                    <!-- Manual Banks Loop -->
+                    <?php 
+                    $manual_gateway = new WPD_Gateway_Manual(); 
+                    $active_banks = $manual_gateway->get_active_banks($campaign_id);
+                    
+                    if ( ! empty( $active_banks ) ) {
+                        $first = true;
+                        foreach ( $active_banks as $bank ) {
+                            // If ID exists (Pro), use manual_ID. If not (Legacy), use manual.
+                            $p_val = isset($bank['id']) ? 'manual_' . $bank['id'] : 'manual';
+                            ?>
+                            <label class="wpd-payment-item">
+                                <input type="radio" name="payment_method" value="<?php echo esc_attr($p_val); ?>" <?php echo $first ? 'checked' : ''; ?>>
+                                <div class="wpd-payment-box">
+                                    <div class="wpd-payment-icon">🏦</div>
+                                    <div class="wpd-payment-details">
+                                        <div class="title">Transfer <?php echo esc_html($bank['bank_name']); ?></div>
+                                        <div class="desc"><?php echo esc_html($bank['account_number']); ?> a.n <?php echo esc_html($bank['account_name']); ?></div>
+                                    </div>
+                                    <div class="wpd-check-icon"></div>
+                                </div>
+                            </label>
+                            <?php
+                            $first = false;
+                        }
+                    } else {
+                        // Fallback if no banks configured (should rarely happen as active_banks defaults to legacy)
+                         ?>
+                        <label class="wpd-payment-item">
+                            <input type="radio" name="payment_method" value="manual" checked>
+                            <div class="wpd-payment-box">
+                                <div class="wpd-payment-icon">🏦</div>
+                                <div class="wpd-payment-details">
+                                    <div class="title">Transfer Bank Manual</div>
+                                    <div class="desc">Verifikasi manual dalam 1x24 jam</div>
+                                </div>
+                                <div class="wpd-check-icon"></div>
                             </div>
-                            <div class="wpd-check-icon"></div>
-                        </div>
-                    </label>
+                        </label>
+                        <?php
+                    }
+                    ?>
 
                     <!-- Midtrans -->
                     <?php if( wpd_is_gateway_active('midtrans') ): ?>

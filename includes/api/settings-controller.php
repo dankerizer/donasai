@@ -59,6 +59,8 @@ function wpd_api_get_settings() {
         if($pro_is_prod) $midtrans['pro_is_production'] = ($pro_is_prod == '1');
         
         $donation['recurring_intervals'] = $pro_intervals;
+        
+        $bank['pro_accounts'] = get_option('wpd_pro_bank_accounts', []);
     }
 
     // Get all pages for dropdown
@@ -94,6 +96,20 @@ function wpd_api_update_settings( $request ) {
 			'account_name'   => sanitize_text_field( $params['bank']['account_name'] ?? '' ),
 		);
 		update_option( 'wpd_settings_bank', $bank_data );
+        
+        if ( isset( $params['bank']['pro_accounts'] ) && is_array( $params['bank']['pro_accounts'] ) ) {
+            $accounts = [];
+            foreach( $params['bank']['pro_accounts'] as $acc ) {
+                $accounts[] = array(
+                    'id'             => isset($acc['id']) ? sanitize_text_field($acc['id']) : uniqid(),
+                    'bank_name'      => sanitize_text_field( $acc['bank_name'] ?? '' ),
+                    'account_number' => sanitize_text_field( $acc['account_number'] ?? '' ),
+                    'account_name'   => sanitize_text_field( $acc['account_name'] ?? '' ),
+                    'is_default'     => ! empty( $acc['is_default'] ),
+                );
+            }
+            update_option( 'wpd_pro_bank_accounts', $accounts );
+        }
 	}
 
 	if ( isset( $params['midtrans'] ) ) {

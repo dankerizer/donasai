@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Check, X, Building, CreditCard, Bell, Star, Crown, Heart, Palette, Lock } from 'lucide-react'
+import { Check, X, Building, CreditCard, Bell, Star, Crown, Heart, Palette, Lock, Trash, Plus } from 'lucide-react'
 import clsx from 'clsx'
 
 export default function Settings() {
@@ -31,7 +31,9 @@ export default function Settings() {
         // Bank
         bank_name: '',
         account_number: '',
+
         account_name: '',
+        pro_accounts: [] as { id: string; bank_name: string; account_number: string; account_name: string; is_default: boolean }[],
         // Midtrans
         midtrans_enabled: false,
         midtrans_production: false,
@@ -89,7 +91,9 @@ export default function Settings() {
                 // Bank
                 bank_name: data.bank?.bank_name || '',
                 account_number: data.bank?.account_number || '',
+
                 account_name: data.bank?.account_name || '',
+                pro_accounts: data.bank?.pro_accounts || [],
                 // Midtrans
                 midtrans_enabled: data.midtrans?.enabled === true || data.midtrans?.enabled === '1',
                 midtrans_production: data.midtrans?.is_production === true || data.midtrans?.is_production === '1',
@@ -138,7 +142,8 @@ export default function Settings() {
                 bank: {
                     bank_name: data.bank_name,
                     account_number: data.account_number,
-                    account_name: data.account_name
+                    account_name: data.account_name,
+                    pro_accounts: data.pro_accounts
                 },
                 midtrans: {
                     enabled: data.midtrans_enabled,
@@ -182,6 +187,26 @@ export default function Settings() {
             setTimeout(() => setSuccess(''), 3000)
         }
     })
+
+    const addAccount = () => {
+        setFormData(prev => ({
+            ...prev,
+            pro_accounts: [...prev.pro_accounts, { id: Date.now().toString(), bank_name: '', account_number: '', account_name: '', is_default: false }]
+        }))
+    }
+
+    const removeAccount = (index: number) => {
+        const newAccounts = [...formData.pro_accounts];
+        newAccounts.splice(index, 1);
+        setFormData({ ...formData, pro_accounts: newAccounts });
+    }
+
+    const updateAccount = (index: number, field: string, value: any) => {
+        const newAccounts = [...formData.pro_accounts];
+        // @ts-ignore
+        newAccounts[index][field] = value;
+        setFormData({ ...formData, pro_accounts: newAccounts });
+    }
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -559,38 +584,125 @@ export default function Settings() {
                             <div className="space-y-8">
                                 <div>
                                     <h3 className="text-lg font-medium text-gray-900 mb-4">Transfer Bank (Manual)</h3>
-                                    <div className="grid gap-4">
-                                        <div className="grid grid-cols-2 gap-4">
+
+                                    {licenseStatus === 'active' ? (
+                                        <div className="space-y-4">
+                                            <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                                                <div className="flex justify-between items-center mb-3">
+                                                    <h4 className="text-sm font-bold text-purple-800 flex items-center gap-2">
+                                                        <Crown size={14} /> Multi-Akun Bank (Pro)
+                                                    </h4>
+                                                    <button type="button" onClick={addAccount} className="text-xs flex items-center gap-1 bg-purple-600 text-white px-2 py-1 rounded hover:bg-purple-700">
+                                                        <Plus size={12} /> Tambah Rekening
+                                                    </button>
+                                                </div>
+
+                                                {formData.pro_accounts.length === 0 && (
+                                                    <p className="text-sm text-gray-500 italic">Belum ada rekening yang ditambahkan.</p>
+                                                )}
+
+                                                <div className="space-y-3">
+                                                    {formData.pro_accounts.map((acc, idx) => (
+                                                        <div key={acc.id || idx} className="bg-white p-3 rounded border border-gray-200 shadow-sm relative group">
+                                                            <div className="grid md:grid-cols-3 gap-2 mb-2">
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Bank (e.g BCA)"
+                                                                    className="p-1.5 text-sm border rounded"
+                                                                    value={acc.bank_name}
+                                                                    onChange={(e) => updateAccount(idx, 'bank_name', e.target.value)}
+                                                                />
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="No. Rekening"
+                                                                    className="p-1.5 text-sm border rounded"
+                                                                    value={acc.account_number}
+                                                                    onChange={(e) => updateAccount(idx, 'account_number', e.target.value)}
+                                                                />
+                                                                <input
+                                                                    type="text"
+                                                                    placeholder="Atas Nama"
+                                                                    className="p-1.5 text-sm border rounded"
+                                                                    value={acc.account_name}
+                                                                    onChange={(e) => updateAccount(idx, 'account_name', e.target.value)}
+                                                                />
+                                                            </div>
+                                                            <div className="flex justify-between items-center">
+                                                                <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={acc.is_default}
+                                                                        onChange={(e) => updateAccount(idx, 'is_default', e.target.checked)}
+                                                                        className="rounded text-purple-600 focus:ring-purple-500"
+                                                                    />
+                                                                    Default
+                                                                </label>
+                                                                <button type="button" onClick={() => removeAccount(idx)} className="text-red-500 hover:text-red-700 p-1">
+                                                                    <Trash size={14} />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <div className="opacity-50 pointer-events-none">
+                                                <p className="text-xs text-gray-500 mb-2">Pengaturan Fallback (Gratis):</p>
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-xs font-medium text-gray-700 mb-1">Nama Bank</label>
+                                                        <input type="text" className="w-full p-2 border border-gray-300 rounded-lg bg-gray-100" value={formData.bank_name} readOnly />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs font-medium text-gray-700 mb-1">Nomor Rekening</label>
+                                                        <input type="text" className="w-full p-2 border border-gray-300 rounded-lg bg-gray-100" value={formData.account_number} readOnly />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="grid gap-4">
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama Bank</label>
+                                                    <input
+                                                        type="text"
+                                                        className="w-full p-2 border border-gray-300 rounded-lg"
+                                                        value={formData.bank_name}
+                                                        onChange={e => setFormData({ ...formData, bank_name: e.target.value })}
+                                                        placeholder="Contoh: BCA"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Rekening</label>
+                                                    <input
+                                                        type="text"
+                                                        className="w-full p-2 border border-gray-300 rounded-lg"
+                                                        value={formData.account_number}
+                                                        onChange={e => setFormData({ ...formData, account_number: e.target.value })}
+                                                    />
+                                                </div>
+                                            </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Bank</label>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Pemilik Rekening</label>
                                                 <input
                                                     type="text"
                                                     className="w-full p-2 border border-gray-300 rounded-lg"
-                                                    value={formData.bank_name}
-                                                    onChange={e => setFormData({ ...formData, bank_name: e.target.value })}
-                                                    placeholder="Contoh: BCA"
+                                                    value={formData.account_name}
+                                                    onChange={e => setFormData({ ...formData, account_name: e.target.value })}
                                                 />
                                             </div>
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Rekening</label>
-                                                <input
-                                                    type="text"
-                                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                                    value={formData.account_number}
-                                                    onChange={e => setFormData({ ...formData, account_number: e.target.value })}
-                                                />
+
+                                            {/* Pro Teaser */}
+                                            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 flex justify-between items-center cursor-pointer hover:bg-gray-100" onClick={() => setShowProModal(true)}>
+                                                <div className="flex items-center gap-2">
+                                                    <Crown size={14} className="text-purple-600" />
+                                                    <span className="text-sm font-medium text-gray-600">Butuh lebih dari satu rekening bank?</span>
+                                                </div>
+                                                <span className="text-xs text-purple-600 font-bold">Upgrade Pro</span>
                                             </div>
                                         </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Nama Pemilik Rekening</label>
-                                            <input
-                                                type="text"
-                                                className="w-full p-2 border border-gray-300 rounded-lg"
-                                                value={formData.account_name}
-                                                onChange={e => setFormData({ ...formData, account_name: e.target.value })}
-                                            />
-                                        </div>
-                                    </div>
+                                    )}
                                 </div>
 
                                 <div className="border-t border-gray-200 pt-6">
@@ -709,7 +821,7 @@ export default function Settings() {
                                     </h3>
                                     <p className="text-sm text-gray-500 mb-4">Tersedia di versi Pro:</p>
                                     <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
-                                        <li>Notifikasi WhatsApp real-time untuk setiap donasi.</li>
+                                        {/* <li>Notifikasi WhatsApp real-time untuk setiap donasi.</li> */}
                                         <li>Ringkasan harian via Email.</li>
                                         <li>Peringatan pembayaran gagal.</li>
                                     </ul>

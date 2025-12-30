@@ -25,23 +25,34 @@ class WPD_Gateway_Manual implements WPD_Gateway {
         global $wpdb;
         $table_donations = $wpdb->prefix . 'wpd_donations';
 
+        // Generate Unique Code (1-999) to ease verification
+        $unique_code = rand( 1, 999 );
+        $final_amount = $donation_data['amount'] + $unique_code;
+
+        // Update Metadata
+        $metadata = json_decode( $donation_data['metadata'], true );
+        if ( ! is_array( $metadata ) ) $metadata = [];
+        $metadata['unique_code'] = $unique_code;
+        $metadata['original_amount'] = $donation_data['amount'];
+
         // Insert Donation
         $data = array(
             'campaign_id'    => $donation_data['campaign_id'],
-            'user_id'        => get_current_user_id() ? get_current_user_id() : null,
+            'user_id'        => isset( $donation_data['user_id'] ) ? $donation_data['user_id'] : ( get_current_user_id() ? get_current_user_id() : null ),
             'name'           => $donation_data['name'],
             'email'          => $donation_data['email'],
             'phone'          => $donation_data['phone'],
-            'amount'         => $donation_data['amount'],
+            'amount'         => $final_amount, // Total with unique code
             'currency'       => 'IDR',
             'payment_method' => $this->get_id(),
-            'status'         => 'pending', // Manual is always pending first
+            'status'         => 'pending',
             'note'           => $donation_data['note'],
             'is_anonymous'   => $donation_data['is_anonymous'],
             'created_at'     => current_time( 'mysql' ),
+            'metadata'       => json_encode( $metadata )
         );
 
-        $format = array( '%d', '%d', '%s', '%s', '%s', '%f', '%s', '%s', '%s', '%s', '%d', '%s' );
+        $format = array( '%d', '%d', '%s', '%s', '%s', '%f', '%s', '%s', '%s', '%s', '%d', '%s', '%s' );
 
         $inserted = $wpdb->insert( $table_donations, $data, $format );
 
@@ -51,42 +62,123 @@ class WPD_Gateway_Manual implements WPD_Gateway {
 
         $donation_id = $wpdb->insert_id;
 
-        // Email Sending is handled by 'wpd_donation_created' action in controller/services
-
-        // Return success with redirect URL
-        // We leave redirect_url empty so the Service handles the default "Thank You" page redirect.
-        // Unless we want to override it here.
-        
         return array(
             'success'      => true,
             'donation_id'  => $donation_id,
-            'redirect_url' => null // Let service handle redirect to /thank-you
+            'redirect_url' => null 
         );
     }
 
-    public function get_payment_instructions( $donation_id ): string {
-		$options = get_option( 'wpd_settings_bank', array() );
-        $bank_name = isset($options['bank_name']) ? $options['bank_name'] : 'BCA';
-        $account_number = isset($options['account_number']) ? $options['account_number'] : '1234567890';
-        $account_name = isset($options['account_name']) ? $options['account_name'] : 'Yayasan';
+    /**
+     * Get active banks for a campaign (or global defaults)
+     */
+    public function get_active_banks( $campaign_id ) {
+        $banks_to_show = [];
+        $pro_accounts = get_option( 'wpd_pro_bank_accounts', [] );
 
-        return "
+        // 1. Check Campaign Specific
+        if ( ! empty( $pro_accounts ) ) {
+            $campaign_banks = get_post_meta( $campaign_id, '_wpd_campaign_banks', true );
+            
+            if ( ! empty( $campaign_banks ) && is_array( $campaign_banks ) ) {
+                // Show ONLY selected banks
+                foreach ( $pro_accounts as $acc ) {
+                    if ( in_array( $acc['id'], $campaign_banks ) ) {
+                        $banks_to_show[] = $acc;
+                    }
+                }
+            } else {
+                // Defaults
+                $defaults = array_filter( $pro_accounts, function($a) { return !empty($a['is_default']); } );
+                $banks_to_show = !empty($defaults) ? $defaults : $pro_accounts;
+            }
+        }
+
+        // 2. Fallback to Free Settings if no Pro banks to show
+        if ( empty( $banks_to_show ) ) {
+            $options = get_option( 'wpd_settings_bank', array() );
+            if ( ! empty( $options['account_number'] ) ) {
+                $banks_to_show[] = array(
+                    'bank_name'      => isset($options['bank_name']) ? $options['bank_name'] : 'BCA',
+                    'account_number' => isset($options['account_number']) ? $options['account_number'] : '-',
+                    'account_name'   => isset($options['account_name']) ? $options['account_name'] : '',
+                );
+            }
+        }
+
+        return $banks_to_show;
+    }
+
+    public function get_payment_instructions( $donation_id ): string {
+        global $wpdb;
+        $donation = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wpd_donations WHERE id = %d", $donation_id ) );
+        
+        $total_amount = $donation ? $donation->amount : 0;
+        
+        // Extract unique code
+        $unique_code = 0;
+        if ( $donation && $donation->metadata ) {
+            $meta = json_decode( $donation->metadata, true );
+            if ( isset( $meta['unique_code'] ) ) {
+                $unique_code = $meta['unique_code'];
+            }
+        }
+
+        // Get Banks
+        $banks_to_show = $this->get_active_banks( $donation ? $donation->campaign_id : 0 );
+        
+        // Filter if specific bank selected
+        if ( $donation && $donation->metadata ) {
+             $meta = json_decode( $donation->metadata, true );
+             if ( ! empty( $meta['selected_bank'] ) ) {
+                 // Filter banks to show only the selected one
+                 $selected_id = $meta['selected_bank'];
+                 $banks_to_show = array_filter( $banks_to_show, function($b) use ($selected_id) {
+                     return (isset($b['id']) && $b['id'] == $selected_id) || (isset($b['bank_name']) && $b['bank_name'] == $selected_id); // robust check
+                 });
+                 // Re-index
+                 $banks_to_show = array_values($banks_to_show);
+             }
+        }
+
+        $instructions = "
+            <div style='background-color:#fffbeb; padding:15px; border:1px solid #fcd34d; border-radius:8px; margin-bottom:20px; text-align:center;'>
+                <div style='font-size:13px; color:#92400e; margin-bottom:5px;'>Total yang harus ditransfer:</div>
+                <div style='font-size:24px; font-weight:bold; color:#d97706;'>
+                    Rp " . number_format( $total_amount, 0, ',', '.' ) . "
+                </div>
+                <div style='font-size:12px; color:#b45309; margin-top:5px;'>
+                    *Pastikan transfer <strong>TEPAT</strong> sampai 3 digit terakhir untuk verifikasi otomatis.
+                </div>
+            </div>
+
             <div style='margin-bottom:10px; color:#475569; font-size:14px; font-weight:500;'>Silakan transfer ke rekening berikut:</div>
             
-            <div class='wpd-bank-info'>
-                <div class='wpd-bank-logo'>" . esc_html( $bank_name ) . "</div>
-                <div style='text-align:right'>
-                    <div class='wpd-account-number'>" . esc_html( $account_number ) . "</div>
-                    <div style='font-size:12px; color:#64748b;'>a.n " . esc_html( $account_name ) . "</div>
+            <div class='wpd-bank-list' style='display:grid; gap:10px;'>";
+            
+        foreach ( $banks_to_show as $bank ) {
+            $instructions .= "
+            <div class='wpd-bank-info' style='border:1px solid #e2e8f0; padding:12px; border-radius:8px; display:flex; justify-content:space-between; items-align:center; background:#fff;'>
+                <div style='display:flex; flex-direction:column; justify-content:center;'>
+                    <div class='wpd-bank-logo' style='font-weight:bold; font-size:16px; color:#1e293b;'>" . esc_html( $bank['bank_name'] ) . "</div>
+                    <div style='font-size:12px; color:#64748b;'>" . esc_html( $bank['account_name'] ) . "</div>
                 </div>
-                <button class='wpd-copy-btn' onclick='copyToClipboard(\"" . esc_attr( $account_number ) . "\")'>
-                    <svg width='16' height='16' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z'/></svg>
-                </button>
-            </div>
+                <div style='text-align:right'>
+                    <div class='wpd-account-number' style='font-family:monospace; font-size:15px; font-weight:500; color:#334155; margin-bottom:4px;'>" . esc_html( $bank['account_number'] ) . "</div>
+                    <button class='wpd-copy-btn' onclick='copyToClipboard(\"" . esc_attr( $bank['account_number'] ) . "\")' style='font-size:11px; padding:2px 8px; border:1px solid #cbd5e1; border-radius:4px; background:#f8fafc; cursor:pointer;'>
+                        Salin
+                    </button>
+                </div>
+            </div>";
+        }
+        
+        $instructions .= "</div>
             
             <div style='margin-top:15px; font-size:13px; color:#64748b; line-height:1.4;'>
                 Donasi akan diverifikasi otomatis setelah bukti transfer dikirim/dikonfirmasi.
             </div>
         ";
+
+        return $instructions;
     }
 }

@@ -55,7 +55,7 @@ class WPD_Gateway_Midtrans implements WPD_Gateway {
         // 1. Save Donation as Pending First
         $data = array(
             'campaign_id'    => $donation_data['campaign_id'],
-            'user_id'        => get_current_user_id() ? get_current_user_id() : null,
+            'user_id'        => isset( $donation_data['user_id'] ) ? $donation_data['user_id'] : ( get_current_user_id() ? get_current_user_id() : null ),
             'name'           => $donation_data['name'],
             'email'          => $donation_data['email'],
             'phone'          => $donation_data['phone'],

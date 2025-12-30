@@ -46,6 +46,17 @@ function wpd_handle_donation_submission() {
 
     // Get Gateway
     $gateway_id = isset( $_POST['payment_method'] ) ? sanitize_text_field( $_POST['payment_method'] ) : 'manual';
+    
+    // Check for specific bank selection (e.g. manual_123)
+    $selected_bank_id = null;
+    if ( strpos( $gateway_id, 'manual_' ) === 0 ) {
+        $parts = explode( '_', $gateway_id );
+        if ( count($parts) > 1 ) {
+            $selected_bank_id = $parts[1]; // The ID
+            $gateway_id = 'manual'; // Reset to manual gateway
+        }
+    }
+
     $gateway    = WPD_Gateway_Registry::get_gateway( $gateway_id );
 
     if ( ! $gateway ) {
@@ -54,6 +65,9 @@ function wpd_handle_donation_submission() {
 
     // Capture Metadata
     $metadata = [];
+    if ( $selected_bank_id ) {
+        $metadata['selected_bank'] = sanitize_text_field( $selected_bank_id );
+    }
     if ( isset( $_POST['qurban_package'] ) ) {
         $metadata['qurban_package'] = sanitize_text_field( $_POST['qurban_package'] );
     }
@@ -67,21 +81,46 @@ function wpd_handle_donation_submission() {
     // Check for Fundraiser Cookie
     $fundraiser_id = isset( $_COOKIE['wpd_ref'] ) ? intval( $_COOKIE['wpd_ref'] ) : 0;
     
+    // User Handling (Auto-Register if Setting Enabled)
+    $user_id = get_current_user_id();
+    $donation_settings = get_option( 'wpd_settings_donation', [] );
+    $should_create_user = isset($donation_settings['create_user']) && ($donation_settings['create_user'] == '1' || $donation_settings['create_user'] === true);
+
+    if ( ! $user_id && $should_create_user && email_exists( $email ) ) {
+        $user_id = email_exists( $email );
+    } elseif ( ! $user_id && $should_create_user ) {
+        $password = wp_generate_password( 12, false );
+        $new_user_id = wp_create_user( $email, $password, $email );
+        
+        if ( ! is_wp_error( $new_user_id ) ) {
+            $user_id = $new_user_id;
+            wp_update_user([
+                'ID' => $user_id,
+                'display_name' => $name,
+                'nickname'     => $name
+            ]);
+            
+            // Send Login Details
+            wp_new_user_notification( $user_id, null, 'user' );
+        }
+    }
+
     // Check Subscription
     $subscription_id = 0;
-    if ( isset( $_POST['is_recurring'] ) && $_POST['is_recurring'] == 1 && is_user_logged_in() ) {
+    if ( isset( $_POST['is_recurring'] ) && $_POST['is_recurring'] == 1 && $user_id > 0 ) {
         $sub_service = new WPD_Subscription_Service();
         $subscription_id = $sub_service->create_subscription( 
-            get_current_user_id(), 
+            $user_id, 
             $campaign_id, 
             $amount, 
-            'monthly' 
+            isset($_POST['recurring_interval']) ? sanitize_text_field($_POST['recurring_interval']) : 'month' 
         );
     }
 
     // Process Payment
     $donation_data = array(
         'campaign_id'   => $campaign_id,
+        'user_id'       => $user_id,
         'amount'        => $amount,
         'name'          => $name,
         'email'         => $email,
