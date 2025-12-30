@@ -8,6 +8,10 @@ export default function Settings() {
     const [activeTab, setActiveTab] = useState('general')
     const [showProModal, setShowProModal] = useState(false)
 
+    // License State
+    const [licenseStatus, setLicenseStatus] = useState('inactive')
+    const [licenseKey, setLicenseKey] = useState('')
+
     // Form States
     const [formData, setFormData] = useState({
         // General
@@ -20,6 +24,7 @@ export default function Settings() {
         presets: '50000,100000,200000,500000',
         anonymous_label: 'Hamba Allah',
         create_user: false,
+        recurring_intervals: ['month', 'year'],
         // Appearance
         brand_color: '#059669',
         button_color: '#ec4899',
@@ -62,6 +67,9 @@ export default function Settings() {
                 setPages(data.pages);
             }
 
+            setLicenseStatus(data.license?.status || 'inactive');
+            setLicenseKey(data.license?.key || '');
+
             setFormData(prev => ({
                 ...prev,
                 // General
@@ -74,6 +82,7 @@ export default function Settings() {
                 presets: data.donation?.presets || '50000,100000,200000,500000',
                 anonymous_label: data.donation?.anonymous_label || 'Hamba Allah',
                 create_user: data.donation?.create_user === true || data.donation?.create_user === '1',
+                recurring_intervals: data.donation?.recurring_intervals || ['month', 'year'],
                 // Appearance
                 brand_color: data.appearance?.brand_color || '#059669',
                 button_color: data.appearance?.button_color || '#ec4899',
@@ -119,7 +128,8 @@ export default function Settings() {
                     min_amount: data.min_amount,
                     presets: data.presets,
                     anonymous_label: data.anonymous_label,
-                    create_user: data.create_user
+                    create_user: data.create_user,
+                    recurring_intervals: data.recurring_intervals
                 },
                 appearance: {
                     brand_color: data.brand_color,
@@ -149,6 +159,9 @@ export default function Settings() {
                 notifications: {
                     opt_in_email: data.opt_in_email,
                     opt_in_whatsapp: data.opt_in_whatsapp
+                },
+                license: {
+                    key: licenseKey
                 }
             };
 
@@ -181,6 +194,7 @@ export default function Settings() {
         { id: 'payment', label: 'Payment', icon: CreditCard },
         { id: 'notifications', label: 'Notifications', icon: Bell },
         { id: 'appearance', label: 'Appearance', icon: Palette },
+        { id: 'license', label: 'License', icon: Lock },
     ]
 
     return (
@@ -195,20 +209,30 @@ export default function Settings() {
             </div>
 
             {/* Pro Banner */}
-            <div className="bg-linear-to-r from-purple-600 to-indigo-600 rounded-xl p-6 text-white flex justify-between items-center shadow-lg">
-                <div>
-                    <h3 className="text-xl font-bold flex items-center gap-2">
-                        <Crown className="text-yellow-300" /> Upgrade ke Donasai Pro
-                    </h3>
-                    <p className="opacity-90 mt-1">Buka Donasi Berulang, Notifikasi WhatsApp, dan Konfirmasi AI.</p>
+            {licenseStatus !== 'active' ? (
+                <div className="bg-linear-to-r from-purple-600 to-indigo-600 rounded-xl p-6 text-white flex justify-between items-center shadow-lg">
+                    <div>
+                        <h3 className="text-xl font-bold flex items-center gap-2">
+                            <Crown className="text-yellow-300" /> Upgrade ke Donasai Pro
+                        </h3>
+                        <p className="opacity-90 mt-1">Buka Donasi Berulang, Notifikasi WhatsApp, dan Konfirmasi AI.</p>
+                    </div>
+                    <button
+                        onClick={() => setShowProModal(true)}
+                        className="bg-white text-purple-700 px-5 py-2.5 rounded-lg font-bold hover:bg-gray-50 transition-colors shadow-sm"
+                    >
+                        Bandingkan Fitur
+                    </button>
                 </div>
-                <button
-                    onClick={() => setShowProModal(true)}
-                    className="bg-white text-purple-700 px-5 py-2.5 rounded-lg font-bold hover:bg-gray-50 transition-colors shadow-sm"
-                >
-                    Bandingkan Fitur
-                </button>
-            </div>
+            ) : (
+                <div className="bg-green-100 border border-green-200 rounded-xl p-4 text-green-800 flex items-center gap-3">
+                    <div className="p-2 bg-green-200 rounded-full"><Check size={20} /></div>
+                    <div>
+                        <h3 className="font-bold">Donasai Pro Aktif</h3>
+                        <p className="text-sm opacity-90">Terima kasih telah mendukung pengembangan plugin ini!</p>
+                    </div>
+                </div>
+            )}
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden min-h-[500px] flex">
 
@@ -233,7 +257,8 @@ export default function Settings() {
                                     tab.label === 'Donation Settings' ? 'Pengaturan Donasi' :
                                         tab.label === 'Payment' ? 'Pembayaran' :
                                             tab.label === 'Notifications' ? 'Notifikasi' :
-                                                tab.label === 'Appearance' ? 'Tampilan' : tab.label}</span>
+                                                tab.label === 'Appearance' ? 'Tampilan' :
+                                                    tab.label === 'License' ? 'Lisensi' : tab.label}</span>
                             </button>
                         )
                     })}
@@ -242,6 +267,35 @@ export default function Settings() {
                 {/* Content Area */}
                 <div className="flex-1 p-8">
                     <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
+
+                        {/* LICENSE TAB */}
+                        {activeTab === 'license' && (
+                            <div className="space-y-6">
+                                <div>
+                                    <h3 className="text-lg font-medium text-gray-900 mb-1">Status Lisensi</h3>
+                                    <p className="text-sm text-gray-500 mb-4">Masukkan kunci lisensi Anda untuk membuka fitur Pro.</p>
+
+                                    <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Kunci Lisensi</label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="text"
+                                                className="flex-1 p-2 border border-gray-300 rounded-lg font-mono text-sm"
+                                                value={licenseKey}
+                                                onChange={e => setLicenseKey(e.target.value)}
+                                                placeholder="Masukan License Key"
+                                            />
+                                            <div className={clsx("px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2",
+                                                licenseStatus === 'active' ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-600"
+                                            )}>
+                                                {licenseStatus === 'active' ? <Check size={16} /> : <Lock size={16} />}
+                                                {licenseStatus === 'active' ? 'Aktif' : 'Tidak Aktif'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {/* GENERAL TAB */}
                         {activeTab === 'general' && (
@@ -360,20 +414,37 @@ export default function Settings() {
                                     </div>
                                 </div>
 
-                                <div className="border-t border-gray-200 pt-6">
-                                    <h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
-                                        Branding <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>
-                                    </h3>
-                                    <div className="flex items-center space-x-3 opacity-60">
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.remove_branding} // Visual only for now if not implemented logic in UI to block
-                                            onChange={() => setShowProModal(true)}
-                                            className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                                        />
-                                        <label className="text-sm font-medium text-gray-700">Hapus Branding "Powered by Donasai"</label>
+                                {licenseStatus === 'active' ? (
+                                    <div className="border-t border-gray-200 pt-6">
+                                        <h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
+                                            Branding <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>
+                                        </h3>
+                                        <div className="flex items-center space-x-3">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.remove_branding}
+                                                onChange={(e) => setFormData({ ...formData, remove_branding: e.target.checked })}
+                                                className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                                            />
+                                            <label className="text-sm font-medium text-gray-700">Hapus Branding "Powered by Donasai"</label>
+                                        </div>
                                     </div>
-                                </div>
+                                ) : (
+                                    <div className="border-t border-gray-200 pt-6">
+                                        <h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
+                                            Branding <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>
+                                        </h3>
+                                        <div className="flex items-center space-x-3 opacity-60">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.remove_branding} // Visual only for now if not implemented logic in UI to block
+                                                onChange={() => setShowProModal(true)}
+                                                className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                                            />
+                                            <label className="text-sm font-medium text-gray-700">Hapus Branding "Powered by Donasai"</label>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -416,20 +487,70 @@ export default function Settings() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="border-t border-gray-200 pt-6">
-                                    <h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
-                                        Registrasi Pengguna <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>
-                                    </h3>
-                                    <div className="flex items-center space-x-3 opacity-60">
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.create_user}
-                                            onChange={() => setShowProModal(true)}
-                                            className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                                        />
-                                        <label className="text-sm font-medium text-gray-700">Otomatis buat Pengguna WordPress dari Email Donatur</label>
+                                {licenseStatus === 'active' ? (
+                                    <div className="border-t border-gray-200 pt-6">
+                                        <h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
+                                            Donasi Berulang <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>
+                                        </h3>
+                                        <p className="text-sm text-gray-500 mb-3">Pilih interval penagihan yang tersedia untuk donatur.</p>
+                                        <div className="grid grid-cols-2 gap-3 mb-6">
+                                            {[
+                                                { id: 'day', label: 'Harian' },
+                                                { id: 'week', label: 'Mingguan' },
+                                                { id: 'month', label: 'Bulanan' },
+                                                { id: 'year', label: 'Tahunan' }
+                                            ].map((interval) => (
+                                                <div key={interval.id} className="flex items-center space-x-2">
+                                                    <input
+                                                        type="checkbox"
+                                                        id={`interval-${interval.id}`}
+                                                        checked={(formData.recurring_intervals as string[])?.includes(interval.id)}
+                                                        onChange={(e) => {
+                                                            const checked = e.target.checked;
+                                                            let current = [...(formData.recurring_intervals as string[] || [])];
+                                                            if (checked) {
+                                                                if (!current.includes(interval.id)) current.push(interval.id);
+                                                            } else {
+                                                                current = current.filter(i => i !== interval.id);
+                                                            }
+                                                            setFormData({ ...formData, recurring_intervals: current });
+                                                        }}
+                                                        className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                                                    />
+                                                    <label htmlFor={`interval-${interval.id}`} className="text-sm text-gray-700">{interval.label}</label>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
+                                            Registrasi Pengguna <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>
+                                        </h3>
+                                        <div className="flex items-center space-x-3">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.create_user}
+                                                onChange={(e) => setFormData({ ...formData, create_user: e.target.checked })}
+                                                className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                                            />
+                                            <label className="text-sm font-medium text-gray-700">Otomatis buat Pengguna WordPress dari Email Donatur</label>
+                                        </div>
                                     </div>
-                                </div>
+                                ) : (
+                                    <div className="border-t border-gray-200 pt-6">
+                                        <h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
+                                            Registrasi Pengguna <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>
+                                        </h3>
+                                        <div className="flex items-center space-x-3 opacity-60">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.create_user}
+                                                onChange={() => setShowProModal(true)}
+                                                className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                                            />
+                                            <label className="text-sm font-medium text-gray-700">Otomatis buat Pengguna WordPress dari Email Donatur</label>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -486,61 +607,65 @@ export default function Settings() {
                                             <label htmlFor="midtrans_enabled" className="text-sm font-medium text-gray-700">Aktifkan Midtrans</label>
                                         </div>
 
-                                        {/* Pro Settings */}
-                                        <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
-                                            <h4 className="text-sm font-bold text-purple-800 mb-3 flex items-center gap-2">
-                                                <Crown size={14} /> Pengaturan Lanjutan (Pro)
-                                            </h4>
+                                        {/* Pro Settings (Only if Active) */}
+                                        {licenseStatus === 'active' && (
+                                            <>
+                                                <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                                                    <h4 className="text-sm font-bold text-purple-800 mb-3 flex items-center gap-2">
+                                                        <Crown size={14} /> Pengaturan Lanjutan (Pro)
+                                                    </h4>
 
-                                            <div className="space-y-4">
-                                                <div className="flex items-center space-x-3">
+                                                    <div className="space-y-4">
+                                                        <div className="flex items-center space-x-3">
+                                                            <input
+                                                                type="checkbox"
+                                                                id="pro_midtrans_production"
+                                                                checked={formData.pro_midtrans_production}
+                                                                onChange={(e) => setFormData(prev => ({ ...prev, pro_midtrans_production: e.target.checked }))}
+                                                                className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                                                            />
+                                                            <label htmlFor="pro_midtrans_production" className="text-sm font-medium text-purple-900">Mode Produksi (Pro)</label>
+                                                        </div>
+
+                                                        <div className="grid md:grid-cols-2 gap-4">
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-purple-900 mb-1">Server Key (Pro)</label>
+                                                                <input
+                                                                    type="password"
+                                                                    className="w-full p-2 border border-purple-200 rounded-lg font-mono text-xs bg-white"
+                                                                    value={formData.pro_midtrans_server_key}
+                                                                    onChange={e => setFormData({ ...formData, pro_midtrans_server_key: e.target.value })}
+                                                                    placeholder="Override Free Key..."
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-purple-900 mb-1">Client Key (Pro)</label>
+                                                                <input
+                                                                    type="text"
+                                                                    className="w-full p-2 border border-purple-200 rounded-lg font-mono text-xs bg-white"
+                                                                    value={formData.pro_midtrans_client_key}
+                                                                    onChange={e => setFormData({ ...formData, pro_midtrans_client_key: e.target.value })}
+                                                                    placeholder="Override Free Key..."
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <p className="text-xs text-purple-700">Kunci ini akan menimpa pengaturan versi gratis jika diisi.</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className={clsx("opacity-50 pointer-events-none")}>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Server Key (Gratis)</label>
                                                     <input
-                                                        type="checkbox"
-                                                        id="pro_midtrans_production"
-                                                        checked={formData.pro_midtrans_production}
-                                                        onChange={(e) => setFormData(prev => ({ ...prev, pro_midtrans_production: e.target.checked }))}
-                                                        className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                                                        type="password"
+                                                        className="w-full p-2 border border-gray-300 rounded-lg font-mono text-sm bg-gray-100"
+                                                        value={formData.midtrans_server_key}
+                                                        readOnly
+                                                        placeholder="Key Standar..."
                                                     />
-                                                    <label htmlFor="pro_midtrans_production" className="text-sm font-medium text-purple-900">Mode Produksi (Pro)</label>
+                                                    <p className="text-xs text-gray-500 mt-1">Gunakan Pro Key di atas untuk fungsionalitas penuh.</p>
                                                 </div>
-
-                                                <div className="grid md:grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label className="block text-xs font-medium text-purple-900 mb-1">Server Key (Pro)</label>
-                                                        <input
-                                                            type="password"
-                                                            className="w-full p-2 border border-purple-200 rounded-lg font-mono text-xs bg-white"
-                                                            value={formData.pro_midtrans_server_key}
-                                                            onChange={e => setFormData({ ...formData, pro_midtrans_server_key: e.target.value })}
-                                                            placeholder="Override Free Key..."
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-xs font-medium text-purple-900 mb-1">Client Key (Pro)</label>
-                                                        <input
-                                                            type="text"
-                                                            className="w-full p-2 border border-purple-200 rounded-lg font-mono text-xs bg-white"
-                                                            value={formData.pro_midtrans_client_key}
-                                                            onChange={e => setFormData({ ...formData, pro_midtrans_client_key: e.target.value })}
-                                                            placeholder="Override Free Key..."
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <p className="text-xs text-purple-700">Kunci ini akan menimpa pengaturan versi gratis jika diisi.</p>
-                                            </div>
-                                        </div>
-
-                                        <div className={clsx("opacity-50 pointer-events-none")}>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Server Key (Gratis)</label>
-                                            <input
-                                                type="password"
-                                                className="w-full p-2 border border-gray-300 rounded-lg font-mono text-sm bg-gray-100"
-                                                value={formData.midtrans_server_key}
-                                                readOnly
-                                                placeholder="Key Standar..."
-                                            />
-                                            <p className="text-xs text-gray-500 mt-1">Gunakan Pro Key di atas untuk fungsionalitas penuh.</p>
-                                        </div>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             </div>

@@ -8,7 +8,7 @@ import FundraisersPage from './pages/FundraisersPage'
 import Confirmations from './pages/Confirmations'
 import { LayoutDashboard, Heart, Settings as SettingsIcon, Users, CheckCircle } from 'lucide-react'
 import clsx from 'clsx'
-
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 const queryClient = new QueryClient()
 
 function App() {
@@ -16,6 +16,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <HashRouter>
         <AppLayout />
+        <ReactQueryDevtools initialIsOpen={false} />
       </HashRouter>
     </QueryClientProvider>
   )
