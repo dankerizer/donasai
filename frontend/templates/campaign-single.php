@@ -103,12 +103,12 @@ get_header();
                 
                 <div style="display:flex; align-items:center; color:#6b7280; font-size:14px;">
                      <svg style="width:16px; height:16px; margin-right:5px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                     <span>Indonesia</span>
+                     <span>Lokasi: Indonesia</span>
                      
                      <?php if ( $is_verified ) : ?>
                         <span style="margin-left:15px; display:inline-flex; align-items:center; color:#2563eb; background:#eff6ff; padding:2px 8px; border-radius:10px; font-size:12px; font-weight:500;">
                             <svg style="width:12px; height:12px; margin-right:3px;" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                            Verified Campaign
+                            Kampanye Terverifikasi
                         </span>
                      <?php endif; ?>
                 </div>
@@ -116,7 +116,7 @@ get_header();
 
             <!-- Tabs Navigation -->
             <div class="wpd-tabs" style="border-bottom:1px solid #e5e7eb; margin-bottom:20px;">
-                <button onclick="openWpdTab('desc')" id="tab-btn-desc" class="wpd-tab-btn active" style="background:none; border:none; border-bottom:2px solid #2563eb; color:#2563eb; font-weight:600; padding:10px 20px; font-size:16px; cursor:pointer;">Keterangan</button>
+                <button onclick="openWpdTab('desc')" id="tab-btn-desc" class="wpd-tab-btn active" style="background:none; border:none; border-bottom:2px solid #2563eb; color:#2563eb; font-weight:600; padding:10px 20px; font-size:16px; cursor:pointer;">Detail Program</button>
                 <button onclick="openWpdTab('updates')" id="tab-btn-updates" class="wpd-tab-btn" style="background:none; border:none; border-bottom:2px solid transparent; color:#6b7280; font-weight:500; padding:10px 20px; font-size:16px; cursor:pointer;">Kabar Terbaru (0)</button>
                 <button onclick="openWpdTab('donors')" id="tab-btn-donors" class="wpd-tab-btn" style="background:none; border:none; border-bottom:2px solid transparent; color:#6b7280; font-weight:500; padding:10px 20px; font-size:16px; cursor:pointer;">Donatur (<?php echo count($donors); ?>)</button>
             </div>
@@ -135,7 +135,7 @@ get_header();
             <!-- Tab Content: Donors -->
             <div id="wpd-tab-donors" class="wpd-tab-content" style="display:none;">
                 <?php if ( empty( $donors ) ) : ?>
-                    <p style="color:#6b7280; padding:30px 0; text-align:center;">Belum ada donatur. Jadilah yang pertama!</p>
+                    <p style="color:#6b7280; padding:30px 0; text-align:center;">Belum ada donatur. Jadilah donatur pertama!</p>
                 <?php else : ?>
                     <div class="wpd-donor-list">
                         <?php foreach ( $donors as $donor ) : 
@@ -202,11 +202,11 @@ get_header();
                     <!-- Fundraiser Button -->
                     <?php if ( is_user_logged_in() ) : ?>
                          <button onclick="wpdRegisterFundraiser(<?php echo $campaign_id; ?>)" style="width:100%; background:white; color:var(--wpd-primary); border:1px solid var(--wpd-primary); font-weight:600; padding:10px; border-radius:8px; cursor:pointer;">
-                             Jadi Fundraiser
+                             Daftar sebagai Penggalang Dana
                          </button>
                     <?php else : ?>
                          <div style="text-align:center; font-size:13px; color:#6b7280;">
-                             <a href="<?php echo wp_login_url( get_permalink() ); ?>" style="color:var(--wpd-primary);">Login</a> untuk jadi Fundraiser
+                             <a href="<?php echo wp_login_url( get_permalink() ); ?>" style="color:var(--wpd-primary);">Masuk</a> untuk mendaftar Penggalang Dana
                          </div>
                     <?php endif; ?>
 
@@ -229,14 +229,14 @@ get_header();
                 <!-- Recent Donors Sidebar -->
                 <div style="background:white; border-radius:12px; border:1px solid #e5e7eb; overflow:hidden;">
                     <div style="padding:15px 20px; background:#f9fafb; border-bottom:1px solid #e5e7eb; font-weight:700; color:#374151;">
-                        Doa-doa Orang Baik (<?php echo count($donors); ?>)
+                        Doa dan Dukungan (<?php echo count($donors); ?>)
                     </div>
                     <div style="max-height:400px; overflow-y:auto;">
                         <?php if ( empty( $donors ) ) : ?>
                             <div style="padding:20px; text-align:center; color:#9ca3af; font-size:14px;">Belum ada donatur.</div>
                         <?php else : ?>
                             <?php foreach ( $donors as $donor ) : 
-                                $name = $donor->is_anonymous ? 'Orang Baik' : $donor->name;
+                                $name = $donor->is_anonymous ? 'Hamba Allah' : $donor->name;
                                 $time = human_time_diff( strtotime( $donor->created_at ), current_time( 'timestamp' ) ) . ' yang lalu';
                             ?>
                             <div style="padding:15px 20px; border-bottom:1px solid #f3f4f6;">
@@ -263,11 +263,11 @@ get_header();
     <div id="wpd-fundraiser-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:99999; align-items:center; justify-content:center;">
         <div style="background:white; padding:25px; border-radius:10px; width:90%; max-width:400px; position:relative;">
             <button onclick="document.getElementById('wpd-fundraiser-modal').style.display='none'" style="position:absolute; top:10px; right:15px; border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
-            <h3 style="margin-top:0;">Fundraiser Registered!</h3>
-            <p>Bagikan link ini untuk mendapatkan komisi/pahala:</p>
+            <h3 style="margin-top:0;">Pendaftaran Berhasil!</h3>
+            <p>Bagikan tautan ini untuk mengajak orang lain berdonasi:</p>
             <input type="text" id="wpd-ref-link" readonly style="width:100%; padding:10px; background:#f9f9f9; border:1px solid #ddd; margin-bottom:15px; font-size:14px;">
-            <button class="button" onclick="wpdCopyRef()" style="width:100%; margin-bottom:10px; background:#2563eb; color:white; border:none; padding:10px; border-radius:4px;">Copy Link</button>
-            <a id="wpd-wa-share" href="#" target="_blank" class="button" style="display:block; width:100%; text-align:center; background:#25D366; color:white; border:none; padding:10px; border-radius:4px; text-decoration:none;">Share ke WhatsApp</a>
+            <button class="button" onclick="wpdCopyRef()" style="width:100%; margin-bottom:10px; background:#2563eb; color:white; border:none; padding:10px; border-radius:4px;">Salin Tautan</button>
+            <a id="wpd-wa-share" href="#" target="_blank" class="button" style="display:block; width:100%; text-align:center; background:#25D366; color:white; border:none; padding:10px; border-radius:4px; text-decoration:none;">Bagikan ke WhatsApp</a>
         </div>
     </div>
 

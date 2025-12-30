@@ -50,7 +50,7 @@ $presets = array_map('intval', $presets);
                 <img src="<?php echo esc_url($thumbnail); ?>" alt="Campaign" class="wpd-campaign-thumb">
             <?php endif; ?>
             <div class="wpd-campaign-info">
-                <div class="wpd-campaign-label">Anda akan berdonasi untuk:</div>
+                <div class="wpd-campaign-label">Anda akan berdonasi untuk program:</div>
                 <h3 class="wpd-campaign-title"><?php echo esc_html($title); ?></h3>
             </div>
         </div>
@@ -64,13 +64,13 @@ $presets = array_map('intval', $presets);
             <?php if ( isset( $_GET['donation_success'] ) && $_GET['donation_success'] == 1 ) : ?>
                 <div class="wpd-alert-success">
                     <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <span>Donasi tercatat! Silakan selesaikan pembayaran.</span>
+                    <span>Donasi berhasil dicatat! Silakan selesaikan pembayaran.</span>
                 </div>
             <?php endif; ?>
 
             <!-- SECTION: NOMINAL -->
             <div class="wpd-section">
-                <label class="wpd-label-heading">Mau donasi berapa?</label>
+                <label class="wpd-label-heading">Masukkan Nominal Donasi</label>
                 
                 <?php if ( $type === 'zakat' ) : ?>
                     <!-- Zakat Logic Placeholder (Simplified for Redesign) -->
@@ -81,7 +81,7 @@ $presets = array_map('intval', $presets);
                             <option value="income">Zakat Penghasilan</option>
                         </select>
                         <!-- Inputs added via JS for simplicity in this view -->
-                        <input type="number" id="zakat_calc_input" class="wpd-input mt-2" placeholder="Masukkan jumlah harta/penghasilan" oninput="calculateZakat()">
+                        <input type="number" id="zakat_calc_input" class="wpd-input mt-2" placeholder="Masukkan jumlah harta / penghasilan" oninput="calculateZakat()">
                     </div>
                 <?php elseif ( $type === 'qurban' && !empty($packages) ) : ?>
                     <!-- Qurban List -->
@@ -99,7 +99,7 @@ $presets = array_map('intval', $presets);
                     </div>
                     <!-- Qty Input hidden by default -->
                     <div id="qurban_qty_wrapper" style="display:none; margin-top:15px;">
-                        <label class="wpd-label-sm">Jumlah Hewan</label>
+                        <label class="wpd-label-sm">Jumlah Hewan Kurban</label>
                         <div class="wpd-qty-control">
                             <button type="button" onclick="changeQty(-1)">-</button>
                             <input type="number" name="qurban_qty" id="qurban_qty" value="1" readonly>
@@ -122,7 +122,7 @@ $presets = array_map('intval', $presets);
                     <span class="wpd-currency">Rp</span>
                     <input type="number" name="amount" id="amount" class="wpd-input-money" placeholder="0" min="<?php echo $min_amount; ?>" required>
                 </div>
-                <div class="wpd-helper-text">Minimal donasi Rp <?php echo number_format($min_amount,0,',','.'); ?></div>
+                <div class="wpd-helper-text">Minimal donasi sebesar Rp <?php echo number_format($min_amount,0,',','.'); ?></div>
             </div>
 
             <div class="wpd-divider"></div>
@@ -140,7 +140,7 @@ $presets = array_map('intval', $presets);
                         </div>
                     <?php else : ?>
                         <div class="wpd-login-prompt">
-                            Sudah punya akun? <a href="<?php echo wp_login_url(get_permalink()); ?>">Login</a> agar lebih mudah.
+                            Sudah memiliki akun? <a href="<?php echo wp_login_url(get_permalink()); ?>">Masuk</a> untuk kemudahan berdonasi.
                         </div>
                     <?php endif; ?>
                 </div>
@@ -162,7 +162,7 @@ $presets = array_map('intval', $presets);
                 </div>
 
                 <div class="wpd-form-row mt-3">
-                    <textarea name="note" class="wpd-textarea" placeholder="Tulis doa atau dukungan (opsional)..." rows="2"></textarea>
+                    <textarea name="note" class="wpd-textarea" placeholder="Tuliskan doa atau dukungan (opsional)..." rows="2"></textarea>
                 </div>
             </div>
 
@@ -180,7 +180,7 @@ $presets = array_map('intval', $presets);
                             <div class="wpd-payment-icon">🏦</div>
                             <div class="wpd-payment-details">
                                 <div class="title">Transfer Bank Manual</div>
-                                <div class="desc">Cek manual 1x24 jam (Free)</div>
+                                <div class="desc">Verifikasi manual dalam 1x24 jam</div>
                             </div>
                             <div class="wpd-check-icon"></div>
                         </div>
@@ -193,7 +193,7 @@ $presets = array_map('intval', $presets);
                         <div class="wpd-payment-box">
                             <div class="wpd-payment-icon">⚡</div>
                             <div class="wpd-payment-details">
-                                <div class="title">Instan / Otomatis</div>
+                                <div class="title">Pembayaran Otomatis</div>
                                 <div class="desc">QRIS, E-Wallet, Virtual Account</div>
                             </div>
                             <div class="wpd-badge-instant">Auto</div>
@@ -206,7 +206,7 @@ $presets = array_map('intval', $presets);
 
             <!-- FOOTER ACTION -->
             <div class="wpd-footer-action">
-                <button type="submit" class="wpd-btn-primary">Lanjut Pembayaran</button>
+                <button type="submit" class="wpd-btn-primary">Lanjutkan Pembayaran</button>
                 <div class="wpd-secure-badge">
                     <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
                     Pembayaran Aman & Terenkripsi
@@ -238,7 +238,7 @@ html, body {
     box-shadow: 0 0 20px rgba(0,0,0,0.05);
 }
 @media(min-width: 640px) {
-    .wpd-layout-wrapper { padding: 40px 20px; }
+    .wpd-layout-wrapper { padding: 0px 20px; }
     .wpd-card { min-height: auto; border-radius: 20px; overflow: hidden; }
 }
 
