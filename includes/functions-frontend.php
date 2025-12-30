@@ -370,6 +370,19 @@ add_shortcode( 'wpd_profile', 'wpd_shortcode_profile' );
 function wpd_shortcode_confirmation_form() {
     $success = false;
     $error   = '';
+    $donation_id_val = '';
+    $amount_val      = '';
+
+    // Pre-fill from URL
+    if ( isset( $_GET['donation_id'] ) ) {
+        global $wpdb;
+        $d_id = intval( $_GET['donation_id'] );
+        $donation_row = $wpdb->get_row( $wpdb->prepare( "SELECT amount FROM {$wpdb->prefix}wpd_donations WHERE id = %d", $d_id ) );
+        if ( $donation_row ) {
+            $donation_id_val = $d_id;
+            $amount_val      = $donation_row->amount;
+        }
+    }
 
     if ( isset( $_POST['wpd_confirm_submit'] ) && isset( $_POST['_wpnonce'] ) ) {
         if ( ! wp_verify_nonce( $_POST['_wpnonce'], 'wpd_confirm_payment' ) ) {

@@ -37,13 +37,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
                 <div style="margin-bottom:15px;">
                     <label style="display:block; margin-bottom:5px; font-weight:500; color:#374151;">ID Donasi</label>
-                    <input type="number" name="donation_id" placeholder="Contoh: 154" required style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px;">
+                    <input type="number" name="donation_id" placeholder="Contoh: 154" value="<?php echo esc_attr( $donation_id_val ); ?>" required style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px;">
                     <p style="font-size:12px; color:#6b7280; margin-top:3px;">ID Donasi dapat dilihat di email instruksi pembayaran.</p>
                 </div>
 
                 <div style="margin-bottom:15px;">
                     <label style="display:block; margin-bottom:5px; font-weight:500; color:#374151;">Nominal Transfer (Rp)</label>
-                    <input type="text" name="amount" placeholder="Contoh: 100000" required style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px;">
+                    <input type="text" name="amount" placeholder="Contoh: 100000" value="<?php echo esc_attr( $amount_val ); ?>" required style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px;">
                 </div>
 
                 <div style="margin-bottom:25px;">

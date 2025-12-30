@@ -14,6 +14,7 @@ export default function Settings() {
         campaign_slug: 'campaign',
         payment_slug: 'pay',
         remove_branding: false,
+        confirmation_page: '',
         // Donation
         min_amount: 10000,
         presets: '50000,100000,200000,500000',
@@ -41,6 +42,7 @@ export default function Settings() {
         opt_in_whatsapp: ''
     })
 
+    const [pages, setPages] = useState<Array<{ id: number, title: string }>>([])
     const [success, setSuccess] = useState('')
 
     // Fetch Settings
@@ -52,12 +54,17 @@ export default function Settings() {
             });
             const data = await response.json();
 
+            if (data.pages) {
+                setPages(data.pages);
+            }
+
             setFormData(prev => ({
                 ...prev,
                 // General
                 campaign_slug: data.general?.campaign_slug || 'campaign',
                 payment_slug: data.general?.payment_slug || 'pay',
                 remove_branding: data.general?.remove_branding === true || data.general?.remove_branding === '1',
+                confirmation_page: data.general?.confirmation_page || '',
                 // Donation
                 min_amount: data.donation?.min_amount || 10000,
                 presets: data.donation?.presets || '50000,100000,200000,500000',
@@ -97,7 +104,8 @@ export default function Settings() {
                 general: {
                     campaign_slug: data.campaign_slug,
                     payment_slug: data.payment_slug,
-                    remove_branding: data.remove_branding
+                    remove_branding: data.remove_branding,
+                    confirmation_page: data.confirmation_page
                 },
                 donation: {
                     min_amount: data.min_amount,
@@ -208,6 +216,7 @@ export default function Settings() {
                                 )}
                             >
                                 <Icon size={18} />
+                                <Icon size={18} />
                                 {tab.label}
                             </button>
                         )
@@ -310,6 +319,25 @@ export default function Settings() {
                                     </div>
                                     <p className="text-xs text-amber-600 mt-2">Make sure to resave "Settings &gt; Permalinks" in WordPress if you change these.</p>
                                 </div>
+
+                                <div className="border-t border-gray-200 pt-6">
+                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Confirmation Settings</h3>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Custom Confirmation Page</label>
+                                        <select
+                                            className="w-full p-2 border border-gray-300 rounded-lg"
+                                            value={formData.confirmation_page}
+                                            onChange={e => setFormData({ ...formData, confirmation_page: e.target.value })}
+                                        >
+                                            <option value="">-- No Custom Page (Use Default Alert) --</option>
+                                            {pages.map(page => (
+                                                <option key={page.id} value={page.id}>{page.title}</option>
+                                            ))}
+                                        </select>
+                                        <p className="text-xs text-gray-500 mt-1">Select a page that contains the [wpd_confirmation_form] shortcode.</p>
+                                    </div>
+                                </div>
+
                                 <div className="border-t border-gray-200 pt-6">
                                     <h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
                                         Branding <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>

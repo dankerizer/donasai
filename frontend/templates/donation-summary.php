@@ -405,17 +405,27 @@ $button_color = get_option('wpd_appearance_button_color', '#ec4899'); // Pink
     <?php endif; ?>
 
     function confirmPayment() {
-        // Simple prompt or redirect to WhatsApp
-        const phone = "<?php echo get_option('wpd_settings_general')['whatsapp_number'] ?? ''; ?>"; // Ideally fetch from settings
-        let url = '';
-        if(phone) {
-             const cleanPhone = phone.replace(/\D/g,'');
-             const text = encodeURIComponent("Halo Admin, saya sudah transfer untuk donasi #<?php echo $donation_id; ?> sebesar Rp <?php echo number_format($amount,0,',','.'); ?>. Mohon dicek. Terima kasih.");
-             url = `https://wa.me/${cleanPhone}?text=${text}`;
-             window.open(url, '_blank');
-        } else {
-            alert('Silakan hubungi admin untuk konfirmasi.');
-        }
+        // Confirmation Page Logic
+        <?php 
+        $settings = get_option('wpd_settings_general');
+        $conf_page_id = isset($settings['confirmation_page']) ? intval($settings['confirmation_page']) : 0;
+        $conf_url = $conf_page_id ? get_permalink($conf_page_id) : '';
+        
+        if ($conf_url) : 
+        ?>
+            // Redirect to Confirmation Page
+            window.location.href = "<?php echo add_query_arg('donation_id', $donation_id, $conf_url); ?>";
+        <?php else : ?>
+            // WhatsApp Logic (Default)
+            const phone = "<?php echo get_option('wpd_settings_general')['whatsapp_number'] ?? ''; ?>"; 
+            if(phone) {
+                 const cleanPhone = phone.replace(/\D/g,'');
+                 const text = encodeURIComponent("Halo Admin, saya sudah transfer untuk donasi #<?php echo $donation_id; ?> sebesar Rp <?php echo number_format($amount,0,',','.'); ?>. Mohon dicek. Terima kasih.");
+                 window.open(`https://wa.me/${cleanPhone}?text=${text}`, '_blank');
+            } else {
+                alert('Silakan hubungi admin untuk konfirmasi.');
+            }
+        <?php endif; ?>
     }
 
     // Copy to Clipboard (will be used by manual gateway HTML)

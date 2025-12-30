@@ -34,9 +34,19 @@ function wpd_api_get_settings() {
     $notifications = get_option( 'wpd_settings_notifications', array( 'opt_in_email' => get_option('admin_email'), 'opt_in_whatsapp' => '' ) );
     
     // New Settings
-    $general = get_option( 'wpd_settings_general', array( 'campaign_slug' => 'campaign', 'payment_slug' => 'pay', 'remove_branding' => false ) );
+    $general = get_option( 'wpd_settings_general', array( 'campaign_slug' => 'campaign', 'payment_slug' => 'pay', 'remove_branding' => false, 'confirmation_page' => '' ) );
     $donation = get_option( 'wpd_settings_donation', array( 'min_amount' => 10000, 'presets' => '50000,100000,200000,500000', 'anonymous_label' => 'Hamba Allah', 'create_user' => false ) );
     $appearance = get_option( 'wpd_settings_appearance', array( 'brand_color' => '#059669', 'button_color' => '#ec4899' ) );
+
+    // Get all pages for dropdown
+    $pages = get_pages();
+    $pages_list = array();
+    foreach ( $pages as $page ) {
+        $pages_list[] = array(
+            'id' => $page->ID,
+            'title' => $page->post_title
+        );
+    }
 
 	return rest_ensure_response( array(
 		'bank'         => $bank,
@@ -46,7 +56,8 @@ function wpd_api_get_settings() {
         'notifications'=> $notifications,
         'general'      => $general,
         'donation'     => $donation,
-        'appearance'   => $appearance
+        'appearance'   => $appearance,
+        'pages'        => $pages_list // Return pages list
 	) );
 }
 
@@ -87,6 +98,7 @@ function wpd_api_update_settings( $request ) {
             'campaign_slug'   => sanitize_title( $params['general']['campaign_slug'] ?? 'campaign' ),
             'payment_slug'    => sanitize_title( $params['general']['payment_slug'] ?? 'pay' ),
             'remove_branding' => ! empty( $params['general']['remove_branding'] ), // Pro
+            'confirmation_page' => isset($params['general']['confirmation_page']) ? intval($params['general']['confirmation_page']) : '',
         );
         
         // Check if slugs changed, flush rewrite rules might be needed (handled via option update hook or manual flush hint)
