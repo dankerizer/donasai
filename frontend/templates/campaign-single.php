@@ -196,7 +196,13 @@ $donors = function_exists('wpd_get_recent_donors') ? wpd_get_recent_donors( $cam
                     <!-- CTA Buttons -->
                     <?php 
                         global $wp_rewrite;
-                        if ( $wp_rewrite->using_permalinks() ) {
+                        $general_settings = get_option('wpd_settings_general');
+                        $payment_page_id = $general_settings['payment_page'] ?? '';
+                        
+                        if ( ! empty( $payment_page_id ) ) {
+                            // Use configure payment page
+                            $donate_link = add_query_arg( 'campaign_id', $campaign_id, get_permalink( $payment_page_id ) );
+                        } elseif ( $wp_rewrite->using_permalinks() ) {
                             $donate_link = user_trailingslashit( get_permalink() . $payment_slug );
                         } else {
                             $donate_link = add_query_arg( $payment_slug, '1', get_permalink() );
@@ -280,10 +286,17 @@ $donors = function_exists('wpd_get_recent_donors') ? wpd_get_recent_donors( $cam
 
     <!-- Mobile Sticky CTA -->
     <?php 
-        $payment_slug = get_option('wpd_settings_general')['payment_slug'] ?? 'pay';
-        $donate_link_sticky = $wp_rewrite->using_permalinks() 
-            ? user_trailingslashit( get_permalink() . $payment_slug ) 
-            : add_query_arg( $payment_slug, '1', get_permalink() );
+        // Logic reused from sidebar for consistency
+        $payment_slug = $general_settings['payment_slug'] ?? 'pay';
+        $payment_page_id = $general_settings['payment_page'] ?? '';
+        
+        if ( ! empty( $payment_page_id ) ) {
+            $donate_link_sticky = add_query_arg( 'campaign_id', $campaign_id, get_permalink( $payment_page_id ) );
+        } elseif ( $wp_rewrite->using_permalinks() ) {
+            $donate_link_sticky = user_trailingslashit( get_permalink() . $payment_slug ); 
+        } else {
+             $donate_link_sticky = add_query_arg( $payment_slug, '1', get_permalink() );
+        }
     ?>
     <div class="wpd-mobile-cta">
         <div>

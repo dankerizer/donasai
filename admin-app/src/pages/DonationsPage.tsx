@@ -16,6 +16,12 @@ interface Donation {
     gateway_txn_id: string
     note: string
     date: string
+    metadata?: {
+        proof_url?: string
+        sender_bank?: string
+        sender_name?: string
+        confirmed_at?: string
+    }
 }
 
 export default function DonationsPage() {
@@ -293,6 +299,41 @@ export default function DonationsPage() {
                                             </span>
                                         </div>
                                     </div>
+
+                                    {/* Confirmation Details (Metadata) */}
+                                    {selectedDonation.metadata && (selectedDonation.metadata.sender_bank || selectedDonation.metadata.proof_url) && (
+                                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                                            <h4 className="text-sm font-bold text-blue-800 mb-3 flex items-center gap-2">
+                                                <CheckCircle size={16} /> Payment Confirmation
+                                            </h4>
+                                            <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
+                                                {selectedDonation.metadata.sender_bank && (
+                                                    <div className="col-span-1">
+                                                        <span className="block text-xs text-blue-600 uppercase font-semibold">Bank</span>
+                                                        <span className="text-gray-900 font-medium">{selectedDonation.metadata.sender_bank}</span>
+                                                    </div>
+                                                )}
+                                                {selectedDonation.metadata.sender_name && (
+                                                    <div className="col-span-1">
+                                                        <span className="block text-xs text-blue-600 uppercase font-semibold">Sender Name</span>
+                                                        <span className="text-gray-900 font-medium">{selectedDonation.metadata.sender_name}</span>
+                                                    </div>
+                                                )}
+                                                {selectedDonation.metadata.proof_url && (
+                                                    <div className="col-span-2 pt-2 border-t border-blue-100 mt-1">
+                                                        <a
+                                                            href={selectedDonation.metadata.proof_url}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-blue-600 underline hover:text-blue-800 font-medium flex items-center gap-1"
+                                                        >
+                                                            <Eye size={14} /> View Transfer Proof
+                                                        </a>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
 
                                     {selectedDonation.gateway_txn_id && (
                                         <div className="bg-gray-50 p-3 rounded border border-gray-200">
