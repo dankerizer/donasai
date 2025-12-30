@@ -174,7 +174,7 @@ export default function Settings() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-800">Settings</h2>
+                <h2 className="text-2xl font-bold text-gray-800">Pengaturan</h2>
                 {success && (
                     <div className="px-4 py-2 bg-green-100 text-green-700 rounded-lg flex items-center gap-2">
                         <Check size={16} /> {success}
@@ -186,15 +186,15 @@ export default function Settings() {
             <div className="bg-linear-to-r from-purple-600 to-indigo-600 rounded-xl p-6 text-white flex justify-between items-center shadow-lg">
                 <div>
                     <h3 className="text-xl font-bold flex items-center gap-2">
-                        <Crown className="text-yellow-300" /> Upgrade to WP Donasi Pro
+                        <Crown className="text-yellow-300" /> Upgrade ke WP Donasi Pro
                     </h3>
-                    <p className="opacity-90 mt-1">Unlock Recurring Donations, WhatsApp Notifications, and AI Confirmation.</p>
+                    <p className="opacity-90 mt-1">Buka Donasi Berulang, Notifikasi WhatsApp, dan Konfirmasi AI.</p>
                 </div>
                 <button
                     onClick={() => setShowProModal(true)}
                     className="bg-white text-purple-700 px-5 py-2.5 rounded-lg font-bold hover:bg-gray-50 transition-colors shadow-sm"
                 >
-                    Compare Features
+                    Bandingkan Fitur
                 </button>
             </div>
 
@@ -217,7 +217,11 @@ export default function Settings() {
                             >
 
                                 <Icon size={18} />
-                                <span> {tab.label}</span>
+                                <span> {tab.label === 'General & Org' ? 'Umum & Organisasi' :
+                                    tab.label === 'Donation Settings' ? 'Pengaturan Donasi' :
+                                        tab.label === 'Payment' ? 'Pembayaran' :
+                                            tab.label === 'Notifications' ? 'Notifikasi' :
+                                                tab.label === 'Appearance' ? 'Tampilan' : tab.label}</span>
                             </button>
                         )
                     })}
@@ -231,28 +235,28 @@ export default function Settings() {
                         {activeTab === 'general' && (
                             <div className="space-y-8">
                                 <div>
-                                    <h3 className="text-lg font-medium text-gray-900 mb-1">Organization Details</h3>
-                                    <p className="text-sm text-gray-500 mb-4">This information will appear on donation receipts.</p>
+                                    <h3 className="text-lg font-medium text-gray-900 mb-1">Detail Organisasi</h3>
+                                    <p className="text-sm text-gray-500 mb-4">Informasi ini akan muncul pada kuitansi donasi.</p>
 
                                     <div className="grid gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Organization Name</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Nama Organisasi</label>
                                             <input
                                                 type="text"
                                                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-400 transition-colors"
                                                 value={formData.org_name}
                                                 onChange={e => setFormData({ ...formData, org_name: e.target.value })}
-                                                placeholder="e.g. Yayasan Amal Bhakti"
+                                                placeholder="Contoh: Yayasan Amal Bhakti"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
                                             <textarea
                                                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                                                 rows={3}
                                                 value={formData.org_address}
                                                 onChange={e => setFormData({ ...formData, org_address: e.target.value })}
-                                                placeholder="Full address..."
+                                                placeholder="Alamat lengkap..."
                                             />
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
@@ -266,7 +270,7 @@ export default function Settings() {
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Phone / WhatsApp</label>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Telepon / WhatsApp</label>
                                                 <input
                                                     type="text"
                                                     className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -284,15 +288,15 @@ export default function Settings() {
                                                 onChange={e => setFormData({ ...formData, org_logo: e.target.value })}
                                                 placeholder="https://..."
                                             />
-                                            <p className="text-xs text-gray-500 mt-1">Upload to Media Library and paste URL here.</p>
+                                            <p className="text-xs text-gray-500 mt-1">Unggah ke Pustaka Media dan tempel URL di sini.</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="border-t border-gray-200 pt-6">
-                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Permalink Settings</h3>
+                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Pengaturan Permalink</h3>
                                     <div className="grid grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Campaign Slug</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Slug Kampanye</label>
                                             <div className="flex bg-gray-50 border border-gray-300 rounded-lg items-center text-gray-500 text-sm overflow-hidden">
                                                 <span className="px-3 bg-gray-100 border-r border-gray-300 h-full flex items-center">/</span>
                                                 <input
@@ -305,7 +309,7 @@ export default function Settings() {
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Payment Slug</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Slug Pembayaran</label>
                                             <div className="flex bg-gray-50 border border-gray-300 rounded-lg items-center text-gray-500 text-sm overflow-hidden">
                                                 <span className="px-3 bg-gray-100 border-r border-gray-300 h-full flex items-center">/campaign/</span>
                                                 <input
@@ -317,11 +321,11 @@ export default function Settings() {
                                             </div>
                                         </div>
                                     </div>
-                                    <p className="text-xs text-amber-600 mt-2">Make sure to resave "Settings &gt; Permalinks" in WordPress if you change these.</p>
+                                    <p className="text-xs text-amber-600 mt-2">Pastikan untuk menyimpan ulang 'Permalink' di WordPress jika Anda mengubah ini.</p>
                                 </div>
 
                                 <div className="border-t border-gray-200 pt-6">
-                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Confirmation Settings</h3>
+                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Pengaturan Konfirmasi</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -355,7 +359,7 @@ export default function Settings() {
                                             onChange={() => setShowProModal(true)}
                                             className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                                         />
-                                        <label className="text-sm font-medium text-gray-700">Remove "Powered by WP Donasi"</label>
+                                        <label className="text-sm font-medium text-gray-700">Hapus Branding "Powered by WP Donasi"</label>
                                     </div>
                                 </div>
                             </div>
@@ -365,10 +369,10 @@ export default function Settings() {
                         {activeTab === 'donation' && (
                             <div className="space-y-6">
                                 <div>
-                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Donation Options</h3>
+                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Opsi Donasi</h3>
                                     <div className="grid gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Donation Amount (Rp)</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Jumlah Donasi Minimum (Rp)</label>
                                             <input
                                                 type="number"
                                                 className="w-full p-2 border border-gray-300 rounded-lg"
@@ -377,7 +381,7 @@ export default function Settings() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Default Presets (Rp)</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Preset Default (Rp)</label>
                                             <input
                                                 type="text"
                                                 className="w-full p-2 border border-gray-300 rounded-lg"
@@ -385,10 +389,10 @@ export default function Settings() {
                                                 onChange={e => setFormData({ ...formData, presets: e.target.value })}
                                                 placeholder="50000,100000,200000"
                                             />
-                                            <p className="text-xs text-gray-500 mt-1">Separate with commas.</p>
+                                            <p className="text-xs text-gray-500 mt-1">Pisahkan dengan koma.</p>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Anonymous Label</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Label Anonim</label>
                                             <input
                                                 type="text"
                                                 className="w-full p-2 border border-gray-300 rounded-lg"
@@ -396,13 +400,13 @@ export default function Settings() {
                                                 onChange={e => setFormData({ ...formData, anonymous_label: e.target.value })}
                                                 placeholder="Hamba Allah"
                                             />
-                                            <p className="text-xs text-gray-500 mt-1">Displayed usage when user hides their name.</p>
+                                            <p className="text-xs text-gray-500 mt-1">Ditampilkan saat pengguna menyembunyikan nama mereka.</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="border-t border-gray-200 pt-6">
                                     <h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
-                                        User Registration <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>
+                                        Registrasi Pengguna <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>
                                     </h3>
                                     <div className="flex items-center space-x-3 opacity-60">
                                         <input
@@ -411,7 +415,7 @@ export default function Settings() {
                                             onChange={() => setShowProModal(true)}
                                             className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                                         />
-                                        <label className="text-sm font-medium text-gray-700">Auto-create WordPress User from Donor Email</label>
+                                        <label className="text-sm font-medium text-gray-700">Otomatis buat Pengguna WordPress dari Email Donatur</label>
                                     </div>
                                 </div>
                             </div>
@@ -421,21 +425,21 @@ export default function Settings() {
                         {activeTab === 'payment' && (
                             <div className="space-y-8">
                                 <div>
-                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Bank Transfer (Manual)</h3>
+                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Transfer Bank (Manual)</h3>
                                     <div className="grid gap-4">
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Bank Name</label>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Bank</label>
                                                 <input
                                                     type="text"
                                                     className="w-full p-2 border border-gray-300 rounded-lg"
                                                     value={formData.bank_name}
                                                     onChange={e => setFormData({ ...formData, bank_name: e.target.value })}
-                                                    placeholder="e.g. BCA"
+                                                    placeholder="Contoh: BCA"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Account Number</label>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Rekening</label>
                                                 <input
                                                     type="text"
                                                     className="w-full p-2 border border-gray-300 rounded-lg"
@@ -445,7 +449,7 @@ export default function Settings() {
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Account Holder Name</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Nama Pemilik Rekening</label>
                                             <input
                                                 type="text"
                                                 className="w-full p-2 border border-gray-300 rounded-lg"
@@ -457,7 +461,7 @@ export default function Settings() {
                                 </div>
 
                                 <div className="border-t border-gray-200 pt-6">
-                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Midtrans Gateway</h3>
+                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Gerbang Pembayaran Midtrans</h3>
                                     <div className="space-y-4">
                                         <div className="flex items-center space-x-3">
                                             <input
@@ -467,7 +471,7 @@ export default function Settings() {
                                                 onChange={(e) => setFormData(prev => ({ ...prev, midtrans_enabled: e.target.checked }))}
                                                 className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                                             />
-                                            <label htmlFor="midtrans_enabled" className="text-sm font-medium text-gray-700">Enable Midtrans</label>
+                                            <label htmlFor="midtrans_enabled" className="text-sm font-medium text-gray-700">Aktifkan Midtrans</label>
                                         </div>
 
                                         <div className="flex items-center space-x-3">
@@ -478,7 +482,7 @@ export default function Settings() {
                                                 onChange={(e) => setFormData(prev => ({ ...prev, midtrans_production: e.target.checked }))}
                                                 className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                                             />
-                                            <label htmlFor="midtrans_production" className="text-sm font-medium text-gray-700">Production Mode</label>
+                                            <label htmlFor="midtrans_production" className="text-sm font-medium text-gray-700">Mode Produksi</label>
                                         </div>
 
                                         <div>
@@ -499,28 +503,28 @@ export default function Settings() {
                         {activeTab === 'notifications' && (
                             <div className="space-y-6">
                                 <div>
-                                    <h3 className="text-lg font-medium text-gray-900 mb-1">Update Subscriptions</h3>
-                                    <p className="text-sm text-gray-500 mb-4">Receive donor updates and plugin announcements.</p>
+                                    <h3 className="text-lg font-medium text-gray-900 mb-1">Langganan Pembaruan</h3>
+                                    <p className="text-sm text-gray-500 mb-4">Terima pembaruan donatur dan pengumuman plugin.</p>
 
                                     <div className="grid gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Email for Updates</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Email untuk Pembaruan</label>
                                             <input
                                                 type="email"
                                                 className="w-full p-2 border border-gray-300 rounded-lg"
                                                 value={formData.opt_in_email}
                                                 onChange={e => setFormData({ ...formData, opt_in_email: e.target.value })}
                                             />
-                                            <p className="text-xs text-gray-500 mt-1">We'll verify this email before sending sensitive reports.</p>
+                                            <p className="text-xs text-gray-500 mt-1">Kami akan memverifikasi email ini sebelum mengirim laporan sensitif.</p>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number (Optional)</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp (Opsional)</label>
                                             <input
                                                 type="text"
                                                 className="w-full p-2 border border-gray-300 rounded-lg"
                                                 value={formData.opt_in_whatsapp}
                                                 onChange={e => setFormData({ ...formData, opt_in_whatsapp: e.target.value })}
-                                                placeholder="e.g. 62812..."
+                                                placeholder="Contoh: 62812..."
                                             />
                                         </div>
                                     </div>
@@ -529,13 +533,13 @@ export default function Settings() {
                                 <div className="border-t border-gray-200 pt-6">
                                     <h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
                                         <Bell size={18} className="text-gray-400" />
-                                        Advanced Notifications <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>
+                                        Notifikasi Lanjutan <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>
                                     </h3>
-                                    <p className="text-sm text-gray-500 mb-4">Available in Pro version:</p>
+                                    <p className="text-sm text-gray-500 mb-4">Tersedia di versi Pro:</p>
                                     <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
-                                        <li>Real-time WhatsApp notifications for every donation.</li>
-                                        <li>Daily summary via Email.</li>
-                                        <li>Failed payment alerts.</li>
+                                        <li>Notifikasi WhatsApp real-time untuk setiap donasi.</li>
+                                        <li>Ringkasan harian via Email.</li>
+                                        <li>Peringatan pembayaran gagal.</li>
                                     </ul>
                                 </div>
                             </div>
@@ -545,10 +549,10 @@ export default function Settings() {
                         {activeTab === 'appearance' && (
                             <div className="space-y-8">
                                 <div>
-                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Theme Colors</h3>
+                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Warna Tema</h3>
                                     <div className="grid gap-6 md:grid-cols-2">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Primary Brand Color</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Warna Merek Utama</label>
                                             <div className="flex items-center gap-3">
                                                 <input
                                                     type="color"
@@ -558,10 +562,10 @@ export default function Settings() {
                                                 />
                                                 <span className="text-sm text-gray-500 font-mono uppercase">{formData.brand_color}</span>
                                             </div>
-                                            <p className="text-xs text-gray-500 mt-2">Used for badges, amounts, and progress bars.</p>
+                                            <p className="text-xs text-gray-500 mt-2">Digunakan untuk lencana, jumlah, dan bilah kemajuan.</p>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Button Color</label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Warna Tombol</label>
                                             <div className="flex items-center gap-3">
                                                 <input
                                                     type="color"
@@ -571,7 +575,7 @@ export default function Settings() {
                                                 />
                                                 <span className="text-sm text-gray-500 font-mono uppercase">{formData.button_color}</span>
                                             </div>
-                                            <p className="text-xs text-gray-500 mt-2">Main CTA buttons (Donate, Submit).</p>
+                                            <p className="text-xs text-gray-500 mt-2">Tombol CTA utama (Donasi, Kirim).</p>
                                         </div>
                                     </div>
                                 </div>
@@ -579,29 +583,29 @@ export default function Settings() {
                                 {/* Pro Teasers */}
                                 <div className="border-t border-gray-200 pt-6">
                                     <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
-                                        Advanced Styling <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>
+                                        Gaya Lanjutan <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>
                                     </h3>
                                     <div className="grid gap-4 md:grid-cols-2 opacity-60">
                                         <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 relative cursor-pointer" onClick={() => setShowProModal(true)}>
                                             <div className="flex justify-between items-start mb-2">
-                                                <div className="font-medium text-gray-900">Typography</div>
+                                                <div className="font-medium text-gray-900">Tipografi</div>
                                                 <Lock size={14} className="text-gray-400" />
                                             </div>
-                                            <p className="text-sm text-gray-500">Custom Google Fonts and size controls.</p>
+                                            <p className="text-sm text-gray-500">Font Google kustom dan kontrol ukuran.</p>
                                         </div>
                                         <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 relative cursor-pointer" onClick={() => setShowProModal(true)}>
                                             <div className="flex justify-between items-start mb-2">
-                                                <div className="font-medium text-gray-900">Dark Mode</div>
+                                                <div className="font-medium text-gray-900">Mode Gelap</div>
                                                 <Lock size={14} className="text-gray-400" />
                                             </div>
-                                            <p className="text-sm text-gray-500">Enable site-wide dark mode support.</p>
+                                            <p className="text-sm text-gray-500">Aktifkan dukungan mode gelap di seluruh situs.</p>
                                         </div>
                                         <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 relative cursor-pointer" onClick={() => setShowProModal(true)}>
                                             <div className="flex justify-between items-start mb-2">
-                                                <div className="font-medium text-gray-900">Border Radius</div>
+                                                <div className="font-medium text-gray-900">Radius Batas</div>
                                                 <Lock size={14} className="text-gray-400" />
                                             </div>
-                                            <p className="text-sm text-gray-500">Global control for rounded corners.</p>
+                                            <p className="text-sm text-gray-500">Kontrol global untuk sudut membulat.</p>
                                         </div>
                                     </div>
                                 </div>
@@ -615,7 +619,7 @@ export default function Settings() {
                                 disabled={mutation.isPending}
                                 className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50 shadow-sm transition-all"
                             >
-                                {mutation.isPending ? 'Saving...' : 'Save Changes'}
+                                {mutation.isPending ? 'Menyimpan...' : 'Simpan Perubahan'}
                             </button>
                         </div>
                     </form>
@@ -627,7 +631,7 @@ export default function Settings() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
                     <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-                            <h2 className="text-2xl font-bold text-gray-900">Choose your plan</h2>
+                            <h2 className="text-2xl font-bold text-gray-900">Pilih paket Anda</h2>
                             <button onClick={() => setShowProModal(false)} className="p-2 hover:bg-gray-100 rounded-full">
                                 <X size={24} className="text-gray-500" />
                             </button>
@@ -636,36 +640,36 @@ export default function Settings() {
                             <div className="grid md:grid-cols-2 gap-8">
                                 {/* FREE */}
                                 <div className="border border-gray-200 rounded-xl p-6">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">Free</h3>
-                                    <p className="text-gray-500 mb-6">For small communities starting out.</p>
+                                    <h3 className="text-xl font-bold text-gray-900 mb-2">Gratis</h3>
+                                    <p className="text-gray-500 mb-6">Untuk komunitas kecil yang baru memulai.</p>
                                     <ul className="space-y-3 mb-8">
-                                        {['Unlimited Campaigns', 'Basic Donation Form', 'Manual Bank Transfer', 'Basic Reporting', '1 Global Gateway'].map(f => (
+                                        {['Kampanye Tak Terbatas', 'Formulir Donasi Dasar', 'Transfer Bank Manual', 'Pelaporan Dasar', '1 Gerbang Global'].map(f => (
                                             <li key={f} className="flex items-center gap-2 text-sm text-gray-700">
                                                 <Check size={16} className="text-green-500" /> {f}
                                             </li>
                                         ))}
                                     </ul>
-                                    <button className="w-full py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg cursor-default">Current Plan</button>
+                                    <button className="w-full py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg cursor-default">Paket Saat Ini</button>
                                 </div>
 
                                 {/* PRO */}
                                 <div className="border-2 border-purple-600 rounded-xl p-6 relative bg-purple-50">
-                                    <div className="absolute top-0 right-0 bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">RECOMMENDED</div>
+                                    <div className="absolute top-0 right-0 bg-purple-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">DIREKOMENDASIKAN</div>
                                     <h3 className="text-xl font-bold text-gray-900 mb-2">Pro</h3>
-                                    <p className="text-gray-500 mb-6">For growing organizations & NGOs.</p>
+                                    <p className="text-gray-500 mb-6">Untuk organisasi & LSM yang sedang berkembang.</p>
                                     <ul className="space-y-3 mb-8">
                                         <li className="flex items-center gap-2 text-sm text-gray-900 font-medium">
-                                            <Check size={16} className="text-purple-600" /> All Free Features
+                                            <Check size={16} className="text-purple-600" /> Semua Fitur Gratis
                                         </li>
                                         {[
-                                            'Recurring Donations (Subscriptions)',
-                                            'WhatsApp Notifications',
-                                            'Local Gateways (Midtrans, Xendit, QRIS)',
-                                            'PDF Receipts',
-                                            'User Registration',
-                                            'Remove Branding',
-                                            'AI Payment Confirmation',
-                                            'Advanced Analytics'
+                                            'Donasi Berulang (Langganan)',
+                                            'Notifikasi WhatsApp',
+                                            'Gerbang Lokal (Midtrans, Xendit, QRIS)',
+                                            'Kuitansi PDF',
+                                            'Registrasi Pengguna',
+                                            'Hapus Branding',
+                                            'Konfirmasi Pembayaran AI',
+                                            'Analitik Lanjutan'
                                         ].map(f => (
                                             <li key={f} className="flex items-center gap-2 text-sm text-gray-700">
                                                 <Star size={16} className="text-purple-600" fill="currentColor" /> {f}
@@ -673,7 +677,7 @@ export default function Settings() {
                                         ))}
                                     </ul>
                                     <button className="w-full py-2 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 shadow-md">
-                                        Upgrade Now (Coming Soon)
+                                        Upgrade Sekarang (Segera Hadir)
                                     </button>
                                 </div>
                             </div>

@@ -37,11 +37,11 @@ function AppLayout() {
   }, []);
 
   const navItems = [
-    { label: 'Dashboard', path: '/', icon: LayoutDashboard },
-    { label: 'Donations', path: '/donations', icon: Heart },
-    { label: 'Confirmations', path: '/confirmations', icon: CheckCircle },
-    { label: 'Fundraisers', path: '/fundraisers', icon: Users },
-    { label: 'Settings', path: '/settings', icon: SettingsIcon },
+    { label: 'Dasbor', path: '/', icon: LayoutDashboard },
+    { label: 'Donasi', path: '/donations', icon: Heart },
+    { label: 'Konfirmasi', path: '/confirmations', icon: CheckCircle },
+    { label: 'Penggalang Dana', path: '/fundraisers', icon: Users },
+    { label: 'Pengaturan', path: '/settings', icon: SettingsIcon },
   ]
 
   return (

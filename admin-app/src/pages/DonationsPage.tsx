@@ -100,13 +100,13 @@ export default function DonationsPage() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-800">Donations</h2>
+                <h2 className="text-2xl font-bold text-gray-800">Donasi</h2>
                 <a
                     href={`/wp-json/wpd/v1/export/donations?_wpnonce=${(window as any).wpdSettings?.nonce}`}
                     target="_blank"
                     className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 font-medium text-sm flex items-center gap-2"
                 >
-                    Export CSV
+                    Ekspor CSV
                 </a>
             </div>
 
@@ -115,16 +115,16 @@ export default function DonationsPage() {
                     <thead className="bg-gray-50 border-b border-gray-200 font-medium text-gray-900">
                         <tr>
                             <th className="px-6 py-4">ID</th>
-                            <th className="px-6 py-4">Donor</th>
-                            <th className="px-6 py-4">Amount</th>
+                            <th className="px-6 py-4">Donatur</th>
+                            <th className="px-6 py-4">Jumlah</th>
                             <th className="px-6 py-4">Status</th>
-                            <th className="px-6 py-4">Date</th>
-                            <th className="px-6 py-4 text-right">Actions</th>
+                            <th className="px-6 py-4">Tanggal</th>
+                            <th className="px-6 py-4 text-right">Aksi</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                         {isLoading ? (
-                            <tr><td colSpan={6} className="px-6 py-4 text-center">Loading...</td></tr>
+                            <tr><td colSpan={6} className="px-6 py-4 text-center">Memuat...</td></tr>
                         ) : donations && donations.length > 0 ? (
                             donations.map((donation: Donation) => (
                                 <tr key={donation.id} className="hover:bg-gray-50">
@@ -140,7 +140,7 @@ export default function DonationsPage() {
                                             donation.status === 'complete' ? 'bg-green-100 text-green-700' :
                                                 donation.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'
                                         )}>
-                                            {donation.status}
+                                            {donation.status === 'complete' ? 'Selesai' : donation.status === 'pending' ? 'Menunggu' : donation.status === 'failed' ? 'Gagal' : donation.status}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4">{donation.date}</td>
@@ -148,7 +148,7 @@ export default function DonationsPage() {
                                         <button
                                             onClick={() => setSelectedDonation(donation)}
                                             className="text-gray-600 hover:text-blue-600 p-1 rounded hover:bg-blue-50 transition-colors"
-                                            title="View Details"
+                                            title="Lihat Detail"
                                         >
                                             <Eye size={18} />
                                         </button>
@@ -158,7 +158,7 @@ export default function DonationsPage() {
                                                 onClick={() => mutation.mutate({ id: donation.id, data: { status: 'complete' } })}
                                                 disabled={mutation.isPending}
                                                 className="text-green-600 hover:text-green-800 p-1 rounded hover:bg-green-50 transition-colors"
-                                                title="Mark as Complete"
+                                                title="Tandai Selesai"
                                             >
                                                 <CheckCircle size={18} />
                                             </button>
@@ -167,7 +167,7 @@ export default function DonationsPage() {
                                 </tr>
                             ))
                         ) : (
-                            <tr><td colSpan={6} className="px-6 py-4 text-center">No donations found.</td></tr>
+                            <tr><td colSpan={6} className="px-6 py-4 text-center">Tidak ada donasi ditemukan.</td></tr>
                         )}
                     </tbody>
                 </table>
@@ -179,7 +179,7 @@ export default function DonationsPage() {
                     <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
                         <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
                             <h3 className="text-lg font-bold text-gray-800">
-                                {isEditing ? `Edit Donation #${selectedDonation.id}` : `Donation Details #${selectedDonation.id}`}
+                                {isEditing ? `Edit Donasi #${selectedDonation.id}` : `Detail Donasi #${selectedDonation.id}`}
                             </h3>
                             <div className="flex items-center gap-2">
                                 {!isEditing && (
@@ -206,7 +206,7 @@ export default function DonationsPage() {
                             {isEditing ? (
                                 <div className="grid grid-cols-1 gap-4">
                                     <div>
-                                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Donor Name</label>
+                                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Nama Donatur</label>
                                         <input
                                             type="text"
                                             value={editFormData.name || ''}
@@ -216,7 +216,7 @@ export default function DonationsPage() {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Amount</label>
+                                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Jumlah</label>
                                             <input
                                                 type="number"
                                                 value={editFormData.amount || 0}
@@ -231,9 +231,9 @@ export default function DonationsPage() {
                                                 onChange={(e) => setEditFormData(prev => ({ ...prev, status: e.target.value as any }))}
                                                 className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                                             >
-                                                <option value="pending">Pending</option>
-                                                <option value="complete">Complete</option>
-                                                <option value="failed">Failed</option>
+                                                <option value="pending">Menunggu</option>
+                                                <option value="complete">Selesai</option>
+                                                <option value="failed">Gagal</option>
                                             </select>
                                         </div>
                                     </div>
@@ -247,7 +247,7 @@ export default function DonationsPage() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Phone</label>
+                                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Telepon</label>
                                         <input
                                             type="text"
                                             value={editFormData.phone || ''}
@@ -256,7 +256,7 @@ export default function DonationsPage() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Note</label>
+                                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Catatan</label>
                                         <textarea
                                             value={editFormData.note || ''}
                                             onChange={(e) => setEditFormData(prev => ({ ...prev, note: e.target.value }))}
@@ -269,11 +269,11 @@ export default function DonationsPage() {
                                 <div className="space-y-4">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Donor Name</p>
+                                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Nama Donatur</p>
                                             <p className="font-medium text-gray-900">{selectedDonation.name}</p>
                                         </div>
                                         <div>
-                                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Amount</p>
+                                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Jumlah</p>
                                             <p className="font-medium text-green-600 text-lg">Rp {selectedDonation.amount.toLocaleString('id-ID')}</p>
                                         </div>
                                         <div>
@@ -281,11 +281,11 @@ export default function DonationsPage() {
                                             <p className="text-gray-700 break-all">{selectedDonation.email}</p>
                                         </div>
                                         <div>
-                                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Phone</p>
+                                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Telepon</p>
                                             <p className="text-gray-700">{selectedDonation.phone || '-'}</p>
                                         </div>
                                         <div>
-                                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Payment Method</p>
+                                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Metode Pembayaran</p>
                                             <p className="capitalize text-gray-700">{selectedDonation.payment_method}</p>
                                         </div>
                                         <div>
@@ -295,7 +295,7 @@ export default function DonationsPage() {
                                                 selectedDonation.status === 'complete' ? 'bg-green-100 text-green-700' :
                                                     selectedDonation.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'
                                             )}>
-                                                {selectedDonation.status}
+                                                {selectedDonation.status === 'complete' ? 'Selesai' : selectedDonation.status === 'pending' ? 'Menunggu' : selectedDonation.status === 'failed' ? 'Gagal' : selectedDonation.status}
                                             </span>
                                         </div>
                                     </div>
@@ -304,7 +304,7 @@ export default function DonationsPage() {
                                     {selectedDonation.metadata && (selectedDonation.metadata.sender_bank || selectedDonation.metadata.proof_url) && (
                                         <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
                                             <h4 className="text-sm font-bold text-blue-800 mb-3 flex items-center gap-2">
-                                                <CheckCircle size={16} /> Payment Confirmation
+                                                <CheckCircle size={16} /> Konfirmasi Pembayaran
                                             </h4>
                                             <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
                                                 {selectedDonation.metadata.sender_bank && (
@@ -315,7 +315,7 @@ export default function DonationsPage() {
                                                 )}
                                                 {selectedDonation.metadata.sender_name && (
                                                     <div className="col-span-1">
-                                                        <span className="block text-xs text-blue-600 uppercase font-semibold">Sender Name</span>
+                                                        <span className="block text-xs text-blue-600 uppercase font-semibold">Nama Pengirim</span>
                                                         <span className="text-gray-900 font-medium">{selectedDonation.metadata.sender_name}</span>
                                                     </div>
                                                 )}
@@ -327,7 +327,7 @@ export default function DonationsPage() {
                                                             rel="noopener noreferrer"
                                                             className="text-blue-600 underline hover:text-blue-800 font-medium flex items-center gap-1"
                                                         >
-                                                            <Eye size={14} /> View Transfer Proof
+                                                            <Eye size={14} /> Lihat Bukti Transfer
                                                         </a>
                                                     </div>
                                                 )}
@@ -337,14 +337,14 @@ export default function DonationsPage() {
 
                                     {selectedDonation.gateway_txn_id && (
                                         <div className="bg-gray-50 p-3 rounded border border-gray-200">
-                                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Transaction ID</p>
+                                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">ID Transaksi</p>
                                             <code className="text-sm">{selectedDonation.gateway_txn_id}</code>
                                         </div>
                                     )}
 
                                     {selectedDonation.note && (
                                         <div>
-                                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Note</p>
+                                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Catatan</p>
                                             <p className="text-sm text-gray-600 italic bg-gray-50 p-3 rounded border border-gray-100">
                                                 "{selectedDonation.note}"
                                             </p>
@@ -352,7 +352,7 @@ export default function DonationsPage() {
                                     )}
 
                                     <div className="pt-2 text-xs text-gray-400 text-center">
-                                        Created at: {selectedDonation.date}
+                                        Dibuat pada: {selectedDonation.date}
                                     </div>
                                 </div>
                             )}
@@ -367,7 +367,7 @@ export default function DonationsPage() {
                                         disabled={mutation.isPending}
                                         type="button"
                                     >
-                                        Cancel
+                                        Batal
                                     </button>
                                     <button
                                         onClick={handleSave}
@@ -375,9 +375,9 @@ export default function DonationsPage() {
                                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm flex items-center gap-2"
                                         type="button"
                                     >
-                                        {mutation.isPending ? 'Saving...' : (
+                                        {mutation.isPending ? 'Menyimpan...' : (
                                             <>
-                                                <Save size={16} /> Save Changes
+                                                <Save size={16} /> Simpan Perubahan
                                             </>
                                         )}
                                     </button>
@@ -391,7 +391,7 @@ export default function DonationsPage() {
                                             disabled={mutation.isPending}
                                             type="button"
                                         >
-                                            <CheckCircle size={16} /> Mark Complete
+                                            <CheckCircle size={16} /> Tandai Selesai
                                         </button>
                                     )}
                                     <button
@@ -399,7 +399,7 @@ export default function DonationsPage() {
                                         className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium text-sm"
                                         type="button"
                                     >
-                                        Close
+                                        Tutup
                                     </button>
                                 </>
                             )}

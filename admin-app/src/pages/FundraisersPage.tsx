@@ -27,7 +27,7 @@ export default function FundraisersPage() {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-800">Fundraisers</h2>
+                <h2 className="text-2xl font-bold text-gray-800">Penggalang Dana</h2>
                 {/* Future: Add Invite/Create Button */}
             </div>
 
@@ -36,16 +36,16 @@ export default function FundraisersPage() {
                     <thead className="bg-gray-50 border-b border-gray-200 font-medium text-gray-900">
                         <tr>
                             <th className="px-6 py-4">ID</th>
-                            <th className="px-6 py-4">Code (User)</th>
-                            <th className="px-6 py-4">Campaign ID</th>
-                            <th className="px-6 py-4 text-right">Donations Raised</th>
-                            <th className="px-6 py-4 text-right">Count</th>
-                            <th className="px-6 py-4">Joined At</th>
+                            <th className="px-6 py-4">Kode (Pengguna)</th>
+                            <th className="px-6 py-4">ID Kampanye</th>
+                            <th className="px-6 py-4 text-right">Donasi Terkumpul</th>
+                            <th className="px-6 py-4 text-right">Jumlah</th>
+                            <th className="px-6 py-4">Bergabung Pada</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                         {isLoading ? (
-                            <tr><td colSpan={6} className="px-6 py-4 text-center">Loading...</td></tr>
+                            <tr><td colSpan={6} className="px-6 py-4 text-center">Memuat...</td></tr>
                         ) : fundraisers && fundraisers.length > 0 ? (
                             fundraisers.map((f: Fundraiser) => (
                                 <tr key={f.id} className="hover:bg-gray-50">
@@ -63,7 +63,7 @@ export default function FundraisersPage() {
                                 </tr>
                             ))
                         ) : (
-                            <tr><td colSpan={6} className="px-6 py-4 text-center">No fundraisers found.</td></tr>
+                            <tr><td colSpan={6} className="px-6 py-4 text-center">Tidak ada penggalang dana ditemukan.</td></tr>
                         )}
                     </tbody>
                 </table>
