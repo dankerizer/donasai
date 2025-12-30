@@ -54,19 +54,13 @@ class WPD_Gateway_Manual implements WPD_Gateway {
         // Email Sending is handled by 'wpd_donation_created' action in controller/services
 
         // Return success with redirect URL
-        $redirect_url = add_query_arg( 
-            array( 
-                'donation_success' => 1, 
-                'donation_id'      => $donation_id, 
-                'method'           => $this->get_id() 
-            ), 
-            get_permalink( $donation_data['campaign_id'] ) 
-        );
-
+        // We leave redirect_url empty so the Service handles the default "Thank You" page redirect.
+        // Unless we want to override it here.
+        
         return array(
             'success'      => true,
             'donation_id'  => $donation_id,
-            'redirect_url' => $redirect_url
+            'redirect_url' => null // Let service handle redirect to /thank-you
         );
     }
 

@@ -11,6 +11,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Handle Donation Form Submission
  */
 function wpd_handle_donation_submission() {
+    // DEBUG LOG
+    if ( isset($_POST['wpd_action']) ) {
+        $log = "Action: " . $_POST['wpd_action'] . "\n";
+        $log .= "Nonce Check: " . ( wp_verify_nonce( $_POST['wpd_donate_nonce'], 'wpd_donate_action' ) ? 'PASS' : 'FAIL' ) . "\n";
+        file_put_contents( WP_CONTENT_DIR . '/wpd-debug.log', $log, FILE_APPEND );
+    }
+
 	if ( ! isset( $_POST['wpd_donate_nonce'] ) || ! wp_verify_nonce( $_POST['wpd_donate_nonce'], 'wpd_donate_action' ) ) {
 		return;
 	}
@@ -108,6 +115,23 @@ function wpd_handle_donation_submission() {
             wp_safe_redirect( $result['redirect_url'] );
             exit;
         }
+
+        // Default Redirect to Thank You Page
+        $thankyou_slug = get_option('wpd_settings_general')['thankyou_slug'] ?? 'thank-you';
+        $base_url = get_permalink( $campaign_id );
+        
+        if ( get_option('permalink_structure') ) {
+             // Pretty Permalinks: /campaign/slug/thank-you/ID/
+             $redirect_url = user_trailingslashit( trailingslashit( $base_url ) . $thankyou_slug . '/' . $result['donation_id'] );
+        } else {
+             // Plain Permalinks: /?p=123&thank-you=ID
+             $redirect_url = add_query_arg( $thankyou_slug, $result['donation_id'], $base_url );
+        }
+        
+        file_put_contents( WP_CONTENT_DIR . '/wpd-debug.log', "Redirecting to: " . $redirect_url . "\n", FILE_APPEND );
+
+        wp_safe_redirect( $redirect_url );
+        exit;
     } else {
         wp_die( 'Payment failed: ' . $result['message'] );
     }

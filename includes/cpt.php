@@ -94,6 +94,10 @@ add_action( 'init', 'wpd_add_rewrite_endpoints' );
 function wpd_add_rewrite_endpoints() {
     $payment_slug = get_option('wpd_settings_general')['payment_slug'] ?? 'pay';
     add_rewrite_endpoint( $payment_slug, EP_PERMALINK | EP_PAGES );
+    
+    // Thank You Page Endpoint
+    $thankyou_slug = get_option('wpd_settings_general')['thankyou_slug'] ?? 'thank-you';
+    add_rewrite_endpoint( $thankyou_slug, EP_PERMALINK | EP_PAGES );
 }
 
 /**
@@ -102,8 +106,12 @@ function wpd_add_rewrite_endpoints() {
  */
 add_action( 'admin_init', 'wpd_maybe_flush_rewrites' );
 function wpd_maybe_flush_rewrites() {
-    if ( get_option( 'wpd_rewrite_flush_needed' ) ) {
+    // Check if rewrite rules need flushing (e.g. after plugin update or endpoint change)
+    // For development/debugging: force flush if we are just setting this up
+    if ( get_option( 'wpd_rewrite_flush_needed' ) || isset($_GET['flush_wpd']) ) {
         flush_rewrite_rules();
         delete_option( 'wpd_rewrite_flush_needed' );
     }
 }
+// Hook to init as well for frontend flushes if really needed during dev
+add_action( 'init', 'wpd_maybe_flush_rewrites', 99 );

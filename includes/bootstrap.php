@@ -7,6 +7,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Define Constants
+if ( ! defined( 'WPD_VERSION' ) ) {
+    define( 'WPD_VERSION', '1.0.0' );
+}
+if ( ! defined( 'WPD_PLUGIN_PATH' ) ) {
+    define( 'WPD_PLUGIN_PATH', plugin_dir_path( __DIR__ ) );
+}
+if ( ! defined( 'WPD_PLUGIN_URL' ) ) {
+    define( 'WPD_PLUGIN_URL', plugin_dir_url( __DIR__ ) . '/' ); // simplistic fallback
+}
+
+// Temporary: Force Rewrite Flush to fix 404/Routing issues
+update_option( 'wpd_rewrite_flush_needed', true );
+
 // Core Includes
 require_once WPD_PLUGIN_PATH . 'includes/db.php';
 require_once WPD_PLUGIN_PATH . 'includes/cpt.php';

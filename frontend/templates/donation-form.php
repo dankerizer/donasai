@@ -56,8 +56,9 @@ $presets = array_map('intval', $presets);
         </div>
 
         <form method="post" id="donationForm">
-            <?php wp_nonce_field( 'wpd_process_donation', '_wpnonce' ); ?>
-            <input type="hidden" name="action" value="wpd_process_donation">
+            <!-- Correct Nonce & Action for Service Handler -->
+            <?php wp_nonce_field( 'wpd_donate_action', 'wpd_donate_nonce' ); ?>
+            <input type="hidden" name="wpd_action" value="submit_donation">
             <input type="hidden" name="campaign_id" value="<?php echo esc_attr( $campaign_id ); ?>">
 
             <!-- Alert Success -->
@@ -146,11 +147,11 @@ $presets = array_map('intval', $presets);
                 </div>
 
                 <div class="wpd-form-row">
-                    <input type="text" name="name" class="wpd-input" placeholder="Nama Lengkap" value="<?php echo esc_attr($default_name); ?>" required>
+                    <input type="text" name="donor_name" class="wpd-input" placeholder="Nama Lengkap" value="<?php echo esc_attr($default_name); ?>" required>
                 </div>
                 
                 <div class="wpd-form-row">
-                    <input type="text" name="email" class="wpd-input" placeholder="Nomor WhatsApp atau Email" value="<?php echo esc_attr($default_email); ?>" required>
+                    <input type="text" name="donor_email" class="wpd-input" placeholder="Nomor WhatsApp atau Email" value="<?php echo esc_attr($default_email); ?>" required>
                 </div>
 
                 <div class="wpd-switch-wrapper">
@@ -162,7 +163,7 @@ $presets = array_map('intval', $presets);
                 </div>
 
                 <div class="wpd-form-row mt-3">
-                    <textarea name="note" class="wpd-textarea" placeholder="Tuliskan doa atau dukungan (opsional)..." rows="2"></textarea>
+                    <textarea name="donor_note" class="wpd-textarea" placeholder="Tuliskan doa atau dukungan (opsional)..." rows="2"></textarea>
                 </div>
             </div>
 
