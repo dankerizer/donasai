@@ -431,7 +431,7 @@ function wpd_shortcode_confirmation_form() {
                         "{$wpdb->prefix}wpd_donations", 
                         array( 
                             'metadata' => json_encode( $metadata ),
-                            'status'   => 'on-hold' // Mark as On Hold / Review
+                            'status'   => 'processing' // Mark as Processing (Enum matches DB)
                         ),
                         array( 'id' => $donation_id ) 
                     );

@@ -368,8 +368,18 @@ $button_color = get_option('wpd_appearance_button_color', '#ec4899'); // Pink
                 </a>
             <?php endif; ?>
 
-            <?php if ( $status == 'pending' && $gateway_id == 'manual' ) : ?>
-                <a href="#" onclick="confirmPayment()" class="btn btn-primary">Konfirmasi Pembayaran</a>
+            <?php if ( $status == 'pending' && $gateway_id == 'manual' ) : 
+                // Get Confirmation URL
+                $settings_gen = get_option('wpd_settings_general');
+                $conf_page_id = isset($settings_gen['confirmation_page']) ? intval($settings_gen['confirmation_page']) : 0;
+                
+                if ( $conf_page_id ) {
+                    $conf_url = add_query_arg('donation_id', $donation_id, get_permalink($conf_page_id));
+                    echo '<a href="' . esc_url($conf_url) . '" class="btn btn-primary">Konfirmasi Pembayaran</a>';
+                } else {
+                    echo '<a href="#" onclick="confirmPayment()" class="btn btn-primary">Konfirmasi Pembayaran</a>';
+                }
+            ?>
             <?php endif; ?>
 
             <a href="<?php echo get_permalink( $campaign_id ); ?>" class="btn btn-ghost">

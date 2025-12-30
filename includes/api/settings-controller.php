@@ -98,6 +98,7 @@ function wpd_api_update_settings( $request ) {
             'campaign_slug'     => sanitize_title( $params['general']['campaign_slug'] ?? 'campaign' ),
             'payment_slug'      => sanitize_title( $params['general']['payment_slug'] ?? 'pay' ),
             'remove_branding'   => ! empty( $params['general']['remove_branding'] ), // Pro
+            'confirmation_page' => isset($params['general']['confirmation_page']) ? intval($params['general']['confirmation_page']) : '',
         );
         
         // Check if slugs changed, flush rewrite rules might be needed (handled via option update hook or manual flush hint)

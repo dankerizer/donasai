@@ -5,6 +5,8 @@ import { Search, ExternalLink, Bot, Lock } from 'lucide-react'
 export default function Confirmations() {
     const queryClient = useQueryClient()
     const [searchTerm, setSearchTerm] = useState('')
+    const [selectedProof, setSelectedProof] = useState<any>(null)
+    const [filterStatus, setFilterStatus] = useState<'unconfirmed' | 'approved' | 'rejected'>('unconfirmed')
 
     // Fetch Donations
     const { data: donations, isLoading } = useQuery({
@@ -18,17 +20,27 @@ export default function Confirmations() {
         }
     })
 
-    // Filter for Pending Confirmations (on-hold OR has proof_url but not complete)
-    const pendingConfirmations = donations?.filter((d: any) => {
-        const hasProof = d.metadata?.proof_url;
-        const isPending = d.status === 'on-hold' || d.status === 'pending';
-        return hasProof && isPending;
-    }) || []
+    const filteredDonations = (donations || [])
+        .filter((d: any) => {
+            // Check for manual proof
+            const hasProof = d.metadata?.proof_url;
+            if (!hasProof && filterStatus === 'unconfirmed') return false;
 
-    const filteredDonations = pendingConfirmations.filter((d: any) =>
-        d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        d.email.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+            if (filterStatus === 'unconfirmed') {
+                return d.status !== 'complete' && d.status !== 'failed' && d.status !== 'refunded';
+            }
+            if (filterStatus === 'approved') {
+                return d.status === 'complete';
+            }
+            if (filterStatus === 'rejected') {
+                return d.status === 'failed' || d.status === 'refunded';
+            }
+            return false;
+        })
+        .filter((d: any) =>
+            d.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            d.email.toLowerCase().includes(searchTerm.toLowerCase())
+        )
 
     // Update Status Mutation
     const updateStatus = useMutation({
@@ -46,25 +58,51 @@ export default function Confirmations() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['donations'] })
+            setSelectedProof(null) // Close modal on success
         }
     })
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-end">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div>
                     <h2 className="text-2xl font-bold text-gray-800">Donation Confirmations</h2>
                     <p className="text-gray-500">Review manual transfer receipts.</p>
                 </div>
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input
-                        type="text"
-                        placeholder="Search donor..."
-                        className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        value={searchTerm}
-                        onChange={e => setSearchTerm(e.target.value)}
-                    />
+
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                    {/* Status Filter */}
+                    <div className="bg-white border border-gray-300 rounded-lg p-1 flex">
+                        <button
+                            onClick={() => setFilterStatus('unconfirmed')}
+                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${filterStatus === 'unconfirmed' ? 'bg-gray-100 text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+                        >
+                            Unconfirmed
+                        </button>
+                        <button
+                            onClick={() => setFilterStatus('approved')}
+                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${filterStatus === 'approved' ? 'bg-green-50 text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+                        >
+                            Approved
+                        </button>
+                        <button
+                            onClick={() => setFilterStatus('rejected')}
+                            className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${filterStatus === 'rejected' ? 'bg-red-50 text-red-700 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}
+                        >
+                            Rejected
+                        </button>
+                    </div>
+
+                    <div className="relative flex-1 sm:flex-none">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <input
+                            type="text"
+                            placeholder="Search donor..."
+                            className="pl-12 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 w-full"
+                            value={searchTerm}
+                            onChange={e => setSearchTerm(e.target.value)}
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -77,7 +115,7 @@ export default function Confirmations() {
                     <div>
                         <h3 className="font-bold text-gray-900 flex items-center gap-2">
                             AI Payment Verification
-                            <span className="bg-gray-800 text-white text-[10px] px-1.5 py-0.5 rounded uppercase flex items-center gap-1">
+                            <span className="bg-gray-800 mt-2 text-white text-[10px] px-1.5 py-0.5 rounded uppercase flex items-center gap-1 w-[50px]">
                                 <Lock size={8} /> Pro
                             </span>
                         </h3>
@@ -104,7 +142,7 @@ export default function Confirmations() {
                         {isLoading ? (
                             <tr><td colSpan={5} className="px-6 py-10 text-center text-gray-500">Loading...</td></tr>
                         ) : filteredDonations.length === 0 ? (
-                            <tr><td colSpan={5} className="px-6 py-10 text-center text-gray-500">No pending confirmations found.</td></tr>
+                            <tr><td colSpan={5} className="px-6 py-10 text-center text-gray-500">No {filterStatus} confirmations found.</td></tr>
                         ) : (
                             filteredDonations.map((donation: any) => (
                                 <tr key={donation.id} className="hover:bg-gray-50">
@@ -118,30 +156,22 @@ export default function Confirmations() {
                                     </td>
                                     <td className="px-6 py-4">
                                         {donation.metadata?.proof_url ? (
-                                            <a
-                                                href={donation.metadata.proof_url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 underline"
-                                            >
-                                                View Receipt <ExternalLink size={12} />
-                                            </a>
+                                            <span className={`inline-flex items-center text-xs font-medium px-2 py-0.5 rounded ${filterStatus === 'approved' ? 'text-green-700 bg-green-100' :
+                                                filterStatus === 'rejected' ? 'text-red-700 bg-red-100' :
+                                                    'text-yellow-700 bg-yellow-100'
+                                                }`}>
+                                                {filterStatus === 'approved' ? 'Verified' : filterStatus === 'rejected' ? 'Rejected' : 'Pending'}
+                                            </span>
                                         ) : (
                                             <span className="text-gray-400 text-sm">No file</span>
                                         )}
                                     </td>
-                                    <td className="px-6 py-4 text-right space-x-2">
+                                    <td className="px-6 py-4 text-right">
                                         <button
-                                            onClick={() => updateStatus.mutate({ id: donation.id, status: 'complete' })}
-                                            className="px-3 py-1 bg-green-100 text-green-700 rounded text-sm font-medium hover:bg-green-200"
+                                            onClick={() => setSelectedProof(donation)}
+                                            className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors"
                                         >
-                                            Approve
-                                        </button>
-                                        <button
-                                            onClick={() => updateStatus.mutate({ id: donation.id, status: 'pending' })} // Or some rejected status
-                                            className="px-3 py-1 bg-red-100 text-red-700 rounded text-sm font-medium hover:bg-red-200"
-                                        >
-                                            Reject
+                                            Review Proof <ExternalLink size={14} />
                                         </button>
                                     </td>
                                 </tr>
@@ -150,6 +180,78 @@ export default function Confirmations() {
                     </tbody>
                 </table>
             </div>
+
+            {/* Proof Modal */}
+            {selectedProof && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedProof(null)}>
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
+
+                        {/* Header */}
+                        <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                            <div>
+                                <h3 className="font-bold text-gray-900">Review Payment Proof</h3>
+                                <p className="text-xs text-gray-500">Donation #{selectedProof.id} &bull; Rp {selectedProof.amount.toLocaleString('id-ID')}</p>
+                            </div>
+                            <button onClick={() => setSelectedProof(null)} className="p-2 hover:bg-gray-200 rounded-full text-gray-500">
+                                ✕
+                            </button>
+                        </div>
+
+                        {/* Image Body */}
+                        <div className="flex-1 overflow-y-auto p-6 bg-gray-100 flex items-center justify-center min-h-[300px]">
+                            {selectedProof.metadata?.proof_url ? (
+                                <img
+                                    src={selectedProof.metadata.proof_url}
+                                    alt="Payment Proof"
+                                    className="max-w-full max-h-full rounded shadow-lg border border-gray-200"
+                                />
+                            ) : (
+                                <div className="text-gray-400 flex flex-col items-center">
+                                    <ExternalLink size={48} className="mb-2 opacity-50" />
+                                    <span>No proof image uploaded</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Metadata & Actions */}
+                        <div className="p-6 border-t border-gray-100 bg-white">
+                            <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
+                                <div>
+                                    <span className="block text-gray-500 text-xs uppercase font-semibold mb-1">Sender Name</span>
+                                    <div className="font-medium text-gray-900">{selectedProof.metadata?.sender_name || '-'}</div>
+                                </div>
+                                <div>
+                                    <span className="block text-gray-500 text-xs uppercase font-semibold mb-1">Sender Bank</span>
+                                    <div className="font-medium text-gray-900">{selectedProof.metadata?.sender_bank || '-'}</div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <button
+                                    disabled={updateStatus.isPending}
+                                    onClick={() => {
+                                        if (confirm('Are you sure you want to reject this proof?')) {
+                                            updateStatus.mutate({ id: selectedProof.id, status: 'failed' }); // Reject -> Failed
+                                        }
+                                    }}
+                                    className="px-4 py-3 bg-red-50 text-red-700 font-bold rounded-xl hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                >
+                                    {updateStatus.isPending ? 'Processing...' : 'Reject'}
+                                </button>
+                                <button
+                                    disabled={updateStatus.isPending}
+                                    onClick={() => {
+                                        updateStatus.mutate({ id: selectedProof.id, status: 'complete' });
+                                    }}
+                                    className="px-4 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 shadow-lg shadow-green-200 transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0 flex items-center justify-center gap-2"
+                                >
+                                    {updateStatus.isPending ? 'Processing...' : 'Approve Payment'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
