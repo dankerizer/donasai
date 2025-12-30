@@ -3,12 +3,36 @@
  * Single Campaign Template
  */
 
-get_header();
+global $wp_query;
+$payment_slug = get_option('wpd_settings_general')['payment_slug'] ?? 'pay';
 
-$campaign_id = get_the_ID();
-$progress    = wpd_get_campaign_progress( $campaign_id );
-$donors      = wpd_get_recent_donors( $campaign_id, 20 );
-$is_verified = get_post_meta( get_the_ID(), '_wpd_is_verified', true );
+// Check if viewing payment page
+if ( isset( $wp_query->query_vars[ $payment_slug ] ) ) {
+    // Standalone Page Layout
+    ?>
+    <!DOCTYPE html>
+    <html <?php language_attributes(); ?>>
+    <head>
+        <meta charset="<?php bloginfo( 'charset' ); ?>">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <?php wp_head(); ?>
+        <style>
+             /* Reset margin for standalone page to avoid theme interference */
+             html, body { margin: 0; padding: 0; }
+        </style>
+    </head>
+    <body <?php body_class('wpd-payment-page'); ?>>
+        <?php 
+        include WPD_PLUGIN_PATH . 'frontend/templates/donation-form.php'; 
+        wp_footer(); 
+        ?>
+    </body>
+    </html>
+    <?php
+    return;
+}
+
+get_header();
 ?>
 
 <div class="wpd-container" style="max-width:1100px; margin:0 auto; padding:20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
@@ -164,7 +188,6 @@ $is_verified = get_post_meta( get_the_ID(), '_wpd_is_verified', true );
 
                     <!-- CTA Buttons -->
                     <?php 
-                        $payment_slug = get_option('wpd_settings_general')['payment_slug'] ?? 'pay';
                         global $wp_rewrite;
                         if ( $wp_rewrite->using_permalinks() ) {
                             $donate_link = user_trailingslashit( get_permalink() . $payment_slug );
@@ -178,12 +201,12 @@ $is_verified = get_post_meta( get_the_ID(), '_wpd_is_verified', true );
 
                     <!-- Fundraiser Button -->
                     <?php if ( is_user_logged_in() ) : ?>
-                         <button onclick="wpdRegisterFundraiser(<?php echo $campaign_id; ?>)" style="width:100%; background:white; color:#059669; border:1px solid #059669; font-weight:600; padding:10px; border-radius:8px; cursor:pointer;">
+                         <button onclick="wpdRegisterFundraiser(<?php echo $campaign_id; ?>)" style="width:100%; background:white; color:var(--wpd-primary); border:1px solid var(--wpd-primary); font-weight:600; padding:10px; border-radius:8px; cursor:pointer;">
                              Jadi Fundraiser
                          </button>
                     <?php else : ?>
                          <div style="text-align:center; font-size:13px; color:#6b7280;">
-                             <a href="<?php echo wp_login_url( get_permalink() ); ?>" style="color:#059669;">Login</a> untuk jadi Fundraiser
+                             <a href="<?php echo wp_login_url( get_permalink() ); ?>" style="color:var(--wpd-primary);">Login</a> untuk jadi Fundraiser
                          </div>
                     <?php endif; ?>
 
@@ -218,7 +241,7 @@ $is_verified = get_post_meta( get_the_ID(), '_wpd_is_verified', true );
                             ?>
                             <div style="padding:15px 20px; border-bottom:1px solid #f3f4f6;">
                                 <div style="font-weight:600; color:#111827; font-size:14px;"><?php echo esc_html( $name ); ?></div>
-                                <div style="font-size:12px; color:#6b7280; margin-bottom:5px;">Berdonasi <span style="color:#111827;">Rp <?php echo number_format( $donor->amount, 0, ',', '.' ); ?></span> &bull; <?php echo $time; ?></div>
+                                <div style="font-size:12px; color:#6b7280; margin-bottom:5px;">Berdonasi <span style="color:var(--wpd-primary); font-weight:600;">Rp <?php echo number_format( $donor->amount, 0, ',', '.' ); ?></span> &bull; <?php echo $time; ?></div>
                                 <?php if ( ! empty( $donor->note ) ) : ?>
                                     <div style="font-size:13px; color:#4b5563; font-style:italic;">"<?php echo esc_html( $donor->note ); ?>"</div>
                                 <?php endif; ?>

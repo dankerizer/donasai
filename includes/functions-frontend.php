@@ -23,8 +23,10 @@ function wpd_template_loader( $template ) {
         $payment_slug = get_option('wpd_settings_general')['payment_slug'] ?? 'pay';
         
         // Payment Page (?donate=1 OR /slug/pay)
-        if ( isset( $_GET['donate'] ) || get_query_var( $payment_slug ) !== '' ) {
-            $payment_template = WPD_PLUGIN_PATH . 'frontend/templates/payment.php';
+        // Payment Page (?donate=1 OR /slug/pay)
+        global $wp_query;
+        if ( isset( $_GET['donate'] ) || isset( $wp_query->query_vars[ $payment_slug ] ) ) {
+            $payment_template = WPD_PLUGIN_PATH . 'frontend/templates/donation-form.php';
             if ( file_exists( $payment_template ) ) {
                 return $payment_template;
             }
@@ -105,6 +107,17 @@ function wpd_get_recent_donors( $campaign_id, $limit = 10 ) {
     ) );
     
     return $results;
+}
+
+/**
+ * Check if a gateway is active
+ */
+function wpd_is_gateway_active( $gateway_id ) {
+    if ( $gateway_id === 'midtrans' ) {
+        $settings = get_option( 'wpd_settings_midtrans', [] );
+        return ! empty( $settings['enabled'] );
+    }
+    return false;
 }
 
 /**

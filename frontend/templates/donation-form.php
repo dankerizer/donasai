@@ -1,317 +1,630 @@
 <?php
 /**
- * Donation Form Template
- * 
- * Variables available:
- * $campaign_id (int)
+ * Donation Form Template (Modern Redesign)
  */
 
 $campaign_id = isset( $campaign_id ) ? $campaign_id : get_the_ID();
+$title = get_the_title($campaign_id);
+$thumbnail = get_the_post_thumbnail_url($campaign_id, 'medium');
 $type = get_post_meta( $campaign_id, '_wpd_type', true );
 $packages = get_post_meta( $campaign_id, '_wpd_packages', true );
 $packages = json_decode( $packages, true );
+
+// Get User Data
+$current_user = wp_get_current_user();
+$default_name = $current_user->ID ? $current_user->display_name : '';
+$default_email = $current_user->ID ? $current_user->user_email : '';
+
+// Settings
+$settings = get_option('wpd_settings_donation', []);
+$min_amount = $settings['min_amount'] ?? 10000;
+$presets = explode(',', $settings['presets'] ?? '50000,100000,200000,500000');
+$presets = array_map('intval', $presets);
 ?>
 
-<div class="wpd-donation-form-wrapper" id="wpd-form">
+<!DOCTYPE html>
+<html <?php language_attributes(); ?>>
+<head>
+    <meta charset="<?php bloginfo( 'charset' ); ?>">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?php wp_head(); ?>
+</head>
+<body <?php body_class('wpd-payment-page'); ?>>
+
+<div class="wpd-layout-wrapper">
     
-    <style>
-        .wpd-form-title { margin-top:0; margin-bottom:20px; font-size:22px; font-weight:700; color:#1f2937; text-align:center; }
-        .wpd-input, .wpd-textarea {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 16px;
-            margin-top: 5px;
-            background: #fff;
-            box-sizing: border-box;
-            transition: all 0.2s;
-        }
-        .wpd-input:focus, .wpd-textarea:focus {
-            border-color: #3b82f6;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        .wpd-label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #374151;
-            font-size: 14px;
-        }
-        .wpd-form-group {
-            margin-bottom: 20px;
-        }
-        .wpd-amount-presets {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .wpd-btn-preset {
-            background: white;
-            border: 1px solid #d1d5db;
-            color: #4b5563;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-            font-size: 14px;
-        }
-        .wpd-btn-preset:hover, .wpd-btn-preset.active {
-            border-color: var(--wpd-primary);
-            color: var(--wpd-primary);
-            background: #eff6ff;
-            font-weight: 600;
-        }
-        .wpd-copy-btn {
-            background:#f3f4f6; border:1px solid #d1d5db; color:#4b5563; padding:4px 8px; border-radius:4px; font-size:12px; cursor:pointer; margin-left:8px;
-        }
-        .wpd-copy-btn:hover { background:#e5e7eb; }
-        .wpd-btn-submit {
-            display: block;
-            width: 100%;
-            padding: 16px;
-            background: var(--wpd-btn); /* Pink to match reference or Brand Color */
-            color: white;
-            font-weight: 700;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 30px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .wpd-btn-submit:hover {
-            background: var(--wpd-btn-hover);
-        }
-        .wpd-checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .wpd-checkbox-group input {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-        .wpd-checkbox-group label {
-            cursor: pointer;
-            font-size: 14px;
-            color: #4b5563;
-        }
-        .wpd-alert-success {
-            background: #ecfdf5;
-            color: #065f46;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #a7f3d0;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-    </style>
+    <!-- Header (Mobile Sticky) -->
+    <div class="wpd-header-mobile">
+        <a href="<?php echo get_permalink($campaign_id); ?>" class="wpd-back-btn">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </a>
+        <div class="wpd-header-title">Konfirmasi Donasi</div>
+    </div>
 
-	<h3 class="wpd-form-title"><?php _e( 'Donasi Sekarang', 'wp-donasi' ); ?></h3>
-
-	<?php if ( isset( $_GET['donation_success'] ) && $_GET['donation_success'] == 1 ) : ?>
-		<div class="wpd-alert-success">
-			<?php _e( 'Terima kasih! Donasi Anda telah tercatat. Silakan lakukan pembayaran (Instruksi Transfer akan muncul di atas).', 'wp-donasi' ); ?>
-		</div>
-	<?php endif; ?>
-
-	<?php
-        $settings = get_option('wpd_settings_donation', []);
-        $gen_settings = get_option('wpd_settings_general', []);
+    <!-- Main Card -->
+    <div class="wpd-card">
         
-        $min_amount = $settings['min_amount'] ?? 10000;
-        $anon_label = $settings['anonymous_label'] ?? 'Hamba Allah';
-        $presets_str = $settings['presets'] ?? '50000,100000,200000,500000';
-        $presets = array_map('intval', explode(',', $presets_str));
-        $remove_branding = ! empty( $gen_settings['remove_branding'] );
-    ?>
-    
-    <form method="post" action="" class="wpd-form">
-		<?php wp_nonce_field( 'wpd_donate_action', 'wpd_donate_nonce' ); ?>
-		<input type="hidden" name="wpd_action" value="submit_donation">
-		<input type="hidden" name="campaign_id" value="<?php echo esc_attr( $campaign_id ); ?>">
-
-		<!-- Amount Selection -->
-		<div class="wpd-form-group">
-			<label class="wpd-label"><?php _e( 'Nominal Donasi', 'wp-donasi' ); ?></label>
-			
-			<?php if ( $type === 'zakat' ) : ?>
-                <!-- Zakat Calculator -->
-                <div style="background:#f9fafb; padding:20px; border-radius:10px; border:1px solid #e5e7eb; margin-bottom:15px;">
-                    <label class="wpd-label" style="margin-top:0; color:#2563eb;">Kalkulator Zakat</label>
-                    <select id="zakat_type" class="wpd-input" onchange="toggleZakatType(this.value)">
-                        <option value="maal">Zakat Maal (Harta)</option>
-                        <option value="income">Zakat Penghasilan</option>
-                    </select>
-                    
-                    <div id="zakat_wealth_row" style="margin-top:15px;">
-                        <label style="font-size:13px; color:#6b7280; display:block; margin-bottom:5px;">Total Harta (Rp)</label>
-                        <input type="number" id="zakat_wealth" class="wpd-input" oninput="calculateZakat()" placeholder="0">
-                    </div>
-                    
-                    <div id="zakat_income_row" style="display:none; margin-top:15px;">
-                        <label style="font-size:13px; color:#6b7280; display:block; margin-bottom:5px;">Penghasilan Bulanan (Rp)</label>
-                        <input type="number" id="zakat_income" class="wpd-input" oninput="calculateZakat()" placeholder="0">
-                    </div>
-                </div>
-            <?php elseif ( $type === 'qurban' && ! empty( $packages ) ) : ?>
-                <!-- Qurban Packages -->
-                 <div class="wpd-packages-list" style="margin-bottom:15px;">
-                    <p style="font-size:13px; color:#6b7280; margin-bottom:10px;">Pilih Hewan Qurban:</p>
-                    <?php foreach ( $packages as $pkg ) : ?>
-                        <label style="display:block; padding:15px; border:1px solid #ddd; margin-bottom:10px; border-radius:8px; cursor:pointer; background:white; transition:border 0.2s;">
-                            <input type="radio" name="qurban_package" draggable="false" value="<?php echo esc_attr( $pkg['price'] ); ?>" onclick="selectQurbanPackage(this.value, '<?php echo esc_js($pkg['name']); ?>')"> 
-                            <strong style="color:#111827;"><?php echo esc_html( $pkg['name'] ); ?></strong>
-                            <div style="color:#059669; font-weight:600;">Rp <?php echo number_format( (float)$pkg['price'], 0, ',', '.' ); ?></div>
-                        </label>
-                    <?php endforeach; ?>
-                    
-                    <div id="qurban_qty_wrapper" style="display:none; margin-top:15px; padding-top:15px; border-top:1px dashed #ddd;">
-                        <label class="wpd-label">Jumlah Qurban</label>
-                        <input type="number" name="qurban_qty" id="qurban_qty" class="wpd-input" value="1" min="1" onchange="updateQurbanTotal()" oninput="updateQurbanTotal()">
-                        
-                        <div id="qurban_names_wrapper" style="margin-top:15px;">
-                            <label class="wpd-label">Nama Pekurban (Opsional)</label>
-                            <p style="font-size:12px; color:#9ca3af; margin-top:-3px; margin-bottom:10px;">* Jika dikosongkan, akan menggunakan nama donatur utama.</p>
-                            <div id="qurban_names_container">
-                                <!-- Dynamic Inputs -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            <?php else : ?>
-                <!-- Standard Presets -->
-                <div class="wpd-amount-presets">
-                    <?php foreach($presets as $p): ?>
-                        					<button type="button" class="wpd-btn-preset" onclick="selectPreset(<?php echo $p; ?>, this)">
-						Rp <?php echo number_format( $p, 0, ',', '.' ); ?>
-					</button>
-                    <?php endforeach; ?>
-                </div>
+        <!-- Campaign Summary -->
+        <div class="wpd-campaign-summary">
+            <?php if($thumbnail): ?>
+                <img src="<?php echo esc_url($thumbnail); ?>" alt="Campaign" class="wpd-campaign-thumb">
             <?php endif; ?>
-
-			<div style="position:relative;">
-                <span style="position:absolute; left:15px; top:50%; transform:translateY(-50%); color:#9ca3af; font-weight:600;">Rp</span>
-			    <input type="number" name="amount" id="wpd-amount-input" class="wpd-input" style="padding-left:45px; font-weight:bold; color:#111827;" placeholder="<?php echo $type === 'zakat' ? '0' : 'Masukkan nominal lainnya'; ?>" required min="<?php echo esc_attr($min_amount); ?>" <?php echo $type === 'zakat' ? 'readonly' : ''; ?>>
-            </div>
-            <?php if($type !== 'zakat'): ?>
-                <p style="font-size:12px; color:#6b7280; margin-top:5px;">Minimal donasi: Rp <?php echo number_format($min_amount, 0, ',', '.'); ?></p>
-            <?php endif; ?>
-		</div>
-
-		<!-- Donor Info -->
-		<div style="margin-top:30px;">
-            <div class="wpd-form-group">
-                <label class="wpd-label"><?php _e( 'Nama Lengkap', 'wp-donasi' ); ?></label>
-                <input type="text" name="donor_name" class="wpd-input" required placeholder="Nama Anda">
-            </div>
-
-            <div class="wpd-form-group">
-                <label class="wpd-label"><?php _e( 'Email / WhatsApp', 'wp-donasi' ); ?></label>
-                <input type="text" name="donor_email" class="wpd-input" required placeholder="nomor wa atau email">
-            </div>
-
-            <div class="wpd-form-group">
-                <label class="wpd-label"><?php _e( 'Pesan / Doa (Opsional)', 'wp-donasi' ); ?></label>
-                <textarea name="donor_note" class="wpd-textarea" rows="3" placeholder="Tulis doa atau pesan dukungan..."></textarea>
+            <div class="wpd-campaign-info">
+                <div class="wpd-campaign-label">Anda akan berdonasi untuk:</div>
+                <h3 class="wpd-campaign-title"><?php echo esc_html($title); ?></h3>
             </div>
         </div>
 
-		<div class="wpd-form-group wpd-checkbox-group">
-			<input type="checkbox" name="is_anonymous" id="is_anonymous" value="1">
-			<label for="is_anonymous"><?php printf( __( 'Sembunyikan nama saya (%s)', 'wp-donasi' ), esc_html($anon_label) ); ?></label>
-		</div>
+        <form method="post" id="donationForm">
+            <?php wp_nonce_field( 'wpd_process_donation', '_wpnonce' ); ?>
+            <input type="hidden" name="action" value="wpd_process_donation">
+            <input type="hidden" name="campaign_id" value="<?php echo esc_attr( $campaign_id ); ?>">
 
-		<button type="submit" class="wpd-btn-submit">
-			<?php _e( 'Lanjut Pembayaran', 'wp-donasi' ); ?>
-		</button>
-        
-        <?php if(!$remove_branding): ?>
-            <div style="text-align:center; margin-top:20px; font-size:12px; color:#9ca3af;">
-                Secure payment powered by wp-donasi
+            <!-- Alert Success -->
+            <?php if ( isset( $_GET['donation_success'] ) && $_GET['donation_success'] == 1 ) : ?>
+                <div class="wpd-alert-success">
+                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Donasi tercatat! Silakan selesaikan pembayaran.</span>
+                </div>
+            <?php endif; ?>
+
+            <!-- SECTION: NOMINAL -->
+            <div class="wpd-section">
+                <label class="wpd-label-heading">Mau donasi berapa?</label>
+                
+                <?php if ( $type === 'zakat' ) : ?>
+                    <!-- Zakat Logic Placeholder (Simplified for Redesign) -->
+                     <div class="wpd-callout-blue">
+                        <label>Pilih Jenis Zakat</label>
+                        <select id="zakat_type" class="wpd-input" onchange="toggleZakatType(this.value)">
+                            <option value="maal">Zakat Maal</option>
+                            <option value="income">Zakat Penghasilan</option>
+                        </select>
+                        <!-- Inputs added via JS for simplicity in this view -->
+                        <input type="number" id="zakat_calc_input" class="wpd-input mt-2" placeholder="Masukkan jumlah harta/penghasilan" oninput="calculateZakat()">
+                    </div>
+                <?php elseif ( $type === 'qurban' && !empty($packages) ) : ?>
+                    <!-- Qurban List -->
+                    <div class="wpd-qurban-list">
+                        <?php foreach($packages as $pkg): ?>
+                        <label class="wpd-radio-card">
+                            <input type="radio" name="qurban_package" value="<?php echo esc_attr($pkg['price']); ?>" onclick="selectQurbanPackage(this.value)">
+                            <div class="wpd-radio-check"></div>
+                            <div class="wpd-radio-content">
+                                <div class="wpd-pkg-name"><?php echo esc_html($pkg['name']); ?></div>
+                                <div class="wpd-pkg-price">Rp <?php echo number_format($pkg['price'],0,',','.'); ?></div>
+                            </div>
+                        </label>
+                        <?php endforeach; ?>
+                    </div>
+                    <!-- Qty Input hidden by default -->
+                    <div id="qurban_qty_wrapper" style="display:none; margin-top:15px;">
+                        <label class="wpd-label-sm">Jumlah Hewan</label>
+                        <div class="wpd-qty-control">
+                            <button type="button" onclick="changeQty(-1)">-</button>
+                            <input type="number" name="qurban_qty" id="qurban_qty" value="1" readonly>
+                            <button type="button" onclick="changeQty(1)">+</button>
+                        </div>
+                    </div>
+                <?php else : ?>
+                    <!-- Standard Donation Presets -->
+                    <div class="wpd-grid-presets">
+                        <?php foreach($presets as $val): ?>
+                        <div class="wpd-preset-card" onclick="selectAmount(this, <?php echo $val; ?>)">
+                            <div class="wpd-preset-emoji">💖</div>
+                            <div class="wpd-preset-val">Rp <?php echo number_format($val/1000, 0); ?>rb</div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+
+                <div class="wpd-input-money-wrapper">
+                    <span class="wpd-currency">Rp</span>
+                    <input type="number" name="amount" id="amount" class="wpd-input-money" placeholder="0" min="<?php echo $min_amount; ?>" required>
+                </div>
+                <div class="wpd-helper-text">Minimal donasi Rp <?php echo number_format($min_amount,0,',','.'); ?></div>
             </div>
-        <?php endif; ?>
-	</form>
 
-	<script>
-		var currentQurbanPrice = 0;
+            <div class="wpd-divider"></div>
 
-		function setWpdAmount(amount) {
-			document.getElementById('wpd-amount-input').value = amount;
-            // Prevent default form submission if button is inside form
-            // (Buttons are type=button so safe)
-		}
+            <!-- SECTION: IDENTITY -->
+            <div class="wpd-section">
+                <div class="wpd-user-option">
+                    <?php if ( is_user_logged_in() ) : ?>
+                        <div class="wpd-user-profile">
+                            <img src="<?php echo get_avatar_url($current_user->ID); ?>" alt="">
+                            <div>
+                                <div class="name"><?php echo esc_html($default_name); ?></div>
+                                <div class="email"><?php echo esc_html($default_email); ?></div>
+                            </div>
+                        </div>
+                    <?php else : ?>
+                        <div class="wpd-login-prompt">
+                            Sudah punya akun? <a href="<?php echo wp_login_url(get_permalink()); ?>">Login</a> agar lebih mudah.
+                        </div>
+                    <?php endif; ?>
+                </div>
 
-		    function selectPreset(amount, btn) {
-        document.getElementById('wpd-amount-input').value = amount;
-        
-        // Remove active class from all buttons
-        const buttons = document.querySelectorAll('.wpd-btn-preset');
-        buttons.forEach(b => b.classList.remove('active'));
-        
-        // Add active class to clicked button
-        if(btn) btn.classList.add('active');
-    }
-		function toggleZakatType(type) {
-             document.getElementById('zakat_wealth_row').style.display = type === 'maal' ? 'block' : 'none';
-             document.getElementById('zakat_income_row').style.display = type === 'income' ? 'block' : 'none';
-             calculateZakat();
-        }
+                <div class="wpd-form-row">
+                    <input type="text" name="name" class="wpd-input" placeholder="Nama Lengkap" value="<?php echo esc_attr($default_name); ?>" required>
+                </div>
+                
+                <div class="wpd-form-row">
+                    <input type="text" name="email" class="wpd-input" placeholder="Nomor WhatsApp atau Email" value="<?php echo esc_attr($default_email); ?>" required>
+                </div>
 
-		function calculateZakat() {
-		    var type = document.getElementById('zakat_type').value;
-		    var amount = 0;
-		    
-		    if (type === 'maal') {
-		        var wealth = parseFloat(document.getElementById('zakat_wealth').value) || 0;
-		        amount = wealth * 0.025;
-		    } else if (type === 'income') {
-		        var income = parseFloat(document.getElementById('zakat_income').value) || 0;
-		        amount = income * 0.025;
-		    }
-		    
-		    document.getElementById('wpd-amount-input').value = Math.ceil(amount);
-		}
-		
-		function selectQurbanPackage(price, name) {
-		    currentQurbanPrice = parseFloat(price);
-		    document.getElementById('qurban_qty_wrapper').style.display = 'block';
-		    updateQurbanTotal();
-		}
-		
-		function updateQurbanTotal() {
-		    var qty = parseInt(document.getElementById('qurban_qty').value) || 1;
-		    if(qty < 1) qty = 1;
-		    
-		    var total = currentQurbanPrice * qty;
-		    document.getElementById('wpd-amount-input').value = total;
-		    
-		    renderQurbanNames(qty);
-		}
-		
-		function renderQurbanNames(qty) {
-		    var container = document.getElementById('qurban_names_container');
-		    var existingInputs = container.querySelectorAll('input');
-		    var values = [];
-		    existingInputs.forEach(function(input) {
-		        values.push(input.value);
-		    });
-		    
-		    container.innerHTML = '';
-		    
-		    for (var i = 0; i < qty; i++) {
-		        var val = values[i] || '';
-		        var div = document.createElement('div');
-		        div.style.marginBottom = '8px';
-		        div.innerHTML = '<input type="text" name="qurban_names[]" class="wpd-input" placeholder="Nama Pekurban ' + (i+1) + '" value="' + val + '" style="font-size:14px; padding:10px;">';
-		        container.appendChild(div);
-		    }
-		}
-	</script>
+                <div class="wpd-switch-wrapper">
+                    <label class="wpd-switch">
+                        <input type="checkbox" name="is_anonymous" value="1">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="wpd-switch-label">Sembunyikan nama saya (Hamba Allah)</span>
+                </div>
+
+                <div class="wpd-form-row mt-3">
+                    <textarea name="note" class="wpd-textarea" placeholder="Tulis doa atau dukungan (opsional)..." rows="2"></textarea>
+                </div>
+            </div>
+
+            <div class="wpd-divider"></div>
+
+            <!-- SECTION: PAYMENT METHOD -->
+            <div class="wpd-section">
+                <label class="wpd-label-heading">Metode Pembayaran</label>
+                
+                <div class="wpd-payment-list">
+                    <!-- Manual -->
+                    <label class="wpd-payment-item">
+                        <input type="radio" name="payment_method" value="manual" checked>
+                        <div class="wpd-payment-box">
+                            <div class="wpd-payment-icon">🏦</div>
+                            <div class="wpd-payment-details">
+                                <div class="title">Transfer Bank Manual</div>
+                                <div class="desc">Cek manual 1x24 jam (Free)</div>
+                            </div>
+                            <div class="wpd-check-icon"></div>
+                        </div>
+                    </label>
+
+                    <!-- Midtrans -->
+                    <?php if( wpd_is_gateway_active('midtrans') ): ?>
+                    <label class="wpd-payment-item">
+                        <input type="radio" name="payment_method" value="midtrans">
+                        <div class="wpd-payment-box">
+                            <div class="wpd-payment-icon">⚡</div>
+                            <div class="wpd-payment-details">
+                                <div class="title">Instan / Otomatis</div>
+                                <div class="desc">QRIS, E-Wallet, Virtual Account</div>
+                            </div>
+                            <div class="wpd-badge-instant">Auto</div>
+                            <div class="wpd-check-icon"></div>
+                        </div>
+                    </label>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <!-- FOOTER ACTION -->
+            <div class="wpd-footer-action">
+                <button type="submit" class="wpd-btn-primary">Lanjut Pembayaran</button>
+                <div class="wpd-secure-badge">
+                    <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                    Pembayaran Aman & Terenkripsi
+                </div>
+            </div>
+
+        </form>
+    </div>
 </div>
+
+<style>
+/* Reset & Base */
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #f3f4f6;
+}
+.wpd-layout-wrapper {
+    background-color: #f3f4f6;
+    min-height: 100vh;
+    padding-bottom: 90px; /* Space for footer */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.wpd-card {
+    background: white;
+    max-width: 550px;
+    margin: 0 auto;
+    min-height: 100vh; /* Fill on mobile */
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+}
+@media(min-width: 640px) {
+    .wpd-layout-wrapper { padding: 40px 20px; }
+    .wpd-card { min-height: auto; border-radius: 20px; overflow: hidden; }
+}
+
+/* Header */
+.wpd-header-mobile {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    background: white;
+    border-bottom: 1px solid #f3f4f6;
+    position: sticky;
+    top: 0;
+    z-index: 99;
+}
+/* Admin Bar Adjustment */
+body.admin-bar .wpd-header-mobile { top: 32px; }
+@media screen and (max-width: 782px) {
+    body.admin-bar .wpd-header-mobile { top: 46px; }
+}
+
+.wpd-back-btn {
+    color: #374151;
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+.wpd-header-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+}
+
+/* Campaign Summary */
+.wpd-campaign-summary {
+    padding: 20px 24px;
+    background: #fdfdfd;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid #f3f4f6;
+}
+.wpd-campaign-thumb {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+.wpd-campaign-label {
+    font-size: 11px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+.wpd-campaign-title {
+    margin: 2px 0 0 0;
+    font-size: 15px;
+    line-height: 1.3;
+    color: #1f2937;
+    font-weight: 700;
+}
+
+/* Sections */
+.wpd-section {
+    padding: 20px 24px;
+}
+.wpd-divider {
+    height: 8px;
+    background: #f3f4f6;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+.wpd-label-heading {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 16px;
+}
+
+/* Presets Grid */
+.wpd-grid-presets {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.wpd-preset-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+    position: relative;
+    overflow: hidden;
+}
+.wpd-preset-card:hover {
+    border-color: #d1d5db;
+    background: #f9fafb;
+}
+.wpd-preset-card.active {
+    border-color: var(--wpd-primary, #2563eb);
+    background: var(--wpd-bg-soft, #eff6ff); 
+    box-shadow: 0 0 0 1px var(--wpd-primary, #2563eb);
+}
+.wpd-preset-emoji { font-size: 20px; margin-bottom: 4px; }
+.wpd-preset-val { font-weight: 700; color: #374151; font-size: 15px; }
+
+/* Money Input */
+.wpd-input-money-wrapper {
+    position: relative;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    overflow: hidden;
+    background: white;
+    transition: all 0.2s;
+}
+.wpd-input-money-wrapper:focus-within {
+    border-color: var(--wpd-primary, #2563eb);
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
+}
+.wpd-currency {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 700;
+    color: #9ca3af;
+    font-size: 18px;
+}
+.wpd-input-money {
+    width: 100%;
+    border: none;
+    padding: 16px 16px 16px 50px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    outline: none;
+    box-sizing: border-box;
+}
+.wpd-helper-text {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 8px;
+}
+
+/* Inputs */
+.wpd-form-row { margin-bottom: 15px; }
+.wpd-input, .wpd-textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+    background: #fdfdfd;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+.wpd-input:focus, .wpd-textarea:focus {
+    background: white;
+    border-color: var(--wpd-primary, #2563eb);
+}
+.mt-3 { margin-top: 15px; }
+
+/* User Profile - FIXED */
+.wpd-user-option {
+    margin-bottom: 20px;
+}
+.wpd-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: #f9fafb;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+}
+.wpd-user-profile img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+.wpd-user-profile .name { font-weight: 600; font-size: 14px; color: #111827; }
+.wpd-user-profile .email { font-size: 12px; color: #6b7280; }
+.wpd-login-prompt { font-size: 14px; color: #4b5563; }
+.wpd-login-prompt a { color: var(--wpd-primary, #2563eb); font-weight: 600; text-decoration: none; }
+
+/* Switch */
+.wpd-switch-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 10px 0 20px 0;
+}
+.wpd-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+.wpd-switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #e5e7eb;
+    transition: .3s;
+    border-radius: 34px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+input:checked + .slider { background-color: var(--wpd-primary, #2563eb); }
+input:checked + .slider:before { transform: translateX(20px); }
+.wpd-switch-label { font-size: 14px; color: #4b5563; cursor: pointer; }
+
+/* Payment Types */
+.wpd-payment-list { display: grid; gap: 12px; }
+.wpd-payment-item { display: block; cursor: pointer; }
+.wpd-payment-item input { display: none; }
+.wpd-payment-box {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: white;
+    transition: all 0.2s;
+}
+.wpd-payment-item input:checked + .wpd-payment-box {
+    border-color: var(--wpd-primary, #2563eb);
+    background: var(--wpd-bg-soft, #f0fdf4);
+    box-shadow: 0 0 0 1px var(--wpd-primary, #2563eb);
+}
+.wpd-payment-icon {
+    font-size: 20px;
+    margin-right: 15px;
+    background: #f3f4f6;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+.wpd-payment-details { flex: 1; }
+.wpd-payment-details .title { font-weight: 700; color: #1f2937; font-size: 15px; margin-bottom: 2px; }
+.wpd-payment-details .desc { font-size: 12px; color: #6b7280; }
+.wpd-badge-instant {
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 6px;
+    border-radius: 4px;
+    margin-right: 10px;
+    text-transform: uppercase;
+}
+.wpd-check-icon {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+}
+.wpd-payment-item input:checked + .wpd-payment-box .wpd-check-icon {
+    border-color: var(--wpd-primary, #2563eb);
+    background: var(--wpd-primary, #2563eb);
+}
+.wpd-payment-item input:checked + .wpd-payment-box .wpd-check-icon::after {
+    content: '';
+    position: absolute;
+    top: 5px; left: 5px;
+    width: 6px; height: 6px;
+    background: white;
+    border-radius: 50%;
+}
+
+/* Footer Action - FIXED */
+.wpd-footer-action {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: white;
+    padding: 16px 20px;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+    z-index: 100;
+    text-align: center;
+    border-top: 1px solid #f3f4f6;
+}
+@media(min-width: 640px) {
+    .wpd-footer-action {
+        position: static;
+        box-shadow: none;
+        border: none;
+        padding: 20px 0 0 0;
+    }
+}
+.wpd-btn-primary {
+    display: block;
+    width: 100%;
+    background: var(--wpd-btn, #2563eb); /* Fallback to blue */
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+    -webkit-appearance: none;
+}
+.wpd-btn-primary:hover {
+    opacity: 0.95;
+    background: var(--wpd-btn-hover, #1d4ed8);
+}
+.wpd-btn-primary:active { transform: scale(0.98); }
+.wpd-secure-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 12px;
+}
+</style>
+
+<script>
+function selectAmount(card, amount) {
+    document.getElementById('amount').value = amount;
+    
+    // Clear active classes
+    document.querySelectorAll('.wpd-preset-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+}
+
+// Qurban & Zakat js stubs for interaction
+function toggleZakatType(val) {
+    let output = document.getElementById('zakat_calc_input');
+    if(val === 'maal') output.placeholder = 'Total Harta (Rp)';
+    else output.placeholder = 'Total Penghasilan (Rp)';
+}
+function calculateZakat() {
+    let val = document.getElementById('zakat_calc_input').value;
+    document.getElementById('amount').value = Math.round(val * 0.025);
+}
+function selectQurbanPackage(price) {
+    document.querySelector('#qurban_qty_wrapper').style.display = 'block';
+    updateQurbanTotal();
+}
+function changeQty(delta) {
+    let input = document.getElementById('qurban_qty');
+    let val = parseInt(input.value) + delta;
+    if(val < 1) val = 1;
+    input.value = val;
+    updateQurbanTotal();
+}
+function updateQurbanTotal() {
+    let qty = document.getElementById('qurban_qty').value;
+    let price = document.querySelector('input[name="qurban_package"]:checked').value;
+    document.getElementById('amount').value = qty * price;
+}
+</script>
+
+<?php if ( is_admin_bar_showing() ) : ?>
+<style>.wpd-header-mobile { top: 32px; } </style>
+<?php endif; ?>
+<?php wp_footer(); ?>
+</body>
+</html>

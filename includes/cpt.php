@@ -84,5 +84,26 @@ function wpd_register_cpt() {
 		'rewrite'           => array( 'slug' => 'donation-category' ),
 	);
 
-	register_taxonomy( 'donation_category', array( 'wpd_campaign' ), $tax_args );
+    register_taxonomy( 'donation_category', array( 'wpd_campaign' ), $tax_args );
+}
+
+/**
+ * Add Rewrite Endpoints
+ */
+add_action( 'init', 'wpd_add_rewrite_endpoints' );
+function wpd_add_rewrite_endpoints() {
+    $payment_slug = get_option('wpd_settings_general')['payment_slug'] ?? 'pay';
+    add_rewrite_endpoint( $payment_slug, EP_PERMALINK | EP_PAGES );
+}
+
+/**
+ * Maybe Flush Rewrite Rules
+ * Runs on admin_init to ensure all init hooks (CPT/Endpoints) are registered first.
+ */
+add_action( 'admin_init', 'wpd_maybe_flush_rewrites' );
+function wpd_maybe_flush_rewrites() {
+    if ( get_option( 'wpd_rewrite_flush_needed' ) ) {
+        flush_rewrite_rules();
+        delete_option( 'wpd_rewrite_flush_needed' );
+    }
 }
