@@ -105,6 +105,16 @@ $settings_bank  = get_option( 'wpd_settings_bank', [] );
                 Share ke WhatsApp
             </a>
         </div>
+
+        <?php 
+        $gen_settings = get_option('wpd_settings_general', []);
+        $is_branding_removed = !empty($gen_settings['remove_branding']);
+        
+        if ( ! $is_branding_removed ) : ?>
+            <div class="wpd-powered-by" style="margin-top: 30px; opacity: 0.7;">
+                Powered by <a href="https://donasai.com" target="_blank" style="color:inherit; text-decoration:none; font-weight:600;">Donasai</a>
+            </div>
+        <?php endif; ?>
     </div>
 
     <a href="#" onclick="window.print(); return false;" class="print-btn">Print Receipt</a>

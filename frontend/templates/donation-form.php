@@ -246,15 +246,17 @@ $presets = array_map('intval', $presets);
             </div>
 
         </form>
+        
+        <?php 
+        $gen_settings = get_option('wpd_settings_general', []);
+        $is_branding_removed = !empty($gen_settings['remove_branding']);
+        
+        if ( ! $is_branding_removed ) : ?>
+            <div class="wpd-powered-by">
+                Powered by <a href="https://donasai.com" target="_blank">Donasai</a>
+            </div>
+        <?php endif; ?>
     </div>
-    <?php 
-    $gen_settings = get_option('wpd_settings_general', []);
-    $remove_branding = !empty($gen_settings['remove_branding']);
-    if ( ! $remove_branding ) : ?>
-        <div class="wpd-powered-by">
-            Powered by <a href="https://donasai.com" target="_blank">Donasai</a>
-        </div>
-    <?php endif; ?>
 </div>
 
 <style>
@@ -289,9 +291,11 @@ html, body {
     padding: 15px 20px;
     background: white;
     border-bottom: 1px solid #f3f4f6;
-    position: sticky;
+    position: fixed;
     top: 0;
     z-index: 99;
+    width: 100%;
+    left: 0;
 }
 /* Admin Bar Adjustment */
 body.admin-bar .wpd-header-mobile { top: 32px; }
@@ -627,8 +631,8 @@ input:checked + .slider:before { transform: translateX(20px); }
     text-align: center;
     font-size: 13px;
     color: #9ca3af;
-    margin-top: 20px;
-    padding-bottom: 20px;
+    margin-top: 10px;
+    padding-bottom: 30px; /* Extra padding for bottom */
 }
 .wpd-powered-by a {
     color: inherit;
