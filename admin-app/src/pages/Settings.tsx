@@ -31,6 +31,9 @@ export default function Settings() {
         container_width: '1100px',
         border_radius: '12px',
         campaign_layout: 'sidebar-right',
+        font_family: 'Inter',
+        font_size: '16px',
+        dark_mode: false,
         // Bank
         bank_name: '',
         account_number: '',
@@ -94,6 +97,9 @@ export default function Settings() {
                 container_width: data.appearance?.container_width || '1100px',
                 border_radius: data.appearance?.border_radius || '12px',
                 campaign_layout: data.appearance?.campaign_layout || 'sidebar-right',
+                font_family: data.appearance?.font_family || 'Inter',
+                font_size: data.appearance?.font_size || '16px',
+                dark_mode: data.appearance?.dark_mode === true || data.appearance?.dark_mode === '1',
                 // Bank
                 bank_name: data.bank?.bank_name || '',
                 account_number: data.bank?.account_number || '',
@@ -146,7 +152,10 @@ export default function Settings() {
                     button_color: data.button_color,
                     container_width: data.container_width,
                     border_radius: data.border_radius,
-                    campaign_layout: data.campaign_layout
+                    campaign_layout: data.campaign_layout,
+                    font_family: data.font_family,
+                    font_size: data.font_size,
+                    dark_mode: data.dark_mode
                 },
                 bank: {
                     bank_name: data.bank_name,
@@ -447,77 +456,7 @@ export default function Settings() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="border-t border-gray-200 pt-6">
-                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Tampilan & Layout</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Warna Brand (Utama)</label>
-                                            <div className="flex items-center gap-2">
-                                                <input
-                                                    type="color"
-                                                    value={formData.brand_color || '#059669'}
-                                                    onChange={(e) => setFormData({ ...formData, brand_color: e.target.value })}
-                                                    className="h-10 w-14 border border-gray-300 rounded p-1"
-                                                />
-                                                <input
-                                                    type="text"
-                                                    value={formData.brand_color || '#059669'}
-                                                    onChange={(e) => setFormData({ ...formData, brand_color: e.target.value })}
-                                                    className="flex-1 p-2 border border-gray-300 rounded-lg text-sm uppercase"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Warna Tombol</label>
-                                            <div className="flex items-center gap-2">
-                                                <input
-                                                    type="color"
-                                                    value={formData.button_color || '#ec4899'}
-                                                    onChange={(e) => setFormData({ ...formData, button_color: e.target.value })}
-                                                    className="h-10 w-14 border border-gray-300 rounded p-1"
-                                                />
-                                                <input
-                                                    type="text"
-                                                    value={formData.button_color || '#ec4899'}
-                                                    onChange={(e) => setFormData({ ...formData, button_color: e.target.value })}
-                                                    className="flex-1 p-2 border border-gray-300 rounded-lg text-sm uppercase"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Lebar Kontainer (Max Width)</label>
-                                            <input
-                                                type="text"
-                                                value={formData.container_width || '1100px'}
-                                                onChange={(e) => setFormData({ ...formData, container_width: e.target.value })}
-                                                className="w-full p-2 border border-gray-300 rounded-lg"
-                                                placeholder="1100px"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Border Radius</label>
-                                            <input
-                                                type="text"
-                                                value={formData.border_radius || '12px'}
-                                                onChange={(e) => setFormData({ ...formData, border_radius: e.target.value })}
-                                                className="w-full p-2 border border-gray-300 rounded-lg"
-                                                placeholder="12px"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Layout Campaign</label>
-                                            <select
-                                                value={formData.campaign_layout || 'sidebar-right'}
-                                                onChange={(e) => setFormData({ ...formData, campaign_layout: e.target.value })}
-                                                className="w-full p-2 border border-gray-300 rounded-lg"
-                                            >
-                                                <option value="sidebar-right">Sidebar Kanan (Default)</option>
-                                                <option value="sidebar-left">Sidebar Kiri</option>
-                                                <option value="full-width">Full Width (No Sidebar)</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
+
                                 {licenseStatus === 'active' ? (
                                     <div className="border-t border-gray-200 pt-6">
                                         <h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
@@ -912,14 +851,14 @@ export default function Settings() {
                         {activeTab === 'appearance' && (
                             <div className="space-y-8">
                                 <div>
-                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Warna Tema</h3>
-                                    <div className="grid gap-6 md:grid-cols-2">
+                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Tampilan & Layout</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">Warna Merek Utama</label>
                                             <div className="flex items-center gap-3">
                                                 <input
                                                     type="color"
-                                                    value={formData.brand_color}
+                                                    value={formData.brand_color || '#059669'}
                                                     onChange={e => setFormData({ ...formData, brand_color: e.target.value })}
                                                     className="h-10 w-20 p-1 rounded border border-gray-300 cursor-pointer"
                                                 />
@@ -932,13 +871,47 @@ export default function Settings() {
                                             <div className="flex items-center gap-3">
                                                 <input
                                                     type="color"
-                                                    value={formData.button_color}
+                                                    value={formData.button_color || '#ec4899'}
                                                     onChange={e => setFormData({ ...formData, button_color: e.target.value })}
                                                     className="h-10 w-20 p-1 rounded border border-gray-300 cursor-pointer"
                                                 />
                                                 <span className="text-sm text-gray-500 font-mono uppercase">{formData.button_color}</span>
                                             </div>
                                             <p className="text-xs text-gray-500 mt-2">Tombol CTA utama (Donasi, Kirim).</p>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Lebar Kontainer</label>
+                                            <input
+                                                type="text"
+                                                value={formData.container_width || '1100px'}
+                                                onChange={(e) => setFormData({ ...formData, container_width: e.target.value })}
+                                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                                placeholder="1100px"
+                                            />
+                                            <p className="text-xs text-gray-500 mt-2">Lebar maksimal halaman campaign.</p>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Border Radius</label>
+                                            <input
+                                                type="text"
+                                                value={formData.border_radius || '12px'}
+                                                onChange={(e) => setFormData({ ...formData, border_radius: e.target.value })}
+                                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                                placeholder="12px"
+                                            />
+                                            <p className="text-xs text-gray-500 mt-2">Kelengkungan sudut (card, tombol, input).</p>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Layout Campaign</label>
+                                            <select
+                                                value={formData.campaign_layout || 'sidebar-right'}
+                                                onChange={(e) => setFormData({ ...formData, campaign_layout: e.target.value })}
+                                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                            >
+                                                <option value="sidebar-right">Sidebar Kanan (Default)</option>
+                                                <option value="sidebar-left">Sidebar Kiri</option>
+                                                <option value="full-width">Full Width (No Sidebar)</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -948,27 +921,74 @@ export default function Settings() {
                                     <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
                                         Gaya Lanjutan <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>
                                     </h3>
-                                    <div className="grid gap-4 md:grid-cols-2 opacity-60">
-                                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 relative cursor-pointer" onClick={() => setShowProModal(true)}>
+                                    <div className="grid gap-4 md:grid-cols-2">
+                                        {/* Typography */}
+                                        <div className={clsx("border border-gray-200 rounded-lg p-4 bg-gray-50 relative", !['active', 'pro'].includes(licenseStatus) ? "opacity-60 cursor-pointer" : "")} onClick={() => !['active', 'pro'].includes(licenseStatus) && setShowProModal(true)}>
                                             <div className="flex justify-between items-start mb-2">
                                                 <div className="font-medium text-gray-900">Tipografi</div>
-                                                <Lock size={14} className="text-gray-400" />
+                                                {!['active', 'pro'].includes(licenseStatus) ? <Lock size={14} className="text-gray-400" /> : <span className="text-xs font-bold text-green-600 bg-green-100 px-2 rounded">Active</span>}
                                             </div>
-                                            <p className="text-sm text-gray-500">Font Google kustom dan kontrol ukuran.</p>
+
+                                            {licenseStatus === 'active' ? (
+                                                <div className="space-y-3 mt-3">
+                                                    <div>
+                                                        <label className="block text-xs font-medium text-gray-700 mb-1">Font Utama</label>
+                                                        <select
+                                                            value={formData.font_family || 'Inter'}
+                                                            onChange={(e) => setFormData({ ...formData, font_family: e.target.value })}
+                                                            className="w-full text-sm p-2 border border-gray-300 rounded"
+                                                        >
+                                                            <option value="Inter">Inter (Default)</option>
+                                                            <option value="Roboto">Roboto</option>
+                                                            <option value="Open Sans">Open Sans</option>
+                                                            <option value="Poppins">Poppins</option>
+                                                            <option value="Lato">Lato</option>
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-xs font-medium text-gray-700 mb-1">Ukuran Font Dasar</label>
+                                                        <div className="flex items-center gap-2">
+                                                            <input
+                                                                type="text"
+                                                                value={formData.font_size || '16px'}
+                                                                onChange={(e) => setFormData({ ...formData, font_size: e.target.value })}
+                                                                className="w-20 text-sm p-2 border border-gray-300 rounded"
+                                                            />
+                                                            <span className="text-xs text-gray-500">px/rem</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <p className="text-sm text-gray-500">Font Google kustom dan kontrol ukuran.</p>
+                                            )}
                                         </div>
-                                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 relative cursor-pointer" onClick={() => setShowProModal(true)}>
+
+                                        {/* Dark Mode */}
+                                        <div className={clsx("border border-gray-200 rounded-lg p-4 bg-gray-50 relative", !['active', 'pro'].includes(licenseStatus) ? "opacity-60 cursor-pointer" : "")} onClick={() => !['active', 'pro'].includes(licenseStatus) && setShowProModal(true)}>
                                             <div className="flex justify-between items-start mb-2">
                                                 <div className="font-medium text-gray-900">Mode Gelap</div>
-                                                <Lock size={14} className="text-gray-400" />
+                                                {!['active', 'pro'].includes(licenseStatus) ? <Lock size={14} className="text-gray-400" /> : <span className="text-xs font-bold text-green-600 bg-green-100 px-2 rounded">Active</span>}
                                             </div>
-                                            <p className="text-sm text-gray-500">Aktifkan dukungan mode gelap di seluruh situs.</p>
-                                        </div>
-                                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 relative cursor-pointer" onClick={() => setShowProModal(true)}>
-                                            <div className="flex justify-between items-start mb-2">
-                                                <div className="font-medium text-gray-900">Radius Batas</div>
-                                                <Lock size={14} className="text-gray-400" />
-                                            </div>
-                                            <p className="text-sm text-gray-500">Kontrol global untuk sudut membulat.</p>
+
+                                            {licenseStatus === 'active' ? (
+                                                <div className="mt-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="relative inline-flex items-center cursor-pointer">
+                                                            <input
+                                                                type="checkbox"
+                                                                className="sr-only peer"
+                                                                checked={formData.dark_mode}
+                                                                onChange={(e) => setFormData({ ...formData, dark_mode: e.target.checked })}
+                                                            />
+                                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                                        </div>
+                                                        <span className="text-sm text-gray-600">{formData.dark_mode ? 'Aktif' : 'Nonaktif'}</span>
+                                                    </div>
+                                                    <p className="text-xs text-gray-500 mt-2">Otomatis menyesuaikan warna background dan teks.</p>
+                                                </div>
+                                            ) : (
+                                                <p className="text-sm text-gray-500">Aktifkan dukungan mode gelap di seluruh situs.</p>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

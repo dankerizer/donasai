@@ -47,16 +47,77 @@ $border_radius = $settings_app['border_radius'] ?? '12px';
 $layout_mode = $settings_app['campaign_layout'] ?? 'sidebar-right';
 $primary_color = $settings_app['brand_color'] ?? '#059669';
 $button_color = $settings_app['button_color'] ?? '#ec4899';
+
+// Typography & Dark Mode
+$font_family = $settings_app['font_family'] ?? 'Inter';
+$font_size = $settings_app['font_size'] ?? '16px';
+$dark_mode = $settings_app['dark_mode'] ?? false;
+
+// Google Fonts Map
+$fonts_map = [
+    'Inter' => 'Inter:wght@400;500;600;700',
+    'Roboto' => 'Roboto:wght@400;500;700',
+    'Open Sans' => 'Open+Sans:wght@400;600;700',
+    'Poppins' => 'Poppins:wght@400;500;600;700',
+    'Lato' => 'Lato:wght@400;700'
+];
+$font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2?family={$fonts_map[$font_family]}&display=swap" : "";
 ?>
 
-<div class="wpd-container" style="max-width:<?php echo esc_attr($container_width); ?>; margin:0 auto; padding:20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+<?php if ($font_url): ?>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="<?php echo esc_url($font_url); ?>" rel="stylesheet">
+<?php endif; ?>
+
+<div class="wpd-container <?php echo $dark_mode ? 'wpd-dark' : ''; ?>" style="max-width:<?php echo esc_attr($container_width); ?>; margin:0 auto; padding:20px; font-family: '<?php echo esc_attr($font_family); ?>', sans-serif; font-size: <?php echo esc_attr($font_size); ?>;">
 
     <style>
         :root {
             --wpd-radius: <?php echo esc_attr($border_radius); ?>;
             --wpd-primary: <?php echo esc_attr($primary_color); ?>;
             --wpd-btn: <?php echo esc_attr($button_color); ?>;
+            
+            /* Light Mode Defaults */
+            --wpd-bg: #ffffff;
+            --wpd-text: #1f2937;
+            --wpd-text-light: #6b7280;
+            --wpd-border: #e5e7eb;
+            --wpd-card-bg: #ffffff;
         }
+
+        /* Dark Mode Overrides */
+        .wpd-dark {
+            --wpd-bg: #1f2937;
+            --wpd-text: #f3f4f6;
+            --wpd-text-light: #9ca3af;
+            --wpd-border: #374151;
+            --wpd-card-bg: #111827;
+            background-color: var(--wpd-bg);
+            color: var(--wpd-text);
+        }
+
+        /* Apply Variables */
+        .wpd-container { color: var(--wpd-text); }
+        .wpd-campaign-grid { color: var(--wpd-text); }
+        h1, h2, h3, h4, .wpd-amt, .wpd-target-amt { color: var(--wpd-text) !important; }
+        .wpd-meta, .wpd-days { color: var(--wpd-text-light) !important; }
+        
+        .wpd-main-col, .wpd-sidebar-col {
+             /* If you use cards inside columns */
+        }
+        
+        /* Specific Dark Mode Fixes */
+        .wpd-dark .wpd-sidebar-inner {
+            background: var(--wpd-card-bg);
+            border-color: var(--wpd-border);
+        }
+        .wpd-dark input, .wpd-dark select, .wpd-dark textarea {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #fff;
+        }
+
 
         /* Progress Bar Animation */
         @keyframes wpdProgressFill {

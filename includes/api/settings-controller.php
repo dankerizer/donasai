@@ -50,7 +50,10 @@ function wpd_api_get_settings() {
         'button_color'    => '#ec4899', 
         'container_width' => '1100px', 
         'border_radius'   => '12px',
-        'campaign_layout' => 'sidebar-right' 
+        'campaign_layout' => 'sidebar-right',
+        'font_family'     => 'Inter',
+        'font_size'       => '16px',
+        'dark_mode'       => false
     ) );
 
     // Pro Settings (Midtrans Override)
@@ -189,6 +192,9 @@ function wpd_api_update_settings( $request ) {
             'container_width' => sanitize_text_field( $params['appearance']['container_width'] ?? '1100px' ),
             'border_radius'   => sanitize_text_field( $params['appearance']['border_radius'] ?? '12px' ),
             'campaign_layout' => sanitize_text_field( $params['appearance']['campaign_layout'] ?? 'sidebar-right' ),
+            'font_family'     => sanitize_text_field( $params['appearance']['font_family'] ?? 'Inter' ),
+            'font_size'       => sanitize_text_field( $params['appearance']['font_size'] ?? '16px' ),
+            'dark_mode'       => $params['appearance']['dark_mode'] ?? false,
         );
         update_option( 'wpd_settings_appearance', $appearance_data );
     }

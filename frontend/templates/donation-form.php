@@ -29,6 +29,18 @@ $container_width = $settings_app['container_width'] ?? '1100px'; // For donation
 $border_radius = $settings_app['border_radius'] ?? '12px';
 $primary_color = $settings_app['brand_color'] ?? '#059669';
 $button_color = $settings_app['button_color'] ?? '#ec4899';
+$font_family = $settings_app['font_family'] ?? 'Inter';
+$font_size = $settings_app['font_size'] ?? '16px';
+$dark_mode = $settings_app['dark_mode'] ?? false;
+
+$fonts_map = [
+    'Inter' => 'Inter:wght@400;500;600;700',
+    'Roboto' => 'Roboto:wght@400;500;700',
+    'Open Sans' => 'Open+Sans:wght@400;600;700',
+    'Poppins' => 'Poppins:wght@400;500;600;700',
+    'Lato' => 'Lato:wght@400;700'
+];
+$font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2?family={$fonts_map[$font_family]}&display=swap" : "";
 ?>
 
 <!DOCTYPE html>
@@ -37,11 +49,53 @@ $button_color = $settings_app['button_color'] ?? '#ec4899';
     <meta charset="<?php bloginfo( 'charset' ); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php wp_head(); ?>
+    <?php if ($font_url): ?>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="<?php echo esc_url($font_url); ?>" rel="stylesheet">
+    <?php endif; ?>
     <style>
         :root {
             --wpd-radius: <?php echo esc_attr($border_radius); ?>;
             --wpd-primary: <?php echo esc_attr($primary_color); ?>;
             --wpd-btn: <?php echo esc_attr($button_color); ?>;
+            
+            /* Light */
+            --wpd-bg: #f3f4f6; /* Form usually has gray bg */
+            --wpd-card-bg: #ffffff;
+            --wpd-text: #1f2937;
+            --wpd-border: #e5e7eb;
+        }
+        
+        <?php if ($dark_mode): ?>
+        :root {
+            --wpd-bg: #111827;
+            --wpd-card-bg: #1f2937;
+            --wpd-text: #f3f4f6;
+            --wpd-border: #374151;
+        }
+        body.wpd-payment-page {
+            background-color: var(--wpd-bg); 
+            color: var(--wpd-text);
+        }
+        .wpd-card {
+            background-color: var(--wpd-card-bg);
+            border-color: var(--wpd-border);
+            color: var(--wpd-text);
+        }
+        .wpd-input, .wpd-radio-card {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #fff;
+        }
+        .wpd-label-heading, .wpd-campaign-title { color: var(--wpd-text); }
+        .wpd-radio-content .wpd-pkg-name { color: #fff; }
+        .wpd-radio-content .wpd-pkg-price { color: #9ca3af; }
+        <?php endif; ?>
+
+        body {
+            font-family: '<?php echo esc_attr($font_family); ?>', sans-serif;
+            font-size: <?php echo esc_attr($font_size); ?>;
         }
         .wpd-card, .btn, .wpd-radio-card, .wpd-input {
             border-radius: var(--wpd-radius) !important;
