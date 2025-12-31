@@ -247,6 +247,14 @@ $presets = array_map('intval', $presets);
 
         </form>
     </div>
+    <?php 
+    $gen_settings = get_option('wpd_settings_general', []);
+    $remove_branding = !empty($gen_settings['remove_branding']);
+    if ( ! $remove_branding ) : ?>
+        <div class="wpd-powered-by">
+            Powered by <a href="https://donasai.com" target="_blank">Donasai</a>
+        </div>
+    <?php endif; ?>
 </div>
 
 <style>
@@ -614,6 +622,21 @@ input:checked + .slider:before { transform: translateX(20px); }
     font-size: 12px;
     color: #9ca3af;
     margin-top: 12px;
+}
+.wpd-powered-by {
+    text-align: center;
+    font-size: 13px;
+    color: #9ca3af;
+    margin-top: 20px;
+    padding-bottom: 20px;
+}
+.wpd-powered-by a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: none;
+}
+.wpd-powered-by a:hover {
+    text-decoration: underline;
 }
 </style>
 
