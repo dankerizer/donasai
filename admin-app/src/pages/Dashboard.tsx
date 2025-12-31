@@ -1,6 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { Heart, LayoutDashboard, Users, TrendingUp, Calendar, Lock } from 'lucide-react';
+import { Heart, LayoutDashboard, Users, TrendingUp, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import {
+    AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+    PieChart, Pie, Cell, Legend, BarChart, Bar
+} from 'recharts';
+import { clsx } from 'clsx';
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
 export default function Dashboard() {
     const { data: stats } = useQuery({
@@ -12,7 +19,18 @@ export default function Dashboard() {
             if (!response.ok) return { total_donations: 0, total_donors: 0, active_campaigns: 0 };
             return response.json();
         }
-    })
+    });
+
+    const { data: chartData } = useQuery({
+        queryKey: ['chart-stats'],
+        queryFn: async () => {
+            const response = await fetch('/wp-json/wpd/v1/stats/chart', {
+                headers: { 'X-WP-Nonce': (window as any).wpdSettings?.nonce }
+            });
+            if (!response.ok) return {};
+            return response.json();
+        }
+    });
 
     return (
         <div className="space-y-8">
@@ -62,59 +80,164 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {/* Pro Features (Locked) */}
+            {/* Donation Trends Chart */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <div className="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 className="text-lg font-bold text-gray-800">Tren Donasi</h3>
+                        <p className="text-sm text-gray-500">30 Hari Terakhir</p>
+                    </div>
+                    {/* Placeholder for range selector if needed later */}
+                </div>
+
+                <div className="h-[300px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={chartData?.daily_stats || []} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                            <defs>
+                                <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#2563eb" stopOpacity={0.1} />
+                                    <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                            <XAxis
+                                dataKey="date"
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fill: '#6B7280', fontSize: 12 }}
+                                dy={10}
+                            />
+                            <YAxis
+                                axisLine={false}
+                                tickLine={false}
+                                tick={{ fill: '#6B7280', fontSize: 12 }}
+                                tickFormatter={(value) =>
+                                    new Intl.NumberFormat('id-ID', { notation: "compact", compactDisplay: "short" }).format(value)
+                                }
+                            />
+                            <Tooltip
+                                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                formatter={(value: any) => [`Rp ${Number(value).toLocaleString('id-ID')}`, 'Jumlah']}
+                            />
+                            <Area
+                                type="monotone"
+                                dataKey="amount"
+                                stroke="#2563eb"
+                                strokeWidth={2}
+                                fillOpacity={1}
+                                fill="url(#colorAmount)"
+                            />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
+
+            {/* Pro Analytics (Active) */}
             <div>
                 <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    Analitik Lanjutan <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded uppercase">Pro</span>
+                    Analitik Lanjutan <span className="text-xs bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded uppercase">Pro Active</span>
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 opacity-75 grayscale hover:grayscale-0 transition-all group">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-                    {/* Locked Card 1 */}
-                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 border-dashed relative overflow-hidden">
-                        <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-[1px] z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="flex items-center gap-2 text-sm font-bold text-gray-800 bg-white px-3 py-1 rounded-full shadow border border-gray-200">
-                                <Lock size={14} /> Tersedia di Pro
-                            </div>
-                        </div>
+                    {/* Growth Rate */}
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                         <div className="flex items-center gap-4 mb-2">
                             <div className="p-2 bg-pink-100 text-pink-600 rounded-lg">
                                 <TrendingUp size={20} />
                             </div>
-                            <span className="font-medium text-gray-600">Tingkat Pertumbuhan</span>
+                            <span className="font-medium text-gray-600">Pertumbuhan (MoM)</span>
                         </div>
-                        <div className="h-16 w-full bg-gray-200 rounded animate-pulse"></div>
+                        <h3 className={clsx("text-2xl font-bold", (stats?.growth_rate || 0) >= 0 ? "text-green-600" : "text-red-600")}>
+                            {(stats?.growth_rate || 0) > 0 ? '+' : ''}{stats?.growth_rate || 0}%
+                        </h3>
+                        <p className="text-xs text-gray-400 mt-1">Dibanding bulan lalu</p>
                     </div>
 
-                    {/* Locked Card 2 */}
-                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 border-dashed relative overflow-hidden">
-                        <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-[1px] z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="flex items-center gap-2 text-sm font-bold text-gray-800 bg-white px-3 py-1 rounded-full shadow border border-gray-200">
-                                <Lock size={14} /> Tersedia di Pro
-                            </div>
-                        </div>
+                    {/* Recurring Revenue */}
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                         <div className="flex items-center gap-4 mb-2">
                             <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
                                 <Calendar size={20} />
                             </div>
                             <span className="font-medium text-gray-600">Pendapatan Berulang</span>
                         </div>
-                        <div className="h-16 w-full bg-gray-200 rounded animate-pulse"></div>
+                        <h3 className="text-2xl font-bold text-gray-900">
+                            Rp {stats?.recurring_revenue?.toLocaleString('id-ID') || 0}
+                        </h3>
+                        <p className="text-xs text-gray-400 mt-1">Total donasi rutin aktif</p>
                     </div>
 
-                    {/* Locked Card 3 */}
-                    <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 border-dashed relative overflow-hidden">
-                        <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-[1px] z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="flex items-center gap-2 text-sm font-bold text-gray-800 bg-white px-3 py-1 rounded-full shadow border border-gray-200">
-                                <Lock size={14} /> Tersedia di Pro
-                            </div>
-                        </div>
+                    {/* Retention Rate */}
+                    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                         <div className="flex items-center gap-4 mb-2">
                             <div className="p-2 bg-orange-100 text-orange-600 rounded-lg">
                                 <Users size={20} />
                             </div>
                             <span className="font-medium text-gray-600">Retensi Donatur</span>
                         </div>
-                        <div className="h-16 w-full bg-gray-200 rounded animate-pulse"></div>
+                        <h3 className="text-2xl font-bold text-gray-900">
+                            {stats?.retention_rate || 0}%
+                        </h3>
+                        <p className="text-xs text-gray-400 mt-1">Donatur yang berdonasi &gt; 1 kali</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Additional Charts */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Payment Methods Pie Chart */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 className="text-lg font-bold text-gray-800 mb-6">Metode Pembayaran</h3>
+                    <div className="h-[300px] w-full flex justify-center">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={chartData?.payment_methods || []}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={60}
+                                    outerRadius={80}
+                                    paddingAngle={5}
+                                    dataKey="count"
+                                    nameKey="payment_method"
+                                >
+                                    {(chartData?.payment_methods || []).map((_entry: any, index: number) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                                <Tooltip formatter={(value: any, name: any) => [value, name]} />
+                                <Legend />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Top Campaigns Bar Chart */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <h3 className="text-lg font-bold text-gray-800 mb-6">Kampanye Terpopuler</h3>
+                    <div className="h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                                layout="vertical"
+                                data={chartData?.top_campaigns || []}
+                                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                                <XAxis type="number" hide />
+                                <YAxis
+                                    dataKey="name"
+                                    type="category"
+                                    width={150}
+                                    tick={{ fontSize: 12 }}
+                                    tickFormatter={(value) => value.length > 20 ? value.substring(0, 20) + '...' : value}
+                                />
+                                <Tooltip
+                                    cursor={{ fill: 'transparent' }}
+                                    formatter={(value: any) => [`Rp ${Number(value).toLocaleString('id-ID')}`, 'Total']}
+                                />
+                                <Bar dataKey="value" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
+                            </BarChart>
+                        </ResponsiveContainer>
                     </div>
                 </div>
             </div>

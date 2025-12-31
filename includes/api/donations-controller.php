@@ -43,11 +43,94 @@ add_action( 'rest_api_init', function () {
             return current_user_can( 'manage_options' );
         },
     ) );
+
+    // GET /stats/chart
+    register_rest_route( 'wpd/v1', '/stats/chart', array(
+        'methods'             => 'GET',
+        'callback'            => 'wpd_api_get_chart_stats',
+        'permission_callback' => function () {
+            return current_user_can( 'manage_options' );
+        },
+    ) );
 } );
+
+function wpd_api_get_chart_stats() {
+    global $wpdb;
+    $table_donations = $wpdb->prefix . 'wpd_donations';
+    
+    // Get last 30 days data
+    $results = $wpdb->get_results( "
+        SELECT 
+            DATE(created_at) as date, 
+            SUM(amount) as total_amount,
+            COUNT(id) as total_count
+        FROM $table_donations 
+        WHERE status = 'complete' 
+        AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+        GROUP BY DATE(created_at)
+        ORDER BY date ASC
+    " );
+
+    // Fill missing dates with 0
+    $daily_stats = array();
+    $period = new DatePeriod(
+        new DateTime('-30 days'),
+        new DateInterval('P1D'),
+        new DateTime('+1 day')
+    );
+
+    $stats_by_date = array();
+    foreach ( $results as $row ) {
+        $stats_by_date[ $row->date ] = $row;
+    }
+
+    foreach ( $period as $date ) {
+        $date_str = $date->format('Y-m-d');
+        if ( isset( $stats_by_date[ $date_str ] ) ) {
+            $daily_stats[] = array(
+                'date' => $date->format('d M'),
+                'amount' => (float) $stats_by_date[ $date_str ]->total_amount,
+                'count' => (int) $stats_by_date[ $date_str ]->total_count
+            );
+        } else {
+            $daily_stats[] = array(
+                'date' => $date->format('d M'),
+                'amount' => 0,
+                'count' => 0
+            );
+        }
+    }
+
+    // --- Payment Methods ---
+    $payment_methods = $wpdb->get_results( "
+        SELECT payment_method, COUNT(*) as count 
+        FROM $table_donations 
+        WHERE status = 'complete' 
+        GROUP BY payment_method
+    " );
+
+    // --- Top Campaigns ---
+    $top_campaigns = $wpdb->get_results( "
+        SELECT p.post_title as name, SUM(d.amount) as value
+        FROM $table_donations d
+        LEFT JOIN {$wpdb->posts} p ON d.campaign_id = p.ID
+        WHERE d.status = 'complete' AND d.campaign_id > 0
+        GROUP BY d.campaign_id
+        ORDER BY value DESC
+        LIMIT 5
+    " );
+
+    return rest_ensure_response( array(
+        'daily_stats' => $daily_stats,
+        'payment_methods' => $payment_methods,
+        'top_campaigns' => $top_campaigns
+    ) );
+}
 
 function wpd_api_get_stats() {
     global $wpdb;
     $table_donations = $wpdb->prefix . 'wpd_donations';
+    $table_subscriptions = $wpdb->prefix . 'wpd_subscriptions';
     
     // Total Connected Amount (Completed)
     $total_collected = $wpdb->get_var( "SELECT SUM(amount) FROM $table_donations WHERE status = 'complete'" );
@@ -58,10 +141,61 @@ function wpd_api_get_stats() {
     // Active Campaigns
     $active_campaigns = wp_count_posts( 'wpd_campaign' )->publish;
 
+    // --- Advanced Analytics ---
+
+    // 1. Growth Rate (Month over Month)
+    $current_month_start = date('Y-m-01');
+    $last_month_start = date('Y-m-01', strtotime('-1 month'));
+    $last_month_end   = date('Y-m-t', strtotime('-1 month'));
+
+    $current_month_amount = $wpdb->get_var( $wpdb->prepare( 
+        "SELECT SUM(amount) FROM $table_donations WHERE status = 'complete' AND created_at >= %s", 
+        $current_month_start 
+    ) ) ?: 0;
+
+    $last_month_amount = $wpdb->get_var( $wpdb->prepare( 
+        "SELECT SUM(amount) FROM $table_donations WHERE status = 'complete' AND created_at >= %s AND created_at <= %s", 
+        $last_month_start, $last_month_end 
+    ) ) ?: 0;
+
+    $growth_rate = 0;
+    if ( $last_month_amount > 0 ) {
+        $growth_rate = (($current_month_amount - $last_month_amount) / $last_month_amount) * 100;
+    } else {
+        $growth_rate = $current_month_amount > 0 ? 100 : 0;
+    }
+
+    // 2. Recurring Revenue (Monthly Recurring Revenue - MRR)
+    // Check if subscription table exists first to avoid error if Pro not fully setup
+    $recurring_revenue = 0;
+    if ( $wpdb->get_var("SHOW TABLES LIKE '$table_subscriptions'") == $table_subscriptions ) {
+        $recurring_revenue = $wpdb->get_var( "SELECT SUM(amount) FROM $table_subscriptions WHERE status = 'active'" ) ?: 0;
+    }
+
+    // 3. Retention Rate
+    // Donors who donated more than once
+    $repeat_donors = $wpdb->get_var( "
+        SELECT COUNT(*) FROM (
+            SELECT email FROM $table_donations 
+            WHERE status = 'complete' 
+            GROUP BY email 
+            HAVING COUNT(id) > 1
+        ) as repeaters
+    " );
+    
+    $retention_rate = 0;
+    if ( $total_donors > 0 ) {
+        $retention_rate = ($repeat_donors / $total_donors) * 100;
+    }
+
     return rest_ensure_response( array(
         'total_donations' => (float) $total_collected,
         'total_donors'    => (int) $total_donors,
-        'active_campaigns' => (int) $active_campaigns
+        'active_campaigns' => (int) $active_campaigns,
+        // Pro Stats
+        'growth_rate' => round($growth_rate, 1),
+        'recurring_revenue' => (float) $recurring_revenue,
+        'retention_rate' => round($retention_rate, 1)
     ) );
 }
 
