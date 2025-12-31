@@ -32,6 +32,7 @@ $button_color = $settings_app['button_color'] ?? '#ec4899';
 $font_family = $settings_app['font_family'] ?? 'Inter';
 $font_size = $settings_app['font_size'] ?? '16px';
 $dark_mode = $settings_app['dark_mode'] ?? false;
+$donation_layout = $settings_app['donation_layout'] ?? 'default';
 
 $fonts_map = [
     'Inter' => 'Inter:wght@400;500;600;700',
@@ -329,7 +330,8 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                 Powered by <a href="https://donasai.com" target="_blank">Donasai</a>
             </div>
         <?php endif; ?>
-    </div>
+        <div id="wpd-toast"></div>
+</div>
 </div>
 
 <style>
@@ -356,6 +358,44 @@ html, body {
     .wpd-layout-wrapper { padding: 0px 20px; }
     .wpd-card { min-height: auto; border-radius: 20px; overflow: hidden; }
 }
+
+/* Split Layout Logic */
+<?php if($donation_layout === 'split'): ?>
+@media(min-width: 900px) {
+    .wpd-card {
+        max-width: 900px;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        align-items: start;
+    }
+    .wpd-campaign-summary {
+        grid-column: 1;
+        height: 100%;
+        background: #f8fafc;
+        border-right: 1px solid #e5e7eb;
+        border-bottom: none;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 30px;
+    }
+    .wpd-campaign-thumb {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16/9;
+        margin-bottom: 15px;
+    }
+    .wpd-campaign-info { text-align: left; }
+    .wpd-campaign-title { font-size: 18px; }
+    
+    /* Form Container */
+    form#donationForm {
+        grid-column: 2;
+        padding-bottom: 20px;
+    }
+    /* Hide footer helper inside form if cleaner */
+    .wpd-powered-by { grid-column: 2; }
+}
+<?php endif; ?>
 
 /* Header */
 .wpd-header-mobile {
@@ -715,9 +755,40 @@ input:checked + .slider:before { transform: translateX(20px); }
 .wpd-powered-by a:hover {
     text-decoration: underline;
 }
+/* Toast Notification */
+#wpd-toast {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 12px;
+    position: fixed;
+    z-index: 99999;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s, bottom 0.3s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+#wpd-toast.show {
+    visibility: visible;
+    opacity: 1;
+    bottom: 50px;
+}
 </style>
 
 <script>
+function showToast(message) {
+    let toast = document.getElementById('wpd-toast');
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => { toast.classList.remove('show'); }, 3000);
+}
 function selectAmount(card, amount) {
     document.getElementById('amount').value = amount;
     
@@ -794,7 +865,7 @@ if( $snap_active && !empty($client_key) ):
                     window.snap.pay(res.data.snap_token, {
                         onSuccess: function(result){ window.location.href = res.data.redirect_url; },
                         onPending: function(result){ window.location.href = res.data.redirect_url; },
-                        onError: function(result){ alert("Payment Failed!"); btn.disabled = false; btn.innerText = originalText; },
+                        onError: function(result){ showToast("Pembayaran Gagal!"); btn.disabled = false; btn.innerText = originalText; },
                         onClose: function(){ btn.disabled = false; btn.innerText = originalText; }
                     });
                 } else {
@@ -802,14 +873,14 @@ if( $snap_active && !empty($client_key) ):
                     if(res.data.redirect_url) window.location.href = res.data.redirect_url;
                 }
             } else {
-                alert('Error: ' + res.data.message);
+                showToast('Error: ' + res.data.message);
                 btn.disabled = false;
                 btn.innerText = originalText;
             }
         })
         .catch(err => {
             console.error(err);
-            alert('Terjadi kesalahan koneksi.');
+            showToast('Terjadi kesalahan koneksi.');
             btn.disabled = false;
             btn.innerText = originalText;
         });

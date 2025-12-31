@@ -34,6 +34,7 @@ export default function Settings() {
         font_family: 'Inter',
         font_size: '16px',
         dark_mode: false,
+        donation_layout: 'default',
         // Bank
         bank_name: '',
         account_number: '',
@@ -100,6 +101,7 @@ export default function Settings() {
                 font_family: data.appearance?.font_family || 'Inter',
                 font_size: data.appearance?.font_size || '16px',
                 dark_mode: data.appearance?.dark_mode === true || data.appearance?.dark_mode === '1',
+                donation_layout: data.appearance?.donation_layout || 'default',
                 // Bank
                 bank_name: data.bank?.bank_name || '',
                 account_number: data.bank?.account_number || '',
@@ -155,7 +157,8 @@ export default function Settings() {
                     campaign_layout: data.campaign_layout,
                     font_family: data.font_family,
                     font_size: data.font_size,
-                    dark_mode: data.dark_mode
+                    dark_mode: data.dark_mode,
+                    donation_layout: data.donation_layout,
                 },
                 bank: {
                     bank_name: data.bank_name,
@@ -901,17 +904,53 @@ export default function Settings() {
                                             />
                                             <p className="text-xs text-gray-500 mt-2">Kelengkungan sudut (card, tombol, input).</p>
                                         </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Layout Campaign</label>
-                                            <select
-                                                value={formData.campaign_layout || 'sidebar-right'}
-                                                onChange={(e) => setFormData({ ...formData, campaign_layout: e.target.value })}
-                                                className="w-full p-2 border border-gray-300 rounded-lg"
-                                            >
-                                                <option value="sidebar-right">Sidebar Kanan (Default)</option>
-                                                <option value="sidebar-left">Sidebar Kiri</option>
-                                                <option value="full-width">Full Width (No Sidebar)</option>
-                                            </select>
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-700 mb-3">Layout Halaman Campaign</label>
+                                            <div className="grid grid-cols-3 gap-4">
+                                                {/* Sidebar Right */}
+                                                <div
+                                                    className={clsx(
+                                                        "border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
+                                                        formData.campaign_layout === 'sidebar-right' ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600" : "border-gray-200 bg-white"
+                                                    )}
+                                                    onClick={() => setFormData({ ...formData, campaign_layout: 'sidebar-right' })}
+                                                >
+                                                    <div className="aspect-video bg-gray-100 rounded mb-2 flex gap-1 p-1">
+                                                        <div className="bg-gray-300 h-full w-2/3 rounded-sm"></div>
+                                                        <div className="bg-blue-200 h-full w-1/3 rounded-sm"></div>
+                                                    </div>
+                                                    <div className="text-xs font-medium text-center text-gray-700">Sidebar Kanan</div>
+                                                </div>
+
+                                                {/* Sidebar Left */}
+                                                <div
+                                                    className={clsx(
+                                                        "border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
+                                                        formData.campaign_layout === 'sidebar-left' ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600" : "border-gray-200 bg-white"
+                                                    )}
+                                                    onClick={() => setFormData({ ...formData, campaign_layout: 'sidebar-left' })}
+                                                >
+                                                    <div className="aspect-video bg-gray-100 rounded mb-2 flex gap-1 p-1">
+                                                        <div className="bg-blue-200 h-full w-1/3 rounded-sm"></div>
+                                                        <div className="bg-gray-300 h-full w-2/3 rounded-sm"></div>
+                                                    </div>
+                                                    <div className="text-xs font-medium text-center text-gray-700">Sidebar Kiri</div>
+                                                </div>
+
+                                                {/* Full Width */}
+                                                <div
+                                                    className={clsx(
+                                                        "border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
+                                                        formData.campaign_layout === 'full-width' ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600" : "border-gray-200 bg-white"
+                                                    )}
+                                                    onClick={() => setFormData({ ...formData, campaign_layout: 'full-width' })}
+                                                >
+                                                    <div className="aspect-video bg-gray-100 rounded mb-2 w-full p-1">
+                                                        <div className="bg-gray-300 h-full w-full rounded-sm"></div>
+                                                    </div>
+                                                    <div className="text-xs font-medium text-center text-gray-700">Full Width</div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -988,6 +1027,49 @@ export default function Settings() {
                                                 </div>
                                             ) : (
                                                 <p className="text-sm text-gray-500">Aktifkan dukungan mode gelap di seluruh situs.</p>
+                                            )}
+                                        </div>
+
+                                        {/* Donation Form Layout (Pro Only) */}
+                                        <div className={clsx("border border-gray-200 rounded-lg p-4 bg-gray-50 relative md:col-span-2", !['active', 'pro'].includes(licenseStatus) ? "opacity-60 cursor-pointer" : "")} onClick={() => !['active', 'pro'].includes(licenseStatus) && setShowProModal(true)}>
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div className="font-medium text-gray-900">Layout Formulir Donasi</div>
+                                                {!['active', 'pro'].includes(licenseStatus) ? <Lock size={14} className="text-gray-400" /> : <span className="text-xs font-bold text-green-600 bg-green-100 px-2 rounded">Active</span>}
+                                            </div>
+
+                                            {licenseStatus === 'active' ? (
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    {/* Default */}
+                                                    <div
+                                                        className={clsx(
+                                                            "border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
+                                                            formData.donation_layout === 'default' ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600" : "border-gray-200 bg-white"
+                                                        )}
+                                                        onClick={() => setFormData({ ...formData, donation_layout: 'default' })}
+                                                    >
+                                                        <div className="aspect-video bg-gray-100 rounded mb-2 flex flex-col items-center justify-center p-2">
+                                                            <div className="bg-white w-2/3 h-full rounded shadow-sm border border-gray-200"></div>
+                                                        </div>
+                                                        <div className="text-xs font-medium text-center text-gray-700">Tunggal (Default)</div>
+                                                    </div>
+
+                                                    {/* Split */}
+                                                    <div
+                                                        className={clsx(
+                                                            "border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
+                                                            formData.donation_layout === 'split' ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600" : "border-gray-200 bg-white"
+                                                        )}
+                                                        onClick={() => setFormData({ ...formData, donation_layout: 'split' })}
+                                                    >
+                                                        <div className="aspect-video bg-gray-100 rounded mb-2 flex gap-1 p-1">
+                                                            <div className="bg-blue-100 h-full w-1/2 rounded-sm border border-blue-200"></div>
+                                                            <div className="bg-white h-full w-1/2 rounded-sm border border-gray-200"></div>
+                                                        </div>
+                                                        <div className="text-xs font-medium text-center text-gray-700">Split (Kiri Info, Kanan Form)</div>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <p className="text-sm text-gray-500">Pilihan tata letak untuk formulir donasi.</p>
                                             )}
                                         </div>
                                     </div>

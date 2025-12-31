@@ -137,10 +137,10 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
         <?php if ( $layout_mode === 'sidebar-left' ) : ?>
         .wpd-sidebar-col { order: -1; }
         <?php elseif ( $layout_mode === 'full-width' ) : ?>
-        .wpd-main-col { flex: 0 0 100%; }
-        .wpd-sidebar-col { flex: 0 0 100%; width: 100%; }
-        /* When full width, maybe minimalize sidebar or grid it? */
-        /* For now, just stack it at bottom */
+        .wpd-main-col { flex: 0 0 100%; max-width: 100%; }
+        .wpd-sidebar-col { display: none !important; }
+        .wpd-mobile-cta { display: flex !important; }
+        /* When full width, hide sidebar and show sticky CTA */
         <?php endif; ?>
 
         /* Apply Radius */
@@ -159,7 +159,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
             left: 0;
             right: 0;
             background: white;
-            padding: 15px 20px;
+            padding: 15px 0;
             box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
             z-index: 9999;
             border-top: 1px solid #e5e7eb;
@@ -187,7 +187,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
     <div class="wpd-campaign-grid">
         
         <!-- Left Column: Content (65%) -->
-        <div class="wpd-main-col" style="flex:1 0 300px; max-width:100%;">
+        <div class="wpd-main-col" style="max-width:100%;">
             
             <!-- Featured Image -->
             <?php if ( has_post_thumbnail() ) : ?>
@@ -268,7 +268,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
         </div>
 
         <!-- Right Column: Sidebar (35%) -->
-        <div class="wpd-sidebar-col" style="flex:0 0 350px; width:350px; max-width:100%;">
+        <div class="wpd-sidebar-col" style="max-width:100%;">
             <div style="position:sticky; top:20px;">
                 
                 <!-- Donation Card -->
@@ -296,7 +296,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                             $donate_link = add_query_arg( $payment_slug, '1', get_permalink() );
                         }
                     ?>
-                    <a href="<?php echo esc_url( $donate_link ); ?>" style="display:block; width:100%; background:var(--wpd-btn); color:white; font-weight:700; text-align:center; padding:14px; border-radius:8px; text-decoration:none; font-size:18px; margin-bottom:15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <a href="<?php echo esc_url( $donate_link ); ?>" style="display:block; max-width:100%; background:var(--wpd-btn); color:white; font-weight:700; text-align:center; padding:14px; border-radius:8px; text-decoration:none; font-size:18px; margin-bottom:15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
                         Donasi Sekarang
                     </a>
 
@@ -380,13 +380,15 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
             : add_query_arg( $payment_slug, '1', get_permalink() );
     ?>
     <div class="wpd-mobile-cta">
-        <div>
-            <div style="font-size:12px; color:#6b7280; margin-bottom:2px;">Terkumpul</div>
-            <div style="font-size:16px; font-weight:700; color:#059669;">Rp <?php echo number_format( $progress['collected'], 0, ',', '.' ); ?></div>
+        <div style="width:100%; max-width:<?php echo esc_attr($container_width); ?>; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 15px;">
+            <div>
+                <div style="font-size:12px; color:#6b7280; margin-bottom:2px;">Terkumpul</div>
+                <div style="font-size:16px; font-weight:700; color:#059669;">Rp <?php echo number_format( $progress['collected'], 0, ',', '.' ); ?></div>
+            </div>
+            <a href="<?php echo esc_url( $donate_link_sticky ); ?>" style="background:var(--wpd-btn); color:white; font-weight:700; padding:12px 24px; border-radius:8px; text-decoration:none; font-size:16px;">
+                Donasi Sekarang
+            </a>
         </div>
-        <a href="<?php echo esc_url( $donate_link_sticky ); ?>" style="background:var(--wpd-btn); color:white; font-weight:700; padding:12px 24px; border-radius:8px; text-decoration:none; font-size:16px;">
-            Donasi Sekarang
-        </a>
     </div>
 
     <!-- Scripts -->

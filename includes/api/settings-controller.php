@@ -53,7 +53,8 @@ function wpd_api_get_settings() {
         'campaign_layout' => 'sidebar-right',
         'font_family'     => 'Inter',
         'font_size'       => '16px',
-        'dark_mode'       => false
+        'dark_mode'       => false,
+        'donation_layout' => 'default'
     ) );
 
     // Pro Settings (Midtrans Override)
@@ -195,6 +196,7 @@ function wpd_api_update_settings( $request ) {
             'font_family'     => sanitize_text_field( $params['appearance']['font_family'] ?? 'Inter' ),
             'font_size'       => sanitize_text_field( $params['appearance']['font_size'] ?? '16px' ),
             'dark_mode'       => $params['appearance']['dark_mode'] ?? false,
+            'donation_layout' => sanitize_text_field( $params['appearance']['donation_layout'] ?? 'default' ),
         );
         update_option( 'wpd_settings_appearance', $appearance_data );
     }
