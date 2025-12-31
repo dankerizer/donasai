@@ -101,6 +101,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
         .wpd-card, .btn, .wpd-radio-card, .wpd-input {
             border-radius: var(--wpd-radius) !important;
         }
+     
     </style>
 </head>
 <body <?php body_class('wpd-payment-page'); ?>>
@@ -341,9 +342,13 @@ html, body {
     padding: 0;
     background-color: #f3f4f6;
 }
+
+ .admin-bar .wpd-layout-wrapper { padding-top: 80px }
+    
 .wpd-layout-wrapper {
     background-color: #f3f4f6;
     min-height: 100vh;
+    padding-top: 50px;
     padding-bottom: 90px; /* Space for footer */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
@@ -355,7 +360,8 @@ html, body {
     box-shadow: 0 0 20px rgba(0,0,0,0.05);
 }
 @media(min-width: 640px) {
-    .wpd-layout-wrapper { padding: 0px 20px; }
+    .admin-bar .wpd-layout-wrapper { padding-top: 100px }
+    .wpd-layout-wrapper { padding: 70px 20px 20px; }
     .wpd-card { min-height: auto; border-radius: 20px; overflow: hidden; }
 }
 
@@ -363,37 +369,53 @@ html, body {
 <?php if($donation_layout === 'split'): ?>
 @media(min-width: 900px) {
     .wpd-card {
-        max-width: 900px;
+        max-width: 1050px;
         display: grid;
-        grid-template-columns: 280px 1fr;
-        align-items: start;
+        grid-template-columns: 400px 1fr;
+        align-items: stretch;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
     }
     .wpd-campaign-summary {
         grid-column: 1;
-        height: 100%;
-        background: #f8fafc;
-        border-right: 1px solid #e5e7eb;
+        grid-row: 1 / 3; /* Span full height */
+        background: #fdfdfd; 
+        border-right: 1px solid #f1f5f9;
         border-bottom: none;
         flex-direction: column;
         align-items: flex-start;
-        padding: 30px;
+        padding: 40px;
+        position: relative;
+    }
+    .wpd-campaign-summary::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; bottom: 0; width: 6px;
+        background: var(--wpd-primary, #059669);
     }
     .wpd-campaign-thumb {
         width: 100%;
         height: auto;
         aspect-ratio: 16/9;
-        margin-bottom: 15px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
-    .wpd-campaign-info { text-align: left; }
-    .wpd-campaign-title { font-size: 18px; }
+    .wpd-campaign-info { text-align: left; width: 100%; }
+    .wpd-campaign-label { color: #64748b; margin-bottom: 8px; font-size: 12px; font-weight: 600; letter-spacing: 1px; }
+    .wpd-campaign-title { font-size: 24px; line-height: 1.3; color: #1e293b; font-weight: 800; }
     
     /* Form Container */
     form#donationForm {
         grid-column: 2;
+        padding: 40px;
+    }
+    
+    /* Move Powered By to bottom left? or just hide/move to bottom right */
+    .wpd-powered-by { 
+        grid-column: 2; 
+        text-align: center;
         padding-bottom: 20px;
     }
-    /* Hide footer helper inside form if cleaner */
-    .wpd-powered-by { grid-column: 2; }
 }
 <?php endif; ?>
 
