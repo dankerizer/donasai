@@ -450,11 +450,88 @@ $button_color = get_option('wpd_appearance_button_color', '#ec4899'); // Pink
 
     // Copy to Clipboard (will be used by manual gateway HTML)
     function copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(() => {
-            alert('Nomor rekening disalin!');
-        });
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Nomor rekening berhasil disalin!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                fallbackCopyTextToClipboard(text);
+            });
+        } else {
+            fallbackCopyTextToClipboard(text);
+        }
+    }
+
+    function fallbackCopyTextToClipboard(text) {
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        
+        // Avoid scrolling to bottom
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.position = "fixed";
+
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            var successful = document.execCommand('copy');
+            var msg = successful ? 'Nomor rekening berhasil disalin!' : 'Gagal menyalin text';
+            showToast(msg);
+        } catch (err) {
+            console.error('Fallback: Oops, unable to copy', err);
+            showToast('Gagal menyalin. Silakan salin manual.');
+        }
+
+        document.body.removeChild(textArea);
+    }
+
+    function showToast(message) {
+        // Create toast if not exists
+        let toast = document.getElementById('wpd-toast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'wpd-toast';
+            document.body.appendChild(toast);
+        }
+        
+        toast.textContent = message;
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
     }
 </script>
+
+<style>
+/* Toast Notification */
+#wpd-toast {
+    visibility: hidden;
+    min-width: 250px; 
+    background-color: #333; 
+    color: #fff; 
+    text-align: center; 
+    border-radius: 8px; 
+    padding: 12px; 
+    position: fixed; 
+    z-index: 9999; 
+    left: 50%; 
+    bottom: 30px; 
+    transform: translateX(-50%);
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s, bottom 0.3s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+#wpd-toast.show {
+    visibility: visible;
+    opacity: 1;
+    bottom: 50px;
+}
+</style>
 
 <?php wp_footer(); ?>
 </body>
