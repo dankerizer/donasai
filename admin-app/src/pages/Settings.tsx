@@ -28,6 +28,9 @@ export default function Settings() {
         // Appearance
         brand_color: '#059669',
         button_color: '#ec4899',
+        container_width: '1100px',
+        border_radius: '12px',
+        campaign_layout: 'sidebar-right',
         // Bank
         bank_name: '',
         account_number: '',
@@ -88,6 +91,9 @@ export default function Settings() {
                 // Appearance
                 brand_color: data.appearance?.brand_color || '#059669',
                 button_color: data.appearance?.button_color || '#ec4899',
+                container_width: data.appearance?.container_width || '1100px',
+                border_radius: data.appearance?.border_radius || '12px',
+                campaign_layout: data.appearance?.campaign_layout || 'sidebar-right',
                 // Bank
                 bank_name: data.bank?.bank_name || '',
                 account_number: data.bank?.account_number || '',
@@ -137,7 +143,10 @@ export default function Settings() {
                 },
                 appearance: {
                     brand_color: data.brand_color,
-                    button_color: data.button_color
+                    button_color: data.button_color,
+                    container_width: data.container_width,
+                    border_radius: data.border_radius,
+                    campaign_layout: data.campaign_layout
                 },
                 bank: {
                     bank_name: data.bank_name,
@@ -438,7 +447,77 @@ export default function Settings() {
                                         </div>
                                     </div>
                                 </div>
-
+                                <div className="border-t border-gray-200 pt-6">
+                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Tampilan & Layout</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Warna Brand (Utama)</label>
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="color"
+                                                    value={formData.brand_color || '#059669'}
+                                                    onChange={(e) => setFormData({ ...formData, brand_color: e.target.value })}
+                                                    className="h-10 w-14 border border-gray-300 rounded p-1"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={formData.brand_color || '#059669'}
+                                                    onChange={(e) => setFormData({ ...formData, brand_color: e.target.value })}
+                                                    className="flex-1 p-2 border border-gray-300 rounded-lg text-sm uppercase"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Warna Tombol</label>
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="color"
+                                                    value={formData.button_color || '#ec4899'}
+                                                    onChange={(e) => setFormData({ ...formData, button_color: e.target.value })}
+                                                    className="h-10 w-14 border border-gray-300 rounded p-1"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={formData.button_color || '#ec4899'}
+                                                    onChange={(e) => setFormData({ ...formData, button_color: e.target.value })}
+                                                    className="flex-1 p-2 border border-gray-300 rounded-lg text-sm uppercase"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Lebar Kontainer (Max Width)</label>
+                                            <input
+                                                type="text"
+                                                value={formData.container_width || '1100px'}
+                                                onChange={(e) => setFormData({ ...formData, container_width: e.target.value })}
+                                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                                placeholder="1100px"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Border Radius</label>
+                                            <input
+                                                type="text"
+                                                value={formData.border_radius || '12px'}
+                                                onChange={(e) => setFormData({ ...formData, border_radius: e.target.value })}
+                                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                                placeholder="12px"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Layout Campaign</label>
+                                            <select
+                                                value={formData.campaign_layout || 'sidebar-right'}
+                                                onChange={(e) => setFormData({ ...formData, campaign_layout: e.target.value })}
+                                                className="w-full p-2 border border-gray-300 rounded-lg"
+                                            >
+                                                <option value="sidebar-right">Sidebar Kanan (Default)</option>
+                                                <option value="sidebar-left">Sidebar Kiri</option>
+                                                <option value="full-width">Full Width (No Sidebar)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                                 {licenseStatus === 'active' ? (
                                     <div className="border-t border-gray-200 pt-6">
                                         <h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">

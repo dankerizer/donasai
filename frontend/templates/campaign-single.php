@@ -39,11 +39,25 @@ $campaign_id = get_the_ID();
 $is_verified = get_post_meta( $campaign_id, '_wpd_is_verified', true );
 $progress = function_exists('wpd_get_campaign_progress') ? wpd_get_campaign_progress( $campaign_id ) : array('collected'=>0, 'target'=>0, 'percentage'=>0);
 $donors = function_exists('wpd_get_recent_donors') ? wpd_get_recent_donors( $campaign_id, 10 ) : array();
+
+// Layout Settings
+$settings_app = get_option('wpd_settings_appearance', []);
+$container_width = $settings_app['container_width'] ?? '1100px';
+$border_radius = $settings_app['border_radius'] ?? '12px';
+$layout_mode = $settings_app['campaign_layout'] ?? 'sidebar-right';
+$primary_color = $settings_app['brand_color'] ?? '#059669';
+$button_color = $settings_app['button_color'] ?? '#ec4899';
 ?>
 
-<div class="wpd-container" style="max-width:1100px; margin:0 auto; padding:20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+<div class="wpd-container" style="max-width:<?php echo esc_attr($container_width); ?>; margin:0 auto; padding:20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
 
     <style>
+        :root {
+            --wpd-radius: <?php echo esc_attr($border_radius); ?>;
+            --wpd-primary: <?php echo esc_attr($primary_color); ?>;
+            --wpd-btn: <?php echo esc_attr($button_color); ?>;
+        }
+
         /* Progress Bar Animation */
         @keyframes wpdProgressFill {
             from { width: 0; }
@@ -53,6 +67,28 @@ $donors = function_exists('wpd_get_recent_donors') ? wpd_get_recent_donors( $cam
             transition: width 1.5s ease-out;
             animation: wpdProgressFill 1.5s ease-out forwards;
         }
+
+        /* Layout Modes */
+        .wpd-campaign-grid { display: flex; flex-wrap: wrap; gap: 30px; }
+        .wpd-main-col { flex: 1 1 500px; min-width: 0; }
+        .wpd-sidebar-col { flex: 0 0 350px; width: 350px; max-width: 100%; }
+
+        <?php if ( $layout_mode === 'sidebar-left' ) : ?>
+        .wpd-sidebar-col { order: -1; }
+        <?php elseif ( $layout_mode === 'full-width' ) : ?>
+        .wpd-main-col { flex: 0 0 100%; }
+        .wpd-sidebar-col { flex: 0 0 100%; width: 100%; }
+        /* When full width, maybe minimalize sidebar or grid it? */
+        /* For now, just stack it at bottom */
+        <?php endif; ?>
+
+        /* Apply Radius */
+        .wpd-featured-image, 
+        .wpd-tabs .wpd-tab-btn, /* maybe not tabs */
+        .wpd-sidebar-inner > div {
+             border-radius: var(--wpd-radius);
+        }
+        .wpd-featured-image { border-radius: var(--wpd-radius); overflow: hidden; }
 
         /* Responsive Mobile Sticky CTA */
         .wpd-mobile-cta {
@@ -75,21 +111,19 @@ $donors = function_exists('wpd_get_recent_donors') ? wpd_get_recent_donors( $cam
                 gap: 15px;
             }
             .wpd-sidebar-col {
-                display: none; /* Hide sidebar on mobile if we have sticky CTA, or keep it but move below content */
+                display: none; /* Default hide on mobile, user relies on sticky CTA */
             }
-            /* Adjust main col to full width */
-            .wpd-main-col {
-                flex: 0 0 100% !important;
-            }
-            /* Add padding to bottom of body so content isn't hidden behind sticky CTA */
-            body {
-                padding-bottom: 80px;
-            }
+            /* Override for Full Width Mode to ensure sidebar (donation card) is visible if we want? 
+               actually mobile CTA handles donation. 
+               The sidebar has "Recent Donors" too. Maybe keep logic as is (hidden on mobile).
+            */
+            .wpd-main-col { flex: 0 0 100% !important; }
+            body { padding-bottom: 80px; }
         }
     </style>
 
     <!-- Main Layout Grid -->
-    <div class="wpd-campaign-grid" style="display:flex; flex-wrap:wrap; gap:30px;">
+    <div class="wpd-campaign-grid">
         
         <!-- Left Column: Content (65%) -->
         <div class="wpd-main-col" style="flex:1 0 300px; max-width:100%;">
@@ -348,40 +382,7 @@ $donors = function_exists('wpd_get_recent_donors') ? wpd_get_recent_donors( $cam
     }
     </script>
     
-    <style>
-        .wpd-campaign-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 40px;
-        }
-        .wpd-main-col {
-            flex: 1 1 500px;
-            min-width: 0;
-        }
-        .wpd-sidebar-col {
-            flex: 1 1 350px;
-            width: 350px; /* Base width */
-            max-width: 100%;
-        }
-
-        /* Responsive Breakpoint */
-        @media (max-width: 960px) {
-            .wpd-campaign-grid {
-                flex-direction: column;
-                gap: 20px;
-            }
-            .wpd-main-col {
-                flex: auto;
-                width: 100%;
-            }
-            .wpd-sidebar-col {
-                flex: auto;
-                width: 100% !important;
-                order: -1; /* Sidebar on top for mobile */
-                margin-bottom: 20px;
-            }
-        }
-    </style>
+    <!-- styles moved to head -->
 </div>
 
 <?php

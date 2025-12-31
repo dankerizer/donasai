@@ -45,7 +45,13 @@ function wpd_api_get_settings() {
     // New Settings
     $general = get_option( 'wpd_settings_general', array( 'campaign_slug' => 'campaign', 'payment_slug' => 'pay', 'remove_branding' => false, 'confirmation_page' => '' ) );
     $donation = get_option( 'wpd_settings_donation', array( 'min_amount' => 10000, 'presets' => '50000,100000,200000,500000', 'anonymous_label' => 'Hamba Allah', 'create_user' => false ) );
-    $appearance = get_option( 'wpd_settings_appearance', array( 'brand_color' => '#059669', 'button_color' => '#ec4899' ) );
+    $appearance = get_option( 'wpd_settings_appearance', array( 
+        'brand_color'     => '#059669', 
+        'button_color'    => '#ec4899', 
+        'container_width' => '1100px', 
+        'border_radius'   => '12px',
+        'campaign_layout' => 'sidebar-right' 
+    ) );
 
     // Pro Settings (Midtrans Override)
     if ( $license['status'] === 'active' ) {
@@ -178,8 +184,11 @@ function wpd_api_update_settings( $request ) {
 
     if ( isset( $params['appearance'] ) ) {
         $appearance_data = array(
-            'brand_color'  => sanitize_hex_color( $params['appearance']['brand_color'] ?? '#059669' ),
-            'button_color' => sanitize_hex_color( $params['appearance']['button_color'] ?? '#ec4899' ),
+            'brand_color'     => sanitize_hex_color( $params['appearance']['brand_color'] ?? '#059669' ),
+            'button_color'    => sanitize_hex_color( $params['appearance']['button_color'] ?? '#ec4899' ),
+            'container_width' => sanitize_text_field( $params['appearance']['container_width'] ?? '1100px' ),
+            'border_radius'   => sanitize_text_field( $params['appearance']['border_radius'] ?? '12px' ),
+            'campaign_layout' => sanitize_text_field( $params['appearance']['campaign_layout'] ?? 'sidebar-right' ),
         );
         update_option( 'wpd_settings_appearance', $appearance_data );
     }

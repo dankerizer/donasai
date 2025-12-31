@@ -20,6 +20,15 @@ $settings = get_option('wpd_settings_donation', []);
 $min_amount = $settings['min_amount'] ?? 10000;
 $presets = explode(',', $settings['presets'] ?? '50000,100000,200000,500000');
 $presets = array_map('intval', $presets);
+
+// Layout Settings
+$settings_app = get_option('wpd_settings_appearance', []);
+$container_width = $settings_app['container_width'] ?? '1100px'; // For donation form, we usually use smaller width, but let's respect the radius.
+// Actually, donation form is "standalone" usually, constrained by .wpd-layout-wrapper max-width: 480px.
+// But we should respect the radius.
+$border_radius = $settings_app['border_radius'] ?? '12px';
+$primary_color = $settings_app['brand_color'] ?? '#059669';
+$button_color = $settings_app['button_color'] ?? '#ec4899';
 ?>
 
 <!DOCTYPE html>
@@ -28,6 +37,16 @@ $presets = array_map('intval', $presets);
     <meta charset="<?php bloginfo( 'charset' ); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php wp_head(); ?>
+    <style>
+        :root {
+            --wpd-radius: <?php echo esc_attr($border_radius); ?>;
+            --wpd-primary: <?php echo esc_attr($primary_color); ?>;
+            --wpd-btn: <?php echo esc_attr($button_color); ?>;
+        }
+        .wpd-card, .btn, .wpd-radio-card, .wpd-input {
+            border-radius: var(--wpd-radius) !important;
+        }
+    </style>
 </head>
 <body <?php body_class('wpd-payment-page'); ?>>
 
