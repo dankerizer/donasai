@@ -33,6 +33,9 @@ $font_family = $settings_app['font_family'] ?? 'Inter';
 $font_size = $settings_app['font_size'] ?? '16px';
 $dark_mode = $settings_app['dark_mode'] ?? false;
 $donation_layout = $settings_app['donation_layout'] ?? 'default';
+if ( ! defined( 'WPD_PRO_VERSION' ) ) {
+    $donation_layout = 'default';
+}
 
 $fonts_map = [
     'Inter' => 'Inter:wght@400;500;600;700',
@@ -255,7 +258,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                     $manual_gateway = new WPD_Gateway_Manual(); 
                     $active_banks = $manual_gateway->get_active_banks($campaign_id);
                     
-                    if ( ! empty( $active_banks ) ) {
+                    if ( defined( 'WPD_PRO_VERSION' ) && ! empty( $active_banks ) ) {
                         $first = true;
                         foreach ( $active_banks as $bank ) {
                             // If ID exists (Pro), use manual_ID. If not (Legacy), use manual.
@@ -391,7 +394,6 @@ html, body {
         content: '';
         position: absolute;
         top: 0; left: 0; bottom: 0; width: 6px;
-        background: var(--wpd-primary, #059669);
     }
     .wpd-campaign-thumb {
         width: 100%;

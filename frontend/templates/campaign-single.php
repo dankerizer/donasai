@@ -145,7 +145,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
 
         /* Apply Radius */
         .wpd-featured-image, 
-        .wpd-tabs .wpd-tab-btn, /* maybe not tabs */
+        
         .wpd-sidebar-inner > div {
              border-radius: var(--wpd-radius);
         }

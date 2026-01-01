@@ -136,15 +136,18 @@ function wpd_campaign_options_callback( $post ) {
 		renderPackages();
 		</script>
 
-		// Initial Render
-		renderPackages();
+		
+			<?php 
+			// Initial Render
+// renderPackages();
+			?>
 		</script>
 
         <?php
         $pro_accounts = get_option('wpd_pro_bank_accounts', []);
         $license_status = get_option('wpd_pro_license_status'); // Or check define WPD_PRO_VERSION
         
-        if ( ! empty( $pro_accounts ) ) {
+        if ( defined( 'WPD_PRO_VERSION' ) && ! empty( $pro_accounts ) ) {
             $campaign_banks = get_post_meta( $post->ID, '_wpd_campaign_banks', true );
             if ( ! is_array( $campaign_banks ) ) $campaign_banks = [];
             ?>
@@ -164,6 +167,7 @@ function wpd_campaign_options_callback( $post ) {
         }
         ?>
 
+        <?php if ( defined( 'WPD_PRO_VERSION' ) ) : ?>
 		<h4>Marketing Pixels</h4>
 		<p>
 			<label for="wpd_pixel_fb">Facebook Pixel ID</label><br>
@@ -183,6 +187,7 @@ function wpd_campaign_options_callback( $post ) {
 			<label for="wpd_wa_message">Default Message</label><br>
 			<textarea name="wpd_whatsapp_settings[message]" id="wpd_wa_message" class="widefat" style="max-width: 300px;"><?php echo esc_textarea( $whatsapp['message'] ?? '' ); ?></textarea>
 		</p>
+        <?php endif; ?>
 	</div>
 	<?php
 }
@@ -238,15 +243,14 @@ function wpd_save_campaign_options( $post_id ) {
 	}
 
     // Save Campaign Banks
-    if ( isset( $_POST['wpd_campaign_banks'] ) && is_array( $_POST['wpd_campaign_banks'] ) ) {
-        $banks = array_map( 'sanitize_text_field', $_POST['wpd_campaign_banks'] );
-        update_post_meta( $post_id, '_wpd_campaign_banks', $banks );
-    } else {
-        // If not set but we saved before, essentially clearing it.
-        // However, checkboxes not checked = not sent. So we should check nonce validity (which we did) and update to empty if needed.
-        // But to differentiate "Update unrelated meta" vs "Updates checks", we rely on the nonce.
-        // Safer: always update if nonce is valid.
-        delete_post_meta( $post_id, '_wpd_campaign_banks' );
+    if ( defined( 'WPD_PRO_VERSION' ) ) {
+        if ( isset( $_POST['wpd_campaign_banks'] ) && is_array( $_POST['wpd_campaign_banks'] ) ) {
+            $banks = array_map( 'sanitize_text_field', $_POST['wpd_campaign_banks'] );
+            update_post_meta( $post_id, '_wpd_campaign_banks', $banks );
+        } else {
+            // If not set but defined WPD_PRO_VERSION (and nonce valid), it means user unchecked all.
+            delete_post_meta( $post_id, '_wpd_campaign_banks' );
+        }
     }
 }
 add_action( 'save_post', 'wpd_save_campaign_options' );

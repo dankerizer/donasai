@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Check, X, Building, CreditCard, Bell, Star, Crown, Heart, Palette, Lock, Trash, Plus } from 'lucide-react'
+import { Check, X, Building, CreditCard, Bell, Star, Crown, Heart, Palette, Lock, Trash, Plus, Link as LinkIcon } from 'lucide-react'
 import clsx from 'clsx'
 
 export default function Settings() {
@@ -405,35 +405,59 @@ export default function Settings() {
                                     </div>
                                 </div>
                                 <div className="border-t border-gray-200 pt-6">
-                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Pengaturan Permalink</h3>
-                                    <div className="grid grid-cols-2 gap-6">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+                                            <LinkIcon size={20} />
+                                        </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Slug Kampanye</label>
-                                            <div className="flex bg-gray-50 border border-gray-300 rounded-lg items-center text-gray-500 text-sm overflow-hidden">
-                                                <span className="px-3 bg-gray-100 border-r border-gray-300 h-full flex items-center">/</span>
+                                            <h3 className="text-lg font-medium text-gray-900">Pengaturan Permalink</h3>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Slug Kampanye</label>
+                                            <div className="flex bg-white border border-gray-300 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 overflow-hidden items-stretch">
+                                                <span className="px-3 bg-gray-50 border-r border-gray-200 text-gray-500 text-sm flex items-center whitespace-nowrap">
+                                                    {window.location.host}/
+                                                </span>
                                                 <input
                                                     type="text"
-                                                    className="flex-1 p-2 bg-transparent focus:outline-none"
+                                                    className="flex-1 w-full p-2.5 border-none focus:ring-0 text-sm text-gray-900 placeholder-gray-400 bg-transparent"
                                                     value={formData.campaign_slug}
                                                     onChange={e => setFormData({ ...formData, campaign_slug: e.target.value })}
                                                 />
-                                                <span className="px-3">/judul-campaign</span>
+                                                <span className="px-3 bg-gray-50 border-l border-gray-200 text-gray-500 text-sm flex items-center whitespace-nowrap">
+                                                    /judul-campaign
+                                                </span>
                                             </div>
+                                            <p className="mt-1.5 text-xs text-gray-500">Contoh: <code>domain.com/{formData.campaign_slug}/pembangunan-masjid</code></p>
                                         </div>
+
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Slug Pembayaran</label>
-                                            <div className="flex bg-gray-50 border border-gray-300 rounded-lg items-center text-gray-500 text-sm overflow-hidden">
-                                                <span className="px-3 bg-gray-100 border-r border-gray-300 h-full flex items-center">/campaign/</span>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Slug Pembayaran</label>
+                                            <div className="flex bg-white border border-gray-300 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 overflow-hidden items-stretch">
+                                                <span className="px-3 bg-gray-50 border-r border-gray-200 text-gray-500 text-sm flex items-center whitespace-nowrap">
+                                                    {window.location.host}/{formData.campaign_slug}/
+                                                </span>
                                                 <input
                                                     type="text"
-                                                    className="flex-1 p-2 bg-transparent focus:outline-none"
+                                                    className="flex-1 w-full p-2.5 border-none focus:ring-0 text-sm text-gray-900 placeholder-gray-400 bg-transparent"
                                                     value={formData.payment_slug}
                                                     onChange={e => setFormData({ ...formData, payment_slug: e.target.value })}
                                                 />
                                             </div>
+                                            <p className="mt-1.5 text-xs text-gray-500">URL halaman form donasi (default: pay, donate, dll).</p>
                                         </div>
                                     </div>
-                                    <p className="text-xs text-amber-600 mt-2">Pastikan untuk menyimpan ulang 'Permalink' di WordPress jika Anda mengubah ini.</p>
+
+                                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex gap-3 text-amber-800">
+                                        <Bell size={18} className="shrink-0 mt-0.5" />
+                                        <div className="text-sm">
+                                            <p className="font-semibold mb-1">Penting: Simpan Permalink WordPress</p>
+                                            <p>Setelah mengubah slug di atas, Anda <u>wajib</u> masuk ke menu <strong>Settings &gt; Permalinks</strong> di dashboard WordPress dan klik "Save Changes" agar URL baru dapat diakses.</p>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div className="border-t border-gray-200 pt-6">
