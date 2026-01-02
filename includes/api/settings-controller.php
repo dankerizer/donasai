@@ -43,7 +43,14 @@ function wpd_api_get_settings() {
     $notifications = get_option( 'wpd_settings_notifications', array( 'opt_in_email' => get_option('admin_email'), 'opt_in_whatsapp' => '' ) );
     
     // New Settings
-    $general = get_option( 'wpd_settings_general', array( 'campaign_slug' => 'campaign', 'payment_slug' => 'pay', 'remove_branding' => false, 'confirmation_page' => '' ) );
+    $general = get_option( 'wpd_settings_general', array( 
+        'campaign_slug' => 'campaign', 
+        'payment_slug' => 'pay', 
+        'remove_branding' => true, 
+        'confirmation_page' => '',
+        'delete_on_uninstall_settings' => false,
+        'delete_on_uninstall_tables' => false
+    ) );
     $donation = get_option( 'wpd_settings_donation', array( 'min_amount' => 10000, 'presets' => '50000,100000,200000,500000', 'anonymous_label' => 'Hamba Allah', 'create_user' => false ) );
     $appearance = get_option( 'wpd_settings_appearance', array( 
         'brand_color'     => '#059669', 
@@ -92,7 +99,8 @@ function wpd_api_get_settings() {
         'general'      => $general,
         'donation'     => $donation,
         'appearance'   => $appearance,
-        'pages'        => $pages_list // Return pages list
+        'pages'        => $pages_list, // Return pages list
+        'is_pro_installed' => defined('WPD_PRO_VERSION')
 	) );
 }
 
@@ -151,8 +159,10 @@ function wpd_api_update_settings( $request ) {
         $gen_data = array(
             'campaign_slug'     => sanitize_title( $params['general']['campaign_slug'] ?? 'campaign' ),
             'payment_slug'      => sanitize_title( $params['general']['payment_slug'] ?? 'pay' ),
-            'remove_branding'   => ! empty( $params['general']['remove_branding'] ), // Pro
+            'remove_branding'   => ! empty( $params['general']['remove_branding'] ),
             'confirmation_page' => isset($params['general']['confirmation_page']) ? intval($params['general']['confirmation_page']) : '',
+            'delete_on_uninstall_settings' => ! empty( $params['general']['delete_on_uninstall_settings'] ),
+            'delete_on_uninstall_tables'   => ! empty( $params['general']['delete_on_uninstall_tables'] ),
         );
         
         // Check if slugs changed, flush rewrite rules might be needed (handled via option update hook or manual flush hint)

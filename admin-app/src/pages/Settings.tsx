@@ -7,6 +7,7 @@ export default function Settings() {
     const queryClient = useQueryClient()
     const [activeTab, setActiveTab] = useState('general')
     const [showProModal, setShowProModal] = useState(false)
+    const [isProInstalled, setIsProInstalled] = useState(false)
 
     // License State
     const [licenseStatus, setLicenseStatus] = useState('inactive')
@@ -19,6 +20,8 @@ export default function Settings() {
         payment_slug: 'pay',
         remove_branding: false,
         confirmation_page: '',
+        delete_on_uninstall_settings: false,
+        delete_on_uninstall_tables: false,
         // Donation
         min_amount: 10000,
         presets: '50000,100000,200000,500000',
@@ -76,6 +79,7 @@ export default function Settings() {
                 setPages(data.pages);
             }
 
+            setIsProInstalled(data.is_pro_installed || false);
             setLicenseStatus(data.license?.status || 'inactive');
             setLicenseKey(data.license?.key || '');
 
@@ -86,6 +90,8 @@ export default function Settings() {
                 payment_slug: data.general?.payment_slug || 'pay',
                 remove_branding: data.general?.remove_branding === true || data.general?.remove_branding === '1',
                 confirmation_page: data.general?.confirmation_page || '',
+                delete_on_uninstall_settings: data.general?.delete_on_uninstall_settings === true || data.general?.delete_on_uninstall_settings === '1',
+                delete_on_uninstall_tables: data.general?.delete_on_uninstall_tables === true || data.general?.delete_on_uninstall_tables === '1',
                 // Donation
                 min_amount: data.donation?.min_amount || 10000,
                 presets: data.donation?.presets || '50000,100000,200000,500000',
@@ -240,8 +246,9 @@ export default function Settings() {
         { id: 'payment', label: 'Payment', icon: CreditCard },
         { id: 'notifications', label: 'Notifications', icon: Bell },
         { id: 'appearance', label: 'Appearance', icon: Palette },
+        { id: 'advanced', label: 'Advanced', icon: Star },
         { id: 'license', label: 'License', icon: Lock },
-    ]
+    ].filter(tab => tab.id !== 'license' || isProInstalled)
 
     return (
         <div className="space-y-6">
@@ -256,19 +263,32 @@ export default function Settings() {
 
             {/* Pro Banner */}
             {licenseStatus !== 'active' ? (
-                <div className="bg-linear-to-r from-purple-600 to-indigo-600 rounded-xl p-6 text-white flex justify-between items-center shadow-lg">
-                    <div>
-                        <h3 className="text-xl font-bold flex items-center gap-2">
-                            <Crown className="text-yellow-300" /> Upgrade ke Donasai Pro
-                        </h3>
-                        <p className="opacity-90 mt-1">Buka Donasi Berulang, Notifikasi WhatsApp, dan Konfirmasi AI.</p>
+                <div className="relative overflow-hidden bg-gradient-to-br from-red-600 via-red-700 to-red-800 rounded-2xl p-8 text-white shadow-2xl border border-red-500">
+                    {/* Decorative Elements */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-red-500 rounded-full opacity-10 blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+                    <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full opacity-5 blur-2xl translate-y-1/2 -translate-x-1/3"></div>
+
+                    <div className="relative flex justify-between items-center gap-6">
+                        <div className="flex-1">
+                            <div className="inline-flex items-center gap-2 bg-red-500/30 backdrop-blur-sm px-3 py-1.5 rounded-full mb-3 border border-red-400/30">
+                                <Crown className="text-yellow-300 w-4 h-4" />
+                                <span className="text-xs font-semibold tracking-wide uppercase">Premium Features</span>
+                            </div>
+                            <h3 className="text-2xl font-bold mb-2 tracking-tight">
+                                Upgrade ke Donasai Pro
+                            </h3>
+                            <p className="text-red-50 text-sm leading-relaxed max-w-md">
+                                Buka Donasi Berulang, Notifikasi WhatsApp, dan Konfirmasi AI dengan teknologi terdepan.
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => setShowProModal(true)}
+                            className="group relative bg-white text-red-600 px-6 py-3.5 rounded-xl font-bold hover:bg-red-50 transition-all shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+                        >
+                            <span className="relative z-10">Bandingkan Fitur</span>
+                            <div className="absolute inset-0 bg-gradient-to-r from-red-50 to-white opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+                        </button>
                     </div>
-                    <button
-                        onClick={() => setShowProModal(true)}
-                        className="bg-white text-purple-700 px-5 py-2.5 rounded-lg font-bold hover:bg-gray-50 transition-colors shadow-sm"
-                    >
-                        Bandingkan Fitur
-                    </button>
                 </div>
             ) : (
                 <div className="bg-green-100 border border-green-200 rounded-xl p-4 text-green-800 flex items-center gap-3">
@@ -484,37 +504,21 @@ export default function Settings() {
                                     </div>
                                 </div>
 
-                                {licenseStatus === 'active' ? (
-                                    <div className="border-t border-gray-200 pt-6">
-                                        <h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
-                                            Branding <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>
-                                        </h3>
-                                        <div className="flex items-center space-x-3">
-                                            <input
-                                                type="checkbox"
-                                                checked={formData.remove_branding}
-                                                onChange={(e) => setFormData({ ...formData, remove_branding: e.target.checked })}
-                                                className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                                            />
-                                            <label className="text-sm font-medium text-gray-700">Hapus Branding "Powered by Donasai"</label>
-                                        </div>
+                                <div className="border-t border-gray-200 pt-6">
+                                    <h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
+                                        Branding
+                                    </h3>
+                                    <div className="flex items-center space-x-3">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.remove_branding}
+                                            onChange={(e) => setFormData({ ...formData, remove_branding: e.target.checked })}
+                                            className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                                        />
+                                        <label className="text-sm font-medium text-gray-700">Hapus Branding "Powered by Donasai"</label>
                                     </div>
-                                ) : (
-                                    <div className="border-t border-gray-200 pt-6">
-                                        <h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
-                                            Branding <span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">PRO</span>
-                                        </h3>
-                                        <div className="flex items-center space-x-3 opacity-60">
-                                            <input
-                                                type="checkbox"
-                                                checked={formData.remove_branding} // Visual only for now if not implemented logic in UI to block
-                                                onChange={() => setShowProModal(true)}
-                                                className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                                            />
-                                            <label className="text-sm font-medium text-gray-700">Hapus Branding "Powered by Donasai"</label>
-                                        </div>
-                                    </div>
-                                )}
+                                    <p className="text-xs text-gray-500 mt-1 ml-7">Opsi untuk menyembunyikan "Powered by Donasai" di footer form dan kuitansi.</p>
+                                </div>
                             </div>
                         )}
 
@@ -1095,6 +1099,165 @@ export default function Settings() {
                                             ) : (
                                                 <p className="text-sm text-gray-500">Pilihan tata letak untuk formulir donasi.</p>
                                             )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ADVANCED TAB */}
+                        {activeTab === 'advanced' && (
+                            <div className="space-y-6">
+                                <div>
+                                    <h3 className="text-lg font-medium text-gray-900 mb-4">Ekspor & Impor Pengaturan</h3>
+
+                                    {/* Export Settings */}
+                                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
+                                        <h4 className="font-medium text-gray-800 mb-2">Ekspor Pengaturan</h4>
+                                        <p className="text-sm text-gray-600 mb-3">Unduh semua pengaturan plugin Anda sebagai file JSON. Gunakan untuk backup atau memindahkan ke situs lain.</p>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const settings = {
+                                                    general: {
+                                                        campaign_slug: formData.campaign_slug,
+                                                        payment_slug: formData.payment_slug,
+                                                        remove_branding: formData.remove_branding,
+                                                        confirmation_page: formData.confirmation_page,
+                                                    },
+                                                    donation: {
+                                                        min_amount: formData.min_amount,
+                                                        presets: formData.presets,
+                                                        anonymous_label: formData.anonymous_label,
+                                                        create_user: formData.create_user,
+                                                    },
+                                                    appearance: {
+                                                        brand_color: formData.brand_color,
+                                                        button_color: formData.button_color,
+                                                        container_width: formData.container_width,
+                                                        border_radius: formData.border_radius,
+                                                        campaign_layout: formData.campaign_layout,
+                                                        font_family: formData.font_family,
+                                                        font_size: formData.font_size,
+                                                        dark_mode: formData.dark_mode,
+                                                        donation_layout: formData.donation_layout,
+                                                    },
+                                                    bank: {
+                                                        bank_name: formData.bank_name,
+                                                        account_number: formData.account_number,
+                                                        account_name: formData.account_name,
+                                                    },
+                                                    organization: {
+                                                        org_name: formData.org_name,
+                                                        org_address: formData.org_address,
+                                                        org_phone: formData.org_phone,
+                                                        org_email: formData.org_email,
+                                                    },
+                                                    notifications: {
+                                                        opt_in_email: formData.opt_in_email,
+                                                        opt_in_whatsapp: formData.opt_in_whatsapp,
+                                                    },
+                                                    exported_at: new Date().toISOString(),
+                                                    version: '1.0'
+                                                };
+                                                const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+                                                const url = URL.createObjectURL(blob);
+                                                const a = document.createElement('a');
+                                                a.href = url;
+                                                a.download = `donasai-settings-${new Date().toISOString().split('T')[0]}.json`;
+                                                a.click();
+                                                URL.revokeObjectURL(url);
+                                            }}
+                                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
+                                        >
+                                            📥 Ekspor Pengaturan
+                                        </button>
+                                    </div>
+
+                                    {/* Import Settings */}
+                                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                        <h4 className="font-medium text-gray-800 mb-2">Impor Pengaturan</h4>
+                                        <p className="text-sm text-gray-600 mb-3">Muat pengaturan dari file JSON yang telah diekspor sebelumnya.</p>
+                                        <input
+                                            type="file"
+                                            accept=".json"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (!file) return;
+                                                const reader = new FileReader();
+                                                reader.onload = (event) => {
+                                                    try {
+                                                        const imported = JSON.parse(event.target?.result as string);
+                                                        setFormData(prev => ({
+                                                            ...prev,
+                                                            campaign_slug: imported.general?.campaign_slug || prev.campaign_slug,
+                                                            payment_slug: imported.general?.payment_slug || prev.payment_slug,
+                                                            remove_branding: imported.general?.remove_branding ?? prev.remove_branding,
+                                                            confirmation_page: imported.general?.confirmation_page || prev.confirmation_page,
+                                                            min_amount: imported.donation?.min_amount || prev.min_amount,
+                                                            presets: imported.donation?.presets || prev.presets,
+                                                            anonymous_label: imported.donation?.anonymous_label || prev.anonymous_label,
+                                                            create_user: imported.donation?.create_user ?? prev.create_user,
+                                                            brand_color: imported.appearance?.brand_color || prev.brand_color,
+                                                            button_color: imported.appearance?.button_color || prev.button_color,
+                                                            container_width: imported.appearance?.container_width || prev.container_width,
+                                                            border_radius: imported.appearance?.border_radius || prev.border_radius,
+                                                            campaign_layout: imported.appearance?.campaign_layout || prev.campaign_layout,
+                                                            font_family: imported.appearance?.font_family || prev.font_family,
+                                                            font_size: imported.appearance?.font_size || prev.font_size,
+                                                            dark_mode: imported.appearance?.dark_mode ?? prev.dark_mode,
+                                                            donation_layout: imported.appearance?.donation_layout || prev.donation_layout,
+                                                            bank_name: imported.bank?.bank_name || prev.bank_name,
+                                                            account_number: imported.bank?.account_number || prev.account_number,
+                                                            account_name: imported.bank?.account_name || prev.account_name,
+                                                            org_name: imported.organization?.org_name || prev.org_name,
+                                                            org_address: imported.organization?.org_address || prev.org_address,
+                                                            org_phone: imported.organization?.org_phone || prev.org_phone,
+                                                            org_email: imported.organization?.org_email || prev.org_email,
+                                                            opt_in_email: imported.notifications?.opt_in_email || prev.opt_in_email,
+                                                            opt_in_whatsapp: imported.notifications?.opt_in_whatsapp || prev.opt_in_whatsapp,
+                                                        }));
+                                                        alert('Pengaturan berhasil diimpor! Klik "Simpan Perubahan" untuk menyimpan.');
+                                                    } catch {
+                                                        alert('Gagal membaca file. Pastikan file JSON valid.');
+                                                    }
+                                                };
+                                                reader.readAsText(file);
+                                            }}
+                                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Danger Zone */}
+                                <div className="border-t border-gray-200 pt-6">
+                                    <h3 className="text-lg font-bold text-red-700 mb-2">
+                                        Zona Bahaya: Pengaturan Uninstall
+                                    </h3>
+                                    <div className="space-y-3 bg-red-50 p-4 rounded-lg border border-red-100">
+                                        <div className="flex items-start space-x-3">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.delete_on_uninstall_settings}
+                                                onChange={(e) => setFormData({ ...formData, delete_on_uninstall_settings: e.target.checked })}
+                                                className="h-4 w-4 text-red-600 border-red-300 rounded focus:ring-red-500 mt-0.5"
+                                            />
+                                            <div>
+                                                <label className="text-sm font-medium text-gray-800">Hapus Semua Pengaturan</label>
+                                                <p className="text-xs text-gray-600">Jika dicentang, semua opsi pengaturan plugin akan dihapus dari database ketika plugin di-uninstall.</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-start space-x-3">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.delete_on_uninstall_tables}
+                                                onChange={(e) => setFormData({ ...formData, delete_on_uninstall_tables: e.target.checked })}
+                                                className="h-4 w-4 text-red-600 border-red-300 rounded focus:ring-red-500 mt-0.5"
+                                            />
+                                            <div>
+                                                <label className="text-sm font-medium text-gray-800">Hapus Tabel Database</label>
+                                                <p className="text-xs text-gray-600">Jika dicentang, tabel donasi dan kampanye akan <b>DIHAPUS PERMANEN</b> ketika plugin di-uninstall.</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

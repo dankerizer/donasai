@@ -1,49 +1,70 @@
-=== WP Donasi ===
-Contributors: yourname
-Tags: donation, fundraising, crowdfunding, zakat, qurban
-Requires at least: 5.8
-Tested up to: 6.4
+=== Donasai - Platform Donasi & Penggalangan Dana ===
+Contributors: hadiedanker
+Tags: donation, fundraising, zakat, qurban, donasi, sedekah, crowdfunding, payment gateway, midtrans
+Requires at least: 6.4
+Tested up to: 6.6
 Stable tag: 1.0.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-WP Donasi is a comprehensive donation and fundraising plugin designed for Indonesian NGOs and organizations.
+Platform donasi dan penggalangan dana WordPress lengkap untuk Yayasan, Masjid, dan Komunitas. Integrasi Midtrans & Transfer Manual.
 
 == Description ==
 
-WP Donasi allows you to create fundraising campaigns with ease. It supports Zakat, Infaq, Sodaqoh, and Wakaf with specialized calculators and features.
+**Donasai** adalah plugin WordPress donasi karya anak bangsa yang dirancang khusus untuk kebutuhan penggalangan dana di Indonesia. Cocok untuk Yayasan, Masjid, Lembaga Zakat, atau komunitas yang ingin menerima donasi secara profesional dan transparan.
 
-**Key Features:**
-*   **Campaign Management**: Create unlimited campaigns with targets and deadlines.
-*   **Donation Types**: Zakat (Maal, Penghasilan), Qurban, and standard donations.
-*   **Payment Gateways**: Manual Bank Transfer and Midtrans (Snap) integration.
-*   **Recurring Donations**: Subscription support for monthly giving.
-*   **Fundraising**: Allow users to become fundraisers and track referrals.
-*   **Advanced Receipts**: Customizable and printable receipts.
-*   **User Dashboard**: Donors can view history and manage profiles.
+Plugin ini mendukung berbagai jenis akad donasi seperti **Zakat Maal**, **Zakat Penghasilan**, **Qurban**, **Infaq**, **Sodaqoh**, dan **Wakaf**.
+
+### Fitur Utama
+
+*   **Manajemen Kampanye**: Buat kampanye donasi unlimited dengan target, batas waktu, dan kategori.
+*   **Kalkulator Zakat**: Hitung otomatis Zakat Maal dan Penghasilan di dalam form donasi.
+*   **Jenis Donasi Lengkap**: Mendukung nominal tetap, nominal bebas, dan pilihan paket (misal: Paket Sembako).
+*   **Sistem Pembayaran**:
+    *   **Transfer Bank Manual**: Verifikasi manual dengan unggah bukti transfer.
+    *   **Midtrans Payment Gateway**: Integrasi otomatis Virtual Account, QRIS, E-Wallet (GoPay, OVO, ShopeePay), dan Kartu Kredit.
+*   **Fundraising**: Fitur untuk relawan/fundraiser membagikan link kampanye dan melacak perolehan donasi mereka.
+*   **Kuitansi & Notifikasi**: Email notifikasi otomatis dan kuitansi donasi yang profesional.
+*   **Manajemen Donatur**: Dashboard untuk donatur melihat riwayat donasi mereka.
+*   **Laporan**: Rekapitulasi donasi harian, bulanan, dan per kampanye.
+
+### Kenapa Memilih Donasai?
+
+1.  **UI/UX Modern**: Form donasi yang mobile-friendly dan mudah digunakan.
+2.  **Ringan & Cepat**: Dibangun dengan standar coding WordPress modern (React + PHP).
+3.  **Khas Indonesia**: Istilah dan alur yang disesuaikan dengan kebiasaan berdonasi di Indonesia.
 
 == Installation ==
 
-1.  Upload the plugin files to the `/wp-content/plugins/wp-donasi` directory, or install the plugin through the WordPress plugins screen directly.
-2.  Activate the plugin through the 'Plugins' screen in WordPress.
-3.  Use the Settings->Donasi menu to configure your bank accounts and payment gateways.
+1.  Upload folder `donasai` ke direktori `/wp-content/plugins/` atau install via menu Plugins > Add New di WordPress.
+2.  Aktifkan plugin melalui menu 'Plugins'.
+3.  Akan muncul menu **Donasai** di sidebar admin.
+4.  Masuk ke **Donasai > Settings** untuk mengatur Payment Gateway (Midtrans) dan Rekening Bank.
+5.  Buat kampanye pertama Anda di **Donasai > Campaigns**.
+6.  Gunakan shortcode `[wpd_donation_form]` (jika manual) atau biarkan plugin membuat halaman otomatis.
 
-== Shortcodes ==
+== Screenshots ==
 
-*   `[wpd_my_donations]`: Display donor's history.
-*   `[wpd_profile]`: Donor profile editing form.
-*   `[wpd_fundraiser_stats]`: Dashboard for fundraisers.
+1. **Dashboard Kampanye** - Tampilan manajemen kampanye yang informatif.
+2. **Form Donasi** - Tampilan form donasi yang bersih dan mudah digunakan.
+3. **Pilihan Pembayaran** - Mendukung Transfer Bank dan E-Wallet via Midtrans.
+4. **Kalkulator Zakat** - Fitur hitung zakat otomatis.
 
 == Frequently Asked Questions ==
 
-= How do I enable Midtrans? =
-Go to Donasi > Settings and enter your Server Key. Make sure to set the Production mode correctly.
+= Apakah plugin ini gratis? =
+Ya, versi dasar (Donasai Free) gratis selamanya dan sudah cukup untuk menerima donasi. Tersedia versi PRO untuk fitur lanjutan seperti Donasi Berulang (Recurring) dan Notifikasi WhatsApp.
 
-= How do I create a Recuring Donation campaign? =
-Recurring donations are enabled globally. Donors can choose to make any donation recurring on the donation form.
+= Bagaimana cara setting Midtrans? =
+Anda perlu mendaftar akun di [Midtrans](https://midtrans.com), lalu ambil **Server Key** dan **Client Key**. Masukkan key tersebut di menu Donasai > Settings > Payment.
+
+= Apakah mendukung mata uang selain Rupiah? =
+Saat ini Donasai difokuskan untuk pengguna di Indonesia dengan mata uang Rupiah (IDR).
 
 == Changelog ==
 
 = 1.0.0 =
-*   Initial release with Campaign, Donation, and Fundraising features.
+*   Initial release.
+*   Fitur dasar: Kampanye, Donasi, Zakat, Midtrans, Transfer Manual.
+

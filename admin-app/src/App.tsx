@@ -9,6 +9,8 @@ import Confirmations from './pages/Confirmations'
 import { LayoutDashboard, Heart, Settings as SettingsIcon, Users, CheckCircle } from 'lucide-react'
 import clsx from 'clsx'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import logo from './assets/logo.svg'
+import LogoIcon from './assets/logo'
 const queryClient = new QueryClient()
 
 function App() {
@@ -54,8 +56,8 @@ function AppLayout() {
             {/* Logo Section */}
             <div className="flex items-center">
               <div className="shrink-0 flex items-center gap-2">
-                <div className="bg-blue-600 p-1.5 rounded-lg">
-                  <Heart className="text-white w-5 h-5" />
+                <div className="">
+                  <LogoIcon className="size-10" />
                 </div>
                 <h1 className="text-lg font-bold text-gray-800 tracking-tight">Donasai</h1>
               </div>
