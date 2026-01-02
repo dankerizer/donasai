@@ -274,7 +274,7 @@ export default function Settings() {
                                 <Crown className="text-yellow-300 w-4 h-4" />
                                 <span className="text-xs font-semibold tracking-wide uppercase">Premium Features</span>
                             </div>
-                            <h3 className="text-2xl font-bold mb-2 tracking-tight">
+                            <h3 className="text-2xl font-bold mb-2 tracking-tight text-white!">
                                 Upgrade ke Donasai Pro
                             </h3>
                             <p className="text-red-50 text-sm leading-relaxed max-w-md">
