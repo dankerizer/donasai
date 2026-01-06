@@ -1,7 +1,10 @@
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
+/** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Check, X, Building, CreditCard, Bell, Star, Crown, Heart, Palette, Lock, Trash, Plus, Link as LinkIcon } from 'lucide-react'
 import clsx from 'clsx'
+import { toast } from 'sonner'
 
 export default function Settings() {
     const queryClient = useQueryClient()
@@ -64,7 +67,6 @@ export default function Settings() {
     })
 
     const [pages, setPages] = useState<Array<{ id: number, title: string }>>([])
-    const [success, setSuccess] = useState('')
 
     // Fetch Settings
     useQuery({
@@ -210,8 +212,14 @@ export default function Settings() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['settings'] })
-            setSuccess('Settings saved successfully!')
-            setTimeout(() => setSuccess(''), 3000)
+            toast.success('Pengaturan berhasil disimpan!', {
+                description: 'Semua perubahan telah tersimpan ke database.'
+            })
+        },
+        onError: (error: Error) => {
+            toast.error('Gagal menyimpan pengaturan', {
+                description: error.message || 'Terjadi kesalahan saat menyimpan pengaturan.'
+            })
         }
     })
 
@@ -254,11 +262,6 @@ export default function Settings() {
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-800">Pengaturan</h2>
-                {success && (
-                    <div className="px-4 py-2 bg-green-100 text-green-700 rounded-lg flex items-center gap-2">
-                        <Check size={16} /> {success}
-                    </div>
-                )}
             </div>
 
             {/* Pro Banner */}
@@ -282,6 +285,7 @@ export default function Settings() {
                             </p>
                         </div>
                         <button
+                        type='button'
                             onClick={() => setShowProModal(true)}
                             className="group relative bg-white text-red-600 px-6 py-3.5 rounded-xl font-bold hover:bg-red-50 transition-all shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
                         >
@@ -308,6 +312,7 @@ export default function Settings() {
                         const Icon = tab.icon
                         return (
                             <button
+                                type='button'
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={clsx(
@@ -342,10 +347,11 @@ export default function Settings() {
                                     <p className="text-sm text-gray-500 mb-4">Masukkan kunci lisensi Anda untuk membuka fitur Pro.</p>
 
                                     <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Kunci Lisensi</label>
+                                        <label htmlFor="licenseKey"  className="block text-sm font-medium text-gray-700 mb-1">Kunci Lisensi</label>
                                         <div className="flex gap-2">
                                             <input
                                                 type="text"
+                                                id="licenseKey"
                                                 className="flex-1 p-2 border border-gray-300 rounded-lg font-mono text-sm"
                                                 value={licenseKey}
                                                 onChange={e => setLicenseKey(e.target.value)}
@@ -372,9 +378,10 @@ export default function Settings() {
 
                                     <div className="grid gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Nama Organisasi</label>
+                                            <label htmlFor="orgName" className="block text-sm font-medium text-gray-700 mb-1">Nama Organisasi</label>
                                             <input
                                                 type="text"
+                                                id="orgName"
                                                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-400 transition-colors"
                                                 value={formData.org_name}
                                                 onChange={e => setFormData({ ...formData, org_name: e.target.value })}
@@ -382,8 +389,9 @@ export default function Settings() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
+                                            <label htmlFor="orgAddress" className="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
                                             <textarea
+                                                id="orgAddress"
                                                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                                                 rows={3}
                                                 value={formData.org_address}
@@ -393,7 +401,7 @@ export default function Settings() {
                                         </div>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                                <label htmlFor="orgEmail" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                                                 <input
                                                     type="email"
                                                     className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -402,7 +410,7 @@ export default function Settings() {
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Telepon / WhatsApp</label>
+                                                <label htmlFor="orgPhone" className="block text-sm font-medium text-gray-700 mb-1">Telepon / WhatsApp</label>
                                                 <input
                                                     type="text"
                                                     className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -412,9 +420,10 @@ export default function Settings() {
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Logo URL</label>
+                                            <label htmlFor="orgLogo" className="block text-sm font-medium text-gray-700 mb-1">Logo URL</label>
                                             <input
                                                 type="text"
+                                                id="orgLogo"
                                                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                                                 value={formData.org_logo}
                                                 onChange={e => setFormData({ ...formData, org_logo: e.target.value })}
@@ -436,12 +445,13 @@ export default function Settings() {
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Slug Kampanye</label>
+                                            <label htmlFor="campaignSlug" className="block text-sm font-medium text-gray-700 mb-2">Slug Kampanye</label>
                                             <div className="flex bg-white border border-gray-300 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 overflow-hidden items-stretch">
                                                 <span className="px-3 bg-gray-50 border-r border-gray-200 text-gray-500 text-sm flex items-center whitespace-nowrap">
                                                     {window.location.host}/
                                                 </span>
                                                 <input
+                                                    id="campaignSlug"
                                                     type="text"
                                                     className="flex-1 w-full p-2.5 border-none focus:ring-0 text-sm text-gray-900 placeholder-gray-400 bg-transparent"
                                                     value={formData.campaign_slug}
@@ -455,12 +465,13 @@ export default function Settings() {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Slug Pembayaran</label>
+                                            <label htmlFor="paymentSlug" className="block text-sm font-medium text-gray-700 mb-2">Slug Pembayaran</label>
                                             <div className="flex bg-white border border-gray-300 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 overflow-hidden items-stretch">
                                                 <span className="px-3 bg-gray-50 border-r border-gray-200 text-gray-500 text-sm flex items-center whitespace-nowrap">
                                                     {window.location.host}/{formData.campaign_slug}/
                                                 </span>
                                                 <input
+                                                    id="paymentSlug"
                                                     type="text"
                                                     className="flex-1 w-full p-2.5 border-none focus:ring-0 text-sm text-gray-900 placeholder-gray-400 bg-transparent"
                                                     value={formData.payment_slug}
@@ -484,10 +495,11 @@ export default function Settings() {
                                     <h3 className="text-lg font-medium text-gray-900 mb-4">Pengaturan Konfirmasi</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            <label htmlFor="confirmationPage" className="block text-sm font-medium text-gray-700 mb-1">
                                                 Halaman Konfirmasi
                                             </label>
                                             <select
+                                                id="confirmationPage"
                                                 value={formData.confirmation_page || ''}
                                                 onChange={(e) => setFormData({ ...formData, confirmation_page: e.target.value })}
                                                 className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -510,12 +522,13 @@ export default function Settings() {
                                     </h3>
                                     <div className="flex items-center space-x-3">
                                         <input
+                                            id="removeBranding"
                                             type="checkbox"
                                             checked={formData.remove_branding}
                                             onChange={(e) => setFormData({ ...formData, remove_branding: e.target.checked })}
                                             className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                                         />
-                                        <label className="text-sm font-medium text-gray-700">Hapus Branding "Powered by Donasai"</label>
+                                        <label htmlFor="removeBranding" className="text-sm font-medium text-gray-700">Hapus Branding "Powered by Donasai"</label>
                                     </div>
                                     <p className="text-xs text-gray-500 mt-1 ml-7">Opsi untuk menyembunyikan "Powered by Donasai" di footer form dan kuitansi.</p>
                                 </div>
@@ -529,18 +542,20 @@ export default function Settings() {
                                     <h3 className="text-lg font-medium text-gray-900 mb-4">Opsi Donasi</h3>
                                     <div className="grid gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Jumlah Donasi Minimum (Rp)</label>
+                                            <label htmlFor="minAmount" className="block text-sm font-medium text-gray-700 mb-1">Jumlah Donasi Minimum (Rp)</label>
                                             <input
                                                 type="number"
+                                                id="minAmount"
                                                 className="w-full p-2 border border-gray-300 rounded-lg"
                                                 value={formData.min_amount}
                                                 onChange={e => setFormData({ ...formData, min_amount: parseInt(e.target.value) || 0 })}
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Preset Default (Rp)</label>
+                                            <label htmlFor="presets" className="block text-sm font-medium text-gray-700 mb-1">Preset Default (Rp)</label>
                                             <input
                                                 type="text"
+                                                id="presets"
                                                 className="w-full p-2 border border-gray-300 rounded-lg"
                                                 value={formData.presets}
                                                 onChange={e => setFormData({ ...formData, presets: e.target.value })}
@@ -549,9 +564,10 @@ export default function Settings() {
                                             <p className="text-xs text-gray-500 mt-1">Pisahkan dengan koma.</p>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Label Anonim</label>
+                                            <label htmlFor="anonymousLabel" className="block text-sm font-medium text-gray-700 mb-1">Label Anonim</label>
                                             <input
                                                 type="text"
+                                                id="anonymousLabel"
                                                 className="w-full p-2 border border-gray-300 rounded-lg"
                                                 value={formData.anonymous_label}
                                                 onChange={e => setFormData({ ...formData, anonymous_label: e.target.value })}
@@ -601,12 +617,13 @@ export default function Settings() {
                                         </h3>
                                         <div className="flex items-center space-x-3">
                                             <input
+                                                id="createUser"
                                                 type="checkbox"
                                                 checked={formData.create_user}
                                                 onChange={(e) => setFormData({ ...formData, create_user: e.target.checked })}
                                                 className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                                             />
-                                            <label className="text-sm font-medium text-gray-700">Otomatis buat Pengguna WordPress dari Email Donatur</label>
+                                            <label htmlFor="createUser" className="text-sm font-medium text-gray-700">Otomatis buat Pengguna WordPress dari Email Donatur</label>
                                         </div>
                                     </div>
                                 ) : (
@@ -616,12 +633,13 @@ export default function Settings() {
                                         </h3>
                                         <div className="flex items-center space-x-3 opacity-60">
                                             <input
+                                                    id="createUserPro"
                                                 type="checkbox"
                                                 checked={formData.create_user}
                                                 onChange={() => setShowProModal(true)}
                                                 className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                                             />
-                                            <label className="text-sm font-medium text-gray-700">Otomatis buat Pengguna WordPress dari Email Donatur</label>
+                                            <label htmlFor="createUserPro" className="text-sm font-medium text-gray-700">Otomatis buat Pengguna WordPress dari Email Donatur</label>
                                         </div>
                                     </div>
                                 )}
@@ -699,12 +717,12 @@ export default function Settings() {
                                                 <p className="text-xs text-gray-500 mb-2">Pengaturan Fallback (Gratis):</p>
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div>
-                                                        <label className="block text-xs font-medium text-gray-700 mb-1">Nama Bank</label>
-                                                        <input type="text" className="w-full p-2 border border-gray-300 rounded-lg bg-gray-100" value={formData.bank_name} readOnly />
+                                                        <label htmlFor="bankName" className="block text-xs font-medium text-gray-700 mb-1">Nama Bank</label>
+                                                        <input type="text" id="bankName" className="w-full p-2 border border-gray-300 rounded-lg bg-gray-100" value={formData.bank_name} readOnly />
                                                     </div>
                                                     <div>
-                                                        <label className="block text-xs font-medium text-gray-700 mb-1">Nomor Rekening</label>
-                                                        <input type="text" className="w-full p-2 border border-gray-300 rounded-lg bg-gray-100" value={formData.account_number} readOnly />
+                                                        <label htmlFor="accountNumber" className="block text-xs font-medium text-gray-700 mb-1">Nomor Rekening</label>
+                                                        <input type="text" id="accountNumber" className="w-full p-2 border border-gray-300 rounded-lg bg-gray-100" value={formData.account_number} readOnly />
                                                     </div>
                                                 </div>
                                             </div>
@@ -713,9 +731,10 @@ export default function Settings() {
                                         <div className="grid gap-4">
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama Bank</label>
+                                                    <label htmlFor="bankName" className="block text-sm font-medium text-gray-700 mb-1">Nama Bank</label>
                                                     <input
                                                         type="text"
+                                                        id="bankName"
                                                         className="w-full p-2 border border-gray-300 rounded-lg"
                                                         value={formData.bank_name}
                                                         onChange={e => setFormData({ ...formData, bank_name: e.target.value })}
@@ -723,9 +742,10 @@ export default function Settings() {
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Rekening</label>
+                                                    <label htmlFor="accountNumber" className="block text-sm font-medium text-gray-700 mb-1">Nomor Rekening</label>
                                                     <input
                                                         type="text"
+                                                        id="accountNumber"
                                                         className="w-full p-2 border border-gray-300 rounded-lg"
                                                         value={formData.account_number}
                                                         onChange={e => setFormData({ ...formData, account_number: e.target.value })}
@@ -733,9 +753,10 @@ export default function Settings() {
                                                 </div>
                                             </div>
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Pemilik Rekening</label>
+                                                <label htmlFor="accountName" className="block text-sm font-medium text-gray-700 mb-1">Nama Pemilik Rekening</label>
                                                 <input
                                                     type="text"
+                                                    id="accountName"
                                                     className="w-full p-2 border border-gray-300 rounded-lg"
                                                     value={formData.account_name}
                                                     onChange={e => setFormData({ ...formData, account_name: e.target.value })}
@@ -743,7 +764,7 @@ export default function Settings() {
                                             </div>
 
                                             {/* Pro Teaser */}
-                                            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 flex justify-between items-center cursor-pointer hover:bg-gray-100" onClick={() => setShowProModal(true)}>
+                                            <div id="proTeaser" className="bg-gray-50 border border-gray-200 rounded-lg p-3 flex justify-between items-center cursor-pointer hover:bg-gray-100" onClick={() => setShowProModal(true)}>
                                                 <div className="flex items-center gap-2">
                                                     <Crown size={14} className="text-purple-600" />
                                                     <span className="text-sm font-medium text-gray-600">Butuh lebih dari satu rekening bank?</span>
@@ -790,8 +811,9 @@ export default function Settings() {
 
                                                         <div className="grid md:grid-cols-2 gap-4">
                                                             <div>
-                                                                <label className="block text-xs font-medium text-purple-900 mb-1">Server Key (Pro)</label>
+                                                                <label htmlFor="pro_midtrans_server_key" className="block text-xs font-medium text-purple-900 mb-1">Server Key (Pro)</label>
                                                                 <input
+                                                                    id="pro_midtrans_server_key"
                                                                     type="password"
                                                                     className="w-full p-2 border border-purple-200 rounded-lg font-mono text-xs bg-white"
                                                                     value={formData.pro_midtrans_server_key}
@@ -800,8 +822,9 @@ export default function Settings() {
                                                                 />
                                                             </div>
                                                             <div>
-                                                                <label className="block text-xs font-medium text-purple-900 mb-1">Client Key (Pro)</label>
+                                                                <label htmlFor="pro_midtrans_client_key" className="block text-xs font-medium text-purple-900 mb-1">Client Key (Pro)</label>
                                                                 <input
+                                                                    id="pro_midtrans_client_key"
                                                                     type="text"
                                                                     className="w-full p-2 border border-purple-200 rounded-lg font-mono text-xs bg-white"
                                                                     value={formData.pro_midtrans_client_key}
@@ -815,9 +838,10 @@ export default function Settings() {
                                                 </div>
 
                                                 <div className={clsx("opacity-50 pointer-events-none")}>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Server Key (Gratis)</label>
+                                                    <label htmlFor="midtrans_server_key" className="block text-sm font-medium text-gray-700 mb-1">Server Key (Gratis)</label>
                                                     <input
                                                         type="password"
+                                                        id="midtrans_server_key"
                                                         className="w-full p-2 border border-gray-300 rounded-lg font-mono text-sm bg-gray-100"
                                                         value={formData.midtrans_server_key}
                                                         readOnly
@@ -841,8 +865,9 @@ export default function Settings() {
 
                                     <div className="grid gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Email untuk Pembaruan</label>
+                                            <label htmlFor="opt_in_email" className="block text-sm font-medium text-gray-700 mb-1">Email untuk Pembaruan</label>
                                             <input
+                                                id="opt_in_email"
                                                 type="email"
                                                 className="w-full p-2 border border-gray-300 rounded-lg"
                                                 value={formData.opt_in_email}
@@ -851,8 +876,9 @@ export default function Settings() {
                                             <p className="text-xs text-gray-500 mt-1">Kami akan memverifikasi email ini sebelum mengirim laporan sensitif.</p>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp (Opsional)</label>
+                                            <label  htmlFor="opt_in_whatsapp" className="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp (Opsional)</label>
                                             <input
+                                                id="opt_in_whatsapp"
                                                 type="text"
                                                 className="w-full p-2 border border-gray-300 rounded-lg"
                                                 value={formData.opt_in_whatsapp}
@@ -885,10 +911,11 @@ export default function Settings() {
                                     <h3 className="text-lg font-medium text-gray-900 mb-4">Tampilan & Layout</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Warna Merek Utama</label>
+                                            <label htmlFor="brand_color" className="block text-sm font-medium text-gray-700 mb-2">Warna Merek Utama</label>
                                             <div className="flex items-center gap-3">
                                                 <input
                                                     type="color"
+                                                    id="brand_color"
                                                     value={formData.brand_color || '#059669'}
                                                     onChange={e => setFormData({ ...formData, brand_color: e.target.value })}
                                                     className="h-10 w-20 p-1 rounded border border-gray-300 cursor-pointer"
@@ -898,10 +925,11 @@ export default function Settings() {
                                             <p className="text-xs text-gray-500 mt-2">Digunakan untuk lencana, jumlah, dan bilah kemajuan.</p>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Warna Tombol</label>
+                                            <label htmlFor="button_color" className="block text-sm font-medium text-gray-700 mb-2">Warna Tombol</label>
                                             <div className="flex items-center gap-3">
                                                 <input
                                                     type="color"
+                                                    id="button_color"
                                                     value={formData.button_color || '#ec4899'}
                                                     onChange={e => setFormData({ ...formData, button_color: e.target.value })}
                                                     className="h-10 w-20 p-1 rounded border border-gray-300 cursor-pointer"
@@ -911,9 +939,10 @@ export default function Settings() {
                                             <p className="text-xs text-gray-500 mt-2">Tombol CTA utama (Donasi, Kirim).</p>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Lebar Kontainer</label>
+                                            <label htmlFor="container_width" className="block text-sm font-medium text-gray-700 mb-1">Lebar Kontainer</label>
                                             <input
                                                 type="text"
+                                                id="container_width"
                                                 value={formData.container_width || '1100px'}
                                                 onChange={(e) => setFormData({ ...formData, container_width: e.target.value })}
                                                 className="w-full p-2 border border-gray-300 rounded-lg"
@@ -922,9 +951,10 @@ export default function Settings() {
                                             <p className="text-xs text-gray-500 mt-2">Lebar maksimal halaman campaign.</p>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Border Radius</label>
+                                            <label htmlFor="border_radius" className="block text-sm font-medium text-gray-700 mb-1">Border Radius</label>
                                             <input
                                                 type="text"
+                                                id="border_radius"
                                                 value={formData.border_radius || '12px'}
                                                 onChange={(e) => setFormData({ ...formData, border_radius: e.target.value })}
                                                 className="w-full p-2 border border-gray-300 rounded-lg"
@@ -933,10 +963,11 @@ export default function Settings() {
                                             <p className="text-xs text-gray-500 mt-2">Kelengkungan sudut (card, tombol, input).</p>
                                         </div>
                                         <div className="md:col-span-2">
-                                            <label className="block text-sm font-medium text-gray-700 mb-3">Layout Halaman Campaign</label>
+                                            <label htmlFor="campaign_layout" className="block text-sm font-medium text-gray-700 mb-3">Layout Halaman Campaign</label>
                                             <div className="grid grid-cols-3 gap-4">
                                                 {/* Sidebar Right */}
                                                 <div
+                                                    id="campaign_layout"
                                                     className={clsx(
                                                         "border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
                                                         formData.campaign_layout === 'sidebar-right' ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600" : "border-gray-200 bg-white"
@@ -952,6 +983,7 @@ export default function Settings() {
 
                                                 {/* Sidebar Left */}
                                                 <div
+                                                    id="campaign_layout"
                                                     className={clsx(
                                                         "border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
                                                         formData.campaign_layout === 'sidebar-left' ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600" : "border-gray-200 bg-white"
@@ -967,6 +999,7 @@ export default function Settings() {
 
                                                 {/* Full Width */}
                                                 <div
+                                                    id="campaign_layout"
                                                     className={clsx(
                                                         "border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
                                                         formData.campaign_layout === 'full-width' ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600" : "border-gray-200 bg-white"
@@ -999,8 +1032,9 @@ export default function Settings() {
                                             {licenseStatus === 'active' ? (
                                                 <div className="space-y-3 mt-3">
                                                     <div>
-                                                        <label className="block text-xs font-medium text-gray-700 mb-1">Font Utama</label>
+                                                        <label htmlFor="font_family" className="block text-xs font-medium text-gray-700 mb-1">Font Utama</label>
                                                         <select
+                                                            id="font_family"
                                                             value={formData.font_family || 'Inter'}
                                                             onChange={(e) => setFormData({ ...formData, font_family: e.target.value })}
                                                             className="w-full text-sm p-2 border border-gray-300 rounded"
@@ -1013,10 +1047,11 @@ export default function Settings() {
                                                         </select>
                                                     </div>
                                                     <div>
-                                                        <label className="block text-xs font-medium text-gray-700 mb-1">Ukuran Font Dasar</label>
-                                                        <div className="flex items-center gap-2">
+                                                        <label   htmlFor="font_size" className="block text-xs font-medium text-gray-700 mb-1">Ukuran Font Dasar</label>
+                                                        <div  className="flex items-center gap-2">
                                                             <input
                                                                 type="text"
+                                                                id="font_size"
                                                                 value={formData.font_size || '16px'}
                                                                 onChange={(e) => setFormData({ ...formData, font_size: e.target.value })}
                                                                 className="w-20 text-sm p-2 border border-gray-300 rounded"
@@ -1167,6 +1202,9 @@ export default function Settings() {
                                                 a.download = `donasai-settings-${new Date().toISOString().split('T')[0]}.json`;
                                                 a.click();
                                                 URL.revokeObjectURL(url);
+                                                toast.success('Ekspor berhasil!', {
+                                                    description: 'File pengaturan telah diunduh.'
+                                                });
                                             }}
                                             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium text-sm"
                                         >
@@ -1217,9 +1255,13 @@ export default function Settings() {
                                                             opt_in_email: imported.notifications?.opt_in_email || prev.opt_in_email,
                                                             opt_in_whatsapp: imported.notifications?.opt_in_whatsapp || prev.opt_in_whatsapp,
                                                         }));
-                                                        alert('Pengaturan berhasil diimpor! Klik "Simpan Perubahan" untuk menyimpan.');
+                                                        toast.success('Pengaturan berhasil diimpor!', {
+                                                            description: 'Klik "Simpan Perubahan" untuk menyimpan ke database.'
+                                                        });
                                                     } catch {
-                                                        alert('Gagal membaca file. Pastikan file JSON valid.');
+                                                        toast.error('Gagal membaca file', {
+                                                            description: 'Pastikan file JSON valid dan sesuai format.'
+                                                        });
                                                     }
                                                 };
                                                 reader.readAsText(file);
@@ -1238,24 +1280,26 @@ export default function Settings() {
                                         <div className="flex items-start space-x-3">
                                             <input
                                                 type="checkbox"
+                                                id="delete_on_uninstall_settings"
                                                 checked={formData.delete_on_uninstall_settings}
                                                 onChange={(e) => setFormData({ ...formData, delete_on_uninstall_settings: e.target.checked })}
                                                 className="h-4 w-4 text-red-600 border-red-300 rounded focus:ring-red-500 mt-0.5"
                                             />
                                             <div>
-                                                <label className="text-sm font-medium text-gray-800">Hapus Semua Pengaturan</label>
+                                                <label htmlFor="delete_on_uninstall_settings" className="text-sm font-medium text-gray-800">Hapus Semua Pengaturan</label>
                                                 <p className="text-xs text-gray-600">Jika dicentang, semua opsi pengaturan plugin akan dihapus dari database ketika plugin di-uninstall.</p>
                                             </div>
                                         </div>
                                         <div className="flex items-start space-x-3">
                                             <input
                                                 type="checkbox"
+                                                id="delete_on_uninstall_tables"
                                                 checked={formData.delete_on_uninstall_tables}
                                                 onChange={(e) => setFormData({ ...formData, delete_on_uninstall_tables: e.target.checked })}
                                                 className="h-4 w-4 text-red-600 border-red-300 rounded focus:ring-red-500 mt-0.5"
                                             />
                                             <div>
-                                                <label className="text-sm font-medium text-gray-800">Hapus Tabel Database</label>
+                                                <label htmlFor="delete_on_uninstall_tables" className="text-sm font-medium text-gray-800">Hapus Tabel Database</label>
                                                 <p className="text-xs text-gray-600">Jika dicentang, tabel donasi dan kampanye akan <b>DIHAPUS PERMANEN</b> ketika plugin di-uninstall.</p>
                                             </div>
                                         </div>
@@ -1284,7 +1328,7 @@ export default function Settings() {
                     <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
                             <h2 className="text-2xl font-bold text-gray-900">Pilih paket Anda</h2>
-                            <button onClick={() => setShowProModal(false)} className="p-2 hover:bg-gray-100 rounded-full">
+                            <button type='button' onClick={() => setShowProModal(false)} className="p-2 hover:bg-gray-100 rounded-full">
                                 <X size={24} className="text-gray-500" />
                             </button>
                         </div>
@@ -1301,7 +1345,7 @@ export default function Settings() {
                                             </li>
                                         ))}
                                     </ul>
-                                    <button className="w-full py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg cursor-default">Paket Saat Ini</button>
+                                    <button type='button' className="w-full py-2 bg-gray-100 text-gray-700 font-semibold rounded-lg cursor-default">Paket Saat Ini</button>
                                 </div>
 
                                 {/* PRO */}
@@ -1328,7 +1372,7 @@ export default function Settings() {
                                             </li>
                                         ))}
                                     </ul>
-                                    <button className="w-full py-2 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 shadow-md">
+                                    <button type='button' className="w-full py-2 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 shadow-md">
                                         Upgrade Sekarang (Segera Hadir)
                                     </button>
                                 </div>

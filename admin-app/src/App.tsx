@@ -9,6 +9,7 @@ import Confirmations from './pages/Confirmations'
 import { LayoutDashboard, Heart, Settings as SettingsIcon, Users, CheckCircle } from 'lucide-react'
 import clsx from 'clsx'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { Toaster } from 'sonner'
 
 import LogoIcon from './assets/logo'
 const queryClient = new QueryClient()
@@ -20,6 +21,7 @@ function App() {
         <AppLayout />
         <ReactQueryDevtools initialIsOpen={false} />
       </HashRouter>
+      <Toaster position="top-right" richColors closeButton />
     </QueryClientProvider>
   )
 }
@@ -28,6 +30,7 @@ function AppLayout() {
   const location = useLocation()
   const navigate = useNavigate()
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const settings = (window as any).wpdSettings;
     // Check if we have an initial path and we are currently at root (default)
@@ -37,7 +40,7 @@ function AppLayout() {
         navigate(settings.initialPath, { replace: true });
       }
     }
-  }, []);
+  }, [location.pathname]);
 
   const navItems = [
     { label: 'Dasbor', path: '/', icon: LayoutDashboard },
