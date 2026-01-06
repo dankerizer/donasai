@@ -9,7 +9,7 @@ import Confirmations from './pages/Confirmations'
 import { LayoutDashboard, Heart, Settings as SettingsIcon, Users, CheckCircle } from 'lucide-react'
 import clsx from 'clsx'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import logo from './assets/logo.svg'
+
 import LogoIcon from './assets/logo'
 const queryClient = new QueryClient()
 
@@ -75,7 +75,7 @@ function AppLayout() {
                     className={clsx(
                       'flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors',
                       isActive
-                        ? 'bg-blue-50 text-blue-700'
+                        ? 'bg-red-50 text-red-700'
                         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                     )}
                   >
