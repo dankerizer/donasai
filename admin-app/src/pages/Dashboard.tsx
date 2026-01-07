@@ -203,7 +203,7 @@ export default function Dashboard() {
                                     nameKey="payment_method"
                                 >
                                     {(chartData?.payment_methods || []).map((_entry: any, index: number) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        <Cell key={`cell-${index.toString()}-${_entry.payment_method}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
                                 <Tooltip formatter={(value: any, name: any) => [value, name]} />

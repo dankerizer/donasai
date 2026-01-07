@@ -10,6 +10,7 @@ const LogoIcon = (props: SVGProps<SVGSVGElement>) => (
         viewBox="0 0 200 200"
         {...props}
     >
+        <title>DonasiAI</title>
         <g transform="translate(10.394 -.2) scale(.05602)">
             <path fill="none" d="M-185.558 3.555h3570.37v3570.37h-3570.37z" />
             <clipPath id="a">

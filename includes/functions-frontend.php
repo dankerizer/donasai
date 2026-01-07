@@ -449,3 +449,13 @@ function wpd_shortcode_confirmation_form() {
     return ob_get_clean();
 }
 add_shortcode( 'wpd_confirmation_form', 'wpd_shortcode_confirmation_form' );
+
+/**
+ * Campaign List Shortcode [donasai_campaign_list]
+ */
+function wpd_shortcode_campaign_list() {
+    ob_start();
+    include WPD_PLUGIN_PATH . 'frontend/templates/campaign-list.php';
+    return ob_get_clean();
+}
+add_shortcode( 'donasai_campaign_list', 'wpd_shortcode_campaign_list' );
