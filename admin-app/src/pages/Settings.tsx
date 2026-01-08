@@ -4,19 +4,22 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import {
-    Bell,
-    Building,
-    Check,
-    CreditCard,
-    Crown,
-    Heart,
-    Link as LinkIcon,
-    Lock,
-    Palette,
-    Plus,
-    Star,
-    Trash,
-    X,
+	Bell,
+	Building,
+	Check,
+	CreditCard,
+	Crown,
+	Heart,
+	Image,
+	Link as LinkIcon,
+	Lock,
+	Palette,
+	Plus,
+	Star,
+	Trash,
+	Trash2,
+	Upload,
+	X,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -546,19 +549,82 @@ export default function Settings() {
 											>
 												Logo URL
 											</label>
-											<input
-												type="text"
-												id="orgLogo"
-												className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-												value={formData.org_logo}
-												onChange={(e) =>
-													setFormData({ ...formData, org_logo: e.target.value })
-												}
-												placeholder="https://..."
-											/>
-											<p className="text-xs text-gray-500 mt-1">
-												Unggah ke Pustaka Media dan tempel URL di sini.
-											</p>
+											<div className="flex items-start gap-4">
+												<div className="relative group shrink-0">
+													{formData.org_logo ? (
+														<div className="w-24 h-24 rounded-lg border border-gray-200 overflow-hidden bg-gray-50 relative">
+															<img
+																src={formData.org_logo}
+																alt="Logo"
+																className="w-full h-full object-contain"
+															/>
+															<button
+																type="button"
+																onClick={() =>
+																	setFormData({ ...formData, org_logo: "" })
+																}
+																className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+																title="Hapus Logo"
+															>
+																<Trash2 size={12} />
+															</button>
+														</div>
+													) : (
+														<div className="w-24 h-24 rounded-lg border border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center text-gray-400">
+															<Image size={24} className="mb-1" />
+															<span className="text-[10px]">No Logo</span>
+														</div>
+													)}
+												</div>
+
+												<div className="flex-1">
+													<div className="flex gap-2 mb-2">
+														<input
+															type="text"
+															id="orgLogo"
+															className="flex-1 p-2 text-sm border border-gray-300! rounded-lg focus:ring-2 focus:ring-blue-500! bg-gray-50!"
+															value={formData.org_logo}
+															readOnly
+															placeholder="URL Logo..."
+														/>
+														<button
+															type="button"
+															onClick={() => {
+																// @ts-expect-error
+																const frame = wp.media({
+																	title: "Pilih Logo Organisasi",
+																	button: {
+																		text: "Gunakan Logo Ini",
+																	},
+																	multiple: false,
+																});
+
+																frame.on("select", () => {
+																	const attachment = frame
+																		.state()
+																		.get("selection")
+																		.first()
+																		.toJSON();
+																	setFormData({
+																		...formData,
+																		org_logo: attachment.url,
+																	});
+																});
+
+																frame.open();
+															}}
+															className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+														>
+															<Upload size={16} />
+															Upload
+														</button>
+													</div>
+													<p className="text-xs text-gray-500">
+														Format: PNG, JPG, atau WebP. Disarankan ukuran
+														persegi (1:1) minimal 512x512px.
+													</p>
+												</div>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -574,68 +640,81 @@ export default function Settings() {
 										</div>
 									</div>
 
-									<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-										<div>
-											<label
-												htmlFor="campaignSlug"
-												className="block text-sm font-medium text-gray-700 mb-2"
-											>
-												Slug Kampanye
-											</label>
-											<div className="flex bg-white border border-gray-300 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 overflow-hidden items-stretch">
-												<span className="px-3 bg-gray-50 border-r border-gray-200 text-gray-500 text-sm flex items-center whitespace-nowrap">
-													{window.location.host}/
-												</span>
-												<input
-													id="campaignSlug"
-													type="text"
-													className="flex-1 w-full p-2.5 border-none focus:ring-0 text-sm text-gray-900 placeholder-gray-400 bg-transparent"
-													value={formData.campaign_slug}
-													onChange={(e) =>
-														setFormData({
-															...formData,
-															campaign_slug: e.target.value,
-														})
-													}
-												/>
-												<span className="px-3 bg-gray-50 border-l border-gray-200 text-gray-500 text-sm flex items-center whitespace-nowrap">
-													/judul-campaign
-												</span>
+									<div className="grid grid-cols-1 gap-6 mb-6">
+										<div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
+											<div className="flex items-center gap-2 mb-4">
+												<div className="p-1.5 bg-blue-100 text-blue-600 rounded">
+													<LinkIcon size={16} />
+												</div>
+												<h4 className="text-sm font-semibold text-gray-900">
+													Struktur URL Kampanye
+												</h4>
 											</div>
-											<p className="mt-1.5 text-xs text-gray-500">
-												Contoh:{" "}
-												<code>
-													domain.com/{formData.campaign_slug}/pembangunan-masjid
-												</code>
+
+											<div className="flex flex-col sm:flex-row sm:items-center gap-3">
+												<div className="flex-1 relative flex items-center max-w-full">
+													<div className="flex items-center w-full rounded-lg border border-gray-300 bg-white shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
+														<span className="pl-3 pr-1 py-2.5 text-gray-500 text-sm bg-gray-50 border-r border-gray-200 select-none whitespace-nowrap">
+															{window.location.host}/
+														</span>
+														<input
+															type="text"
+															className="flex-1 min-w-[100px] border-none! focus:ring-0! max-w-[200px]! text-sm text-gray-900 font-semibold px-3 py-2.5 placeholder-gray-400"
+															value={formData.campaign_slug}
+															onChange={(e) =>
+																setFormData({
+																	...formData,
+																	campaign_slug: e.target.value,
+																})
+															}
+															placeholder="campaign"
+														/>
+														<span className="pl-1 pr-3 py-2.5 text-gray-400 text-sm bg-white select-none whitespace-nowrap">
+															/ nama-kampanye
+														</span>
+													</div>
+												</div>
+											</div>
+											<p className="text-xs text-gray-500 mt-2">
+												Slug ini akan menjadi awalan untuk semua halaman
+												kampanye donasi Anda.
 											</p>
 										</div>
 
-										<div>
-											<label
-												htmlFor="paymentSlug"
-												className="block text-sm font-medium text-gray-700 mb-2"
-											>
-												Slug Pembayaran
-											</label>
-											<div className="flex bg-white border border-gray-300 rounded-lg shadow-sm focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 overflow-hidden items-stretch">
-												<span className="px-3 bg-gray-50 border-r border-gray-200 text-gray-500 text-sm flex items-center whitespace-nowrap">
-													{window.location.host}/{formData.campaign_slug}/
-												</span>
-												<input
-													id="paymentSlug"
-													type="text"
-													className="flex-1 w-full p-2.5 border-none focus:ring-0 text-sm text-gray-900 placeholder-gray-400 bg-transparent"
-													value={formData.payment_slug}
-													onChange={(e) =>
-														setFormData({
-															...formData,
-															payment_slug: e.target.value,
-														})
-													}
-												/>
+										<div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
+											<div className="flex items-center gap-2 mb-4">
+												<div className="p-1.5 bg-green-100 text-green-600 rounded">
+													<CreditCard size={16} />
+												</div>
+												<h4 className="text-sm font-semibold text-gray-900">
+													Struktur URL Pembayaran
+												</h4>
 											</div>
-											<p className="mt-1.5 text-xs text-gray-500">
-												URL halaman form donasi (default: pay, donate, dll).
+
+											<div className="flex flex-col sm:flex-row sm:items-center gap-3">
+												<div className="flex-1 relative flex items-center max-w-full">
+													<div className="flex items-center w-full rounded-lg border border-gray-300 bg-white shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
+														<span className="pl-3 pr-1 py-2.5 text-gray-500 text-sm bg-gray-50 border-r border-gray-200 select-none whitespace-nowrap max-w-[180px] overflow-hidden text-ellipsis">
+															.../{formData.campaign_slug}/nama-campaign
+														</span>
+														<input
+															type="text"
+															className="flex-1!	 min-w-[100px]! border-none! focus:ring-0! text-sm text-gray-900 font-semibold px-3 py-2.5 placeholder-gray-400"
+															value={formData.payment_slug}
+															onChange={(e) =>
+																setFormData({
+																	...formData,
+																	payment_slug: e.target.value,
+																})
+															}
+															placeholder="pay"
+														/>
+													</div>
+												</div>
+											</div>
+											<p className="text-xs text-gray-500 mt-2">
+												Halaman tempat donatur mengisi nominal dan memilih
+												metode pembayaran.
 											</p>
 										</div>
 									</div>
@@ -2077,7 +2156,7 @@ export default function Settings() {
 				<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
 					<div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
 						<div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-							<h2 className="text-2xl font-bold text-gray-900">
+							<h2 className="text-2xl! font-bold text-gray-900 my-0!">
 								Pilih paket Anda
 							</h2>
 							<button
@@ -2174,3 +2253,4 @@ export default function Settings() {
 		</div>
 	);
 }
+

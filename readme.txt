@@ -1,5 +1,5 @@
 === Donasai - Platform Donasi & Penggalangan Dana ===
-Contributors: hadiedanker
+Contributors: hadie danker
 Tags: donation, fundraising, zakat, qurban, donasi, sedekah, crowdfunding, payment gateway, midtrans
 Requires at least: 6.4
 Tested up to: 6.6

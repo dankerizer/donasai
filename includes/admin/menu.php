@@ -112,6 +112,9 @@ function wpd_enqueue_admin_assets($hook)
 		return;
 	}
 
+	// Enqueue Media Scripts
+	wp_enqueue_media();
+
 	// Dev Mode (needs WPD_DEV_MODE constant)
 	if (defined('WPD_DEV_MODE') && WPD_DEV_MODE) {
 		// Vite Dev Server
@@ -129,13 +132,7 @@ function wpd_enqueue_admin_assets($hook)
 			</script>';
 		});
 
-		// Add type="module" to dev scripts
-		add_filter('script_loader_tag', function ($tag, $handle, $src) {
-			if (in_array($handle, array('wpd-vite-client', 'wpd-admin-dev'))) {
-				return '<script type="module" src="' . esc_url($src) . '"></script>';
-			}
-			return $tag;
-		}, 10, 3);
+
 	} else {
 		// Production Build
 		$manifest_path = WPD_PLUGIN_PATH . 'build/.vite/manifest.json';
@@ -180,5 +177,12 @@ function wpd_enqueue_admin_assets($hook)
 		'initialPath' => $initial_path,
 		'isPro' => wpd_is_pro_active(),
 	));
+	// Add type="module" to dev and production scripts
+	add_filter('script_loader_tag', function ($tag, $handle, $src) {
+		if (in_array($handle, array('wpd-vite-client', 'wpd-admin-dev', 'wpd-admin-app'))) {
+			return '<script type="module" src="' . esc_url($src) . '"></script>';
+		}
+		return $tag;
+	}, 10, 3);
 }
 add_action('admin_enqueue_scripts', 'wpd_enqueue_admin_assets');

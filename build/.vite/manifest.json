@@ -1,11 +1,43 @@
 {
+  "_charts-DFIzCEQB.js": {
+    "file": "assets/charts-DFIzCEQB.js",
+    "name": "charts",
+    "imports": [
+      "_vendor-CHqSG2Vf.js",
+      "_ui-V8VJv_gN.js"
+    ]
+  },
+  "_query-D6cGyGtr.js": {
+    "file": "assets/query-D6cGyGtr.js",
+    "name": "query",
+    "imports": [
+      "_vendor-CHqSG2Vf.js"
+    ]
+  },
+  "_ui-V8VJv_gN.js": {
+    "file": "assets/ui-V8VJv_gN.js",
+    "name": "ui",
+    "imports": [
+      "_vendor-CHqSG2Vf.js"
+    ]
+  },
+  "_vendor-CHqSG2Vf.js": {
+    "file": "assets/vendor-CHqSG2Vf.js",
+    "name": "vendor"
+  },
   "src/main.tsx": {
-    "file": "assets/main-DMUE3yqd.js",
+    "file": "assets/main-BgnHJswQ.js",
     "name": "main",
     "src": "src/main.tsx",
     "isEntry": true,
+    "imports": [
+      "_query-D6cGyGtr.js",
+      "_vendor-CHqSG2Vf.js",
+      "_ui-V8VJv_gN.js",
+      "_charts-DFIzCEQB.js"
+    ],
     "css": [
-      "assets/main-YBajgfWS.css"
+      "assets/main-DXqSA6D3.css"
     ]
   }
 }

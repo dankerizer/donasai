@@ -356,7 +356,8 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                                 </div>
                                 <div>
                                     <h4 style="margin:0; font-size:16px; font-weight:600; color:#111827;">
-                                        <?php echo esc_html($name); ?></h4>
+                                        <?php echo esc_html($name); ?>
+                                    </h4>
                                     <div style="font-size:12px; color:#6b7280; margin-top:2px;">
                                         Berdonasi <span style="font-weight:600; color:#059669;">Rp
                                             <?php echo number_format($donor->amount, 0, ',', '.'); ?></span> &bull;
@@ -418,12 +419,12 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
 
                     <!-- Fundraiser Button -->
                     <?php if (function_exists('wpd_is_pro_active') && wpd_is_pro_active()): ?>
-                            <?php if (is_user_logged_in()): ?>
+                        <?php if (is_user_logged_in()): ?>
                             <button onclick="wpdRegisterFundraiser(<?php echo $campaign_id; ?>)"
                                 style="width:100%; background:white; color:var(--wpd-primary); border:1px solid var(--wpd-primary); font-weight:600; padding:10px; border-radius:8px; cursor:pointer;">
                                 Daftar sebagai Penggalang Dana
                             </button>
-                          <?php else: ?>
+                        <?php else: ?>
                             <div style="text-align:center; font-size:13px; color:#6b7280;">
                                 <a href="<?php echo wp_login_url(get_permalink()); ?>"
                                     style="color:var(--wpd-primary);">Masuk</a> untuk mendaftar Penggalang Dana
@@ -434,17 +435,23 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                 </div>
 
                 <!-- Fundraiser Profile -->
+                <?php
+                $org_settings = get_option('wpd_settings_organization', []);
+                $fundraiser_name = !empty($org_settings['org_name']) ? $org_settings['org_name'] : get_the_author();
+                $fundraiser_avatar = !empty($org_settings['org_logo']) ? $org_settings['org_logo'] : 'https://ui-avatars.com/api/?name=' . urlencode($fundraiser_name) . '&background=random';
+                ?>
                 <div
                     style="background:white; border-radius:12px; border:1px solid #e5e7eb; padding:20px; display:flex; align-items:center; gap:15px; margin-bottom:20px;">
-                    <div style="width:50px; height:50px; border-radius:50%; background:#f3f4f6; flex-shrink:0;">
-                        <img src="https://ui-avatars.com/api/?name=Admin&background=random"
-                            style="width:100%; height:100%; border-radius:50%;">
+                    <div
+                        style="width:50px; height:50px; border-radius:50%; background:#f3f4f6; flex-shrink:0; overflow:hidden;">
+                        <img src="<?php echo esc_url($fundraiser_avatar); ?>"
+                            style="width:100%; height:100%; object-fit:cover;">
                     </div>
                     <div>
                         <div style="font-size:12px; text-transform:uppercase; color:#6b7280; font-weight:600;">
                             Penggalang Dana</div>
                         <div style="font-weight:700; color:#111827; display:flex; align-items:center;">
-                            <?php echo get_the_author(); ?>
+                            <?php echo esc_html($fundraiser_name); ?>
                             <svg style="width:14px; height:14px; color:#2563eb; margin-left:5px;" fill="currentColor"
                                 viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
@@ -472,11 +479,13 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                                 ?>
                                 <div style="padding:15px 20px; border-bottom:1px solid #f3f4f6;">
                                     <div style="font-weight:600; color:#111827; font-size:14px;">
-                                        <?php echo esc_html($name); ?></div>
+                                        <?php echo esc_html($name); ?>
+                                    </div>
                                     <div style="font-size:12px; color:#6b7280; margin-bottom:5px;">Berdonasi <span
                                             style="color:var(--wpd-primary); font-weight:600;">Rp
                                             <?php echo number_format($donor->amount, 0, ',', '.'); ?></span> &bull;
-                                        <?php echo $time; ?></div>
+                                        <?php echo $time; ?>
+                                    </div>
                                     <?php if (!empty($donor->note)): ?>
                                         <div style="font-size:13px; color:#4b5563; font-style:italic;">
                                             "<?php echo esc_html($donor->note); ?>"</div>
@@ -530,7 +539,8 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
             <div>
                 <div style="font-size:12px; color:#6b7280; margin-bottom:2px;">Terkumpul</div>
                 <div style="font-size:16px; font-weight:700; color:#059669;">Rp
-                    <?php echo number_format($progress['collected'], 0, ',', '.'); ?></div>
+                    <?php echo number_format($progress['collected'], 0, ',', '.'); ?>
+                </div>
             </div>
             <a href="<?php echo esc_url($donate_link_sticky); ?>"
                 style="background:var(--wpd-btn); color:white; font-weight:700; padding:12px 24px; border-radius:8px; text-decoration:none; font-size:16px;">
