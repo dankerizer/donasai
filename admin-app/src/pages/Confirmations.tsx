@@ -1,4 +1,4 @@
-/** biome-ignore-all lint/a11y/useSemanticElements: <explanation> */
+/** biome-ignore-all lint/a11y/useSemanticElements: gak perlu di cek */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bot, ExternalLink, Lock, Search } from "lucide-react";
 import { useState } from "react";

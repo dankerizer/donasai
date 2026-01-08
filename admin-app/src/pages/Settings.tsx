@@ -1,6 +1,10 @@
 /** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
 /** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
 
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import {
@@ -415,17 +419,12 @@ export default function Settings() {
 									</p>
 
 									<div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
-										<label
-											htmlFor="licenseKey"
-											className="block text-sm font-medium text-gray-700 mb-1"
-										>
-											Kunci Lisensi
-										</label>
+										<Label htmlFor="licenseKey">Kunci Lisensi</Label>
 										<div className="flex gap-2">
-											<input
+											<Input
 												type="text"
 												id="licenseKey"
-												className="flex-1 p-2 border border-gray-300 rounded-lg font-mono text-sm"
+												className="flex-1 font-mono"
 												value={licenseKey}
 												onChange={(e) => setLicenseKey(e.target.value)}
 												placeholder="Masukan License Key"
@@ -464,16 +463,10 @@ export default function Settings() {
 
 									<div className="grid gap-4">
 										<div>
-											<label
-												htmlFor="orgName"
-												className="block text-sm font-medium text-gray-700 mb-1"
-											>
-												Nama Organisasi
-											</label>
-											<input
+											<Label htmlFor="orgName">Nama Organisasi</Label>
+											<Input
 												type="text"
 												id="orgName"
-												className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 hover:border-blue-400 transition-colors"
 												value={formData.org_name}
 												onChange={(e) =>
 													setFormData({ ...formData, org_name: e.target.value })
@@ -482,15 +475,9 @@ export default function Settings() {
 											/>
 										</div>
 										<div>
-											<label
-												htmlFor="orgAddress"
-												className="block text-sm font-medium text-gray-700 mb-1"
-											>
-												Alamat
-											</label>
-											<textarea
+											<Label htmlFor="orgAddress">Alamat</Label>
+											<Textarea
 												id="orgAddress"
-												className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
 												rows={3}
 												value={formData.org_address}
 												onChange={(e) =>
@@ -504,15 +491,9 @@ export default function Settings() {
 										</div>
 										<div className="grid grid-cols-2 gap-4">
 											<div>
-												<label
-													htmlFor="orgEmail"
-													className="block text-sm font-medium text-gray-700 mb-1"
-												>
-													Email
-												</label>
-												<input
+												<Label htmlFor="orgEmail">Email</Label>
+												<Input
 													type="email"
-													className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
 													value={formData.org_email}
 													onChange={(e) =>
 														setFormData({
@@ -523,15 +504,9 @@ export default function Settings() {
 												/>
 											</div>
 											<div>
-												<label
-													htmlFor="orgPhone"
-													className="block text-sm font-medium text-gray-700 mb-1"
-												>
-													Telepon / WhatsApp
-												</label>
-												<input
+												<Label htmlFor="orgPhone">Telepon / WhatsApp</Label>
+												<Input
 													type="text"
-													className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
 													value={formData.org_phone}
 													onChange={(e) =>
 														setFormData({
@@ -543,12 +518,7 @@ export default function Settings() {
 											</div>
 										</div>
 										<div>
-											<label
-												htmlFor="orgLogo"
-												className="block text-sm font-medium text-gray-700 mb-1"
-											>
-												Logo URL
-											</label>
+											<Label htmlFor="orgLogo">Logo URL</Label>
 											<div className="flex items-start gap-4">
 												<div className="relative group shrink-0">
 													{formData.org_logo ? (
@@ -579,10 +549,10 @@ export default function Settings() {
 
 												<div className="flex-1">
 													<div className="flex gap-2 mb-2">
-														<input
+														<Input
 															type="text"
 															id="orgLogo"
-															className="flex-1 p-2 text-sm border border-gray-300! rounded-lg focus:ring-2 focus:ring-blue-500! bg-gray-50!"
+															className="flex-1 bg-gray-50"
 															value={formData.org_logo}
 															readOnly
 															placeholder="URL Logo..."
@@ -657,9 +627,9 @@ export default function Settings() {
 														<span className="pl-3 pr-1 py-2.5 text-gray-500 text-sm bg-gray-50 border-r border-gray-200 select-none whitespace-nowrap">
 															{window.location.host}/
 														</span>
-														<input
+														<Input
 															type="text"
-															className="flex-1 min-w-[100px] border-none! focus:ring-0! max-w-[200px]! text-sm text-gray-900 font-semibold px-3 py-2.5 placeholder-gray-400"
+															className="flex-1 min-w-[100px] border-none! focus:ring-0! max-w-[200px]! shadow-none! rounded-none! text-sm text-gray-900 font-semibold px-3 py-2.5 placeholder-gray-400"
 															value={formData.campaign_slug}
 															onChange={(e) =>
 																setFormData({
@@ -697,9 +667,9 @@ export default function Settings() {
 														<span className="pl-3 pr-1 py-2.5 text-gray-500 text-sm bg-gray-50 border-r border-gray-200 select-none whitespace-nowrap max-w-[180px] overflow-hidden text-ellipsis">
 															.../{formData.campaign_slug}/nama-campaign
 														</span>
-														<input
+														<Input
 															type="text"
-															className="flex-1!	 min-w-[100px]! border-none! focus:ring-0! text-sm text-gray-900 font-semibold px-3 py-2.5 placeholder-gray-400"
+															className="flex-1! min-w-[100px]! border-none! focus:ring-0! shadow-none! rounded-none! text-sm text-gray-900 font-semibold px-3 py-2.5 placeholder-gray-400"
 															value={formData.payment_slug}
 															onChange={(e) =>
 																setFormData({
@@ -741,13 +711,10 @@ export default function Settings() {
 									</h3>
 									<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 										<div>
-											<label
-												htmlFor="confirmationPage"
-												className="block text-sm font-medium text-gray-700 mb-1"
-											>
+											<Label htmlFor="confirmationPage">
 												Halaman Konfirmasi
-											</label>
-											<select
+											</Label>
+											<Select
 												id="confirmationPage"
 												value={formData.confirmation_page || ""}
 												onChange={(e) =>
@@ -756,7 +723,6 @@ export default function Settings() {
 														confirmation_page: e.target.value,
 													})
 												}
-												className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 											>
 												<option value="">-- Pilih Halaman --</option>
 												{pages.map((page: any) => (
@@ -764,7 +730,7 @@ export default function Settings() {
 														{page.title}
 													</option>
 												))}
-											</select>
+											</Select>
 											<p className="mt-1 text-xs text-gray-500">
 												Halaman ini harus berisi shortcode{" "}
 												<code>[wpd_confirmation_form]</code>.
@@ -834,16 +800,10 @@ export default function Settings() {
 											/>
 										</div>
 										<div>
-											<label
-												htmlFor="presets"
-												className="block text-sm font-medium text-gray-700 mb-1"
-											>
-												Preset Default (Rp)
-											</label>
-											<input
+											<Label htmlFor="presets">Preset Default (Rp)</Label>
+											<Input
 												type="text"
 												id="presets"
-												className="w-full p-2 border border-gray-300 rounded-lg"
 												value={formData.presets}
 												onChange={(e) =>
 													setFormData({ ...formData, presets: e.target.value })
@@ -855,16 +815,10 @@ export default function Settings() {
 											</p>
 										</div>
 										<div>
-											<label
-												htmlFor="anonymousLabel"
-												className="block text-sm font-medium text-gray-700 mb-1"
-											>
-												Label Anonim
-											</label>
-											<input
+											<Label htmlFor="anonymousLabel">Label Anonim</Label>
+											<Input
 												type="text"
 												id="anonymousLabel"
-												className="w-full p-2 border border-gray-300 rounded-lg"
 												value={formData.anonymous_label}
 												onChange={(e) =>
 													setFormData({
@@ -1031,11 +985,11 @@ export default function Settings() {
 															className="bg-white p-3 rounded border border-gray-200 shadow-sm relative group"
 														>
 															<div className="grid md:grid-cols-3 gap-2 mb-2">
-																<input
+																<Input
 																	type="text"
 																	placeholder="Bank (e.g BCA)"
-																	className="p-1.5 text-sm border rounded"
 																	value={acc.bank_name}
+																	className="text-xs py-1"
 																	onChange={(e) =>
 																		updateAccount(
 																			idx,
@@ -1044,11 +998,11 @@ export default function Settings() {
 																		)
 																	}
 																/>
-																<input
+																<Input
 																	type="text"
 																	placeholder="No. Rekening"
-																	className="p-1.5 text-sm border rounded"
 																	value={acc.account_number}
+																	className="text-xs py-1"
 																	onChange={(e) =>
 																		updateAccount(
 																			idx,
@@ -1057,11 +1011,11 @@ export default function Settings() {
 																		)
 																	}
 																/>
-																<input
+																<Input
 																	type="text"
 																	placeholder="Atas Nama"
-																	className="p-1.5 text-sm border rounded"
 																	value={acc.account_name}
+																	className="text-xs py-1"
 																	onChange={(e) =>
 																		updateAccount(
 																			idx,
@@ -1106,31 +1060,28 @@ export default function Settings() {
 												</p>
 												<div className="grid grid-cols-2 gap-4">
 													<div>
-														<label
-															htmlFor="bankName"
-															className="block text-xs font-medium text-gray-700 mb-1"
-														>
+														<Label htmlFor="bankName" className="text-xs mb-1">
 															Nama Bank
-														</label>
-														<input
+														</Label>
+														<Input
 															type="text"
 															id="bankName"
-															className="w-full p-2 border border-gray-300 rounded-lg bg-gray-100"
+															className="bg-gray-100"
 															value={formData.bank_name}
 															readOnly
 														/>
 													</div>
 													<div>
-														<label
+														<Label
 															htmlFor="accountNumber"
-															className="block text-xs font-medium text-gray-700 mb-1"
+															className="text-xs mb-1"
 														>
 															Nomor Rekening
-														</label>
-														<input
+														</Label>
+														<Input
 															type="text"
 															id="accountNumber"
-															className="w-full p-2 border border-gray-300 rounded-lg bg-gray-100"
+															className="bg-gray-100"
 															value={formData.account_number}
 															readOnly
 														/>
@@ -1142,16 +1093,10 @@ export default function Settings() {
 										<div className="grid gap-4">
 											<div className="grid grid-cols-2 gap-4">
 												<div>
-													<label
-														htmlFor="bankName"
-														className="block text-sm font-medium text-gray-700 mb-1"
-													>
-														Nama Bank
-													</label>
-													<input
+													<Label htmlFor="bankName">Nama Bank</Label>
+													<Input
 														type="text"
 														id="bankName"
-														className="w-full p-2 border border-gray-300 rounded-lg"
 														value={formData.bank_name}
 														onChange={(e) =>
 															setFormData({
@@ -1163,16 +1108,10 @@ export default function Settings() {
 													/>
 												</div>
 												<div>
-													<label
-														htmlFor="accountNumber"
-														className="block text-sm font-medium text-gray-700 mb-1"
-													>
-														Nomor Rekening
-													</label>
-													<input
+													<Label htmlFor="accountNumber">Nomor Rekening</Label>
+													<Input
 														type="text"
 														id="accountNumber"
-														className="w-full p-2 border border-gray-300 rounded-lg"
 														value={formData.account_number}
 														onChange={(e) =>
 															setFormData({
@@ -1184,16 +1123,12 @@ export default function Settings() {
 												</div>
 											</div>
 											<div>
-												<label
-													htmlFor="accountName"
-													className="block text-sm font-medium text-gray-700 mb-1"
-												>
+												<Label htmlFor="accountName">
 													Nama Pemilik Rekening
-												</label>
-												<input
+												</Label>
+												<Input
 													type="text"
 													id="accountName"
-													className="w-full p-2 border border-gray-300 rounded-lg"
 													value={formData.account_name}
 													onChange={(e) =>
 														setFormData({
@@ -1282,16 +1217,16 @@ export default function Settings() {
 
 														<div className="grid md:grid-cols-2 gap-4">
 															<div>
-																<label
+																<Label
 																	htmlFor="pro_midtrans_server_key"
-																	className="block text-xs font-medium text-purple-900 mb-1"
+																	className="text-xs text-purple-900 mb-1"
 																>
 																	Server Key (Pro)
-																</label>
-																<input
+																</Label>
+																<Input
 																	id="pro_midtrans_server_key"
 																	type="password"
-																	className="w-full p-2 border border-purple-200 rounded-lg font-mono text-xs bg-white"
+																	className="font-mono text-xs bg-white border-purple-200"
 																	value={formData.pro_midtrans_server_key}
 																	onChange={(e) =>
 																		setFormData({
@@ -1303,16 +1238,16 @@ export default function Settings() {
 																/>
 															</div>
 															<div>
-																<label
+																<Label
 																	htmlFor="pro_midtrans_client_key"
-																	className="block text-xs font-medium text-purple-900 mb-1"
+																	className="text-xs text-purple-900 mb-1"
 																>
 																	Client Key (Pro)
-																</label>
-																<input
+																</Label>
+																<Input
 																	id="pro_midtrans_client_key"
 																	type="text"
-																	className="w-full p-2 border border-purple-200 rounded-lg font-mono text-xs bg-white"
+																	className="font-mono text-xs bg-white border-purple-200"
 																	value={formData.pro_midtrans_client_key}
 																	onChange={(e) =>
 																		setFormData({
@@ -1332,16 +1267,16 @@ export default function Settings() {
 												</div>
 
 												<div className={clsx("opacity-50 pointer-events-none")}>
-													<label
+													<Label
 														htmlFor="midtrans_server_key"
-														className="block text-sm font-medium text-gray-700 mb-1"
+														className="text-sm font-medium text-gray-700 mb-1"
 													>
 														Server Key (Gratis)
-													</label>
-													<input
+													</Label>
+													<Input
 														type="password"
 														id="midtrans_server_key"
-														className="w-full p-2 border border-gray-300 rounded-lg font-mono text-sm bg-gray-100"
+														className="font-mono text-sm bg-gray-100"
 														value={formData.midtrans_server_key}
 														readOnly
 														placeholder="Key Standar..."
@@ -1370,16 +1305,12 @@ export default function Settings() {
 
 									<div className="grid gap-4">
 										<div>
-											<label
-												htmlFor="opt_in_email"
-												className="block text-sm font-medium text-gray-700 mb-1"
-											>
+											<Label htmlFor="opt_in_email">
 												Email untuk Pembaruan
-											</label>
-											<input
+											</Label>
+											<Input
 												id="opt_in_email"
 												type="email"
-												className="w-full p-2 border border-gray-300 rounded-lg"
 												value={formData.opt_in_email}
 												onChange={(e) =>
 													setFormData({
@@ -1394,16 +1325,12 @@ export default function Settings() {
 											</p>
 										</div>
 										<div>
-											<label
-												htmlFor="opt_in_whatsapp"
-												className="block text-sm font-medium text-gray-700 mb-1"
-											>
+											<Label htmlFor="opt_in_whatsapp">
 												Nomor WhatsApp (Opsional)
-											</label>
-											<input
+											</Label>
+											<Input
 												id="opt_in_whatsapp"
 												type="text"
-												className="w-full p-2 border border-gray-300 rounded-lg"
 												value={formData.opt_in_whatsapp}
 												onChange={(e) =>
 													setFormData({
@@ -1446,14 +1373,11 @@ export default function Settings() {
 									</h3>
 									<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 										<div>
-											<label
-												htmlFor="brand_color"
-												className="block text-sm font-medium text-gray-700 mb-2"
-											>
+											<Label htmlFor="brand_color" className="mb-2">
 												Warna Merek Utama
-											</label>
+											</Label>
 											<div className="flex items-center gap-3">
-												<input
+												<Input
 													type="color"
 													id="brand_color"
 													value={formData.brand_color || "#059669"}
@@ -1463,7 +1387,7 @@ export default function Settings() {
 															brand_color: e.target.value,
 														})
 													}
-													className="h-10 w-20 p-1 rounded border border-gray-300 cursor-pointer"
+													className="h-10 w-20 p-1 cursor-pointer"
 												/>
 												<span className="text-sm text-gray-500 font-mono uppercase">
 													{formData.brand_color}
@@ -1474,14 +1398,11 @@ export default function Settings() {
 											</p>
 										</div>
 										<div>
-											<label
-												htmlFor="button_color"
-												className="block text-sm font-medium text-gray-700 mb-2"
-											>
+											<Label htmlFor="button_color" className="mb-2">
 												Warna Tombol
-											</label>
+											</Label>
 											<div className="flex items-center gap-3">
-												<input
+												<Input
 													type="color"
 													id="button_color"
 													value={formData.button_color || "#ec4899"}
@@ -1491,7 +1412,7 @@ export default function Settings() {
 															button_color: e.target.value,
 														})
 													}
-													className="h-10 w-20 p-1 rounded border border-gray-300 cursor-pointer"
+													className="h-10 w-20 p-1 cursor-pointer"
 												/>
 												<span className="text-sm text-gray-500 font-mono uppercase">
 													{formData.button_color}
@@ -1502,13 +1423,8 @@ export default function Settings() {
 											</p>
 										</div>
 										<div>
-											<label
-												htmlFor="container_width"
-												className="block text-sm font-medium text-gray-700 mb-1"
-											>
-												Lebar Kontainer
-											</label>
-											<input
+											<Label htmlFor="container_width">Lebar Kontainer</Label>
+											<Input
 												type="text"
 												id="container_width"
 												value={formData.container_width || "1100px"}
@@ -1518,7 +1434,6 @@ export default function Settings() {
 														container_width: e.target.value,
 													})
 												}
-												className="w-full p-2 border border-gray-300 rounded-lg"
 												placeholder="1100px"
 											/>
 											<p className="text-xs text-gray-500 mt-2">
@@ -1526,13 +1441,8 @@ export default function Settings() {
 											</p>
 										</div>
 										<div>
-											<label
-												htmlFor="border_radius"
-												className="block text-sm font-medium text-gray-700 mb-1"
-											>
-												Border Radius
-											</label>
-											<input
+											<Label htmlFor="border_radius">Border Radius</Label>
+											<Input
 												type="text"
 												id="border_radius"
 												value={formData.border_radius || "12px"}
@@ -1542,7 +1452,6 @@ export default function Settings() {
 														border_radius: e.target.value,
 													})
 												}
-												className="w-full p-2 border border-gray-300 rounded-lg"
 												placeholder="12px"
 											/>
 											<p className="text-xs text-gray-500 mt-2">
@@ -1673,13 +1582,13 @@ export default function Settings() {
 											{licenseStatus === "active" ? (
 												<div className="space-y-3 mt-3">
 													<div>
-														<label
+														<Label
 															htmlFor="font_family"
-															className="block text-xs font-medium text-gray-700 mb-1"
+															className="text-xs mb-1"
 														>
 															Font Utama
-														</label>
-														<select
+														</Label>
+														<Select
 															id="font_family"
 															value={formData.font_family || "Inter"}
 															onChange={(e) =>
@@ -1688,24 +1597,21 @@ export default function Settings() {
 																	font_family: e.target.value,
 																})
 															}
-															className="w-full text-sm p-2 border border-gray-300 rounded"
+															className="text-sm"
 														>
 															<option value="Inter">Inter (Default)</option>
 															<option value="Roboto">Roboto</option>
 															<option value="Open Sans">Open Sans</option>
 															<option value="Poppins">Poppins</option>
 															<option value="Lato">Lato</option>
-														</select>
+														</Select>
 													</div>
 													<div>
-														<label
-															htmlFor="font_size"
-															className="block text-xs font-medium text-gray-700 mb-1"
-														>
+														<Label htmlFor="font_size" className="text-xs mb-1">
 															Ukuran Font Dasar
-														</label>
+														</Label>
 														<div className="flex items-center gap-2">
-															<input
+															<Input
 																type="text"
 																id="font_size"
 																value={formData.font_size || "16px"}
@@ -1715,7 +1621,7 @@ export default function Settings() {
 																		font_size: e.target.value,
 																	})
 																}
-																className="w-20 text-sm p-2 border border-gray-300 rounded"
+																className="w-20 text-sm p-2"
 															/>
 															<span className="text-xs text-gray-500">
 																px/rem
@@ -2253,4 +2159,3 @@ export default function Settings() {
 		</div>
 	);
 }
-

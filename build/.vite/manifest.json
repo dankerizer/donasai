@@ -1,10 +1,10 @@
 {
-  "_charts-DFIzCEQB.js": {
-    "file": "assets/charts-DFIzCEQB.js",
+  "_charts-DR76rATM.js": {
+    "file": "assets/charts-DR76rATM.js",
     "name": "charts",
     "imports": [
       "_vendor-CHqSG2Vf.js",
-      "_ui-V8VJv_gN.js"
+      "_ui-DwBQxdVd.js"
     ]
   },
   "_query-D6cGyGtr.js": {
@@ -14,8 +14,8 @@
       "_vendor-CHqSG2Vf.js"
     ]
   },
-  "_ui-V8VJv_gN.js": {
-    "file": "assets/ui-V8VJv_gN.js",
+  "_ui-DwBQxdVd.js": {
+    "file": "assets/ui-DwBQxdVd.js",
     "name": "ui",
     "imports": [
       "_vendor-CHqSG2Vf.js"
@@ -26,18 +26,18 @@
     "name": "vendor"
   },
   "src/main.tsx": {
-    "file": "assets/main-BgnHJswQ.js",
+    "file": "assets/main-C7Dal8Y5.js",
     "name": "main",
     "src": "src/main.tsx",
     "isEntry": true,
     "imports": [
       "_query-D6cGyGtr.js",
       "_vendor-CHqSG2Vf.js",
-      "_ui-V8VJv_gN.js",
-      "_charts-DFIzCEQB.js"
+      "_ui-DwBQxdVd.js",
+      "_charts-DR76rATM.js"
     ],
     "css": [
-      "assets/main-DXqSA6D3.css"
+      "assets/main-C0MQKg3J.css"
     ]
   }
 }
