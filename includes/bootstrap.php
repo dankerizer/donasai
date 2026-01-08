@@ -3,23 +3,23 @@
  * Bootstrap file to init the plugin and load dependencies.
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+if (!defined('ABSPATH')) {
+    exit;
 }
 
 // Define Constants
-if ( ! defined( 'WPD_VERSION' ) ) {
-    define( 'WPD_VERSION', '1.0.0' );
+if (!defined('WPD_VERSION')) {
+    define('WPD_VERSION', '1.0.0');
 }
-if ( ! defined( 'WPD_PLUGIN_PATH' ) ) {
-    define( 'WPD_PLUGIN_PATH', plugin_dir_path( __DIR__ ) );
+if (!defined('WPD_PLUGIN_PATH')) {
+    define('WPD_PLUGIN_PATH', plugin_dir_path(__DIR__));
 }
-if ( ! defined( 'WPD_PLUGIN_URL' ) ) {
-    define( 'WPD_PLUGIN_URL', plugin_dir_url( __DIR__ ) . '/' ); // simplistic fallback
+if (!defined('WPD_PLUGIN_URL')) {
+    define('WPD_PLUGIN_URL', plugin_dir_url(__DIR__) . '/'); // simplistic fallback
 }
 
 // Temporary: Force Rewrite Flush to fix 404/Routing issues
-update_option( 'wpd_rewrite_flush_needed', true );
+update_option('wpd_rewrite_flush_needed', true);
 
 // Core Includes
 require_once WPD_PLUGIN_PATH . 'includes/db.php';
@@ -42,13 +42,13 @@ require_once WPD_PLUGIN_PATH . 'includes/frontend/css-loader.php'; // Load Dynam
 require_once WPD_PLUGIN_PATH . 'includes/functions-frontend.php';
 
 // Register Gateways
-add_action( 'wpd_register_gateways', function() {
-    WPD_Gateway_Registry::register_gateway( new WPD_Gateway_Midtrans() );
+add_action('wpd_register_gateways', function () {
+    WPD_Gateway_Registry::register_gateway(new WPD_Gateway_Midtrans());
 });
 
 // Initialize
-add_action( 'init', array( 'WPD_Gateway_Registry', 'init' ), 5 );
-add_action( 'init', array( 'WPD_Email', 'init' ), 5 );
+add_action('init', array('WPD_Gateway_Registry', 'init'), 5);
+add_action('init', array('WPD_Email', 'init'), 5);
 
 require_once WPD_PLUGIN_PATH . 'includes/services/subscription.php';
 require_once WPD_PLUGIN_PATH . 'includes/api/donations-controller.php';
@@ -58,4 +58,15 @@ require_once WPD_PLUGIN_PATH . 'includes/api/fundraisers-controller.php';
 require_once WPD_PLUGIN_PATH . 'includes/api/subscriptions-controller.php';
 require_once WPD_PLUGIN_PATH . 'includes/api/webhook-controller.php';
 // Initialize Headers/Hooks
-add_action( 'init', 'wpd_register_cpt' );
+add_action('init', 'wpd_register_cpt');
+
+/**
+ * Check if Donasai Pro is Active
+ */
+function wpd_is_pro_active()
+{
+    if (!function_exists('is_plugin_active')) {
+        include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+    }
+    return is_plugin_active('donasai-pro/donasai-pro.php');
+}

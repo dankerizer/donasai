@@ -24,7 +24,7 @@ define('WPD_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WPD_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('WPD_TABLE_PREFIX', 'wpd_');
 if (!defined('WPD_DEV_MODE')) {
-	define('WPD_DEV_MODE', false);
+	define('WPD_DEV_MODE', true);
 }
 
 // Include Bootstrap
