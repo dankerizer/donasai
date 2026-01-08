@@ -114,7 +114,7 @@ export default function Confirmations() {
 						<input
 							type="text"
 							placeholder="Cari donatur..."
-							className="pl-12 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 w-full"
+							className="pl-8! pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 w-full"
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
 						/>
@@ -129,13 +129,13 @@ export default function Confirmations() {
 						<Bot size={24} />
 					</div>
 					<div>
-						<h3 className="font-bold text-gray-900 flex items-center gap-2">
+						<h3 className="font-bold text-gray-900 flex! items-center! gap-2 my-0!">
 							Verifikasi Pembayaran AI
-							<span className="bg-gray-800 mt-2 text-white text-[10px] px-1.5 py-0.5 rounded uppercase flex items-center gap-1 w-[50px]">
+							<span className="bg-gray-800  text-white text-[10px] px-1.5 py-0.5 rounded uppercase flex items-center gap-1 w-[50px]">
 								<Lock size={8} /> Pro
 							</span>
 						</h3>
-						<p className="text-sm text-gray-600">
+						<p className="text-sm text-gray-600 my-0!">
 							Verifikasi otomatis jumlah dan nama bukti transfer menggunakan
 							teknologi AI OCR.
 						</p>
