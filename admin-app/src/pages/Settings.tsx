@@ -2,6 +2,7 @@
 /** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
 
 import { Input } from "@/components/ui/Input";
+import { InputMoney } from "@/components/ui/InputMoney";
 import { Label } from "@/components/ui/Label";
 import { Select } from "@/components/ui/Select";
 import { Textarea } from "@/components/ui/Textarea";
@@ -786,15 +787,13 @@ export default function Settings() {
 											>
 												Jumlah Donasi Minimum (Rp)
 											</label>
-											<input
-												type="number"
+											<InputMoney
 												id="minAmount"
-												className="w-full p-2 border border-gray-300 rounded-lg"
 												value={formData.min_amount}
-												onChange={(e) =>
+												onChange={(val) =>
 													setFormData({
 														...formData,
-														min_amount: parseInt(e.target.value) || 0,
+														min_amount: val,
 													})
 												}
 											/>
