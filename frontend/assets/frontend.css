@@ -4,7 +4,9 @@
 	max-width: 1140px;
 	margin: 0 auto;
 	padding: 20px;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	font-family:
+		-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+		sans-serif;
 }
 
 .wpd-campaign-layout {
@@ -41,7 +43,7 @@
 	padding: 20px;
 	border: 1px solid #e5e7eb;
 	border-radius: 12px;
-	box-shadow: 0 4px 6px -1px elseif (0, 0, 0, 0.1);
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 	position: sticky;
 	top: 20px;
 }
@@ -62,7 +64,7 @@
 .wpd-collected {
 	font-size: 1.5rem;
 	font-weight: 700;
-	color: #059669; /* emerald-600 */
+	color: lab(55.0481% -49.9246 15.93); /* emerald-600 */
 }
 
 .wpd-target {
@@ -80,7 +82,7 @@
 
 .wpd-progress-bar-fill {
 	height: 100%;
-	background-color: #059669; /* emerald-600 */
+	background-color: lab(55.0481% -49.9246 15.93); /* emerald-600 */
 	border-radius: 999px;
 	transition: width 0.5s ease-out;
 }
@@ -123,15 +125,15 @@
 }
 
 .wpd-btn-preset:hover {
-	border-color: #059669;
-	color: #059669;
+	border-color: lab(55.0481% -49.9246 15.93);
+	color: lab(55.0481% -49.9246 15.93);
 	background: #ecfdf5;
 }
 
 .wpd-btn-submit {
 	width: 100%;
 	padding: 12px;
-	background-color: #059669;
+	background-color: lab(55.0481% -49.9246 15.93);
 	color: white;
 	border: none;
 	border-radius: 6px;
