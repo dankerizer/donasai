@@ -127,7 +127,7 @@ class WPD_Gateway_Manual implements WPD_Gateway
     {
         global $wpdb;
         $table = $wpdb->prefix . 'wpd_donations';
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $donation_id));
 
         $total_amount = $donation ? $donation->amount : 0;
@@ -165,8 +165,7 @@ class WPD_Gateway_Manual implements WPD_Gateway
                     Rp " . esc_html(number_format($total_amount, 0, ',', '.')) . "
                 </div>
                 <div style='font-size:12px; color:#b45309; margin-top:5px;'>
-                    /* translators: 1: strong open tag, 2: strong close tag */
-                    " . sprintf(esc_html__('*Pastikan transfer %1$sTEPAT%2$s sampai 3 digit terakhir untuk verifikasi otomatis.', 'donasai'), '<strong>', '</strong>') . "
+                    " . /* translators: 1: strong open tag, 2: strong close tag */ sprintf(esc_html__('*Pastikan transfer %1$sTEPAT%2$s sampai 3 digit terakhir untuk verifikasi otomatis.', 'donasai'), '<strong>', '</strong>') . "
                 </div>
             </div>
 

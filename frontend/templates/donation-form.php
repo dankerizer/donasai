@@ -196,8 +196,9 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                             </div>
                             <div class="wpd-form-row">
                                 <!-- Inputs added via JS for simplicity in this view -->
-                                <input type="number" id="zakat_calc_input" class="wpd-input mt-2"
-                                    placeholder="Masukkan jumlah harta / penghasilan" oninput="calculateZakat()">
+                                <input type="text" id="zakat_calc_input_display" class="wpd-input mt-2"
+                                    placeholder="Masukkan jumlah harta / penghasilan" autocomplete="off">
+                                <input type="hidden" id="zakat_calc_input">
                             </div>
                         </div>
                     <?php elseif ($type === 'qurban' && !empty($packages)): ?>
@@ -1043,58 +1044,11 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
         $snap_url = $is_prod ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js';
 
         if ($snap_active && !empty($client_key)):
-            ?>
-            // Load Snap JS
-            const script = document.createElement('script');
-            script.src = "<?php echo esc_url($snap_url); ?>";
-            script.setAttribute('data-client-key', "<?php echo esc_js($client_key); ?>");
-            document.body.appendChild(script);
-
-            document.getElementById('donationForm').addEventListener('submit', function (e) {
-                // Only hijack if Midtrans is selected
-                const method = document.querySelector('input[name="payment_method"]:checked').value;
-                if (method !== 'midtrans') return;
-
-                e.preventDefault();
-                const btn = document.querySelector('.wpd-btn-primary');
-                const originalText = btn.innerText;
-                btn.innerText = 'Memproses...';
-                btn.disabled = true;
-
-                const formData = new FormData(this);
-                formData.append('wpd_ajax', '1');
-
-                fetch(window.location.href, {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => response.json())
-                    .then(res => {
-                        if (res.success) {
-                            if (res.data.is_midtrans && res.data.snap_token) {
-                                window.snap.pay(res.data.snap_token, {
-                                    onSuccess: function (result) { window.location.href = res.data.redirect_url; },
-                                    onPending: function (result) { window.location.href = res.data.redirect_url; },
-                                    onError: function (result) { showToast("Pembayaran Gagal!"); btn.disabled = false; btn.innerText = originalText; },
-                                    onClose: function () { btn.disabled = false; btn.innerText = originalText; }
-                                });
-                            } else {
-                                // Fallback redirect
-                                if (res.data.redirect_url) window.location.href = res.data.redirect_url;
-                            }
-                        } else {
-                            showToast('Error: ' + res.data.message);
-                            btn.disabled = false;
-                            btn.innerText = originalText;
-                        }
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        showToast('Terjadi kesalahan koneksi.');
-                        btn.disabled = false;
-                        btn.innerText = originalText;
-                    });
-            });
+            ?>         // Load Snap JS         const script = document.createElement('script');         script.src = "<?php echo esc_url($snap_url); ?>";         script.setAttribute('data-client-key', "<?php echo esc_js($client_key); ?>");         document.body.appendChild(script);
+             document.getElementById('donationForm').addEventListener('submit', function (e) {             // Only hijack if Midtrans is selected             const method = document.querySelector('input[name="payment_method"]:checked').value;             if (method !== 'midtrans') return;
+                 e.preventDefault();             const btn = document.querySelector('.wpd-btn-primary');             const originalText = btn.innerText;             btn.innerText = 'Memproses...';             btn.disabled = true;
+                 const formData = new FormData(this);             formData.append('wpd_ajax', '1');
+                 fetch(window.location.href, {                 method: 'POST',                 body: formData             })                 .then(response => response.json())                 .then(res => {                     if (res.success) {                         if (res.data.is_midtrans && res.data.snap_token) {                             window.snap.pay(res.data.snap_token, {                                 onSuccess: function (result) { window.location.href = res.data.redirect_url; },                                 onPending: function (result) { window.location.href = res.data.redirect_url; },                                 onError: function (result) { showToast("Pembayaran Gagal!"); btn.disabled = false; btn.innerText = originalText; },                                 onClose: function () { btn.disabled = false; btn.innerText = originalText; }                             });                         } else {                             // Fallback redirect                             if (res.data.redirect_url) window.location.href = res.data.redirect_url;                         }                     } else {                         showToast('Error: ' + res.data.message);                         btn.disabled = false;                         btn.innerText = originalText;                     }                 })                 .catch(err => {                     console.error(err);                     showToast('Terjadi kesalahan koneksi.');                     btn.disabled = false;                     btn.innerText = originalText;                 });         });
         <?php endif; ?>
     </script>
 

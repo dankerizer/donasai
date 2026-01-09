@@ -1159,134 +1159,137 @@ export default function Settings() {
 								</div>
 
 								<div className="border-t border-gray-200 pt-6">
-									<h3 className="text-lg font-medium text-gray-900 mb-4">
+									<h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
 										Gerbang Pembayaran Midtrans
+										{licenseStatus !== "active" && (
+											<span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">
+												PRO
+											</span>
+										)}
 									</h3>
-									<div className="space-y-4">
-										<div className="flex items-center space-x-3">
-											<input
-												type="checkbox"
-												id="midtrans_enabled"
-												checked={formData.midtrans_enabled}
-												onChange={(e) =>
-													setFormData((prev) => ({
-														...prev,
-														midtrans_enabled: e.target.checked,
-													}))
-												}
-												className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-											/>
-											<label
-												htmlFor="midtrans_enabled"
-												className="text-sm font-medium text-gray-700"
-											>
-												Aktifkan Midtrans
-											</label>
-										</div>
 
-										{/* Pro Settings (Only if Active) */}
-										{licenseStatus === "active" && (
-											<>
-												<div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
-													<h4 className="text-sm font-bold text-purple-800 mb-3 flex items-center gap-2">
-														<Crown size={14} /> Pengaturan Lanjutan (Pro)
-													</h4>
+									{licenseStatus === "active" ? (
+										<div className="space-y-4">
+											<div className="flex items-center space-x-3">
+												<input
+													type="checkbox"
+													id="midtrans_enabled"
+													checked={formData.midtrans_enabled}
+													onChange={(e) =>
+														setFormData((prev) => ({
+															...prev,
+															midtrans_enabled: e.target.checked,
+														}))
+													}
+													className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+												/>
+												<label
+													htmlFor="midtrans_enabled"
+													className="text-sm font-medium text-gray-700"
+												>
+													Aktifkan Midtrans
+												</label>
+											</div>
 
-													<div className="space-y-4">
-														<div className="flex items-center space-x-3">
-															<input
-																type="checkbox"
-																id="pro_midtrans_production"
-																checked={formData.pro_midtrans_production}
-																onChange={(e) =>
-																	setFormData((prev) => ({
-																		...prev,
-																		pro_midtrans_production: e.target.checked,
-																	}))
-																}
-																className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-															/>
-															<label
-																htmlFor="pro_midtrans_production"
-																className="text-sm font-medium text-purple-900"
+											{formData.midtrans_enabled && (
+												<div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4">
+													<div className="flex items-center space-x-3">
+														<input
+															type="checkbox"
+															id="midtrans_production"
+															checked={formData.midtrans_production}
+															onChange={(e) =>
+																setFormData((prev) => ({
+																	...prev,
+																	midtrans_production: e.target.checked,
+																}))
+															}
+															className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+														/>
+														<label
+															htmlFor="midtrans_production"
+															className="text-sm font-medium text-purple-900"
+														>
+															Mode Produksi
+														</label>
+													</div>
+
+													<div className="grid md:grid-cols-2 gap-4">
+														<div>
+															<Label
+																htmlFor="midtrans_server_key"
+																className="text-xs text-gray-700 mb-1"
 															>
-																Mode Produksi (Pro)
-															</label>
+																Server Key
+															</Label>
+															<Input
+																id="midtrans_server_key"
+																type="password"
+																className="font-mono text-xs bg-white border-gray-300"
+																value={formData.midtrans_server_key}
+																onChange={(e) =>
+																	setFormData({
+																		...formData,
+																		midtrans_server_key: e.target.value,
+																	})
+																}
+																placeholder="Midtrans Server Key..."
+															/>
 														</div>
-
-														<div className="grid md:grid-cols-2 gap-4">
-															<div>
-																<Label
-																	htmlFor="pro_midtrans_server_key"
-																	className="text-xs text-purple-900 mb-1"
-																>
-																	Server Key (Pro)
-																</Label>
-																<Input
-																	id="pro_midtrans_server_key"
-																	type="password"
-																	className="font-mono text-xs bg-white border-purple-200"
-																	value={formData.pro_midtrans_server_key}
-																	onChange={(e) =>
-																		setFormData({
-																			...formData,
-																			pro_midtrans_server_key: e.target.value,
-																		})
-																	}
-																	placeholder="Override Free Key..."
-																/>
-															</div>
-															<div>
-																<Label
-																	htmlFor="pro_midtrans_client_key"
-																	className="text-xs text-purple-900 mb-1"
-																>
-																	Client Key (Pro)
-																</Label>
-																<Input
-																	id="pro_midtrans_client_key"
-																	type="text"
-																	className="font-mono text-xs bg-white border-purple-200"
-																	value={formData.pro_midtrans_client_key}
-																	onChange={(e) =>
-																		setFormData({
-																			...formData,
-																			pro_midtrans_client_key: e.target.value,
-																		})
-																	}
-																	placeholder="Override Free Key..."
-																/>
-															</div>
+														<div>
+															<Label
+																htmlFor="pro_midtrans_client_key"
+																className="text-xs text-gray-700 mb-1"
+															>
+																Client Key
+															</Label>
+															<Input
+																id="pro_midtrans_client_key"
+																type="text"
+																className="font-mono text-xs bg-white border-gray-300"
+																// Note: We're using the 'pro' field for client key as standard now
+																// or we should consolidate. Assuming pro_midtrans_client_key is the one.
+																value={formData.pro_midtrans_client_key}
+																onChange={(e) =>
+																	setFormData({
+																		...formData,
+																		pro_midtrans_client_key: e.target.value,
+																	})
+																}
+																placeholder="Midtrans Client Key..."
+															/>
 														</div>
-														<p className="text-xs text-purple-700">
-															Kunci ini akan menimpa pengaturan versi gratis
-															jika diisi.
-														</p>
 													</div>
 												</div>
-
-												<div className={clsx("opacity-50 pointer-events-none")}>
-													<Label
-														htmlFor="midtrans_server_key"
-														className="text-sm font-medium text-gray-700 mb-1"
-													>
-														Server Key (Gratis)
-													</Label>
-													<Input
-														type="password"
-														id="midtrans_server_key"
-														className="font-mono text-sm bg-gray-100"
-														value={formData.midtrans_server_key}
-														readOnly
-														placeholder="Key Standar..."
-													/>
-													<p className="text-xs text-gray-500 mt-1">
-														Gunakan Pro Key di atas untuk fungsionalitas penuh.
-													</p>
+											)}
+										</div>
+									) : (
+										<div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center space-y-4 relative overflow-hidden">
+											<div className="absolute top-0 right-0 p-2 opacity-5">
+												<Crown size={120} />
+											</div>
+											<div className="relative z-10 flex flex-col items-center">
+												<div className="p-3 bg-purple-100 text-purple-600 rounded-full mb-2">
+													<Lock size={24} />
 												</div>
-											</>
-										)}
-									</div>
+												<h4 className="text-lg font-bold text-gray-900">
+													Upgrade ke Pro untuk Midtrans
+												</h4>
+												<p className="text-sm text-gray-500 max-w-sm mx-auto mb-4">
+													Dapatkan pembayaran otomatis via GoPay, OVO,
+													ShopeePay, dan Virtual Account dengan mengaktifkan
+													lisensi Pro.
+												</p>
+												<button
+													type="button"
+													onClick={() => setShowProModal(true)}
+													className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition"
+												>
+													Lihat Fitur Pro
+												</button>
+											</div>
+										</div>
+									)}
 								</div>
 							</div>
 						)}

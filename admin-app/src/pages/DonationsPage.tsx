@@ -178,7 +178,7 @@ export default function DonationsPage() {
 								<input
 									type="date"
 									aria-label="Tanggal Mulai"
-									className="px-2 py-1.5 bg-transparent border-none text-sm focus:ring-0 text-gray-700 w-[130px] outline-none"
+									className="px-2 py-1.5 bg-transparent border-none! text-sm focus:ring-0! text-gray-700 w-[130px] outline-none!"
 									value={startDate}
 									onChange={(e) => setStartDate(e.target.value)}
 								/>
@@ -186,7 +186,7 @@ export default function DonationsPage() {
 								<input
 									type="date"
 									aria-label="Tanggal Selesai"
-									className="px-2 py-1.5 bg-transparent border-none text-sm focus:ring-0 text-gray-700 w-[130px] outline-none"
+									className="px-2 py-1.5 bg-transparent border-none! text-sm focus:ring-0! text-gray-700 w-[130px] outline-none!"
 									value={endDate}
 									onChange={(e) => setEndDate(e.target.value)}
 								/>

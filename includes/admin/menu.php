@@ -118,8 +118,8 @@ function wpd_enqueue_admin_assets($hook)
 	// Dev Mode (needs WPD_DEV_MODE constant)
 	if (defined('WPD_DEV_MODE') && WPD_DEV_MODE) {
 		// Vite Dev Server
-		wp_enqueue_script('wpd-vite-client', 'http://localhost:3001/@vite/client', array(), WPD_VERSION, true);
-		wp_enqueue_script('wpd-admin-dev', 'http://localhost:3001/src/main.tsx', array('wpd-vite-client'), WPD_VERSION, true);
+		wp_enqueue_script('wpd-vite-client', 'http://localhost:3001/@vite/client', array(), null, true);
+		wp_enqueue_script('wpd-admin-dev', 'http://localhost:3001/src/main.tsx', array('wpd-vite-client'), null, true);
 
 		// Need to inject React Refresh for Vite HMR
 		add_action('admin_head', function () {

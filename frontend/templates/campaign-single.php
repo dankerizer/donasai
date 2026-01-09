@@ -269,7 +269,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                     <!-- Fundraiser Button -->
                     <?php if (function_exists('wpd_is_pro_active') && wpd_is_pro_active()): ?>
                         <?php if (is_user_logged_in()): ?>
-                            <button onclick="wpdRegisterFundraiser(<?php echo $campaign_id; ?>)"
+                            <button onclick="wpdRegisterFundraiser(<?php echo intval($campaign_id); ?>)"
                                 style="width:100%; background:white; color:var(--wpd-primary); border:1px solid var(--wpd-primary); font-weight:600; padding:10px; border-radius:8px; cursor:pointer;">
                                 Daftar sebagai Penggalang Dana
                             </button>

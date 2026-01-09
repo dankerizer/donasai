@@ -30,12 +30,14 @@ function selectAmount(card, amount) {
 	updateAmountUI(amount);
 	document
 		.querySelectorAll(".wpd-preset-card")
-		.forEach((c) => c.classList.remove("active"));
+		.forEach((c) => {
+			c.classList.remove("active");
+		});
 	card.classList.add("active");
 }
 
 function toggleZakatType(val) {
-	const output = document.getElementById("zakat_calc_input");
+	const output = document.getElementById("zakat_calc_input_display");
 	if (val === "maal") output.placeholder = "Total Harta (Rp)";
 	else output.placeholder = "Total Penghasilan (Rp)";
 }
@@ -71,6 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const amountDisplay = document.getElementById("amount_display");
     const amountHidden = document.getElementById("amount");
 
+    // Donation Amount Input
     if (amountDisplay && amountHidden) {
         amountDisplay.addEventListener("input", (e) => {
             // Remove non-digits
@@ -86,10 +89,34 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // Initial sync if amount has value (e.g. from reload)
+        // Initial sync if amount has value
         if (amountHidden.value) {
             amountDisplay.value = formatMoney(amountHidden.value);
         }
+    }
+
+    // Zakat Calculator Input
+    const zakatDisplay = document.getElementById("zakat_calc_input_display");
+    const zakatHidden = document.getElementById("zakat_calc_input");
+
+    if (zakatDisplay && zakatHidden) {
+        zakatDisplay.addEventListener("input", (e) => {
+            // Remove non-digits
+            const raw = e.target.value.replace(/\D/g, "");
+            const num = parseInt(raw, 10);
+            
+            if (!Number.isNaN(num)) {
+                zakatHidden.value = num;
+                e.target.value = formatMoney(num);
+                // Trigger calculation
+                calculateZakat();
+            } else {
+                zakatHidden.value = "";
+                e.target.value = "";
+                // Reset amount if empty
+                 updateAmountUI(0);
+            }
+        });
     }
 });
 
