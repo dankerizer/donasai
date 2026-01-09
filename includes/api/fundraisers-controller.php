@@ -75,8 +75,15 @@ function wpd_api_get_fundraisers($request)
 		global $wpdb;
 		$user_id = get_current_user_id();
 		$table = $wpdb->prefix . 'wpd_fundraisers';
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		$results = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table WHERE user_id = %d", $user_id));
+
+		$cache_key = 'wpd_user_fundraisers_' . $user_id;
+		$results = wp_cache_get($cache_key, 'wpd_fundraisers');
+
+		if (false === $results) {
+			$sql = "SELECT * FROM {$table} WHERE user_id = %d";
+			$results = $wpdb->get_results($wpdb->prepare($sql, $user_id));
+			wp_cache_set($cache_key, $results, 'wpd_fundraisers', 300);
+		}
 		return rest_ensure_response($results);
 	}
 
@@ -86,8 +93,15 @@ function wpd_api_get_fundraisers($request)
 		// For now simple select all limited
 		global $wpdb;
 		$table = $wpdb->prefix . 'wpd_fundraisers';
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		$results = $wpdb->get_results("SELECT * FROM $table ORDER BY created_at DESC LIMIT 50");
+
+		$cache_key = 'wpd_admin_fundraisers_list';
+		$results = wp_cache_get($cache_key, 'wpd_fundraisers');
+
+		if (false === $results) {
+			$sql = "SELECT * FROM {$table} ORDER BY created_at DESC LIMIT 50";
+			$results = $wpdb->get_results($sql);
+			wp_cache_set($cache_key, $results, 'wpd_fundraisers', 60);
+		}
 		return rest_ensure_response($results);
 	}
 

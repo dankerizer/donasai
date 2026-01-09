@@ -172,9 +172,8 @@ function wpd_get_recent_donors($campaign_id, $limit = 10)
     $table = $wpdb->prefix . 'wpd_donations';
 
     // Only completed donations
-    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     $results = $wpdb->get_results($wpdb->prepare(
-        "SELECT * FROM $table WHERE campaign_id = %d AND status = 'complete' ORDER BY created_at DESC LIMIT %d",
+        "SELECT * FROM {$table} WHERE campaign_id = %d AND status = 'complete' ORDER BY created_at DESC LIMIT %d",
         $campaign_id,
         $limit
     ));
@@ -317,10 +316,9 @@ function wpd_shortcode_fundraiser_stats()
     $table_fundraisers = $wpdb->prefix . 'wpd_fundraisers';
 
     // Get all campaigns user is fundraising for
-    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     $results = $wpdb->get_results($wpdb->prepare(
         "SELECT f.*, p.post_title 
-         FROM $table_fundraisers f
+         FROM {$table_fundraisers} f
          JOIN {$wpdb->posts} p ON f.campaign_id = p.ID
          WHERE f.user_id = %d
          ORDER BY f.created_at DESC",
@@ -348,8 +346,8 @@ function wpd_shortcode_fundraiser_stats()
             <tbody>
                 <?php foreach ($results as $row):
                     // Get visit count (lazy query, ideally should act stored count or cached)
-                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-                    $visit_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(id) FROM {$wpdb->prefix}wpd_referral_logs WHERE fundraiser_id = %d", $row->id));
+                    $table_logs = $wpdb->prefix . 'wpd_referral_logs';
+                    $visit_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(id) FROM {$table_logs} WHERE fundraiser_id = %d", $row->id));
                     $link = add_query_arg('ref', $row->referral_code, get_permalink($row->campaign_id));
                     ?>
                     <tr style="border-bottom:1px solid #eee;">
@@ -390,15 +388,15 @@ function wpd_shortcode_profile()
 
     // Handle Form Submission
     if (isset($_POST['wpd_profile_submit']) && isset($_POST['wpd_profile_nonce'])) {
-        if (!wp_verify_nonce($_POST['wpd_profile_nonce'], 'wpd_profile_update')) {
+        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wpd_profile_nonce'])), 'wpd_profile_update')) {
             wp_die('Security check failed');
         }
 
         $user_id = get_current_user_id();
-        $name = sanitize_text_field(wp_unslash($_POST['display_name']));
-        $phone = sanitize_text_field(wp_unslash($_POST['phone']));
-        $pass1 = wp_unslash($_POST['pass1']);
-        $pass2 = wp_unslash($_POST['pass2']);
+        $name = isset($_POST['display_name']) ? sanitize_text_field(wp_unslash($_POST['display_name'])) : '';
+        $phone = isset($_POST['phone']) ? sanitize_text_field(wp_unslash($_POST['phone'])) : '';
+        $pass1 = isset($_POST['pass1']) ? wp_unslash($_POST['pass1']) : '';
+        $pass2 = isset($_POST['pass2']) ? wp_unslash($_POST['pass2']) : '';
 
         // Update User
         $user_data = array(
@@ -427,7 +425,7 @@ function wpd_shortcode_profile()
 
     // Pass error to template if exists
     if (isset($_POST['wpd_profile_error'])) {
-        echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">' . esc_html($_POST['wpd_profile_error']) . '</div>';
+        echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">' . esc_html(sanitize_text_field(wp_unslash($_POST['wpd_profile_error']))) . '</div>';
     }
 
     ob_start();
@@ -450,8 +448,8 @@ function wpd_shortcode_confirmation_form()
     if (isset($_GET['donation_id'])) {
         global $wpdb;
         $d_id = intval($_GET['donation_id']);
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        $donation_row = $wpdb->get_row($wpdb->prepare("SELECT amount FROM {$wpdb->prefix}wpd_donations WHERE id = %d", $d_id));
+        $table_donations = $wpdb->prefix . 'wpd_donations';
+        $donation_row = $wpdb->get_row($wpdb->prepare("SELECT amount FROM {$table_donations} WHERE id = %d", $d_id));
         if ($donation_row) {
             $donation_id_val = $d_id;
             $amount_val = $donation_row->amount;
@@ -459,66 +457,74 @@ function wpd_shortcode_confirmation_form()
     }
 
     if (isset($_POST['wpd_confirm_submit']) && isset($_POST['_wpnonce'])) {
-        if (!wp_verify_nonce($_POST['_wpnonce'], 'wpd_confirm_payment')) {
+        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'wpd_confirm_payment')) {
             $error = 'Security check failed.';
         } else {
             global $wpdb;
-            $donation_id = intval($_POST['donation_id']);
-            $amount = intval(str_replace('.', '', wp_unslash($_POST['amount']))); // Remove dots
+            $donation_id = isset($_POST['donation_id']) ? intval($_POST['donation_id']) : 0;
+            $amount_post = isset($_POST['amount']) ? wp_unslash($_POST['amount']) : '0';
+            $amount = intval(str_replace('.', '', $amount_post)); // Remove dots
 
             // Verify Donation Exists
-            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-            $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wpd_donations WHERE id = %d", $donation_id));
+            if ($donation_id > 0) {
+                $table_donations = $wpdb->prefix . 'wpd_donations';
+                $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_donations} WHERE id = %d", $donation_id));
 
-            if (!$donation) {
-                $error = 'ID Donasi tidak ditemukan.';
-            } else {
-                // Handle File Upload
-                if (!function_exists('wp_handle_upload')) {
-                    require_once(ABSPATH . 'wp-admin/includes/file.php');
-                }
-
-                $uploadedfile = $_FILES['proof_file'];
-                $upload_overrides = array('test_form' => false);
-
-                $movefile = wp_handle_upload($uploadedfile, $upload_overrides);
-
-                if ($movefile && !isset($movefile['error'])) {
-                    $proof_url = $movefile['url'];
-
-                    // Sanitize New Fields
-                    $sender_bank = sanitize_text_field(wp_unslash($_POST['sender_bank']));
-                    $sender_name = sanitize_text_field(wp_unslash($_POST['sender_name']));
-
-                    // Update Donation Meta
-                    // Note: Ideally use a helper function or meta table if strictly following schema, 
-                    // but we can use metadata column (JSON) in wpd_donations table.
-                    $metadata = json_decode($donation->metadata, true);
-                    if (!is_array($metadata))
-                        $metadata = array();
-
-                    $metadata['proof_url'] = $proof_url;
-                    $metadata['sender_bank'] = $sender_bank; // New Field
-                    $metadata['sender_name'] = $sender_name; // New Field
-                    $metadata['confirmed_at'] = current_time('mysql');
-                    $metadata['confirmed_amount'] = $amount; // For verification
-
-                    $wpdb->update(
-                        "{$wpdb->prefix}wpd_donations",
-                        array(
-                            'metadata' => json_encode($metadata),
-                            'status' => 'processing' // Mark as Processing (Enum matches DB)
-                        ),
-                        array('id' => $donation_id)
-                    );
-
-                    $success = true;
+                if (!$donation) {
+                    $error = 'ID Donasi tidak ditemukan.';
                 } else {
-                    $error = 'Gagal upload file: ' . $movefile['error'];
+                    // Handle File Upload
+                    if (!function_exists('wp_handle_upload')) {
+                        require_once(ABSPATH . 'wp-admin/includes/file.php');
+                    }
+
+                    $uploadedfile = isset($_FILES['proof_file']) ? $_FILES['proof_file'] : null;
+
+                    if ($uploadedfile) {
+                        $upload_overrides = array('test_form' => false);
+                        $movefile = wp_handle_upload($uploadedfile, $upload_overrides);
+
+                        if ($movefile && !isset($movefile['error'])) {
+                            $proof_url = $movefile['url'];
+
+                            // Sanitize New Fields
+                            $sender_bank = isset($_POST['sender_bank']) ? sanitize_text_field(wp_unslash($_POST['sender_bank'])) : '';
+                            $sender_name = isset($_POST['sender_name']) ? sanitize_text_field(wp_unslash($_POST['sender_name'])) : '';
+
+                            // Update Donation Meta
+                            $metadata = json_decode($donation->metadata, true);
+                            if (!is_array($metadata))
+                                $metadata = array();
+
+                            $metadata['proof_url'] = $proof_url;
+                            $metadata['sender_bank'] = $sender_bank; // New Field
+                            $metadata['sender_name'] = $sender_name; // New Field
+                            $metadata['confirmed_at'] = current_time('mysql');
+                            $metadata['confirmed_amount'] = $amount; // For verification
+
+                            $wpdb->update(
+                                $table_donations,
+                                array(
+                                    'metadata' => json_encode($metadata),
+                                    'status' => 'processing' // Mark as Processing (Enum matches DB)
+                                ),
+                                array('id' => $donation_id)
+                            );
+
+                            $success = true;
+                        } else {
+                            $error = 'Gagal upload file: ' . $movefile['error'];
+                        }
+                    } else {
+                        $error = 'Bukti transfer wajib diupload.';
+                    }
                 }
+            } else {
+                $error = 'ID Donasi tidak valid.';
             }
         }
     }
+
 
     ob_start();
     include WPD_PLUGIN_PATH . 'frontend/templates/confirmation-form.php';

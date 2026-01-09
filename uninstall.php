@@ -30,8 +30,7 @@ if (!empty($general_settings['delete_on_uninstall_tables'])) {
     );
 
     foreach ($tables as $table) {
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-        $wpdb->query("DROP TABLE IF EXISTS $table");
+        $wpdb->query("DROP TABLE IF EXISTS {$table}");
     }
 }
 

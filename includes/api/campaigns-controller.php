@@ -52,7 +52,7 @@ function wpd_api_get_campaigns_list()
 function wpd_api_create_donation($request)
 {
 	global $wpdb;
-	$campaign_id = $request['id'];
+	$campaign_id = isset($request['id']) ? intval($request['id']) : 0;
 	$params = $request->get_json_params();
 
 	// Validation
@@ -99,8 +99,24 @@ function wpd_api_create_donation($request)
 		'created_at' => current_time('mysql'),
 	);
 
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-	$inserted = $wpdb->insert($table_donations, $data);
+	$inserted = $wpdb->insert(
+		$table_donations,
+		$data,
+		array(
+			'%d', // campaign_id
+			'%d', // user_id
+			'%s', // name
+			'%s', // email
+			'%s', // phone
+			'%f', // amount
+			'%s', // payment_method
+			'%s', // status
+			'%d', // subscription_id
+			'%d', // is_anonymous
+			'%d', // fundraiser_id
+			'%s', // created_at
+		)
+	);
 
 	if (!$inserted) {
 		return new WP_Error('db_error', 'Failed to create donation', array('status' => 500));

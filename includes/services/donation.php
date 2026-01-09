@@ -14,19 +14,33 @@ function wpd_handle_donation_submission()
 {
     // DEBUG LOG
     if (isset($_POST['wpd_action'])) {
-        $log = "Action: " . sanitize_text_field(wp_unslash($_POST['wpd_action'])) . "\n";
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-        $log .= "Nonce Check: " . (wp_verify_nonce($_POST['wpd_donate_nonce'], 'wpd_donate_action') ? 'PASS' : 'FAIL') . "\n";
+        $action = sanitize_text_field(wp_unslash($_POST['wpd_action']));
+        $log = "Action: " . $action . "\n";
+
+        $nonce_status = 'FAIL';
+        if (isset($_POST['wpd_donate_nonce'])) {
+            $nonce = sanitize_text_field(wp_unslash($_POST['wpd_donate_nonce']));
+            if (wp_verify_nonce($nonce, 'wpd_donate_action')) {
+                $nonce_status = 'PASS';
+            }
+        }
+        $log .= "Nonce Check: " . $nonce_status . "\n";
         file_put_contents(WP_CONTENT_DIR . '/wpd-debug.log', $log, FILE_APPEND);
     }
 
-    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-    if (!isset($_POST['wpd_donate_nonce']) || !wp_verify_nonce($_POST['wpd_donate_nonce'], 'wpd_donate_action')) {
+    if (!isset($_POST['wpd_donate_nonce'])) {
+        return;
+    }
+    $nonce = sanitize_text_field(wp_unslash($_POST['wpd_donate_nonce']));
+    if (!wp_verify_nonce($nonce, 'wpd_donate_action')) {
         return;
     }
 
-    // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash
-    if (!isset($_POST['wpd_action']) || 'submit_donation' !== $_POST['wpd_action']) {
+    if (!isset($_POST['wpd_action'])) {
+        return;
+    }
+    $action = sanitize_text_field(wp_unslash($_POST['wpd_action']));
+    if ('submit_donation' !== $action) {
         return;
     }
 
@@ -180,6 +194,9 @@ function wpd_handle_donation_submission()
             $redirect_url = add_query_arg($thankyou_slug, $result['donation_id'], get_permalink($campaign_id));
         }
 
+        // Add Nonce for security verification on success page
+        $redirect_url = add_query_arg('_wpnonce', wp_create_nonce('wpd_payment_success'), $redirect_url);
+
         wp_safe_redirect($redirect_url);
         exit;
     } else {
@@ -199,21 +216,38 @@ function wpd_update_campaign_stats($campaign_id)
     global $wpdb;
     $table = $wpdb->prefix . 'wpd_donations';
 
-    // Sum only completed (or pending for offline/testing) donations
-    // For MVP: let's include 'pending' as 'collected' for offline demo purposes? 
-    // Or strictly 'complete'. Let's stick to 'complete' usually, but for Offline, usually admin marks it complete.
-    // But to show progress immediately in demo, maybe we can optionally count pending.
-    // Let's stick to standard: only 'complete' counts for progress.
-
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-    $total = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM $table WHERE campaign_id = %d AND status = 'complete'", $campaign_id));
+    // Sum only completed donations
+    $total = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM {$table} WHERE campaign_id = %d AND status = 'complete'", $campaign_id));
 
     // Count Unique Donors (by email) for completed donations
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-    $donor_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM $table WHERE campaign_id = %d AND status = 'complete'", $campaign_id));
+    $donor_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM {$table} WHERE campaign_id = %d AND status = 'complete'", $campaign_id));
 
     update_post_meta($campaign_id, '_wpd_collected_amount', $total);
     update_post_meta($campaign_id, '_wpd_donor_count', $donor_count);
+}
+
+/**
+ * Get Donation by ID (Cached)
+ */
+function wpd_get_donation($donation_id)
+{
+    global $wpdb;
+    $donation_id = intval($donation_id);
+    if (!$donation_id) {
+        return null;
+    }
+
+    $cache_key = 'wpd_donation_' . $donation_id;
+    $donation = wp_cache_get($cache_key, 'wpd_donations');
+
+    if (false === $donation) {
+        $table = $wpdb->prefix . 'wpd_donations';
+        $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $donation_id));
+        if ($donation) {
+            wp_cache_set($cache_key, $donation, 'wpd_donations', 3600);
+        }
+    }
+    return $donation;
 }
 
 /**
@@ -238,3 +272,4 @@ function wpd_get_campaign_progress($campaign_id)
         'percentage' => $percentage,
     );
 }
+

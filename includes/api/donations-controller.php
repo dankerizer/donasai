@@ -60,18 +60,18 @@ function wpd_api_get_chart_stats()
     $table_donations = $wpdb->prefix . 'wpd_donations';
 
     // Get last 30 days data
-    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
-    $results = $wpdb->get_results("
+    $sql = "
         SELECT 
             DATE(created_at) as date, 
             SUM(amount) as total_amount,
             COUNT(id) as total_count
-        FROM $table_donations 
+        FROM {$table_donations} 
         WHERE status = 'complete' 
         AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
         GROUP BY DATE(created_at)
         ORDER BY date ASC
-    ");
+    ";
+    $results = $wpdb->get_results($sql);
 
     // Fill missing dates with 0
     $daily_stats = array();
@@ -104,25 +104,25 @@ function wpd_api_get_chart_stats()
     }
 
     // --- Payment Methods ---
-    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
-    $payment_methods = $wpdb->get_results("
+    $sql_methods = "
         SELECT payment_method, COUNT(*) as count 
-        FROM $table_donations 
+        FROM {$table_donations} 
         WHERE status = 'complete' 
         GROUP BY payment_method
-    ");
+    ";
+    $payment_methods = $wpdb->get_results($sql_methods);
 
     // --- Top Campaigns ---
-    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-    $top_campaigns = $wpdb->get_results("
+    $sql_campaigns = "
         SELECT p.post_title as name, SUM(d.amount) as value
-        FROM $table_donations d
+        FROM {$table_donations} d
         LEFT JOIN {$wpdb->posts} p ON d.campaign_id = p.ID
         WHERE d.status = 'complete' AND d.campaign_id > 0
         GROUP BY d.campaign_id
         ORDER BY value DESC
         LIMIT 5
-    ");
+    ";
+    $top_campaigns = $wpdb->get_results($sql_campaigns);
 
     return rest_ensure_response(array(
         'daily_stats' => $daily_stats,
@@ -138,12 +138,10 @@ function wpd_api_get_stats()
     $table_subscriptions = $wpdb->prefix . 'wpd_subscriptions';
 
     // Total Connected Amount (Completed)
-    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
-    $total_collected = $wpdb->get_var("SELECT SUM(amount) FROM $table_donations WHERE status = 'complete'");
+    $total_collected = $wpdb->get_var("SELECT SUM(amount) FROM {$table_donations} WHERE status = 'complete'");
 
     // Total Donors (Unique Emails)
-    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
-    $total_donors = $wpdb->get_var("SELECT COUNT(DISTINCT email) FROM $table_donations WHERE status = 'complete'");
+    $total_donors = $wpdb->get_var("SELECT COUNT(DISTINCT email) FROM {$table_donations} WHERE status = 'complete'");
 
     // Active Campaigns
     $active_campaigns = wp_count_posts('wpd_campaign')->publish;
@@ -155,18 +153,11 @@ function wpd_api_get_stats()
     $last_month_start = wp_date('Y-m-01', strtotime('-1 month'));
     $last_month_end = wp_date('Y-m-t', strtotime('-1 month'));
 
-    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
-    $current_month_amount = $wpdb->get_var($wpdb->prepare(
-        "SELECT SUM(amount) FROM $table_donations WHERE status = 'complete' AND created_at >= %s",
-        $current_month_start
-    )) ?: 0;
+    $sql_current = "SELECT SUM(amount) FROM {$table_donations} WHERE status = 'complete' AND created_at >= %s";
+    $current_month_amount = $wpdb->get_var($wpdb->prepare($sql_current, $current_month_start)) ?: 0;
 
-    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
-    $last_month_amount = $wpdb->get_var($wpdb->prepare(
-        "SELECT SUM(amount) FROM $table_donations WHERE status = 'complete' AND created_at >= %s AND created_at <= %s",
-        $last_month_start,
-        $last_month_end
-    )) ?: 0;
+    $sql_last = "SELECT SUM(amount) FROM {$table_donations} WHERE status = 'complete' AND created_at >= %s AND created_at <= %s";
+    $last_month_amount = $wpdb->get_var($wpdb->prepare($sql_last, $last_month_start, $last_month_end)) ?: 0;
 
     $growth_rate = 0;
     if ($last_month_amount > 0) {
@@ -178,17 +169,15 @@ function wpd_api_get_stats()
     // 2. Recurring Revenue (Monthly Recurring Revenue - MRR)
     // Check if subscription table exists first to avoid error if Pro not fully setup
     $recurring_revenue = 0;
-    if ($wpdb->get_var("SHOW TABLES LIKE '$table_subscriptions'") == $table_subscriptions) {
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $recurring_revenue = $wpdb->get_var("SELECT SUM(amount) FROM $table_subscriptions WHERE status = 'active'") ?: 0;
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_subscriptions}'") == $table_subscriptions) {
+        $recurring_revenue = $wpdb->get_var("SELECT SUM(amount) FROM {$table_subscriptions} WHERE status = 'active'") ?: 0;
     }
 
     // 3. Retention Rate
     // Donors who donated more than once
-    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
     $repeat_donors = $wpdb->get_var("
         SELECT COUNT(*) FROM (
-            SELECT email FROM $table_donations 
+            SELECT email FROM {$table_donations} 
             WHERE status = 'complete' 
             GROUP BY email 
             HAVING COUNT(id) > 1
@@ -265,20 +254,19 @@ function wpd_api_export_donations($request)
 
     // Build Query
     $params = array(
-        'campaign_id' => isset($_GET['campaign_id']) ? $_GET['campaign_id'] : '',
-        'status' => isset($_GET['status']) ? $_GET['status'] : '',
-        'start_date' => isset($_GET['start_date']) ? $_GET['start_date'] : '',
-        'end_date' => isset($_GET['end_date']) ? $_GET['end_date'] : '',
+        'campaign_id' => isset($_GET['campaign_id']) ? sanitize_text_field(wp_unslash($_GET['campaign_id'])) : '',
+        'status' => isset($_GET['status']) ? sanitize_text_field(wp_unslash($_GET['status'])) : '',
+        'start_date' => isset($_GET['start_date']) ? sanitize_text_field(wp_unslash($_GET['start_date'])) : '',
+        'end_date' => isset($_GET['end_date']) ? sanitize_text_field(wp_unslash($_GET['end_date'])) : '',
     );
 
     $query_parts = wpd_build_donations_where_clause($params);
 
     if (!empty($query_parts['args'])) {
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $query = $wpdb->prepare("SELECT * FROM $table WHERE {$query_parts['where']} ORDER BY created_at DESC", $query_parts['args']);
+        $sql = "SELECT * FROM {$table} WHERE " . $query_parts['where'] . " ORDER BY created_at DESC";
+        $query = $wpdb->prepare($sql, $query_parts['args']);
     } else {
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $query = "SELECT * FROM $table ORDER BY created_at DESC";
+        $query = "SELECT * FROM {$table} ORDER BY created_at DESC";
     }
 
     $results = $wpdb->get_results($query, ARRAY_A);
@@ -315,7 +303,7 @@ function wpd_api_update_donation($request)
 {
     global $wpdb;
     $table = $wpdb->prefix . 'wpd_donations';
-    $id = $request['id'];
+    $id = isset($request['id']) ? intval($request['id']) : 0;
     $params = $request->get_json_params();
 
     $data_to_update = array();
@@ -341,7 +329,6 @@ function wpd_api_update_donation($request)
         return new WP_Error('no_data', 'No data to update', array('status' => 400));
     }
 
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
     $updated = $wpdb->update(
         $table,
         $data_to_update,
@@ -359,8 +346,8 @@ function wpd_api_update_donation($request)
         do_action('wpd_donation_completed', $id);
 
         // Update Campaign Collected Amount
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $campaign_id = $wpdb->get_var($wpdb->prepare("SELECT campaign_id FROM $table WHERE id = %d", $id));
+        $sql_campaign = "SELECT campaign_id FROM {$table} WHERE id = %d";
+        $campaign_id = $wpdb->get_var($wpdb->prepare($sql_campaign, $id));
         if ($campaign_id) {
             if (function_exists('wpd_update_campaign_stats')) {
                 wpd_update_campaign_stats($campaign_id);
@@ -369,8 +356,8 @@ function wpd_api_update_donation($request)
     }
 
     // Return updated data
-    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
-    $updated_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE id = %d", $id));
+    $sql_row = "SELECT * FROM {$table} WHERE id = %d";
+    $updated_row = $wpdb->get_row($wpdb->prepare($sql_row, $id));
 
     return rest_ensure_response(array(
         'success' => true,
@@ -407,11 +394,10 @@ function wpd_api_get_donations($request)
     $query_parts = wpd_build_donations_where_clause($params);
 
     if (!empty($query_parts['args'])) {
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $query = $wpdb->prepare("SELECT * FROM $table WHERE {$query_parts['where']} ORDER BY created_at DESC", $query_parts['args']);
+        $sql = "SELECT * FROM {$table} WHERE " . $query_parts['where'] . " ORDER BY created_at DESC";
+        $query = $wpdb->prepare($sql, $query_parts['args']);
     } else {
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $query = "SELECT * FROM $table ORDER BY created_at DESC";
+        $query = "SELECT * FROM {$table} ORDER BY created_at DESC";
     }
 
     $results = $wpdb->get_results($query);

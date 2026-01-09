@@ -28,20 +28,32 @@ function wpd_dashboard_widget_render()
     global $wpdb;
     $table_donations = $wpdb->prefix . 'wpd_donations';
 
-    // Total Collected (Complete)
-    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
-    $total_collected = $wpdb->get_var("SELECT SUM(amount) FROM $table_donations WHERE status = 'complete'");
+    // Check Cache
+    $cache_key = 'wpd_dashboard_stats';
+    $stats = wp_cache_get($cache_key, 'wpd_dashboard');
 
-    // Total Donors
-    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
-    $total_donors = $wpdb->get_var("SELECT COUNT(DISTINCT email) FROM $table_donations WHERE status = 'complete'");
+    if (false === $stats) {
+        $stats = array();
 
-    // Active Campaigns
-    $active_campaigns = wp_count_posts('wpd_campaign')->publish;
+        // Total Collected (Complete)
+        $stats['total_collected'] = $wpdb->get_var("SELECT SUM(amount) FROM {$table_donations} WHERE status = 'complete'");
 
-    // Recent Donations
-    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
-    $recent = $wpdb->get_results("SELECT * FROM $table_donations WHERE status = 'complete' ORDER BY created_at DESC LIMIT 5");
+        // Total Donors
+        $stats['total_donors'] = $wpdb->get_var("SELECT COUNT(DISTINCT email) FROM {$table_donations} WHERE status = 'complete'");
+
+        // Active Campaigns
+        $stats['active_campaigns'] = wp_count_posts('wpd_campaign')->publish;
+
+        // Recent Donations
+        $stats['recent'] = $wpdb->get_results("SELECT * FROM {$table_donations} WHERE status = 'complete' ORDER BY created_at DESC LIMIT 5");
+
+        wp_cache_set($cache_key, $stats, 'wpd_dashboard', 300); // 5 minutes
+    }
+
+    $total_collected = $stats['total_collected'] ?? 0;
+    $total_donors = $stats['total_donors'] ?? 0;
+    $active_campaigns = $stats['active_campaigns'] ?? 0;
+    $recent = $stats['recent'] ?? [];
 
     ?>
     <div class="wpd-widget-stats"

@@ -60,7 +60,6 @@ class WPD_Gateway_Manual implements WPD_Gateway
 
         $format = array('%d', '%d', '%s', '%s', '%s', '%f', '%s', '%s', '%s', '%s', '%d', '%s', '%s');
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
         $inserted = $wpdb->insert(
             $table_donations,
             $data,
@@ -127,7 +126,7 @@ class WPD_Gateway_Manual implements WPD_Gateway
     {
         global $wpdb;
         $table = $wpdb->prefix . 'wpd_donations';
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
         $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $donation_id));
 
         $total_amount = $donation ? $donation->amount : 0;

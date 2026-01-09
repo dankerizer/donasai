@@ -19,8 +19,14 @@ if (!$user_id) {
 
 global $wpdb;
 $table_donations = $wpdb->prefix . 'wpd_donations';
-// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Caching to be added later
-$donations = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_donations} WHERE user_id = %d ORDER BY created_at DESC", $user_id));
+
+$cache_key = 'wpd_user_donations_' . $user_id;
+$donations = wp_cache_get($cache_key, 'wpd_donations');
+
+if (false === $donations) {
+    $donations = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_donations} WHERE user_id = %d ORDER BY created_at DESC", $user_id));
+    wp_cache_set($cache_key, $donations, 'wpd_donations', 300);
+}
 ?>
 
 <div class="wpd-donor-dashboard">
@@ -112,16 +118,21 @@ $donations = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_donations}
     <h3><?php esc_html_e('Langganan Rutin Saya', 'donasai'); ?></h3>
 
     <?php
-    $table_subs = $wpdb->prefix . 'wpd_subscriptions';
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-    $subscriptions = $wpdb->get_results($wpdb->prepare(
-        "SELECT s.*, p.post_title as campaign_title 
-         FROM {$table_subs} s
-         JOIN {$wpdb->posts} p ON s.campaign_id = p.ID
-         WHERE s.user_id = %d 
-         ORDER BY s.created_at DESC",
-        $user_id
-    ));
+    $cache_key_subs = 'wpd_user_subscriptions_' . $user_id;
+    $subscriptions = wp_cache_get($cache_key_subs, 'wpd_subscriptions');
+
+    if (false === $subscriptions) {
+        $table_subs = $wpdb->prefix . 'wpd_subscriptions';
+        $subscriptions = $wpdb->get_results($wpdb->prepare(
+            "SELECT s.*, p.post_title as campaign_title 
+             FROM {$table_subs} s
+             JOIN {$wpdb->posts} p ON s.campaign_id = p.ID
+             WHERE s.user_id = %d 
+             ORDER BY s.created_at DESC",
+            $user_id
+        ));
+        wp_cache_set($cache_key_subs, $subscriptions, 'wpd_subscriptions', 300);
+    }
     ?>
 
     <?php if (empty($subscriptions)): ?>

@@ -16,8 +16,8 @@ function wpd_create_tables()
 	$table_meta = $wpdb->prefix . 'wpd_campaign_meta';
 
 	// wpd_donations
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange
-	$sql_donations = "CREATE TABLE $table_donations (
+	// wpd_donations
+	$sql_donations = "CREATE TABLE {$table_donations} (
 		id bigint(20) NOT NULL AUTO_INCREMENT,
 		campaign_id bigint(20) NOT NULL,
 		user_id bigint(20) NULL,
@@ -44,8 +44,8 @@ function wpd_create_tables()
 	) $charset_collate;";
 
 	// wpd_campaign_meta
-	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange
-	$sql_meta = "CREATE TABLE $table_meta (
+	// wpd_campaign_meta
+	$sql_meta = "CREATE TABLE {$table_meta} (
 		campaign_id bigint(20) NOT NULL,
 		meta_key varchar(50) NOT NULL,
 		meta_value longtext,
@@ -107,8 +107,7 @@ function wpd_create_tables()
 	dbDelta($sql_subscriptions);
 
 	// Update Donations Table with subscription_id
-	if (!$wpdb->get_results("SHOW COLUMNS FROM $table_donations LIKE 'subscription_id'")) {
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-		$wpdb->query("ALTER TABLE $table_donations ADD COLUMN subscription_id bigint(20) DEFAULT 0 AFTER fundraiser_id");
+	if (!$wpdb->get_results("SHOW COLUMNS FROM {$table_donations} LIKE 'subscription_id'")) {
+		$wpdb->query("ALTER TABLE {$table_donations} ADD COLUMN subscription_id bigint(20) DEFAULT 0 AFTER fundraiser_id");
 	}
 }

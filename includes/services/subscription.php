@@ -50,15 +50,20 @@ class WPD_Subscription_Service
         $table = $wpdb->prefix . 'wpd_subscriptions';
         $table_posts = $wpdb->prefix . 'posts';
 
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        $sql = "SELECT s.*, p.post_title as campaign_title 
-                FROM $table s
-                JOIN $table_posts p ON s.campaign_id = p.ID
-                WHERE s.user_id = %d 
-                ORDER BY s.created_at DESC";
+        $cache_key = 'wpd_user_subscriptions_' . $user_id;
+        $subscriptions = wp_cache_get($cache_key, 'wpd_subscriptions');
 
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-        return $wpdb->get_results($wpdb->prepare($sql, $user_id));
+        if (false === $subscriptions) {
+            $sql = "SELECT s.*, p.post_title as campaign_title 
+                    FROM {$table} s
+                    JOIN {$table_posts} p ON s.campaign_id = p.ID
+                    WHERE s.user_id = %d 
+                    ORDER BY s.created_at DESC";
+
+            $subscriptions = $wpdb->get_results($wpdb->prepare($sql, $user_id));
+            wp_cache_set($cache_key, $subscriptions, 'wpd_subscriptions', 300);
+        }
+        return $subscriptions;
     }
 
     /**
@@ -69,11 +74,16 @@ class WPD_Subscription_Service
         global $wpdb;
         $table = $wpdb->prefix . 'wpd_subscriptions';
 
-        return $wpdb->update(
+        $updated = $wpdb->update(
             $table,
             array('status' => 'cancelled'),
             array('id' => $subscription_id, 'user_id' => $user_id)
         );
+
+        // Invalidate cache
+        wp_cache_delete('wpd_user_subscriptions_' . $user_id, 'wpd_subscriptions');
+
+        return $updated;
     }
 
     /**
@@ -86,8 +96,7 @@ class WPD_Subscription_Service
         $table = $wpdb->prefix . 'wpd_subscriptions';
 
         // Find active subscriptions due today or earlier
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter
-        $due = $wpdb->get_results("SELECT * FROM $table WHERE status = 'active' AND next_payment_date <= NOW()");
+        $due = $wpdb->get_results("SELECT * FROM {$table} WHERE status = 'active' AND next_payment_date <= NOW()");
 
         foreach ($due as $sub) {
             // Logic to create a new pending donation

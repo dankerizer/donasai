@@ -26,9 +26,8 @@ class WPD_Fundraiser_Service
 		global $wpdb;
 
 		// Check if already registered
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$existing = $wpdb->get_row($wpdb->prepare(
-			"SELECT * FROM $this->table_name WHERE user_id = %d AND campaign_id = %d",
+			"SELECT * FROM {$this->table_name} WHERE user_id = %d AND campaign_id = %d",
 			$user_id,
 			$campaign_id
 		));
@@ -48,7 +47,6 @@ class WPD_Fundraiser_Service
 			$counter++;
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 		$wpdb->insert($this->table_name, [
 			'user_id' => $user_id,
 			'campaign_id' => $campaign_id,
@@ -65,11 +63,17 @@ class WPD_Fundraiser_Service
 	public function get_by_code($code)
 	{
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-		return $wpdb->get_row($wpdb->prepare(
-			"SELECT * FROM $this->table_name WHERE referral_code = %s",
-			$code
-		));
+		$cache_key = 'wpd_fundraiser_code_' . $code;
+		$found = wp_cache_get($cache_key, 'wpd_fundraisers');
+
+		if (false === $found) {
+			$found = $wpdb->get_row($wpdb->prepare(
+				"SELECT * FROM {$this->table_name} WHERE referral_code = %s",
+				$code
+			));
+			wp_cache_set($cache_key, $found, 'wpd_fundraisers', 3600);
+		}
+		return $found;
 	}
 
 	/**
@@ -78,11 +82,17 @@ class WPD_Fundraiser_Service
 	public function get_by_id($id)
 	{
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-		return $wpdb->get_row($wpdb->prepare(
-			"SELECT * FROM $this->table_name WHERE id = %d",
-			$id
-		));
+		$cache_key = 'wpd_fundraiser_id_' . $id;
+		$found = wp_cache_get($cache_key, 'wpd_fundraisers');
+
+		if (false === $found) {
+			$found = $wpdb->get_row($wpdb->prepare(
+				"SELECT * FROM {$this->table_name} WHERE id = %d",
+				$id
+			));
+			wp_cache_set($cache_key, $found, 'wpd_fundraisers', 3600);
+		}
+		return $found;
 	}
 
 	/**
@@ -91,15 +101,16 @@ class WPD_Fundraiser_Service
 	public function record_donation($fundraiser_id, $amount)
 	{
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
 		$wpdb->query($wpdb->prepare(
-			"UPDATE $this->table_name 
+			"UPDATE {$this->table_name} 
 			 SET total_donations = total_donations + %f, 
 			     donation_count = donation_count + 1 
 			 WHERE id = %d",
 			$amount,
 			$fundraiser_id
 		));
+		// Invalidate cache
+		wp_cache_delete('wpd_fundraiser_id_' . $fundraiser_id, 'wpd_fundraisers');
 	}
 
 	/**
@@ -108,17 +119,24 @@ class WPD_Fundraiser_Service
 	public function get_leaderboard($campaign_id, $limit = 10)
 	{
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
-		return $wpdb->get_results($wpdb->prepare(
-			"SELECT f.*, u.display_name, u.user_email 
-			 FROM $this->table_name f
-			 JOIN {$wpdb->users} u ON f.user_id = u.ID
-			 WHERE f.campaign_id = %d AND f.total_donations > 0
-			 ORDER BY f.total_donations DESC
-			 LIMIT %d",
-			$campaign_id,
-			$limit
-		));
+
+		$cache_key = 'wpd_leaderboard_' . $campaign_id . '_' . $limit;
+		$results = wp_cache_get($cache_key, 'wpd_fundraisers');
+
+		if (false === $results) {
+			$results = $wpdb->get_results($wpdb->prepare(
+				"SELECT f.*, u.display_name, u.user_email 
+				 FROM {$this->table_name} f
+				 JOIN {$wpdb->users} u ON f.user_id = u.ID
+				 WHERE f.campaign_id = %d AND f.total_donations > 0
+				 ORDER BY f.total_donations DESC
+				 LIMIT %d",
+				$campaign_id,
+				$limit
+			));
+			wp_cache_set($cache_key, $results, 'wpd_fundraisers', 300);
+		}
+		return $results;
 	}
 
 	/**
@@ -135,7 +153,6 @@ class WPD_Fundraiser_Service
 		$ip_address = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
 		$user_agent = isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'])) : '';
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 		$wpdb->insert($table_logs, [
 			'fundraiser_id' => $fundraiser_id,
 			'campaign_id' => $campaign_id,

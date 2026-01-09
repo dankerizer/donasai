@@ -68,7 +68,7 @@ function wpd_campaign_custom_column($column, $post_id)
 
             // Progress bar
             echo '<div style="background:#e5e7eb;height:4px;width:100%;margin-top:5px;border-radius:2px;overflow:hidden;">';
-            echo '<div style="background:' . esc_attr($color) . ';height:100%;width:' . min(100, $percent) . '%;"></div>';
+            echo '<div style="background:' . esc_attr($color) . ';height:100%;width:' . esc_attr(min(100, $percent)) . '%;"></div>';
             echo '</div>';
             break;
 

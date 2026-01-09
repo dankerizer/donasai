@@ -18,7 +18,6 @@ if (!$donation_id) {
 
 global $wpdb;
 $table = $wpdb->prefix . 'wpd_donations';
-// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
 $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $donation_id));
 
 if (!$donation) {

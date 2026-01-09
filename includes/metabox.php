@@ -102,7 +102,10 @@ function wpd_campaign_options_callback($post)
 			});
 
 			// Initialize Packages
-			var packagesData = <?php echo $packages ? $packages : '[]'; ?>;
+			var packagesData = <?php
+			$packages_array = json_decode($packages, true);
+			echo wp_json_encode(is_array($packages_array) ? $packages_array : []);
+			?>;
 			var container = document.getElementById('wpd_packages_container');
 
 			function renderPackages() {
@@ -221,7 +224,7 @@ function wpd_save_campaign_options($post_id)
 		return;
 	}
 
-	if (!wp_verify_nonce($_POST['wpd_campaign_options_nonce'], 'wpd_save_campaign_options')) {
+	if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wpd_campaign_options_nonce'])), 'wpd_save_campaign_options')) {
 		return;
 	}
 

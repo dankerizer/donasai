@@ -28,9 +28,12 @@ class WPD_Email
 	public static function send_email($donation_id, $type = 'pending')
 	{
 		global $wpdb;
-		$table_donations = $wpdb->prefix . 'wpd_donations';
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-		$donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_donations WHERE id = %d", $donation_id));
+		if (function_exists('wpd_get_donation')) {
+			$donation = wpd_get_donation($donation_id);
+		} else {
+			$table_donations = $wpdb->prefix . 'wpd_donations';
+			$donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_donations} WHERE id = %d", $donation_id));
+		}
 
 		if (!$donation || empty($donation->email)) {
 			return false;

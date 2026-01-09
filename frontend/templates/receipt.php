@@ -7,13 +7,25 @@ if (!defined('ABSPATH')) {
  */
 
 $donation_id = isset($_GET['wpd_receipt']) ? intval($_GET['wpd_receipt']) : 0;
+
+// Verify Nonce
+$nonce = isset($_GET['_wpnonce']) ? sanitize_text_field(wp_unslash($_GET['_wpnonce'])) : '';
+if (!wp_verify_nonce($nonce, 'wpd_receipt_' . $donation_id)) {
+    wp_die('Invalid receipt nonce. Please access from payment success page.');
+}
 $donation = null;
 
 if ($donation_id) {
-    global $wpdb;
-    $table = $wpdb->prefix . 'wpd_donations';
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-    $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE id = %d", $donation_id));
+    if (function_exists('wpd_get_donation')) {
+        $donation = wpd_get_donation($donation_id);
+    } else {
+        // Fallback or Error
+        // Ideally wpd_get_donation comes from includes/services/donation.php which should be loaded.
+        // If not, we might need manual query but with prepare.
+        global $wpdb;
+        $table = $wpdb->prefix . 'wpd_donations';
+        $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $donation_id));
+    }
 }
 
 if (!$donation) {

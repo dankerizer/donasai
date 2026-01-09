@@ -123,14 +123,14 @@ function wpd_enqueue_admin_assets($hook)
 
 		// Need to inject React Refresh for Vite HMR
 		add_action('admin_head', function () {
-			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.EnqueuedResources.NonEnqueuedScript
-			echo '<script type="module">
-				import RefreshRuntime from "http://localhost:3001/@react-refresh"
+			wp_print_inline_script_tag(
+				'import RefreshRuntime from "http://localhost:3001/@react-refresh"
 				RefreshRuntime.injectIntoGlobalHook(window)
 				window.$RefreshReg$ = () => {}
 				window.$RefreshSig$ = () => (type) => type
-				window.__vite_plugin_react_preamble_installed__ = true
-			</script>';
+				window.__vite_plugin_react_preamble_installed__ = true',
+				array('type' => 'module')
+			);
 		});
 
 
