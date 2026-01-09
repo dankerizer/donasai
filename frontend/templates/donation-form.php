@@ -240,8 +240,10 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
 
                     <div class="wpd-input-money-wrapper">
                         <span class="wpd-currency">Rp</span>
-                        <input type="number" name="amount" id="amount" class="wpd-input-money" placeholder="0"
-                            min="<?php echo esc_attr($min_amount); ?>" required>
+                        <input type="text" id="amount_display" class="wpd-input-money" placeholder="0"
+                            autocomplete="off">
+                        <!-- Hidden input for actual submission -->
+                        <input type="hidden" name="amount" id="amount" min="<?php echo esc_attr($min_amount); ?>">
                     </div>
                     <div class="wpd-helper-text">Minimal donasi sebesar Rp
                         <?php echo esc_html(number_format($min_amount, 0, ',', '.')); ?>
@@ -680,12 +682,12 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
 
         .wpd-input-money {
             width: 100%;
-            border: none;
-            padding: 16px 16px 16px 50px;
+            border: none !important;
+            padding: 16px 16px 16px 50px !important;
             font-size: 24px;
             font-weight: 700;
             color: #1f2937;
-            outline: none;
+            outline: none !important;
             box-sizing: border-box;
         }
 

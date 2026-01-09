@@ -43,17 +43,17 @@ class WPD_Gateway_Manual implements WPD_Gateway
 
         // Insert Donation
         $data = array(
-            'campaign_id' => $donation_data['campaign_id'],
-            'user_id' => isset($donation_data['user_id']) ? $donation_data['user_id'] : (get_current_user_id() ? get_current_user_id() : null),
-            'name' => $donation_data['name'],
-            'email' => $donation_data['email'],
-            'phone' => $donation_data['phone'],
+            'campaign_id' => intval($donation_data['campaign_id']),
+            'user_id' => isset($donation_data['user_id']) ? intval($donation_data['user_id']) : (get_current_user_id() ? get_current_user_id() : 0),
+            'name' => sanitize_text_field(wp_unslash($donation_data['name'])),
+            'email' => sanitize_email(wp_unslash($donation_data['email'])),
+            'phone' => sanitize_text_field(wp_unslash($donation_data['phone'])),
             'amount' => $final_amount, // Total with unique code
             'currency' => 'IDR',
             'payment_method' => $this->get_id(),
             'status' => 'pending',
-            'note' => $donation_data['note'],
-            'is_anonymous' => $donation_data['is_anonymous'],
+            'note' => sanitize_textarea_field(wp_unslash($donation_data['note'])),
+            'is_anonymous' => intval($donation_data['is_anonymous']),
             'created_at' => current_time('mysql'),
             'metadata' => json_encode($metadata)
         );
@@ -61,7 +61,11 @@ class WPD_Gateway_Manual implements WPD_Gateway
         $format = array('%d', '%d', '%s', '%s', '%s', '%f', '%s', '%s', '%s', '%s', '%d', '%s', '%s');
 
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-        $inserted = $wpdb->insert($table_donations, $data, $format);
+        $inserted = $wpdb->insert(
+            $table_donations,
+            $data,
+            $format
+        );
 
         if (!$inserted) {
             return array('success' => false, 'message' => 'Database error');
