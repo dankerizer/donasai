@@ -16,7 +16,6 @@ class WPD_Subscription_Service
     public function create_subscription($user_id, $campaign_id, $amount, $frequency = 'month')
     {
         global $wpdb;
-        $table = $wpdb->prefix . 'wpd_subscriptions';
 
         $next_date = ($frequency === 'year')
             ? wp_date('Y-m-d H:i:s', strtotime('+1 year'))
@@ -32,7 +31,7 @@ class WPD_Subscription_Service
             'created_at' => current_time('mysql')
         );
 
-        $inserted = $wpdb->insert($table, $data);
+        $inserted = $wpdb->insert($wpdb->prefix . 'wpd_subscriptions', $data);
 
         if ($inserted) {
             return $wpdb->insert_id;
@@ -47,20 +46,19 @@ class WPD_Subscription_Service
     public function get_user_subscriptions($user_id)
     {
         global $wpdb;
-        $table = $wpdb->prefix . 'wpd_subscriptions';
-        $table_posts = $wpdb->prefix . 'posts';
 
         $cache_key = 'wpd_user_subscriptions_' . $user_id;
         $subscriptions = wp_cache_get($cache_key, 'wpd_subscriptions');
 
         if (false === $subscriptions) {
-            $sql = "SELECT s.*, p.post_title as campaign_title 
-                    FROM {$table} s
-                    JOIN {$table_posts} p ON s.campaign_id = p.ID
-                    WHERE s.user_id = %d 
-                    ORDER BY s.created_at DESC";
-
-            $subscriptions = $wpdb->get_results($wpdb->prepare($sql, $user_id));
+            $subscriptions = $wpdb->get_results($wpdb->prepare(
+                "SELECT s.*, p.post_title as campaign_title 
+                 FROM {$wpdb->prefix}wpd_subscriptions s
+                 JOIN {$wpdb->prefix}posts p ON s.campaign_id = p.ID
+                 WHERE s.user_id = %d 
+                 ORDER BY s.created_at DESC",
+                $user_id
+            ));
             wp_cache_set($cache_key, $subscriptions, 'wpd_subscriptions', 300);
         }
         return $subscriptions;
@@ -72,10 +70,9 @@ class WPD_Subscription_Service
     public function cancel_subscription($subscription_id, $user_id)
     {
         global $wpdb;
-        $table = $wpdb->prefix . 'wpd_subscriptions';
 
         $updated = $wpdb->update(
-            $table,
+            $wpdb->prefix . 'wpd_subscriptions',
             array('status' => 'cancelled'),
             array('id' => $subscription_id, 'user_id' => $user_id)
         );
@@ -93,10 +90,9 @@ class WPD_Subscription_Service
     public function process_renewals()
     {
         global $wpdb;
-        $table = $wpdb->prefix . 'wpd_subscriptions';
 
         // Find active subscriptions due today or earlier
-        $due = $wpdb->get_results("SELECT * FROM {$table} WHERE status = 'active' AND next_payment_date <= NOW()");
+        $due = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wpd_subscriptions WHERE status = %s AND next_payment_date <= NOW()", 'active'));
 
         foreach ($due as $sub) {
             // Logic to create a new pending donation
@@ -108,7 +104,7 @@ class WPD_Subscription_Service
                 ? wp_date('Y-m-d H:i:s', strtotime('+1 year'))
                 : wp_date('Y-m-d H:i:s', strtotime('+1 month'));
 
-            $wpdb->update($table, array('next_payment_date' => $next_date), array('id' => $sub->id));
+            $wpdb->update($wpdb->prefix . 'wpd_subscriptions', array('next_payment_date' => $next_date), array('id' => $sub->id));
 
             // Log/Create Pending Donation (Stub)
             // error_log( "Processed renewal for Subscription #{$sub->id}" );

@@ -107,7 +107,7 @@ function wpd_create_tables()
 	dbDelta($sql_subscriptions);
 
 	// Update Donations Table with subscription_id
-	if (!$wpdb->get_results("SHOW COLUMNS FROM {$table_donations} LIKE 'subscription_id'")) {
+	if (!$wpdb->get_results($wpdb->prepare("SHOW COLUMNS FROM {$table_donations} LIKE %s", 'subscription_id'))) {
 		$wpdb->query("ALTER TABLE {$table_donations} ADD COLUMN subscription_id bigint(20) DEFAULT 0 AFTER fundraiser_id");
 	}
 }

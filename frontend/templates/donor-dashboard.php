@@ -18,13 +18,12 @@ if (!$user_id) {
 }
 
 global $wpdb;
-$table_donations = $wpdb->prefix . 'wpd_donations';
 
 $cache_key = 'wpd_user_donations_' . $user_id;
 $donations = wp_cache_get($cache_key, 'wpd_donations');
 
 if (false === $donations) {
-    $donations = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_donations} WHERE user_id = %d ORDER BY created_at DESC", $user_id));
+    $donations = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wpd_donations WHERE user_id = %d ORDER BY created_at DESC", $user_id));
     wp_cache_set($cache_key, $donations, 'wpd_donations', 300);
 }
 ?>
@@ -122,11 +121,10 @@ if (false === $donations) {
     $subscriptions = wp_cache_get($cache_key_subs, 'wpd_subscriptions');
 
     if (false === $subscriptions) {
-        $table_subs = $wpdb->prefix . 'wpd_subscriptions';
         $subscriptions = $wpdb->get_results($wpdb->prepare(
             "SELECT s.*, p.post_title as campaign_title 
-             FROM {$table_subs} s
-             JOIN {$wpdb->posts} p ON s.campaign_id = p.ID
+             FROM {$wpdb->prefix}wpd_subscriptions s
+             JOIN {$wpdb->prefix}posts p ON s.campaign_id = p.ID
              WHERE s.user_id = %d 
              ORDER BY s.created_at DESC",
             $user_id

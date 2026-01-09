@@ -57,21 +57,20 @@ add_action('rest_api_init', function () {
 function wpd_api_get_chart_stats()
 {
     global $wpdb;
-    $table_donations = $wpdb->prefix . 'wpd_donations';
 
     // Get last 30 days data
-    $sql = "
+    // Get last 30 days data
+    $results = $wpdb->get_results($wpdb->prepare("
         SELECT 
             DATE(created_at) as date, 
             SUM(amount) as total_amount,
             COUNT(id) as total_count
-        FROM {$table_donations} 
-        WHERE status = 'complete' 
+        FROM {$wpdb->prefix}wpd_donations 
+        WHERE status = %s 
         AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
         GROUP BY DATE(created_at)
         ORDER BY date ASC
-    ";
-    $results = $wpdb->get_results($sql);
+    ", 'complete'));
 
     // Fill missing dates with 0
     $daily_stats = array();
@@ -104,25 +103,23 @@ function wpd_api_get_chart_stats()
     }
 
     // --- Payment Methods ---
-    $sql_methods = "
+    $payment_methods = $wpdb->get_results($wpdb->prepare("
         SELECT payment_method, COUNT(*) as count 
-        FROM {$table_donations} 
-        WHERE status = 'complete' 
+        FROM {$wpdb->prefix}wpd_donations 
+        WHERE status = %s 
         GROUP BY payment_method
-    ";
-    $payment_methods = $wpdb->get_results($sql_methods);
+    ", 'complete'));
 
     // --- Top Campaigns ---
-    $sql_campaigns = "
+    $top_campaigns = $wpdb->get_results($wpdb->prepare("
         SELECT p.post_title as name, SUM(d.amount) as value
-        FROM {$table_donations} d
-        LEFT JOIN {$wpdb->posts} p ON d.campaign_id = p.ID
-        WHERE d.status = 'complete' AND d.campaign_id > 0
+        FROM {$wpdb->prefix}wpd_donations d
+        LEFT JOIN {$wpdb->prefix}posts p ON d.campaign_id = p.ID
+        WHERE d.status = %s AND d.campaign_id > 0
         GROUP BY d.campaign_id
         ORDER BY value DESC
         LIMIT 5
-    ";
-    $top_campaigns = $wpdb->get_results($sql_campaigns);
+    ", 'complete'));
 
     return rest_ensure_response(array(
         'daily_stats' => $daily_stats,
@@ -134,14 +131,12 @@ function wpd_api_get_chart_stats()
 function wpd_api_get_stats()
 {
     global $wpdb;
-    $table_donations = $wpdb->prefix . 'wpd_donations';
-    $table_subscriptions = $wpdb->prefix . 'wpd_subscriptions';
 
     // Total Connected Amount (Completed)
-    $total_collected = $wpdb->get_var("SELECT SUM(amount) FROM {$table_donations} WHERE status = 'complete'");
+    $total_collected = $wpdb->get_var("SELECT SUM(amount) FROM {$wpdb->prefix}wpd_donations WHERE status = 'complete'");
 
     // Total Donors (Unique Emails)
-    $total_donors = $wpdb->get_var("SELECT COUNT(DISTINCT email) FROM {$table_donations} WHERE status = 'complete'");
+    $total_donors = $wpdb->get_var("SELECT COUNT(DISTINCT email) FROM {$wpdb->prefix}wpd_donations WHERE status = 'complete'");
 
     // Active Campaigns
     $active_campaigns = wp_count_posts('wpd_campaign')->publish;
@@ -153,11 +148,16 @@ function wpd_api_get_stats()
     $last_month_start = wp_date('Y-m-01', strtotime('-1 month'));
     $last_month_end = wp_date('Y-m-t', strtotime('-1 month'));
 
-    $sql_current = "SELECT SUM(amount) FROM {$table_donations} WHERE status = 'complete' AND created_at >= %s";
-    $current_month_amount = $wpdb->get_var($wpdb->prepare($sql_current, $current_month_start)) ?: 0;
+    $current_month_amount = $wpdb->get_var($wpdb->prepare(
+        "SELECT SUM(amount) FROM {$wpdb->prefix}wpd_donations WHERE status = 'complete' AND created_at >= %s",
+        $current_month_start
+    )) ?: 0;
 
-    $sql_last = "SELECT SUM(amount) FROM {$table_donations} WHERE status = 'complete' AND created_at >= %s AND created_at <= %s";
-    $last_month_amount = $wpdb->get_var($wpdb->prepare($sql_last, $last_month_start, $last_month_end)) ?: 0;
+    $last_month_amount = $wpdb->get_var($wpdb->prepare(
+        "SELECT SUM(amount) FROM {$wpdb->prefix}wpd_donations WHERE status = 'complete' AND created_at >= %s AND created_at <= %s",
+        $last_month_start,
+        $last_month_end
+    )) ?: 0;
 
     $growth_rate = 0;
     if ($last_month_amount > 0) {
@@ -169,15 +169,15 @@ function wpd_api_get_stats()
     // 2. Recurring Revenue (Monthly Recurring Revenue - MRR)
     // Check if subscription table exists first to avoid error if Pro not fully setup
     $recurring_revenue = 0;
-    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_subscriptions}'") == $table_subscriptions) {
-        $recurring_revenue = $wpdb->get_var("SELECT SUM(amount) FROM {$table_subscriptions} WHERE status = 'active'") ?: 0;
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}wpd_subscriptions'") == $wpdb->prefix . 'wpd_subscriptions') {
+        $recurring_revenue = $wpdb->get_var("SELECT SUM(amount) FROM {$wpdb->prefix}wpd_subscriptions WHERE status = 'active'") ?: 0;
     }
 
     // 3. Retention Rate
     // Donors who donated more than once
     $repeat_donors = $wpdb->get_var("
         SELECT COUNT(*) FROM (
-            SELECT email FROM {$table_donations} 
+            SELECT email FROM {$wpdb->prefix}wpd_donations 
             WHERE status = 'complete' 
             GROUP BY email 
             HAVING COUNT(id) > 1
@@ -244,7 +244,6 @@ function wpd_build_donations_where_clause($params)
 function wpd_api_export_donations($request)
 {
     global $wpdb;
-    $table = $wpdb->prefix . 'wpd_donations';
 
     // Check Nonce (as we using directly in href)
     $nonce = isset($_GET['_wpnonce']) ? $_GET['_wpnonce'] : '';
@@ -263,13 +262,14 @@ function wpd_api_export_donations($request)
     $query_parts = wpd_build_donations_where_clause($params);
 
     if (!empty($query_parts['args'])) {
-        $sql = "SELECT * FROM {$table} WHERE " . $query_parts['where'] . " ORDER BY created_at DESC";
+        $table_name = $wpdb->prefix . 'wpd_donations';
+        $sql = "SELECT * FROM {$table_name} WHERE " . $query_parts['where'] . " ORDER BY created_at DESC";
         $query = $wpdb->prepare($sql, $query_parts['args']);
     } else {
-        $query = "SELECT * FROM {$table} ORDER BY created_at DESC";
+        $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wpd_donations ORDER BY created_at DESC LIMIT %d", 10000);
     }
 
-    $results = $wpdb->get_results($query, ARRAY_A);
+    $results = $wpdb->get_results($wpdb->prepare($query), ARRAY_A);
 
     $filename = 'donations-export-' . wp_date('Y-m-d') . '.csv';
     header('Content-Type: text/csv');
@@ -302,7 +302,6 @@ function wpd_api_export_donations($request)
 function wpd_api_update_donation($request)
 {
     global $wpdb;
-    $table = $wpdb->prefix . 'wpd_donations';
     $id = isset($request['id']) ? intval($request['id']) : 0;
     $params = $request->get_json_params();
 
@@ -330,7 +329,7 @@ function wpd_api_update_donation($request)
     }
 
     $updated = $wpdb->update(
-        $table,
+        $wpdb->prefix . 'wpd_donations',
         $data_to_update,
         array('id' => $id),
         $format,
@@ -346,8 +345,7 @@ function wpd_api_update_donation($request)
         do_action('wpd_donation_completed', $id);
 
         // Update Campaign Collected Amount
-        $sql_campaign = "SELECT campaign_id FROM {$table} WHERE id = %d";
-        $campaign_id = $wpdb->get_var($wpdb->prepare($sql_campaign, $id));
+        $campaign_id = $wpdb->get_var($wpdb->prepare("SELECT campaign_id FROM {$wpdb->prefix}wpd_donations WHERE id = %d", $id));
         if ($campaign_id) {
             if (function_exists('wpd_update_campaign_stats')) {
                 wpd_update_campaign_stats($campaign_id);
@@ -356,8 +354,7 @@ function wpd_api_update_donation($request)
     }
 
     // Return updated data
-    $sql_row = "SELECT * FROM {$table} WHERE id = %d";
-    $updated_row = $wpdb->get_row($wpdb->prepare($sql_row, $id));
+    $updated_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wpd_donations WHERE id = %d", $id));
 
     return rest_ensure_response(array(
         'success' => true,
@@ -381,7 +378,6 @@ function wpd_api_update_donation($request)
 function wpd_api_get_donations($request)
 {
     global $wpdb;
-    $table = $wpdb->prefix . 'wpd_donations';
 
     // Build Query
     $params = array(
@@ -394,10 +390,12 @@ function wpd_api_get_donations($request)
     $query_parts = wpd_build_donations_where_clause($params);
 
     if (!empty($query_parts['args'])) {
-        $sql = "SELECT * FROM {$table} WHERE " . $query_parts['where'] . " ORDER BY created_at DESC";
-        $query = $wpdb->prepare($sql, $query_parts['args']);
+        $query = $wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}wpd_donations WHERE " . $query_parts['where'] . " ORDER BY created_at DESC",
+            $query_parts['args']
+        );
     } else {
-        $query = "SELECT * FROM {$table} ORDER BY created_at DESC";
+        $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wpd_donations ORDER BY created_at DESC LIMIT %d", 10000);
     }
 
     $results = $wpdb->get_results($query);

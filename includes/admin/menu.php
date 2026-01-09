@@ -180,8 +180,9 @@ function wpd_enqueue_admin_assets($hook)
 	));
 	// Add type="module" to dev and production scripts
 	add_filter('script_loader_tag', function ($tag, $handle, $src) {
-		if (in_array($handle, array('wpd-vite-client', 'wpd-admin-dev', 'wpd-admin-app'))) {
-			return '<script type="module" src="' . esc_url($src) . '"></script>';
+		if (in_array($handle, array('wpd-vite-client', 'wpd-admin-dev', 'wpd-admin-app'), true)) {
+			// Modify existing tag to add type="module" without constructing raw script tag
+			$tag = str_replace(' src=', ' type="module" src=', $tag);
 		}
 		return $tag;
 	}, 10, 3);

@@ -332,7 +332,7 @@ function wpd_shortcode_fundraiser_stats()
     ob_start();
     ?>
     <div class="wpd-fundraiser-dashboard">
-        <h3><?php _e('Statistik Kampanye Anda', 'donasai'); ?></h3>
+        <h3><?php esc_attr_e('Statistik Kampanye Anda', 'donasai'); ?></h3>
         <table class="wpd-table" style="width:100%; border-collapse:collapse; margin-top:15px;">
             <thead>
                 <tr style="background:#f9fafb; text-align:left; border-bottom:1px solid #ddd;">

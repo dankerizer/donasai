@@ -3,7 +3,7 @@
  * Plugin Name:       Donasai - Platform Donasi & Penggalangan Dana
  * Plugin URI:        https://donasai.com
  * Description:       Complete WordPress donation and fundraising platform for foundations, mosques, and communities.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Author:            Hadie Danker
  * Author URI:        http://profiles.wordpress.org/hadie-danker
  * Requires at least: 6.4
@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin Constants
-define('WPD_VERSION', '1.0.1');
+define('WPD_VERSION', '1.0.2');
 define('WPD_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WPD_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('WPD_TABLE_PREFIX', 'wpd_');

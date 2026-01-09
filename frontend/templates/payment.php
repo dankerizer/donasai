@@ -44,7 +44,7 @@ $campaign_id = get_the_ID();
         // Ensure the form output is properly handled. 
         // wpd_get_donation_form_html should ideally return escaped/sanitized HTML, or we trust it as internal function.
         // Given it likely contains form inputs, standard escaping might break it.
-        echo wpd_get_donation_form_html(esc_attr($campaign_id));
+        echo wp_kses_post(wpd_get_donation_form_html($campaign_id));
         ?>
 
     </div>

@@ -1,0 +1,310 @@
+{
+    "generated_at": "2026-01-09 03:56:58",
+    "plugin": "Donasai - Platform Donasi & Penggalangan Dana",
+    "results": {
+        "frontend/templates/payment.php": [
+            {
+                "message": "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found 'wpd_get_donation_form_html'.",
+                "code": "WordPress.Security.EscapeOutput.OutputNotEscaped",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Ffrontend%2Ftemplates%2Fpayment.php&line=47",
+                "docs": "https://developer.wordpress.org/apis/security/escaping/#escaping-functions",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 47,
+                "column": 14
+            }
+        ],
+        "includes/functions-frontend.php": [
+            {
+                "message": "All output should be run through an escaping function (like esc_html_e() or esc_attr_e()), found '_e'.",
+                "code": "WordPress.Security.EscapeOutput.UnsafePrintingFunction",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Ffunctions-frontend.php&line=335",
+                "docs": "https://developer.wordpress.org/apis/security/escaping/#escaping-with-localization",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 335,
+                "column": 19
+            }
+        ],
+        "includes/api/donations-controller.php": [
+            {
+                "message": "Unescaped parameter $sql used in $wpdb->get_results($sql)\\n$sql assigned unsafely at line 63:\\n $sql = \"\\n        SELECT \\n            DATE(created_at) as date, \\n            SUM(amount) as total_amount,\\n            COUNT(id) as total_count\\n        FROM {$table_donations} \\n        WHERE status = 'complete' \\n        AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)\\n        GROUP BY DATE(created_at)\\n        ORDER BY date ASC\\n    \"\\n$table_donations assigned unsafely at line 60:\\n $table_donations = $wpdb->prefix . 'wpd_donations'",
+                "code": "PluginCheck.Security.DirectDB.UnescapedDBParameter",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=74",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 74,
+                "column": 23
+            },
+            {
+                "message": "Use placeholders and $wpdb->prepare(); found $sql",
+                "code": "WordPress.DB.PreparedSQL.NotPrepared",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=74",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 74,
+                "column": 35
+            },
+            {
+                "message": "Unescaped parameter $sql_methods used in $wpdb->get_results($sql_methods)\\n$sql_methods assigned unsafely at line 107:\\n $sql_methods = \"\\n        SELECT payment_method, COUNT(*) as count \\n        FROM {$table_donations} \\n        WHERE status = 'complete' \\n        GROUP BY payment_method\\n    \"\\n$table_donations assigned unsafely at line 60:\\n $table_donations = $wpdb->prefix . 'wpd_donations'\\n$sql assigned unsafely at line 63:\\n $sql = \"\\n        SELECT \\n            DATE(created_at) as date, \\n            SUM(amount) as total_amount,\\n            COUNT(id) as total_count\\n        FROM {$table_donations} \\n        WHERE status = 'complete' \\n        AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)\\n        GROUP BY DATE(created_at)\\n        ORDER BY date ASC\\n    \"",
+                "code": "PluginCheck.Security.DirectDB.UnescapedDBParameter",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=113",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 113,
+                "column": 31
+            },
+            {
+                "message": "Use placeholders and $wpdb->prepare(); found $sql_methods",
+                "code": "WordPress.DB.PreparedSQL.NotPrepared",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=113",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 113,
+                "column": 43
+            },
+            {
+                "message": "Unescaped parameter $sql_campaigns used in $wpdb->get_results($sql_campaigns)\\n$sql_campaigns assigned unsafely at line 116:\\n $sql_campaigns = \"\\n        SELECT p.post_title as name, SUM(d.amount) as value\\n        FROM {$table_donations} d\\n        LEFT JOIN {$wpdb->posts} p ON d.campaign_id = p.ID\\n        WHERE d.status = 'complete' AND d.campaign_id > 0\\n        GROUP BY d.campaign_id\\n        ORDER BY value DESC\\n        LIMIT 5\\n    \"\\n$table_donations assigned unsafely at line 60:\\n $table_donations = $wpdb->prefix . 'wpd_donations'\\n$sql assigned unsafely at line 63:\\n $sql = \"\\n        SELECT \\n            DATE(created_at) as date, \\n            SUM(amount) as total_amount,\\n            COUNT(id) as total_count\\n        FROM {$table_donations} \\n        WHERE status = 'complete' \\n        AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)\\n        GROUP BY DATE(created_at)\\n        ORDER BY date ASC\\n    \"",
+                "code": "PluginCheck.Security.DirectDB.UnescapedDBParameter",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=125",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 125,
+                "column": 29
+            },
+            {
+                "message": "Use placeholders and $wpdb->prepare(); found $sql_campaigns",
+                "code": "WordPress.DB.PreparedSQL.NotPrepared",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=125",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 125,
+                "column": 41
+            },
+            {
+                "message": "Unescaped parameter $sql_current used in $wpdb->get_var($wpdb->prepare($sql_current, $current_month_start))\\n$sql_current assigned unsafely at line 156:\\n $sql_current = \"SELECT SUM(amount) FROM {$table_donations} WHERE status = 'complete' AND created_at >= %s\"\\n$table_donations assigned unsafely at line 137:\\n $table_donations = $wpdb->prefix . 'wpd_donations'\\n$table_subscriptions assigned unsafely at line 138:\\n $table_subscriptions = $wpdb->prefix . 'wpd_subscriptions'\\n$total_collected assigned unsafely at line 141:\\n $total_collected = $wpdb->get_var(\"SELECT SUM(amount) FROM {$table_donations} WHERE status = 'complete'\")",
+                "code": "PluginCheck.Security.DirectDB.UnescapedDBParameter",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=157",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 157,
+                "column": 36
+            },
+            {
+                "message": "Use placeholders and $wpdb->prepare(); found $sql_current",
+                "code": "WordPress.DB.PreparedSQL.NotPrepared",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=157",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 157,
+                "column": 59
+            },
+            {
+                "message": "Unescaped parameter $sql_last used in $wpdb->get_var($wpdb->prepare($sql_last, $last_month_start, $last_month_end))\\n$sql_last assigned unsafely at line 159:\\n $sql_last = \"SELECT SUM(amount) FROM {$table_donations} WHERE status = 'complete' AND created_at >= %s AND created_at <= %s\"\\n$table_donations assigned unsafely at line 137:\\n $table_donations = $wpdb->prefix . 'wpd_donations'\\n$table_subscriptions assigned unsafely at line 138:\\n $table_subscriptions = $wpdb->prefix . 'wpd_subscriptions'\\n$total_collected assigned unsafely at line 141:\\n $total_collected = $wpdb->get_var(\"SELECT SUM(amount) FROM {$table_donations} WHERE status = 'complete'\")",
+                "code": "PluginCheck.Security.DirectDB.UnescapedDBParameter",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=160",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 160,
+                "column": 33
+            },
+            {
+                "message": "Use placeholders and $wpdb->prepare(); found $sql_last",
+                "code": "WordPress.DB.PreparedSQL.NotPrepared",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=160",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 160,
+                "column": 56
+            },
+            {
+                "message": "Use placeholders and $wpdb->prepare(); found $sql",
+                "code": "WordPress.DB.PreparedSQL.NotPrepared",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=267",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 267,
+                "column": 33
+            },
+            {
+                "message": "Unescaped parameter $query used in $wpdb->get_results($query)\\n$query assigned unsafely at line 269:\\n $query = \"SELECT * FROM {$table} ORDER BY created_at DESC\"\\n$table assigned unsafely at line 247:\\n $table = $wpdb->prefix . 'wpd_donations'\\n$_GET['_wpnonce'] used without escaping.",
+                "code": "PluginCheck.Security.DirectDB.UnescapedDBParameter",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=272",
+                "docs": "",
+                "severity": 10,
+                "type": "ERROR",
+                "line": 272,
+                "column": 23
+            },
+            {
+                "message": "Use placeholders and $wpdb->prepare(); found $query",
+                "code": "WordPress.DB.PreparedSQL.NotPrepared",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=272",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 272,
+                "column": 35
+            },
+            {
+                "message": "File operations should use WP_Filesystem methods instead of direct PHP filesystem calls. Found: fclose().",
+                "code": "WordPress.WP.AlternativeFunctions.file_system_operations_fclose",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=298",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 298,
+                "column": 5
+            },
+            {
+                "message": "Use placeholders and $wpdb->prepare(); found $sql_campaign",
+                "code": "WordPress.DB.PreparedSQL.NotPrepared",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=350",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 350,
+                "column": 54
+            },
+            {
+                "message": "Use placeholders and $wpdb->prepare(); found $sql_row",
+                "code": "WordPress.DB.PreparedSQL.NotPrepared",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=360",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 360,
+                "column": 50
+            },
+            {
+                "message": "Use placeholders and $wpdb->prepare(); found $sql",
+                "code": "WordPress.DB.PreparedSQL.NotPrepared",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=398",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 398,
+                "column": 33
+            },
+            {
+                "message": "Unescaped parameter $query used in $wpdb->get_results($query)\\n$query assigned unsafely at line 400:\\n $query = \"SELECT * FROM {$table} ORDER BY created_at DESC\"\\n$table assigned unsafely at line 384:\\n $table = $wpdb->prefix . 'wpd_donations'\\n$params assigned unsafely at line 387:\\n $params = array(\\n        'campaign_id' => $request->get_param('campaign_id'),\\n        'status' => $request->get_param('status'),\\n        'start_date' => $request->get_param('start_date'),\\n        'end_date' => $request->get_param('end_date'),\\n    )\\n$request used without escaping.",
+                "code": "PluginCheck.Security.DirectDB.UnescapedDBParameter",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=403",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 403,
+                "column": 23
+            },
+            {
+                "message": "Use placeholders and $wpdb->prepare(); found $query",
+                "code": "WordPress.DB.PreparedSQL.NotPrepared",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Fdonations-controller.php&line=403",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 403,
+                "column": 35
+            }
+        ],
+        "includes/api/fundraisers-controller.php": [
+            {
+                "message": "Unescaped parameter $sql used in $wpdb->get_results($wpdb->prepare($sql, $user_id))\\n$sql assigned unsafely at line 83:\\n $sql = \"SELECT * FROM {$table} WHERE user_id = %d\"\\n$table assigned unsafely at line 77:\\n $table = $wpdb->prefix . 'wpd_fundraisers'\\n$cache_key assigned unsafely at line 79:\\n $cache_key = 'wpd_user_fundraisers_' . $user_id\\n$user_id assigned unsafely at line 76:\\n $user_id = get_current_user_id()",
+                "code": "PluginCheck.Security.DirectDB.UnescapedDBParameter",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Ffundraisers-controller.php&line=84",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 84,
+                "column": 22
+            },
+            {
+                "message": "Use placeholders and $wpdb->prepare(); found $sql",
+                "code": "WordPress.DB.PreparedSQL.NotPrepared",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Ffundraisers-controller.php&line=84",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 84,
+                "column": 49
+            },
+            {
+                "message": "Unescaped parameter $sql used in $wpdb->get_results($sql)\\n$sql assigned unsafely at line 101:\\n $sql = \"SELECT * FROM {$table} ORDER BY created_at DESC LIMIT 50\"\\n$table assigned unsafely at line 95:\\n $table = $wpdb->prefix . 'wpd_fundraisers'\\n$cache_key assigned unsafely at line 97:\\n $cache_key = 'wpd_admin_fundraisers_list'\\n$cache_key assigned unsafely at line 79:\\n $cache_key = 'wpd_user_fundraisers_' . $user_id\\n$results assigned unsafely at line 102:\\n $results = $wpdb->get_results($sql)\\n$user_id assigned unsafely at line 76:\\n $user_id = get_current_user_id()",
+                "code": "PluginCheck.Security.DirectDB.UnescapedDBParameter",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Ffundraisers-controller.php&line=102",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 102,
+                "column": 22
+            },
+            {
+                "message": "Use placeholders and $wpdb->prepare(); found $sql",
+                "code": "WordPress.DB.PreparedSQL.NotPrepared",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fapi%2Ffundraisers-controller.php&line=102",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 102,
+                "column": 34
+            }
+        ],
+        "includes/services/subscription.php": [
+            {
+                "message": "Unescaped parameter $sql used in $wpdb->get_results($wpdb->prepare($sql, $user_id))\\n$sql assigned unsafely at line 57:\\n $sql = \"SELECT s.*, p.post_title as campaign_title \\n                    FROM {$table} s\\n                    JOIN {$table_posts} p ON s.campaign_id = p.ID\\n                    WHERE s.user_id = %d \\n                    ORDER BY s.created_at DESC\"\\n$table assigned unsafely at line 50:\\n $table = $wpdb->prefix . 'wpd_subscriptions'\\n$table_posts assigned unsafely at line 51:\\n $table_posts = $wpdb->prefix . 'posts'\\n$cache_key assigned unsafely at line 53:\\n $cache_key = 'wpd_user_subscriptions_' . $user_id\\n$user_id used without escaping.",
+                "code": "PluginCheck.Security.DirectDB.UnescapedDBParameter",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fservices%2Fsubscription.php&line=63",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 63,
+                "column": 37
+            },
+            {
+                "message": "Use placeholders and $wpdb->prepare(); found $sql",
+                "code": "WordPress.DB.PreparedSQL.NotPrepared",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fservices%2Fsubscription.php&line=63",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 63,
+                "column": 64
+            }
+        ],
+        "includes/admin/menu.php": [
+            {
+                "message": "Scripts must be registered/enqueued via wp_enqueue_script()",
+                "code": "WordPress.WP.EnqueuedResources.NonEnqueuedScript",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Fincludes%2Fadmin%2Fmenu.php&line=184",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 184,
+                "column": 20
+            }
+        ],
+        "frontend/templates/donor-dashboard.php": [
+            {
+                "message": "Unescaped parameter $table_subs used in $wpdb->get_results($wpdb->prepare(\\n            \"SELECT s.*, p.post_title as campaign_title \\n             FROM {$table_subs} s\\n             JOIN {$wpdb->posts} p ON s.campaign_id = p.ID\\n             WHERE s.user_id = %d \\n             ORDER BY s.created_at DESC\",\\n            $user_id\\n        ))\\n$table_subs assigned unsafely at line 125:\\n $table_subs = $wpdb->prefix . 'wpd_subscriptions'\\n$subscriptions assigned unsafely at line 126:\\n $subscriptions = $wpdb->get_results($wpdb->prepare(\\n            \"SELECT s.*, p.post_title as campaign_title \\n             FROM {$table_subs} s\\n             JOIN {$wpdb->posts} p ON s.campaign_id = p.ID\\n             WHERE s.user_id = %d \\n             ORDER BY s.created_at DESC\",\\n            $user_id\\n        ))\\n$user_id assigned unsafely at line 13:\\n $user_id = get_current_user_id()",
+                "code": "PluginCheck.Security.DirectDB.UnescapedDBParameter",
+                "link": "https://playground.wordpress.net/scope:confident-cozy-mountain/wp-admin/plugin-editor.php?plugin=donasai%2Fdonasai.php&file=donasai%2Ffrontend%2Ftemplates%2Fdonor-dashboard.php&line=126",
+                "docs": "",
+                "severity": 5,
+                "type": "ERROR",
+                "line": 126,
+                "column": 33
+            }
+        ]
+    }
+}
