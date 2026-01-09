@@ -1,4 +1,7 @@
 <?php
+if (!defined('ABSPATH')) {
+    exit;
+}
 /**
  * Single Campaign Template
  */
@@ -27,12 +30,10 @@ if (isset($wp_query->query_vars[$payment_slug])) {
         </style>
     </head>
 
-    <body <?php body_class('wpd-payment-page'); ?>>
-        <?php
-        include WPD_PLUGIN_PATH . 'frontend/templates/donation-form.php';
-        wp_footer();
-        ?>
-    </body>
+    if (file_exists(WPD_PLUGIN_PATH . 'frontend/templates/donation-form.php')) {
+    include WPD_PLUGIN_PATH . 'frontend/templates/donation-form.php';
+    }
+    return;
 
     </html>
     <?php
@@ -71,11 +72,7 @@ $fonts_map = [
 $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2?family={$fonts_map[$font_family]}&display=swap" : "";
 ?>
 
-<?php if ($font_url): ?>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="<?php echo esc_url($font_url); ?>" rel="stylesheet">
-<?php endif; ?>
+<?php // Fonts enqueued via functions ?>
 
 <div class="wpd-container <?php echo $dark_mode ? 'wpd-dark' : ''; ?>"
     style="max-width:<?php echo esc_attr($container_width); ?>; margin:0 auto; padding:20px; font-family: '<?php echo esc_attr($font_family); ?>', sans-serif; font-size: <?php echo esc_attr($font_size); ?>;">
@@ -91,101 +88,6 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
             --wpd-btn:
                 <?php echo esc_attr($button_color); ?>
             ;
-
-            /* Light Mode Defaults */
-            --wpd-bg: #ffffff;
-            --wpd-text: #1f2937;
-            --wpd-text-light: #6b7280;
-            --wpd-border: #e5e7eb;
-            --wpd-card-bg: #ffffff;
-        }
-
-        /* Dark Mode Overrides */
-        .wpd-dark {
-            --wpd-bg: #1f2937;
-            --wpd-text: #f3f4f6;
-            --wpd-text-light: #9ca3af;
-            --wpd-border: #374151;
-            --wpd-card-bg: #111827;
-            background-color: var(--wpd-bg);
-            color: var(--wpd-text);
-        }
-
-        /* Apply Variables */
-        .wpd-container {
-            color: var(--wpd-text);
-        }
-
-        .wpd-campaign-grid {
-            color: var(--wpd-text);
-        }
-
-        h1,
-        h2,
-        h3,
-        h4,
-        .wpd-amt,
-        .wpd-target-amt {
-            color: var(--wpd-text) !important;
-        }
-
-        .wpd-meta,
-        .wpd-days {
-            color: var(--wpd-text-light) !important;
-        }
-
-        .wpd-main-col,
-        .wpd-sidebar-col {
-            /* If you use cards inside columns */
-        }
-
-        /* Specific Dark Mode Fixes */
-        .wpd-dark .wpd-sidebar-inner {
-            background: var(--wpd-card-bg);
-            border-color: var(--wpd-border);
-        }
-
-        .wpd-dark input,
-        .wpd-dark select,
-        .wpd-dark textarea {
-            background-color: #374151;
-            border-color: #4b5563;
-            color: #fff;
-        }
-
-
-        /* Progress Bar Animation */
-        @keyframes wpdProgressFill {
-            from {
-                width: 0;
-            }
-
-            to {
-                width: var(--wpd-progress-width);
-            }
-        }
-
-        .wpd-progress-bar-fill {
-            transition: width 1.5s ease-out;
-            animation: wpdProgressFill 1.5s ease-out forwards;
-        }
-
-        /* Layout Modes */
-        .wpd-campaign-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-        }
-
-        .wpd-main-col {
-            flex: 1 1 500px;
-            min-width: 0;
-        }
-
-        .wpd-sidebar-col {
-            flex: 0 0 350px;
-            width: 350px;
-            max-width: 100%;
         }
 
         <?php if ($layout_mode === 'sidebar-left'): ?>
@@ -207,60 +109,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                 display: flex !important;
             }
 
-            /* When full width, hide sidebar and show sticky CTA */
         <?php endif; ?>
-
-        /* Apply Radius */
-        .wpd-featured-image,
-
-        .wpd-sidebar-inner>div {
-            border-radius: var(--wpd-radius);
-        }
-
-        .wpd-featured-image {
-            border-radius: var(--wpd-radius);
-            overflow: hidden;
-        }
-
-        /* Responsive Mobile Sticky CTA */
-        .wpd-mobile-cta {
-            display: none;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            padding: 15px 0;
-            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
-            z-index: 9999;
-            border-top: 1px solid #e5e7eb;
-        }
-
-        @media (max-width: 768px) {
-            .wpd-mobile-cta {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 15px;
-            }
-
-            .wpd-sidebar-col {
-                display: none;
-                /* Default hide on mobile, user relies on sticky CTA */
-            }
-
-            /* Override for Full Width Mode to ensure sidebar (donation card) is visible if we want? 
-               actually mobile CTA handles donation. 
-               The sidebar has "Recent Donors" too. Maybe keep logic as is (hidden on mobile).
-            */
-            .wpd-main-col {
-                flex: 0 0 100% !important;
-            }
-
-            body {
-                padding-bottom: 80px;
-            }
-        }
     </style>
 
     <!-- Main Layout Grid -->
@@ -352,7 +201,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                                 style="display:flex; gap:15px; margin-bottom:20px; border-bottom:1px solid #f3f4f6; padding-bottom:20px;">
                                 <div
                                     style="width:40px; height:40px; background:#e0e7ff; color:#4f46e5; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">
-                                    <?php echo $initial; ?>
+                                    <?php echo esc_html($initial); ?>
                                 </div>
                                 <div>
                                     <h4 style="margin:0; font-size:16px; font-weight:600; color:#111827;">
@@ -361,7 +210,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                                     <div style="font-size:12px; color:#6b7280; margin-top:2px;">
                                         Berdonasi <span style="font-weight:600; color:#059669;">Rp
                                             <?php echo number_format($donor->amount, 0, ',', '.'); ?></span> &bull;
-                                        <?php echo $time; ?>
+                                        <?php echo esc_html($time); ?>
                                     </div>
                                     <?php if (!empty($donor->note)): ?>
                                         <p
@@ -388,11 +237,11 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
 
                     <div style="margin-bottom:20px;">
                         <div style="font-size:32px; font-weight:700; color:var(--wpd-primary); line-height:1;">
-                            Rp <?php echo number_format($progress['collected'], 0, ',', '.'); ?>
+                            Rp <?php echo esc_html(number_format($progress['collected'], 0, ',', '.')); ?>
                         </div>
                         <div style="font-size:14px; color:#6b7280; margin-top:5px;">
                             terkumpul dari <span style="font-weight:500;">Rp
-                                <?php echo number_format($progress['target'], 0, ',', '.'); ?></span>
+                                <?php echo esc_html(number_format($progress['target'], 0, ',', '.')); ?></span>
                         </div>
                     </div>
 
@@ -426,7 +275,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                             </button>
                         <?php else: ?>
                             <div style="text-align:center; font-size:13px; color:#6b7280;">
-                                <a href="<?php echo wp_login_url(get_permalink()); ?>"
+                                <a href="<?php echo esc_url(wp_login_url(get_permalink())); ?>"
                                     style="color:var(--wpd-primary);">Masuk</a> untuk mendaftar Penggalang Dana
                             </div>
                         <?php endif; ?>
@@ -484,7 +333,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                                     <div style="font-size:12px; color:#6b7280; margin-bottom:5px;">Berdonasi <span
                                             style="color:var(--wpd-primary); font-weight:600;">Rp
                                             <?php echo number_format($donor->amount, 0, ',', '.'); ?></span> &bull;
-                                        <?php echo $time; ?>
+                                        <?php echo esc_html($time); ?>
                                     </div>
                                     <?php if (!empty($donor->note)): ?>
                                         <div style="font-size:13px; color:#4b5563; font-style:italic;">
@@ -539,7 +388,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
             <div>
                 <div style="font-size:12px; color:#6b7280; margin-bottom:2px;">Terkumpul</div>
                 <div style="font-size:16px; font-weight:700; color:#059669;">Rp
-                    <?php echo number_format($progress['collected'], 0, ',', '.'); ?>
+                    <?php echo esc_html(number_format($progress['collected'], 0, ',', '.')); ?>
                 </div>
             </div>
             <a href="<?php echo esc_url($donate_link_sticky); ?>"
@@ -551,55 +400,10 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
 
     <!-- Scripts -->
     <script>
-        function openWpdTab(tabName) {
-            var i;
-            var x = document.getElementsByClassName("wpd-tab-content");
-            for (i = 0; i < x.length; i++) {
-                x[i].style.display = "none";
-            }
-            var tabs = document.getElementsByClassName("wpd-tab-btn");
-            for (i = 0; i < tabs.length; i++) {
-                tabs[i].classList.remove("active");
-                tabs[i].style.borderBottomColor = "transparent";
-                tabs[i].style.color = "#6b7280";
-            }
-            document.getElementById("wpd-tab-" + tabName).style.display = "block";
-            var activeBtn = document.getElementById("tab-btn-" + tabName);
-            activeBtn.classList.add("active");
-            activeBtn.style.borderBottomColor = "#2563eb";
-            activeBtn.style.color = "#2563eb";
-        }
-
+        // Use helper function from campaign.js
         function wpdRegisterFundraiser(campaignId) {
-            var nonce = '<?php echo wp_create_nonce('wp_rest'); ?>';
-            fetch('/wp-json/wpd/v1/fundraisers', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-WP-Nonce': nonce
-                },
-                body: JSON.stringify({ campaign_id: campaignId })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.referral_link) {
-                        var modal = document.getElementById('wpd-fundraiser-modal');
-                        modal.style.display = 'flex';
-                        document.getElementById('wpd-ref-link').value = data.referral_link;
-                        var text = "Yuk bantu donasi di campaign ini: " + data.referral_link;
-                        document.getElementById('wpd-wa-share').href = "https://wa.me/?text=" + encodeURIComponent(text);
-                    } else {
-                        alert('Error: ' + (data.message || 'Something went wrong'));
-                    }
-                })
-                .catch(err => alert('Error connecting to server'));
-        }
-
-        function wpdCopyRef() {
-            var copyText = document.getElementById("wpd-ref-link");
-            copyText.select();
-            document.execCommand("copy");
-            alert("Link copied!");
+            var nonce = '<?php echo esc_js(wp_create_nonce('wp_rest')); ?>';
+            wpdRegisterFundraiserHelper(campaignId, nonce);
         }
     </script>
 

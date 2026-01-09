@@ -118,11 +118,12 @@ function wpd_enqueue_admin_assets($hook)
 	// Dev Mode (needs WPD_DEV_MODE constant)
 	if (defined('WPD_DEV_MODE') && WPD_DEV_MODE) {
 		// Vite Dev Server
-		wp_enqueue_script('wpd-vite-client', 'http://localhost:3001/@vite/client', array(), null, true);
-		wp_enqueue_script('wpd-admin-dev', 'http://localhost:3001/src/main.tsx', array('wpd-vite-client'), null, true);
+		wp_enqueue_script('wpd-vite-client', 'http://localhost:3001/@vite/client', array(), WPD_VERSION, true);
+		wp_enqueue_script('wpd-admin-dev', 'http://localhost:3001/src/main.tsx', array('wpd-vite-client'), WPD_VERSION, true);
 
 		// Need to inject React Refresh for Vite HMR
 		add_action('admin_head', function () {
+			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.EnqueuedResources.NonEnqueuedScript
 			echo '<script type="module">
 				import RefreshRuntime from "http://localhost:3001/@react-refresh"
 				RefreshRuntime.injectIntoGlobalHook(window)
@@ -152,7 +153,7 @@ function wpd_enqueue_admin_assets($hook)
 	}
 
 	// Determine Initial Path based on Page Slug
-	$current_page = isset($_GET['page']) ? $_GET['page'] : 'wpd-dashboard';
+	$current_page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : 'wpd-dashboard';
 	$initial_path = '/';
 
 	switch ($current_page) {

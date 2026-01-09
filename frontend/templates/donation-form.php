@@ -1,4 +1,7 @@
 <?php
+if (!defined('ABSPATH')) {
+    exit;
+}
 /**
  * Donation Form Template (Modern Redesign)
  */
@@ -54,11 +57,6 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php wp_head(); ?>
-    <?php if ($font_url): ?>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="<?php echo esc_url($font_url); ?>" rel="stylesheet">
-    <?php endif; ?>
     <style>
         :root {
             --wpd-radius:
@@ -142,7 +140,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
 
         <!-- Header (Mobile Sticky) -->
         <div class="wpd-header-mobile">
-            <a href="<?php echo get_permalink($campaign_id); ?>" class="wpd-back-btn">
+            <a href="<?php echo esc_url(get_permalink($campaign_id)); ?>" class="wpd-back-btn">
                 <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
@@ -231,9 +229,10 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                         <!-- Standard Donation Presets -->
                         <div class="wpd-grid-presets">
                             <?php foreach ($presets as $val): ?>
-                                <div class="wpd-preset-card" onclick="selectAmount(this, <?php echo $val; ?>)">
+                                <div class="wpd-preset-card" onclick="selectAmount(this, <?php echo esc_attr($val); ?>)">
                                     <div class="wpd-preset-emoji">💖</div>
-                                    <div class="wpd-preset-val">Rp <?php echo number_format($val / 1000, 0); ?>rb</div>
+                                    <div class="wpd-preset-val">Rp <?php echo esc_html(number_format($val / 1000, 0)); ?>rb
+                                    </div>
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -242,10 +241,10 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                     <div class="wpd-input-money-wrapper">
                         <span class="wpd-currency">Rp</span>
                         <input type="number" name="amount" id="amount" class="wpd-input-money" placeholder="0"
-                            min="<?php echo $min_amount; ?>" required>
+                            min="<?php echo esc_attr($min_amount); ?>" required>
                     </div>
                     <div class="wpd-helper-text">Minimal donasi sebesar Rp
-                        <?php echo number_format($min_amount, 0, ',', '.'); ?>
+                        <?php echo esc_html(number_format($min_amount, 0, ',', '.')); ?>
                     </div>
                 </div>
 
@@ -256,7 +255,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                     <div class="wpd-user-option">
                         <?php if (is_user_logged_in()): ?>
                             <div class="wpd-user-profile">
-                                <img src="<?php echo get_avatar_url($current_user->ID); ?>" alt="">
+                                <img src="<?php echo esc_url(get_avatar_url($current_user->ID)); ?>" alt="">
                                 <div>
                                     <div class="name"><?php echo esc_html($default_name); ?></div>
                                     <div class="email"><?php echo esc_html($default_email); ?></div>
@@ -264,7 +263,9 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                             </div>
                         <?php else: ?>
                             <div class="wpd-login-prompt">
-                                Sudah memiliki akun? <a href="<?php echo wp_login_url(get_permalink()); ?>">Masuk</a> untuk
+                                Sudah memiliki akun? <a
+                                    href="<?php echo esc_url(wp_login_url(get_permalink())); ?>">Masuk</a>
+                                untuk
                                 kemudahan berdonasi.
                             </div>
                         <?php endif; ?>
@@ -1029,47 +1030,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
     </style>
 
     <script>
-        function showToast(message) {
-            let toast = document.getElementById('wpd-toast');
-            if (!toast) return;
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 3000);
-        }
-        function selectAmount(card, amount) {
-            document.getElementById('amount').value = amount;
-
-            // Clear active classes
-            document.querySelectorAll('.wpd-preset-card').forEach(c => c.classList.remove('active'));
-            card.classList.add('active');
-        }
-
-        // Qurban & Zakat js stubs for interaction
-        function toggleZakatType(val) {
-            let output = document.getElementById('zakat_calc_input');
-            if (val === 'maal') output.placeholder = 'Total Harta (Rp)';
-            else output.placeholder = 'Total Penghasilan (Rp)';
-        }
-        function calculateZakat() {
-            let val = document.getElementById('zakat_calc_input').value;
-            document.getElementById('amount').value = Math.round(val * 0.025);
-        }
-        function selectQurbanPackage(price) {
-            document.querySelector('#qurban_qty_wrapper').style.display = 'block';
-            updateQurbanTotal();
-        }
-        function changeQty(delta) {
-            let input = document.getElementById('qurban_qty');
-            let val = parseInt(input.value) + delta;
-            if (val < 1) val = 1;
-            input.value = val;
-            updateQurbanTotal();
-        }
-        function updateQurbanTotal() {
-            let qty = document.getElementById('qurban_qty').value;
-            let price = document.querySelector('input[name="qurban_package"]:checked').value;
-            document.getElementById('amount').value = qty * price;
-        }
+        // JS functions moved to payment.js
 
         // --- MIDTRANS SNAP INTREGRATION ---
         <?php
@@ -1083,7 +1044,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
             ?>
             // Load Snap JS
             const script = document.createElement('script');
-            script.src = "<?php echo $snap_url; ?>";
+            script.src = "<?php echo esc_url($snap_url); ?>";
             script.setAttribute('data-client-key', "<?php echo esc_js($client_key); ?>");
             document.body.appendChild(script);
 

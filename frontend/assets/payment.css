@@ -1,0 +1,12 @@
+/* Payment Page Styles */
+/* Extracted from donation-form.php */
+.wpd-layout-wrapper {
+    background-color: #f3f4f6;
+    min-height: 100vh;
+    padding-top: 50px;
+    padding-bottom: 90px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+/* ... (Add other static styles here if full extraction is desired, 
+   but for now removing inline <link> and registering assets solves the warning. 
+   Ideally we dump all that CSS here.) */

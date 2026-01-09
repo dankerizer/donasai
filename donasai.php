@@ -1,13 +1,13 @@
 <?php
 /**
- * Plugin Name:       Donasai
+ * Plugin Name:       Donasai - Platform Donasi & Penggalangan Dana
  * Plugin URI:        https://donasai.com
- * Description:       Platform donasi dan penggalangan dana WordPress lengkap untuk yayasan, masjid, dan komunitas.
+ * Description:       Complete WordPress donation and fundraising platform for foundations, mosques, and communities.
  * Version:           1.0.1
  * Author:            Hadie Danker
- * Author URI:        https://donasai.com
+ * Author URI:        http://profiles.wordpress.org/hadie-danker
  * Requires at least: 6.4
- * Tested up to:      6.6
+ * Tested up to:      6.9
  * Requires PHP:      7.4
  * License:           GPL v2 or later
  * Text Domain:       donasai

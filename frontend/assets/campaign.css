@@ -1,0 +1,135 @@
+/* Campaign Page Styles */
+
+/* Light Mode Defaults */
+:root {
+    --wpd-bg: #ffffff;
+    --wpd-text: #1f2937;
+    --wpd-text-light: #6b7280;
+    --wpd-border: #e5e7eb;
+    --wpd-card-bg: #ffffff;
+}
+
+/* Dark Mode Overrides */
+.wpd-dark {
+    --wpd-bg: #1f2937;
+    --wpd-text: #f3f4f6;
+    --wpd-text-light: #9ca3af;
+    --wpd-border: #374151;
+    --wpd-card-bg: #111827;
+    background-color: var(--wpd-bg);
+    color: var(--wpd-text);
+}
+
+/* Apply Variables */
+.wpd-container {
+    color: var(--wpd-text);
+}
+
+.wpd-campaign-grid {
+    color: var(--wpd-text);
+}
+
+h1,h2,h3,h4,
+.wpd-amt,
+.wpd-target-amt {
+    color: var(--wpd-text) !important;
+}
+
+.wpd-meta,
+.wpd-days {
+    color: var(--wpd-text-light) !important;
+}
+
+/* Specific Dark Mode Fixes */
+.wpd-dark .wpd-sidebar-inner {
+    background: var(--wpd-card-bg);
+    border-color: var(--wpd-border);
+}
+
+.wpd-dark input,
+.wpd-dark select,
+.wpd-dark textarea {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #fff;
+}
+
+
+/* Progress Bar Animation */
+@keyframes wpdProgressFill {
+    from {
+        width: 0;
+    }
+    to {
+        width: var(--wpd-progress-width);
+    }
+}
+
+.wpd-progress-bar-fill {
+    transition: width 1.5s ease-out;
+    animation: wpdProgressFill 1.5s ease-out forwards;
+}
+
+/* Layout Modes */
+.wpd-campaign-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.wpd-main-col {
+    flex: 1 1 500px;
+    min-width: 0;
+}
+
+.wpd-sidebar-col {
+    flex: 0 0 350px;
+    width: 350px;
+    max-width: 100%;
+}
+
+/* Apply Radius */
+.wpd-featured-image,
+.wpd-sidebar-inner>div {
+    border-radius: var(--wpd-radius);
+}
+
+.wpd-featured-image {
+    border-radius: var(--wpd-radius);
+    overflow: hidden;
+}
+
+/* Responsive Mobile Sticky CTA */
+.wpd-mobile-cta {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    padding: 15px 0;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    border-top: 1px solid #e5e7eb;
+}
+
+@media (max-width: 768px) {
+    .wpd-mobile-cta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .wpd-sidebar-col {
+        display: none;
+    }
+
+    .wpd-main-col {
+        flex: 0 0 100% !important;
+    }
+
+    body {
+        padding-bottom: 80px;
+    }
+}

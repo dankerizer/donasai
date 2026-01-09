@@ -1,0 +1,27 @@
+# Source files
+.git
+.gitignore
+.editorconfig
+.eslintrc.json
+tsconfig.json
+package.json
+package-lock.json
+node_modules
+webpack.config.js
+gulpfile.js
+README.md
+GEMINI.md
+
+# Development / Docs
+docs
+tests
+phpunit.xml.dist
+phpcs.xml.dist
+
+# Build artifacts (if not distributed)
+admin-app
+src
+
+# System
+.DS_Store
+Thumbs.db
