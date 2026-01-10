@@ -26,7 +26,7 @@ export function ActivationLock() {
 					{proSettings.connectUrl ? (
 						<a
 							href={proSettings.connectUrl}
-							className="block w-full py-3.5 px-6 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 active:scale-95"
+							className="block w-full py-3.5 px-6 bg-blue-600 hover:bg-blue-700 text-white! font-bold rounded-xl transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 active:scale-95"
 						>
 							Hubungkan & Aktivasi
 						</a>
