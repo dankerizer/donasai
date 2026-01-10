@@ -61,7 +61,18 @@ require_once WPD_PLUGIN_PATH . 'includes/api/webhook-controller.php';
 add_action('init', 'wpd_register_cpt');
 
 /**
- * Check if Donasai Pro is Active
+ * Check if Donasai Pro is Installed (Active Plugin)
+ */
+function wpd_is_pro_installed()
+{
+    if (!function_exists('is_plugin_active')) {
+        include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+    }
+    return is_plugin_active('donasai-pro/donasai-pro.php');
+}
+
+/**
+ * Check if Donasai Pro is Active and Licensed
  */
 function wpd_is_pro_active()
 {

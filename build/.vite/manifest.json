@@ -26,7 +26,7 @@
     "name": "vendor"
   },
   "src/main.tsx": {
-    "file": "assets/main-BWsZiGZu.js",
+    "file": "assets/main-CpFwTho1.js",
     "name": "main",
     "src": "src/main.tsx",
     "isEntry": true,
@@ -37,7 +37,7 @@
       "_charts-DR76rATM.js"
     ],
     "css": [
-      "assets/main-DFvh4_Vn.css"
+      "assets/main-Cp_N0ND9.css"
     ]
   }
 }

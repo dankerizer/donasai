@@ -1,37 +1,51 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import clsx from "clsx";
 import {
-  CheckCircle,
-  Heart,
-  LayoutDashboard,
-  Settings as SettingsIcon,
-  Users,
+	CheckCircle,
+	Heart,
+	LayoutDashboard,
+	Settings as SettingsIcon,
+	Users,
 } from "lucide-react";
 import { useEffect } from "react";
 import {
-  HashRouter,
-  Link,
-  Route,
-  Routes,
-  useLocation,
-  useNavigate,
+	HashRouter,
+	Link,
+	Route,
+	Routes,
+	useLocation,
+	useNavigate,
 } from "react-router-dom";
 import { Toaster } from "sonner";
 import LogoIcon from "./assets/logo";
+import { ActivationLock } from "./components/ActivationLock";
 import Confirmations from "./pages/Confirmations";
 import Dashboard from "./pages/Dashboard";
 import DonationsPage from "./pages/DonationsPage";
 import FundraisersPage from "./pages/FundraisersPage";
-import SettingsPage from "./pages/Settings";
+import SettingsPage from "./pages/settings";
 
-const queryClient = new QueryClient();
+// ... imports
 
 function App() {
+	const isPro = (window as any).wpdSettings?.isPro;
+	const proSettings = (window as any).wpdProSettings || {};
+	const isLicenseActive = proSettings.licenseStatus === "active";
+
+	// Show Lock if Pro is installed but License is NOT active
+	const showLock = isPro && !isLicenseActive;
+
 	return (
 		<QueryClientProvider client={queryClient}>
 			<HashRouter>
-				<AppLayout />
+				<div className="relative">
+					{showLock && <ActivationLock />}
+					<AppLayout />
+				</div>
 				<ReactQueryDevtools initialIsOpen={false} />
 			</HashRouter>
 			<Toaster position="top-right" richColors closeButton />

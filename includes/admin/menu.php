@@ -176,7 +176,7 @@ function wpd_enqueue_admin_assets($hook)
 		'root' => esc_url_raw(rest_url()),
 		'nonce' => wp_create_nonce('wp_rest'),
 		'initialPath' => $initial_path,
-		'isPro' => wpd_is_pro_active(),
+		'isPro' => wpd_is_pro_installed(),
 	));
 	// Add type="module" to dev and production scripts
 	add_filter('script_loader_tag', function ($tag, $handle, $src) {
