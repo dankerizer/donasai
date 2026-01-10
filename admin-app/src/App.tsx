@@ -34,7 +34,8 @@ import SettingsPage from "./pages/settings";
 function App() {
 	const isPro = (window as any).wpdSettings?.isPro;
 	const proSettings = (window as any).wpdProSettings || {};
-	const isLicenseActive = proSettings.licenseStatus === "active";
+	const isLicenseActive =
+		proSettings.licenseStatus === "active" || proSettings.licenseStatus === "valid";
 
 	// Show Lock if Pro is installed but License is NOT active
 	const showLock = isPro && !isLicenseActive;

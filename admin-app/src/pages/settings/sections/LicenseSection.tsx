@@ -7,7 +7,6 @@ export default function LicenseSection() {
 		licenseStatus,
 		licenseKey,
 		proSettings,
-		setLicenseStatus,
 		isProInstalled,
 	} = useSettings();
 

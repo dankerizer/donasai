@@ -28,7 +28,6 @@ export default function SettingsLayout() {
 		proSettings,
 		isLoading,
 		saveSettings,
-		showProModal,
 		setShowProModal,
 	} = useSettings();
 
