@@ -24,6 +24,12 @@ add_action('rest_api_init', function () {
 			return current_user_can('manage_options');
 		},
 	));
+	// GET /campaigns/{id}/donors (New Endpoint)
+	register_rest_route('wpd/v1', '/campaigns/(?P<id>\d+)/donors', array(
+		'methods' => 'GET',
+		'callback' => 'wpd_api_get_campaign_donors',
+		'permission_callback' => '__return_true', // Public endpoint
+	));
 });
 
 function wpd_api_get_campaigns_list()
@@ -146,5 +152,61 @@ function wpd_api_create_donation($request)
 		'success' => true,
 		'donation_id' => $donation_id,
 		'message' => 'Donation created (Manual)',
+	));
+}
+
+function wpd_api_get_campaign_donors($request)
+{
+	global $wpdb;
+	$campaign_id = isset($request['id']) ? intval($request['id']) : 0;
+
+	// Pagination params
+	$page = isset($request['page']) ? intval($request['page']) : 1;
+	$per_page = isset($request['per_page']) ? intval($request['per_page']) : 10;
+	$offset = ($page - 1) * $per_page;
+
+	// Get Donors
+	$table = $wpdb->prefix . 'wpd_donations';
+	$results = $wpdb->get_results($wpdb->prepare(
+		"SELECT * FROM {$table} WHERE campaign_id = %d AND status = 'complete' ORDER BY created_at DESC LIMIT %d OFFSET %d",
+		$campaign_id,
+		$per_page,
+		$offset
+	));
+
+	// Get Total for this campaign
+	$total = (int) $wpdb->get_var($wpdb->prepare(
+		"SELECT COUNT(id) FROM {$table} WHERE campaign_id = %d AND status = 'complete'",
+		$campaign_id
+	));
+	$total_pages = ceil($total / $per_page);
+
+	// Format Response
+	$data = array();
+	foreach ($results as $donor) {
+		$name = $donor->is_anonymous ? 'Hamba Allah' : $donor->name;
+		$time = human_time_diff(strtotime($donor->created_at), current_time('timestamp')) . ' yang lalu';
+		$initial = strtoupper(substr($name, 0, 1));
+
+		$data[] = array(
+			'id' => $donor->id,
+			'name' => $name,
+			'amount' => (float) $donor->amount,
+			'amount_fmt' => number_format($donor->amount, 0, ',', '.'),
+			'time_ago' => $time,
+			'note' => $donor->note,
+			'initial' => $initial,
+			'date' => $donor->created_at
+		);
+	}
+
+	return rest_ensure_response(array(
+		'data' => $data,
+		'pagination' => array(
+			'total' => $total,
+			'total_pages' => $total_pages,
+			'current_page' => $page,
+			'per_page' => $per_page
+		)
 	));
 }

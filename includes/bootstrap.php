@@ -68,5 +68,12 @@ function wpd_is_pro_active()
     if (!function_exists('is_plugin_active')) {
         include_once(ABSPATH . 'wp-admin/includes/plugin.php');
     }
-    return is_plugin_active('donasai-pro/donasai-pro.php');
+    // Check if plugin active
+    $is_active = is_plugin_active('donasai-pro/donasai-pro.php');
+
+    // Check if license is valid
+    $license_status = get_option('wpd_pro_license_status');
+    $is_license_valid = ($license_status === 'valid' || $license_status === 'active');
+
+    return $is_active && $is_license_valid;
 }

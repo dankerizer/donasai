@@ -182,6 +182,20 @@ function wpd_get_recent_donors($campaign_id, $limit = 10)
 }
 
 /**
+ * Get Total Donor Count
+ */
+function wpd_get_donor_count($campaign_id)
+{
+    global $wpdb;
+    $table = $wpdb->prefix . 'wpd_donations';
+
+    return (int) $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(id) FROM {$table} WHERE campaign_id = %d AND status = 'complete'",
+        $campaign_id
+    ));
+}
+
+/**
  * Check if a gateway is active
  */
 function wpd_is_gateway_active($gateway_id)

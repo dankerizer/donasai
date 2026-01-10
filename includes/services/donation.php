@@ -124,20 +124,9 @@ function wpd_handle_donation_submission()
         }
     }
 
-    // Check Subscription
-    $subscription_id = 0;
-    if (isset($_POST['is_recurring']) && $_POST['is_recurring'] == 1 && $user_id > 0) {
-        $sub_service = new WPD_Subscription_Service();
-        $subscription_id = $sub_service->create_subscription(
-            $user_id,
-            $campaign_id,
-            $amount,
-            isset($_POST['recurring_interval']) ? sanitize_text_field(wp_unslash($_POST['recurring_interval'])) : 'month'
-        );
-    }
-
-    // Process Payment
-    $donation_data = array(
+    // Apply Filter for Pro (Subscriptions, etc)
+    // Allows Pro to create subscription and return subscription_id in the data
+    $donation_data = apply_filters('wpd_donation_data_before_insert', array(
         'campaign_id' => $campaign_id,
         'user_id' => $user_id,
         'amount' => $amount,
@@ -147,9 +136,9 @@ function wpd_handle_donation_submission()
         'note' => $note,
         'is_anonymous' => $is_anon,
         'fundraiser_id' => $fundraiser_id,
-        'subscription_id' => $subscription_id,
+        'subscription_id' => 0, // Default
         'metadata' => json_encode($metadata),
-    );
+    ), $_POST);
 
     $result = $gateway->process_payment($donation_data);
 

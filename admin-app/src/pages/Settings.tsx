@@ -64,6 +64,8 @@ export default function Settings() {
 		font_size: "16px",
 		dark_mode: false,
 		donation_layout: "default",
+		sidebar_count: 5,
+		donor_per_page: 10,
 		// Bank
 		bank_name: "",
 		account_number: "",
@@ -152,8 +154,36 @@ export default function Settings() {
 					data.appearance?.dark_mode === true ||
 					data.appearance?.dark_mode === "1",
 				donation_layout: data.appearance?.donation_layout || "default",
+				sidebar_count: data.appearance?.sidebar_count || 5,
+				donor_per_page: data.appearance?.donor_per_page || 10,
 				// Bank
 				bank_name: data.bank?.bank_name || "",
+				// account_number: data.bank?.account_number || "",
+				// ... (rest of the fetch logic)
+
+				// Update Settings Mutation Payload
+				appearance: {
+					brand_color: data.brand_color,
+					button_color: data.button_color,
+					container_width: data.container_width,
+					border_radius: data.border_radius,
+					campaign_layout: data.campaign_layout,
+					font_family: data.font_family,
+					font_size: data.font_size,
+					dark_mode: data.dark_mode,
+					donation_layout: data.donation_layout,
+					sidebar_count: data.sidebar_count,
+					donor_per_page: data.donor_per_page,
+				},
+				// ... (rest of mutation payload)
+
+				// In the Appearance Tab Rendering (approx line 1950 in original file, need to find the Appearance tab section)
+				// I will use a larger replacement chunk to locate it correctly or use multi_replace for safer editing.
+				// Since the file is huge and I don't have the full content in memory for line numbers > 800, I should probably read the file again or use find_by_name to locate Appearance tab.
+				// I'll stick to updating the state first, observing the file structure from the previous view_file which showed up to line 800.
+				// Wait, the previous view_file only showed up to line 800. The component logic is likely further down.
+				// I should read the rest of the file first.
+
 				account_number: data.bank?.account_number || "",
 
 				account_name: data.bank?.account_name || "",
@@ -1542,6 +1572,54 @@ export default function Settings() {
 													</div>
 												</div>
 											</div>
+										</div>
+									</div>
+
+									{/* Donor Limits */}
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-gray-200">
+										<div>
+											<Label htmlFor="sidebar_count">
+												Jumlah Donatur di Sidebar
+											</Label>
+											<Input
+												type="number"
+												id="sidebar_count"
+												value={formData.sidebar_count}
+												onChange={(e) =>
+													setFormData({
+														...formData,
+														sidebar_count: parseInt(e.target.value) || 5,
+													})
+												}
+												min={1}
+												max={20}
+												className="mt-1"
+											/>
+											<p className="text-xs text-gray-500 mt-2">
+												Jumlah donatur terakhir yang ditampilkan di sidebar.
+											</p>
+										</div>
+										<div>
+											<Label htmlFor="donor_per_page">
+												Jumlah Donatur per Halaman
+											</Label>
+											<Input
+												type="number"
+												id="donor_per_page"
+												value={formData.donor_per_page}
+												onChange={(e) =>
+													setFormData({
+														...formData,
+														donor_per_page: parseInt(e.target.value) || 10,
+													})
+												}
+												min={1}
+												max={50}
+												className="mt-1"
+											/>
+											<p className="text-xs text-gray-500 mt-2">
+												Jumlah donatur yang dimuat per klik "Muat Lebih Banyak".
+											</p>
 										</div>
 									</div>
 								</div>

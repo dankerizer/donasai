@@ -398,7 +398,7 @@ function wpd_api_get_donations($request)
         $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wpd_donations ORDER BY created_at DESC LIMIT %d", 10000);
     }
 
-    $results = $wpdb->get_results($query);
+    $results = $wpdb->get_results($wpdb->prepare($query));
 
     // Format data for frontend
     $data = array_map(function ($row) {

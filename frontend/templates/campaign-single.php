@@ -46,7 +46,11 @@ get_header();
 $campaign_id = get_the_ID();
 $is_verified = get_post_meta($campaign_id, '_wpd_is_verified', true);
 $progress = function_exists('wpd_get_campaign_progress') ? wpd_get_campaign_progress($campaign_id) : array('collected' => 0, 'target' => 0, 'percentage' => 0);
-$donors = function_exists('wpd_get_recent_donors') ? wpd_get_recent_donors($campaign_id, 10) : array();
+$progress = function_exists('wpd_get_campaign_progress') ? wpd_get_campaign_progress($campaign_id) : array('collected' => 0, 'target' => 0, 'percentage' => 0);
+$settings_app = get_option('wpd_settings_appearance', []);
+$sidebar_limit_init = isset($settings_app['sidebar_count']) ? intval($settings_app['sidebar_count']) : 5;
+$donors = function_exists('wpd_get_recent_donors') ? wpd_get_recent_donors($campaign_id, $sidebar_limit_init) : array();
+$total_donors = function_exists('wpd_get_donor_count') ? wpd_get_donor_count($campaign_id) : count($donors);
 
 // Layout Settings
 $settings_app = get_option('wpd_settings_appearance', []);
@@ -55,6 +59,8 @@ $border_radius = $settings_app['border_radius'] ?? '12px';
 $layout_mode = $settings_app['campaign_layout'] ?? 'sidebar-right';
 $primary_color = $settings_app['brand_color'] ?? '#059669';
 $button_color = $settings_app['button_color'] ?? '#ec4899';
+$sidebar_limit = isset($settings_app['sidebar_count']) ? intval($settings_app['sidebar_count']) : 5;
+$per_page_limit = isset($settings_app['donor_per_page']) ? intval($settings_app['donor_per_page']) : 10;
 
 // Typography & Dark Mode
 $font_family = $settings_app['font_family'] ?? 'Inter';
@@ -161,12 +167,14 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                 <button onclick="openWpdTab('desc')" id="tab-btn-desc" class="wpd-tab-btn active"
                     style="background:none; border:none; border-bottom:2px solid #2563eb; color:#2563eb; font-weight:600; padding:10px 20px; font-size:16px; cursor:pointer;">Detail
                     Program</button>
-                <button onclick="openWpdTab('updates')" id="tab-btn-updates" class="wpd-tab-btn"
-                    style="background:none; border:none; border-bottom:2px solid transparent; color:#6b7280; font-weight:500; padding:10px 20px; font-size:16px; cursor:pointer;">Kabar
-                    Terbaru (0)</button>
+                <?php if (function_exists('wpd_is_pro_active') && wpd_is_pro_active()): ?>
+                    <button onclick="openWpdTab('updates')" id="tab-btn-updates" class="wpd-tab-btn"
+                        style="background:none; border:none; border-bottom:2px solid transparent; color:#6b7280; font-weight:500; padding:10px 20px; font-size:16px; cursor:pointer;">Kabar
+                        Terbaru (0)</button>
+                <?php endif; ?>
                 <button onclick="openWpdTab('donors')" id="tab-btn-donors" class="wpd-tab-btn"
                     style="background:none; border:none; border-bottom:2px solid transparent; color:#6b7280; font-weight:500; padding:10px 20px; font-size:16px; cursor:pointer;">Donatur
-                    (<?php echo count($donors); ?>)</button>
+                    (<?php echo esc_html($total_donors); ?>)</button>
             </div>
 
             <!-- Tab Content: Description -->
@@ -175,15 +183,17 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
             </div>
 
             <!-- Tab Content: Updates -->
-            <div id="wpd-tab-updates" class="wpd-tab-content"
-                style="display:none; color:#6b7280; padding:40px 0; text-align:center;">
-                <svg style="width:48px; height:48px; margin:0 auto 10px; color:#d1d5db;" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                </svg>
-                <p>Belum ada kabar terbaru.</p>
-            </div>
+            <?php if (function_exists('wpd_is_pro_active') && wpd_is_pro_active()): ?>
+                <div id="wpd-tab-updates" class="wpd-tab-content"
+                    style="display:none; color:#6b7280; padding:40px 0; text-align:center;">
+                    <svg style="width:48px; height:48px; margin:0 auto 10px; color:#d1d5db;" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                    </svg>
+                    <p>Belum ada kabar terbaru.</p>
+                </div>
+            <?php endif; ?>
 
             <!-- Tab Content: Donors -->
             <div id="wpd-tab-donors" class="wpd-tab-content" style="display:none;">
@@ -191,7 +201,8 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                     <p style="color:#6b7280; padding:30px 0; text-align:center;">Belum ada donatur. Jadilah donatur pertama!
                     </p>
                 <?php else: ?>
-                    <div class="wpd-donor-list">
+                    <div id="wpd-all-donors-list" class="wpd-donor-list">
+                        <!-- Donors will be loaded here via AJAX or initial loop -->
                         <?php foreach ($donors as $donor):
                             $name = $donor->is_anonymous ? 'Hamba Allah' : $donor->name;
                             $time = human_time_diff(strtotime($donor->created_at), current_time('timestamp')) . ' yang lalu';
@@ -222,6 +233,17 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                             </div>
                         <?php endforeach; ?>
                     </div>
+
+                    <?php if ($total_donors > count($donors)): ?>
+                        <div style="text-align:center; margin-top:20px;">
+                            <button id="wpd-load-more-donors" onclick="wpdLoadMoreDonors()" data-page="1"
+                                data-campaign="<?php echo $campaign_id; ?>"
+                                style="padding:8px 20px; background:#f3f4f6; color:#4b5563; border:none; border-radius:6px; cursor:pointer; font-weight:500;">
+                                Muat Lebih Banyak
+                            </button>
+                            <span id="wpd-donors-loading" style="display:none; color:#6b7280; font-size:14px;">Memuat...</span>
+                        </div>
+                    <?php endif; ?>
                 <?php endif; ?>
             </div>
 
@@ -315,7 +337,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                 <div style="background:white; border-radius:12px; border:1px solid #e5e7eb; overflow:hidden;">
                     <div
                         style="padding:15px 20px; background:#f9fafb; border-bottom:1px solid #e5e7eb; font-weight:700; color:#374151;">
-                        Doa dan Dukungan (<?php echo count($donors); ?>)
+                        Doa dan Dukungan (<?php echo esc_html($total_donors); ?>)
                     </div>
                     <div style="max-height:400px; overflow-y:auto;">
                         <?php if (empty($donors)): ?>
@@ -404,6 +426,64 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
         function wpdRegisterFundraiser(campaignId) {
             var nonce = '<?php echo esc_js(wp_create_nonce('wp_rest')); ?>';
             wpdRegisterFundraiserHelper(campaignId, nonce);
+        }
+
+        function wpdLoadMoreDonors() {
+            var btn = document.getElementById('wpd-load-more-donors');
+            var loading = document.getElementById('wpd-donors-loading');
+            var campaignId = btn.getAttribute('data-campaign');
+            var page = parseInt(btn.getAttribute('data-page')) + 1;
+
+            btn.style.display = 'none';
+            loading.style.display = 'inline-block';
+
+            // API Call
+            fetch('<?php echo get_rest_url(null, 'wpd/v1/campaigns/'); ?>' + campaignId + '/donors?page=' + page + '&per_page=<?php echo esc_js($per_page_limit); ?>')
+                .then(response => response.json())
+                .then(data => {
+                    loading.style.display = 'none';
+                    if (data.data && data.data.length > 0) {
+                        var list = document.getElementById('wpd-all-donors-list');
+                        data.data.forEach(donor => {
+                            var html = `
+                             <div style="display:flex; gap:15px; margin-bottom:20px; border-bottom:1px solid #f3f4f6; padding-bottom:20px;">
+                                <div style="width:40px; height:40px; background:#e0e7ff; color:#4f46e5; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">
+                                    ${donor.initial}
+                                </div>
+                                <div>
+                                    <h4 style="margin:0; font-size:16px; font-weight:600; color:#111827;">
+                                        ${donor.name}
+                                    </h4>
+                                    <div style="font-size:12px; color:#6b7280; margin-top:2px;">
+                                        Berdonasi <span style="font-weight:600; color:#059669;">Rp ${donor.amount_fmt}</span> &bull; ${donor.time_ago}
+                                    </div>
+                                    ${donor.note ? `<p style="margin:8px 0 0; font-size:14px; color:#4b5563; background:#f9fafb; padding:10px; border-radius:8px;">"${donor.note}"</p>` : ''}
+                                </div>
+                            </div>
+                            `;
+                            list.insertAdjacentHTML('beforeend', html);
+                        });
+
+                        // Update Page
+                        btn.setAttribute('data-page', page);
+
+                        // Check if more
+                        if (page < data.pagination.total_pages) {
+                            btn.style.display = 'inline-block';
+                        } else {
+                            // Hide if no more pages
+                            btn.style.display = 'none';
+                        }
+                    } else {
+                        btn.style.display = 'none';
+                    }
+                })
+                .catch(err => {
+                    console.error('Error loading donors', err);
+                    loading.style.display = 'none';
+                    btn.style.display = 'inline-block';
+                    alert('Gagal memuat donatur.');
+                });
         }
     </script>
 

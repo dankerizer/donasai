@@ -55,10 +55,11 @@ class WPD_Gateway_Manual implements WPD_Gateway
             'note' => sanitize_textarea_field(wp_unslash($donation_data['note'])),
             'is_anonymous' => intval($donation_data['is_anonymous']),
             'created_at' => current_time('mysql'),
+            'subscription_id' => isset($donation_data['subscription_id']) ? intval($donation_data['subscription_id']) : 0,
             'metadata' => json_encode($metadata)
         );
 
-        $format = array('%d', '%d', '%s', '%s', '%s', '%f', '%s', '%s', '%s', '%s', '%d', '%s', '%s');
+        $format = array('%d', '%d', '%s', '%s', '%s', '%f', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%s');
 
         $inserted = $wpdb->insert(
             $table_donations,
