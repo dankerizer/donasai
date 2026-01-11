@@ -1,7 +1,7 @@
-import { Input } from "/src/components/ui/Input";
-import { Label } from "/src/components/ui/Label";
-import { Textarea } from "/src/components/ui/Textarea";
-import type { ReceiptTemplate } from "/src/pages/receipt-template/hooks/use-receipt-template";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+import { Textarea } from "@/components/ui/Textarea";
+import type { ReceiptTemplate } from "@/pages/receipt-template/hooks/use-receipt-template";
 import { LogoUploader } from "./LogoUploader";
 
 // Unified interface covers both needs

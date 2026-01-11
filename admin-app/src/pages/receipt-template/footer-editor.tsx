@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import { Checkbox } from "/src/components/ui/Checkbox";
-import { Label } from "/src/components/ui/Label";
-import { Textarea } from "/src/components/ui/Textarea";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { Label } from "@/components/ui/Label";
+import { Textarea } from "@/components/ui/Textarea";
 import type { ReceiptTemplate } from "./hooks/use-receipt-template";
 
 interface FooterEditorProps {

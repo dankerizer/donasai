@@ -1,10 +1,10 @@
 import {
   type LogoData,
   LogoUploader,
-} from "/src/components/shared/LogoUploader";
-import { Checkbox } from "/src/components/ui/Checkbox";
-import { Input } from "/src/components/ui/Input";
-import { Label } from "/src/components/ui/Label";
+} from "@/components/shared/LogoUploader";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
 
 interface SignatureValue {
   enabled: boolean;

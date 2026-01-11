@@ -37,6 +37,30 @@ const TEMPLATES = [
     description: "Tegas, kontras tinggi, tipografi besar.",
     color: "bg-black",
   },
+  {
+    id: "elegant",
+    name: "Elegant",
+    description: "Mewah, font serif klasik, aksen emas.",
+    color: "bg-amber-600",
+  },
+  {
+    id: "simple",
+    name: "Simple",
+    description: "Ala printer struk, font monospace.",
+    color: "bg-white border-2 border-dashed border-gray-400",
+  },
+  {
+    id: "creative",
+    name: "Creative",
+    description: "Ramah, sudut bulat, warna cerah.",
+    color: "bg-violet-500",
+  },
+  {
+    id: "official",
+    name: "Official",
+    description: "Resmi, bingkai tegas, layout sertifikat.",
+    color: "bg-slate-700",
+  },
 ];
 
 export function TemplateSelector({ value, onChange }: TemplateSelectorProps) {

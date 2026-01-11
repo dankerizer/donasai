@@ -10,20 +10,20 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 // Import shared components
-import { LogoUploader } from "/src/components/shared/LogoUploader";
-import { OrganizationForm } from "/src/components/shared/OrganizationForm";
-import { Checkbox } from "/src/components/ui/Checkbox";
-import { Input } from "/src/components/ui/Input";
-import { Label } from "/src/components/ui/Label";
-import { Radio } from "/src/components/ui/Radio";
+import { LogoUploader } from "@/components/shared/LogoUploader";
+import { OrganizationForm } from "@/components/shared/OrganizationForm";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+import { Radio } from "@/components/ui/Radio";
 import {
   TabsContent,
   TabsList,
   TabsRoot,
   TabsTrigger,
-} from "/src/components/ui/Tabs";
-import { Textarea } from "/src/components/ui/Textarea";
-import { useSettingsFetch } from "/src/pages/settings/hooks/use-settings-data";
+} from "@/components/ui/Tabs";
+import { Textarea } from "@/components/ui/Textarea";
+import { useSettingsFetch } from "@/pages/settings/hooks/use-settings-data";
 import { FooterEditor } from "./footer-editor";
 import type { ReceiptTemplate } from "./hooks/use-receipt-template";
 import { SignatureUploader } from "./signature-uploader";

@@ -1,12 +1,12 @@
 import { Bell, CreditCard, Link as LinkIcon, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 // Use shared component to avoid redundancy
-import { OrganizationForm } from "/src/components/shared/OrganizationForm";
-import { Input } from "/src/components/ui/Input";
-import { Label } from "/src/components/ui/Label";
-import { Select } from "/src/components/ui/Select";
-import type { ReceiptTemplate } from "/src/pages/receipt-template/hooks/use-receipt-template";
-import { useReceiptTemplate } from "/src/pages/receipt-template/hooks/use-receipt-template";
+import { OrganizationForm } from "@/components/shared/OrganizationForm";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+import { Select } from "@/components/ui/Select";
+import type { ReceiptTemplate } from "@/pages/receipt-template/hooks/use-receipt-template";
+import { useReceiptTemplate } from "@/pages/receipt-template/hooks/use-receipt-template";
 import { useSettings } from "../SettingsContext";
 
 // Sync Button Sub-component to handle conditional hooks

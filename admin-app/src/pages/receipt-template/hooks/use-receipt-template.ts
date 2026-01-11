@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import type { LogoData } from "/src/components/shared/LogoUploader";
+import type { LogoData } from "@/components/shared/LogoUploader";
 
 export interface ReceiptTemplate {
   logo: {

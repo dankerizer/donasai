@@ -1,7 +1,7 @@
-import { Input } from "/src/components/ui/Input";
-import { Label } from "/src/components/ui/Label";
-import { Select } from "/src/components/ui/Select";
-import { Textarea } from "/src/components/ui/Textarea";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+import { Select } from "@/components/ui/Select";
+import { Textarea } from "@/components/ui/Textarea";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2, Plus, Search, X } from "lucide-react";
 import { useState } from "react";

@@ -1,5 +1,5 @@
-import { Input } from "/src/components/ui/Input";
-import { Label } from "/src/components/ui/Label";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
 import { Bell } from "lucide-react";
 import { useSettings } from "../SettingsContext";
 

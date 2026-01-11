@@ -1,4 +1,4 @@
-import ManualDonationModal from "/src/components/ManualDonationModal";
+import ManualDonationModal from "@/components/ManualDonationModal";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { clsx } from "clsx";
 import {
