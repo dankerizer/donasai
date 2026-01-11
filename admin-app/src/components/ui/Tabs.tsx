@@ -39,15 +39,7 @@ export function TabsList({ children, className }: TabsListProps) {
   );
 }
 
-interface TabsTriggerProps {
-  value: string;
-  children: React.ReactNode;
-  className?: string;
-  // Injected by Tabs
-  activeValue?: string;
-  onValueChange?: (value: string) => void;
-  // Manual props in case not using Context (simplifying for now)
-}
+
 
 // Simulating Context with direct prop passing or Context.
 // For simplicity, let's use a Context to avoid prop drilling issues in composition.

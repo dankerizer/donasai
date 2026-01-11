@@ -11,7 +11,7 @@ import { useSettingsFetch } from "./hooks/use-settings-data";
 import {
   initialFormData,
   type Page,
-  type ProAccount,
+
   type SettingsFormData,
 } from "./types";
 
