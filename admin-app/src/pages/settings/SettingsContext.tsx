@@ -25,14 +25,14 @@ interface SettingsContextType {
   licenseStatus: string;
   setLicenseStatus: (status: string) => void;
   licenseKey: string;
-  proSettings: any;
+  proSettings: Record<string, unknown>;
   pages: Page[];
   showProModal: boolean;
   setShowProModal: (show: boolean) => void;
   // Helper functions
   addAccount: () => void;
   removeAccount: (index: number) => void;
-  updateAccount: (index: number, field: string, value: any) => void;
+  updateAccount: (index: number, field: string, value: string | boolean) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(
@@ -47,7 +47,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [licenseKey, setLicenseKey] = useState("");
 
   // Pro Settings from Localization
-  const proSettings = (window as any).wpdProSettings || {};
+  const proSettings: Record<string, unknown> = (window as unknown as { wpdProSettings?: Record<string, unknown> }).wpdProSettings || {};
 
   // Pages State
   const [pages, setPages] = useState<Page[]>([]);
@@ -143,7 +143,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-WP-Nonce": (window as any).wpdSettings?.nonce,
+          "X-WP-Nonce": (window as unknown as { wpdSettings?: { nonce?: string } }).wpdSettings?.nonce ?? "",
         },
         body: JSON.stringify(payload),
       });
@@ -186,7 +186,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     setFormData({ ...formData, pro_accounts: newAccounts });
   };
 
-  const updateAccount = (index: number, field: string, value: any) => {
+  const updateAccount = (index: number, field: string, value: string | boolean) => {
     const newAccounts = [...formData.pro_accounts];
     // @ts-expect-error - Dynamic field
     newAccounts[index][field] = value;

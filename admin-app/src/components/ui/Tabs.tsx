@@ -12,8 +12,8 @@ export function Tabs({ value, onValueChange, children, className }: TabsProps) {
   return (
     <div className={cn("w-full", className)}>
       {React.Children.map(children, (child) => {
-        if (React.isValidElement(child)) {
-          return React.cloneElement(child, { value, onValueChange } as any);
+        if (React.isValidElement<{ value?: string; onValueChange?: (v: string) => void }>(child)) {
+          return React.cloneElement(child, { value, onValueChange });
         }
         return child;
       })}
@@ -30,7 +30,7 @@ export function TabsList({ children, className }: TabsListProps) {
   return (
     <div
       className={cn(
-        "inline-flex h-10 items-center justify-center rounded-md bg-gray-100 dark:bg-gray-800 p-1 text-gray-500 dark:text-gray-400 w-full justify-start",
+        "inline-flex h-10 items-center justify-start rounded-md bg-gray-100 dark:bg-gray-800 p-1 text-gray-500 dark:text-gray-400 w-full",
         className,
       )}
     >
