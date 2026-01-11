@@ -8,6 +8,7 @@ import {
   FileText,
   Heart,
   Lock,
+  Mail,
   Palette,
   Star,
 } from "lucide-react";
@@ -53,6 +54,10 @@ export default function SettingsLayout() {
       window.location.hash = "#/receipt-template";
       return;
     }
+    if (tabId === "email-template") {
+      window.location.hash = "#/email-template";
+      return;
+    }
 
     const params = new URLSearchParams(window.location.search);
     params.set("tab", tabId);
@@ -72,10 +77,11 @@ export default function SettingsLayout() {
     { id: "appearance", label: "Appearance", icon: Palette },
     { id: "advanced", label: "Advanced", icon: Star },
     { id: "receipt-template", label: "Receipt Template", icon: FileText },
+    { id: "email-template", label: "Email Template", icon: Mail },
     { id: "license", label: "License", icon: Lock },
   ].filter(
     (tab) =>
-      (tab.id !== "license" && tab.id !== "receipt-template") || isProInstalled,
+      (tab.id !== "license" && tab.id !== "receipt-template" && tab.id !== "email-template") || isProInstalled,
   );
 
   const showActivationLock = isProInstalled && licenseStatus !== "active";
@@ -237,7 +243,9 @@ export default function SettingsLayout() {
                               ? "Lisensi"
                               : tab.label === "Receipt Template"
                                 ? "Template Kuitansi"
-                                : tab.label}
+                                : tab.label === "Email Template"
+                                  ? "Template Email"
+                                  : tab.label}
                 </span>
               </button>
             );

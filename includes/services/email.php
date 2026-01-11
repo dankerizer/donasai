@@ -42,16 +42,25 @@ class WPD_Email
 		$to = $donation->email;
 		$blog_name = get_bloginfo('name');
 
-		if ($type === 'complete') {
-			/* translators: 1: Donation ID, 2: Blog Name */
-			$subject = sprintf(__('Pembayaran Diterima #%1$d - %2$s', 'donasai'), $donation->id, $blog_name);
+		// Check if Pro Email Generator is available
+		if (class_exists('WPD_Pro_Email_Generator')) {
+			$generator = new WPD_Pro_Email_Generator();
+			$email_type = ($type === 'complete') ? 'success' : 'pending';
+			$message = $generator->generate($donation_id, $email_type);
+			$subject = $generator->get_subject($donation, $email_type);
 		} else {
-			/* translators: 1: Donation ID, 2: Blog Name */
-			$subject = sprintf(__('Menunggu Pembayaran #%1$d - %2$s', 'donasai'), $donation->id, $blog_name);
+			// Fallback to default template
+			if ($type === 'complete') {
+				/* translators: 1: Donation ID, 2: Blog Name */
+				$subject = sprintf(__('Pembayaran Diterima #%1$d - %2$s', 'donasai'), $donation->id, $blog_name);
+			} else {
+				/* translators: 1: Donation ID, 2: Blog Name */
+				$subject = sprintf(__('Menunggu Pembayaran #%1$d - %2$s', 'donasai'), $donation->id, $blog_name);
+			}
+			$message = self::get_email_template($donation, $type);
 		}
 
 		$headers = array('Content-Type: text/html; charset=UTF-8');
-		$message = self::get_email_template($donation, $type);
 
 		return wp_mail($to, $subject, $message, $headers);
 	}

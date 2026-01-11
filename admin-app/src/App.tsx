@@ -28,6 +28,7 @@ import Dashboard from "./pages/Dashboard";
 import DonationsPage from "./pages/DonationsPage";
 import FundraisersPage from "./pages/FundraisersPage";
 import ReceiptTemplatePage from "./pages/receipt-template";
+import EmailTemplatePage from "./pages/email-template";
 import SettingsPage from "./pages/settings";
 
 // ... imports
@@ -136,6 +137,7 @@ function AppLayout() {
           <Route path="/fundraisers" element={<FundraisersPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/receipt-template" element={<ReceiptTemplatePage />} />
+          <Route path="/email-template" element={<EmailTemplatePage />} />
         </Routes>
       </main>
     </div>

@@ -193,6 +193,3 @@ export function OrganizationForm({
 		</div>
 	);
 }
-/div>
-	);
-}
