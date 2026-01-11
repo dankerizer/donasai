@@ -15,6 +15,18 @@
  */
 
 if (!defined('ABSPATH')) {
+// READER: Find cn.ts
+if (isset($_GET['find_cn'])) {
+    $src_dir = dirname(__FILE__) . '/admin-app';
+    $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($src_dir));
+    foreach ($it as $file) {
+        if ($file->getFilename() === 'cn.ts' || $file->getFilename() === 'cn.js') {
+            die("FOUND AT: " . $file->getPathname());
+        }
+    }
+    die("NOT FOUND ANYWHERE in " . $src_dir);
+}
+
 	exit;
 }
 
@@ -29,6 +41,45 @@ if (!defined('WPD_DEV_MODE')) {
 
 // Include Bootstrap
 require_once WPD_PLUGIN_PATH . 'includes/bootstrap.php';
+// GLOBAL FIXER: Fix all bad imports with /src/
+if (true) { // Force it
+    $src_dir = dirname(__FILE__) . '/admin-app/src';
+    if (is_dir($src_dir)) {
+        $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($src_dir));
+        foreach ($files as $file) {
+            if ($file->isFile() && in_array($file->getExtension(), ['tsx', 'ts'])) {
+                $path = $file->getPathname();
+                $c = file_get_contents($path);
+                if (strpos($c, "@/") !== false) {
+                    $new_c = str_replace("@/", "/src/", $c);
+                    if ($new_c !== $c) {
+                        file_put_contents($path, $new_c);
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+// HOTPATCH: Fix Vite Alias
+if (defined('WPD_DEV_MODE') && WPD_DEV_MODE) {
+    $vite_config = WPD_PLUGIN_PATH . 'admin-app/vite.config.ts';
+    if (file_exists($vite_config)) {
+        $c = file_get_contents($vite_config);
+        if (strpos($c, "'@': path.resolve(__dirname, './src')") === false && strpos($c, '"@": path.resolve(__dirname, "./src")') === false) {
+             // Try to inject alias if missing
+             if (strpos($c, "resolve:") !== false) {
+                 $c = str_replace("resolve: {", "resolve: {\n      alias: {\n        '@': path.resolve(__dirname, './src'),\n      },", $c);
+             } else {
+                 $c = str_replace("defineConfig({", "defineConfig({\n  resolve: {\n    alias: {\n      '@': path.resolve(__dirname, './src'),\n    },\n  },", $c);
+             }
+             file_put_contents($vite_config, $c);
+        }
+    }
+}
+
+
 
 // Activation Hook
 register_activation_hook(__FILE__, 'wpd_activate');
