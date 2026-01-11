@@ -64,10 +64,37 @@ $button_color = $settings_app['button_color'] ?? '#ec4899';
 $sidebar_limit = isset($settings_app['sidebar_count']) ? intval($settings_app['sidebar_count']) : 5;
 $per_page_limit = isset($settings_app['donor_per_page']) ? intval($settings_app['donor_per_page']) : 10;
 
+
+// Check Pro Status
+$is_pro = function_exists('wpd_is_pro_active') && wpd_is_pro_active();
+
 // Hero Style
 $hero_style = $settings_app['hero_style'] ?? 'standard';
 if (!$is_pro) {
     $hero_style = 'standard';
+}
+
+
+// Feature Toggles// Defaults
+$show_countdown = $is_pro && (isset($settings_app['show_countdown']) ? filter_var($settings_app['show_countdown'], FILTER_VALIDATE_BOOLEAN) : true);
+$show_prayer_tab = $is_pro && (isset($settings_app['show_prayer_tab']) ? filter_var($settings_app['show_prayer_tab'], FILTER_VALIDATE_BOOLEAN) : true);
+$show_updates_tab = $is_pro && (isset($settings_app['show_updates_tab']) ? filter_var($settings_app['show_updates_tab'], FILTER_VALIDATE_BOOLEAN) : true);
+$show_donor_list = isset($settings_app['show_donor_list']) ? filter_var($settings_app['show_donor_list'], FILTER_VALIDATE_BOOLEAN) : true;
+
+
+// DEBUG
+$debug_active_plugins = (array) get_option('active_plugins', array());
+$debug_in_array = in_array('donasai-pro/donasai-pro.php', $debug_active_plugins, true);
+$debug_license = get_option('wpd_pro_license_status');
+$debug_func_exists = function_exists('wpd_is_pro_active');
+echo "<!-- DEBUG_WPD_DETAILED: func_exists=" . ($debug_func_exists ? '1' : '0') . " active_plugins_count=" . count($debug_active_plugins) . " has_pro_in_list=" . ($debug_in_array ? '1' : '0') . " license_status='" . $debug_license . "' is_pro=" . ($is_pro ? '1' : '0') . " show_donor_list=" . ($show_donor_list ? '1' : '0') . " settings_val=" . (isset($settings_app['show_donor_list']) ? var_export($settings_app['show_donor_list'], true) : 'unset') . " -->";
+
+if (!$is_pro) {
+    $show_countdown = false;
+    $show_prayer_tab = false;
+    $show_updates_tab = false;
+    // Donor List is a Free feature, so we don't force-disable it.
+    // The toggle in admin is Pro-only, so Free users stick to default (true).
 }
 ?>
 
@@ -253,7 +280,6 @@ if (!$is_pro) {
                                         d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                                 <span>Lokasi: Indonesia</span>
-
                                 <?php if ($is_verified): ?>
                                     <span
                                         style="margin-left:15px; display:inline-flex; align-items:center; color:white; background:rgba(37, 99, 235, 0.9); padding:2px 8px; border-radius:10px; font-size:12px; font-weight:500;">
@@ -289,7 +315,7 @@ if (!$is_pro) {
                                 d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                         <span>Lokasi: Indonesia</span>
-
+                        Lokasi: Indonesia
                         <?php if ($is_verified): ?>
                             <span
                                 style="margin-left:15px; display:inline-flex; align-items:center; color:#2563eb; background:var(--wpd-bg-blue-light); padding:2px 8px; border-radius:10px; font-size:12px; font-weight:500;">
@@ -312,18 +338,24 @@ if (!$is_pro) {
                     style="background:none; border:none; border-bottom:2px solid var(--wpd-primary); color:var(--wpd-primary); font-weight:600; padding:10px 15px; font-size:16px; cursor:pointer; white-space:nowrap;">Cerita</button>
 
                 <?php if (function_exists('wpd_is_pro_active') && wpd_is_pro_active()): ?>
-                    <button onclick="openWpdTab('updates')" id="tab-btn-updates" class="wpd-tab-btn"
-                        style="background:none; border:none; border-bottom:2px solid transparent; color:var(--wpd-text-muted); font-weight:500; padding:10px 15px; font-size:16px; cursor:pointer; white-space:nowrap;">Kabar
-                        Terbaru</button>
+                    <?php if ($show_updates_tab): ?>
+                        <button onclick="openWpdTab('updates')" id="tab-btn-updates" class="wpd-tab-btn"
+                            style="background:none; border:none; border-bottom:2px solid transparent; color:var(--wpd-text-muted); font-weight:500; padding:10px 15px; font-size:16px; cursor:pointer; white-space:nowrap;">Kabar
+                            Terbaru</button>
+                    <?php endif; ?>
 
                     <!-- Doa Tab (Pro) -->
-                    <button onclick="openWpdTab('doa')" id="tab-btn-doa" class="wpd-tab-btn"
-                        style="background:none; border:none; border-bottom:2px solid transparent; color:var(--wpd-text-muted); font-weight:500; padding:10px 15px; font-size:16px; cursor:pointer; white-space:nowrap;">Doa</button>
+                    <?php if ($show_prayer_tab): ?>
+                        <button onclick="openWpdTab('doa')" id="tab-btn-doa" class="wpd-tab-btn"
+                            style="background:none; border:none; border-bottom:2px solid transparent; color:var(--wpd-text-muted); font-weight:500; padding:10px 15px; font-size:16px; cursor:pointer; white-space:nowrap;">Doa</button>
+                    <?php endif; ?>
                 <?php endif; ?>
 
-                <button onclick="openWpdTab('donors')" id="tab-btn-donors" class="wpd-tab-btn"
-                    style="background:none; border:none; border-bottom:2px solid transparent; color:var(--wpd-text-muted); font-weight:500; padding:10px 15px; font-size:16px; cursor:pointer; white-space:nowrap;">Donatur
-                    (<?php echo esc_html($total_donors); ?>)</button>
+                <?php if ($show_donor_list): ?>
+                    <button onclick="openWpdTab('donors')" id="tab-btn-donors" class="wpd-tab-btn"
+                        style="background:none; border:none; border-bottom:2px solid transparent; color:var(--wpd-text-muted); font-weight:500; padding:10px 15px; font-size:16px; cursor:pointer; white-space:nowrap;">Donatur
+                        (<?php echo esc_html($total_donors); ?>)</button>
+                <?php endif; ?>
             </div>
 
             <!-- Tab Content: Description -->
@@ -333,7 +365,7 @@ if (!$is_pro) {
             </div>
 
             <!-- Tab Content: Updates -->
-            <?php if (function_exists('wpd_is_pro_active') && wpd_is_pro_active()): ?>
+            <?php if (function_exists('wpd_is_pro_active') && wpd_is_pro_active() && $show_updates_tab): ?>
                 <div id="wpd-tab-updates" class="wpd-tab-content"
                     style="display:none; color:var(--wpd-text-muted); padding:40px 0; text-align:center;">
                     <svg style="width:48px; height:48px; margin:0 auto 10px; color:var(--wpd-border);" fill="none"
@@ -346,11 +378,12 @@ if (!$is_pro) {
             <?php endif; ?>
 
             <!-- Tab Content: Doa -->
-            <?php if (function_exists('wpd_is_pro_active') && wpd_is_pro_active()): ?>
+            <?php if (function_exists('wpd_is_pro_active') && wpd_is_pro_active() && $show_prayer_tab): ?>
                 <div id="wpd-tab-doa" class="wpd-tab-content" style="display:none;">
                     <?php
                     $donors_with_notes = array_filter($donors, function ($d) {
-                        return !empty($d->note); });
+                        return !empty($d->note);
+                    });
                     if (empty($donors_with_notes)):
                         ?>
                         <p style="color:var(--wpd-text-muted); padding:30px 0; text-align:center;">Belum ada doa dan dukungan.
@@ -387,64 +420,111 @@ if (!$is_pro) {
             <?php endif; ?>
 
             <!-- Tab Content: Donors -->
-            <div id="wpd-tab-donors" class="wpd-tab-content" style="display:none;">
-                <?php if (empty($donors)): ?>
-                    <p style="color:var(--wpd-text-muted); padding:30px 0; text-align:center;">Belum ada donatur. Jadilah
-                        donatur pertama!
-                    </p>
-                <?php else: ?>
-                    <div id="wpd-all-donors-list" class="wpd-donor-list">
-                        <!-- Donors will be loaded here via AJAX or initial loop -->
-                        <?php foreach ($donors as $donor):
-                            $name = $donor->is_anonymous ? 'Hamba Allah' : $donor->name;
-                            $time = human_time_diff(strtotime($donor->created_at), current_time('timestamp')) . ' yang lalu';
-                            $initial = strtoupper(substr($name, 0, 1));
-                            ?>
-                            <div
-                                style="display:flex; gap:15px; margin-bottom:20px; border-bottom:1px solid var(--wpd-border); padding-bottom:20px;">
+            <?php if ($show_donor_list): ?>
+                <div id="wpd-tab-donors" class="wpd-tab-content" style="display:none;">
+                    <?php if (empty($donors)): ?>
+                        <p style="color:var(--wpd-text-muted); padding:30px 0; text-align:center;">Belum ada donatur. Jadilah
+                            donatur pertama!
+                        </p>
+                    <?php else: ?>
+                        <div id="wpd-all-donors-list" class="wpd-donor-list">
+                            <!-- Donors will be loaded here via AJAX or initial loop -->
+                            <?php foreach ($donors as $donor):
+                                $name = $donor->is_anonymous ? 'Hamba Allah' : $donor->name;
+                                $time = human_time_diff(strtotime($donor->created_at), current_time('timestamp')) . ' yang lalu';
+                                $initial = strtoupper(substr($name, 0, 1));
+                                ?>
                                 <div
-                                    style="width:40px; height:40px; background:var(--wpd-bg-blue-accent); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">
-                                    <?php echo esc_html($initial); ?>
-                                </div>
-                                <div>
-                                    <h4 style="margin:0; font-size:16px; font-weight:600; color:var(--wpd-text-main);">
-                                        <?php echo esc_html($name); ?>
-                                    </h4>
-                                    <div style="font-size:12px; color:var(--wpd-text-muted); margin-top:2px;">
-                                        Berdonasi <span style="font-weight:600; color:var(--wpd-primary);">Rp
-                                            <?php echo number_format($donor->amount, 0, ',', '.'); ?></span> &bull;
-                                        <?php echo esc_html($time); ?>
+                                    style="display:flex; gap:15px; margin-bottom:20px; border-bottom:1px solid var(--wpd-border); padding-bottom:20px;">
+                                    <div
+                                        style="width:40px; height:40px; background:var(--wpd-bg-blue-accent); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;">
+                                        <?php echo esc_html($initial); ?>
                                     </div>
-                                    <?php if (!empty($donor->note)): ?>
-                                        <p
-                                            style="margin:8px 0 0; font-size:14px; color:var(--wpd-text-body); background:var(--wpd-bg-tertiary); padding:10px; border-radius:8px;">
-                                            "<?php echo esc_html($donor->note); ?>"
-                                        </p>
-                                    <?php endif; ?>
+                                    <div>
+                                        <h4 style="margin:0; font-size:16px; font-weight:600; color:var(--wpd-text-main);">
+                                            <?php echo esc_html($name); ?>
+                                        </h4>
+                                        <div style="font-size:12px; color:var(--wpd-text-muted); margin-top:2px;">
+                                            Berdonasi <span style="font-weight:600; color:var(--wpd-primary);">Rp
+                                                <?php echo number_format($donor->amount, 0, ',', '.'); ?></span> &bull;
+                                            <?php echo esc_html($time); ?>
+                                        </div>
+                                        <?php if (!empty($donor->note)): ?>
+                                            <p
+                                                style="margin:8px 0 0; font-size:14px; color:var(--wpd-text-body); background:var(--wpd-bg-tertiary); padding:10px; border-radius:8px;">
+                                                "<?php echo esc_html($donor->note); ?>"
+                                            </p>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-
-                    <?php if ($total_donors > count($donors)): ?>
-                        <div style="text-align:center; margin-top:20px;">
-                            <button id="wpd-load-more-donors" onclick="wpdLoadMoreDonors()" data-page="1"
-                                data-campaign="<?php echo $campaign_id; ?>"
-                                style="padding:8px 20px; background:var(--wpd-bg-secondary); color:var(--wpd-text-body); border:none; border-radius:6px; cursor:pointer; font-weight:500;">
-                                Muat Lebih Banyak
-                            </button>
-                            <span id="wpd-donors-loading"
-                                style="display:none; color:var(--wpd-text-muted); font-size:14px;">Memuat...</span>
+                            <?php endforeach; ?>
                         </div>
+
+                        <?php if ($total_donors > count($donors)): ?>
+                            <div style="text-align:center; margin-top:20px;">
+                                <button id="wpd-load-more-donors" onclick="wpdLoadMoreDonors()" data-page="1"
+                                    data-campaign="<?php echo $campaign_id; ?>"
+                                    style="padding:8px 20px; background:var(--wpd-bg-secondary); color:var(--wpd-text-body); border:none; border-radius:6px; cursor:pointer; font-weight:500;">
+                                    Muat Lebih Banyak
+                                </button>
+                                <span id="wpd-donors-loading"
+                                    style="display:none; color:var(--wpd-text-muted); font-size:14px;">Memuat...</span>
+                            </div>
+                        <?php endif; ?>
                     <?php endif; ?>
-                <?php endif; ?>
-            </div>
+                </div>
+            <?php endif; ?>
 
         </div>
 
         <!-- Right Column: Sidebar (35%) -->
         <div class="wpd-sidebar-col" style="max-width:100%;">
             <div style="position:sticky; top:20px;">
+
+                <!-- Countdown Timer (Pro) -->
+                <?php
+                if ($show_countdown) {
+                    $deadline_str = get_post_meta($campaign_id, '_wpd_deadline', true);
+                    if (!empty($deadline_str)) {
+                        $deadline = strtotime($deadline_str);
+                        $now = current_time('timestamp');
+                        $diff = $deadline - $now;
+
+                        if ($diff > 0) {
+                            $days = floor($diff / (60 * 60 * 24));
+                            $hours = floor(($diff - ($days * 60 * 60 * 24)) / (60 * 60));
+                            $minutes = floor(($diff - ($days * 60 * 60 * 24) - ($hours * 60 * 60)) / 60);
+                            ?>
+                            <div class="wpd-card-style"
+                                style="padding:15px; margin-bottom:20px; background:var(--wpd-bg-blue-light); border:1px solid rgba(37, 99, 235, 0.2); text-align:center;">
+                                <div style="font-size:13px; color:var(--wpd-text-muted); margin-bottom:5px;">Sisa Waktu Campaign
+                                </div>
+                                <div
+                                    style="display:flex; justify-content:center; gap:10px; font-weight:700; color:var(--wpd-primary); font-size:18px;">
+                                    <div>
+                                        <span><?php echo $days; ?></span>
+                                        <span
+                                            style="display:block; font-size:10px; color:var(--wpd-text-muted); font-weight:400;">Hari</span>
+                                    </div>
+                                    <div style="color:var(--wpd-text-muted);">:</div>
+                                    <div>
+                                        <span><?php echo $hours; ?></span>
+                                        <span
+                                            style="display:block; font-size:10px; color:var(--wpd-text-muted); font-weight:400;">Jam</span>
+                                    </div>
+                                    <div style="color:var(--wpd-text-muted);">:</div>
+                                    <div>
+                                        <span><?php echo $minutes; ?></span>
+                                        <span
+                                            style="display:block; font-size:10px; color:var(--wpd-text-muted); font-weight:400;">Menit</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php
+                        }
+                    }
+                }
+                ?>
 
                 <!-- Donation Card -->
                 <div class="wpd-card-style" style="padding:24px; margin-bottom:20px;">
@@ -527,45 +607,47 @@ if (!$is_pro) {
                 </div>
 
                 <!-- Recent Donors Sidebar -->
-                <div class="wpd-card-style" style="overflow:hidden;">
-                    <div
-                        style="padding:15px 20px; background:var(--wpd-bg-tertiary); border-bottom:1px solid var(--wpd-border); font-weight:700; color:var(--wpd-text-body);">
-                        Doa dan Dukungan (<?php echo esc_html($total_donors); ?>)
-                    </div>
-                    <div style="max-height:400px; overflow-y:auto;">
-                        <?php if (empty($donors)): ?>
-                            <div style="padding:20px; text-align:center; color:var(--wpd-text-muted); font-size:14px;">Belum
-                                ada donatur.
-                            </div>
-                        <?php else: ?>
-                            <?php foreach ($donors as $donor):
-                                $name = $donor->is_anonymous ? 'Hamba Allah' : $donor->name;
-                                $time = human_time_diff(strtotime($donor->created_at), current_time('timestamp')) . ' yang lalu';
-                                ?>
-                                <div style="padding:15px 20px; border-bottom:1px solid var(--wpd-border);">
-                                    <div style="font-weight:600; color:var(--wpd-text-main); font-size:14px;">
-                                        <?php echo esc_html($name); ?>
-                                    </div>
-                                    <div style="font-size:12px; color:var(--wpd-text-muted); margin-bottom:5px;">Berdonasi <span
-                                            style="color:var(--wpd-primary); font-weight:600;">Rp
-                                            <?php echo number_format($donor->amount, 0, ',', '.'); ?></span> &bull;
-                                        <?php echo esc_html($time); ?>
-                                    </div>
-                                    <?php if (!empty($donor->note)): ?>
-                                        <div style="font-size:13px; color:var(--wpd-text-body); font-style:italic;">
-                                            "<?php echo esc_html($donor->note); ?>"</div>
-                                    <?php endif; ?>
+                <?php if ($show_donor_list): ?>
+                    <div class="wpd-card-style" style="overflow:hidden;">
+                        <div
+                            style="padding:15px 20px; background:var(--wpd-bg-tertiary); border-bottom:1px solid var(--wpd-border); font-weight:700; color:var(--wpd-text-body);">
+                            Doa dan Dukungan (<?php echo esc_html($total_donors); ?>)
+                        </div>
+                        <div style="max-height:400px; overflow-y:auto;">
+                            <?php if (empty($donors)): ?>
+                                <div style="padding:20px; text-align:center; color:var(--wpd-text-muted); font-size:14px;">Belum
+                                    ada donatur.
                                 </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                        <div style="padding:10px; text-align:center; border-top:1px solid var(--wpd-border);">
-                            <button
-                                onclick="openWpdTab('donors'); window.scrollTo({top: document.querySelector('.wpd-tabs').offsetTop - 100, behavior: 'smooth'});"
-                                style="background:none; border:none; color:var(--wpd-primary); font-size:13px; font-weight:500; cursor:pointer;">Lihat
-                                Semua</button>
+                            <?php else: ?>
+                                <?php foreach ($donors as $donor):
+                                    $name = $donor->is_anonymous ? 'Hamba Allah' : $donor->name;
+                                    $time = human_time_diff(strtotime($donor->created_at), current_time('timestamp')) . ' yang lalu';
+                                    ?>
+                                    <div style="padding:15px 20px; border-bottom:1px solid var(--wpd-border);">
+                                        <div style="font-weight:600; color:var(--wpd-text-main); font-size:14px;">
+                                            <?php echo esc_html($name); ?>
+                                        </div>
+                                        <div style="font-size:12px; color:var(--wpd-text-muted); margin-bottom:5px;">Berdonasi <span
+                                                style="color:var(--wpd-primary); font-weight:600;">Rp
+                                                <?php echo number_format($donor->amount, 0, ',', '.'); ?></span> &bull;
+                                            <?php echo esc_html($time); ?>
+                                        </div>
+                                        <?php if (!empty($donor->note)): ?>
+                                            <div style="font-size:13px; color:var(--wpd-text-body); font-style:italic;">
+                                                "<?php echo esc_html($donor->note); ?>"</div>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                            <div style="padding:10px; text-align:center; border-top:1px solid var(--wpd-border);">
+                                <button
+                                    onclick="openWpdTab('donors'); window.scrollTo({top: document.querySelector('.wpd-tabs').offsetTop - 100, behavior: 'smooth'});"
+                                    style="background:none; border:none; color:var(--wpd-primary); font-size:13px; font-weight:500; cursor:pointer;">Lihat
+                                    Semua</button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                <?php endif; ?>
 
             </div>
         </div>

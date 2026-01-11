@@ -76,11 +76,15 @@ function wpd_is_pro_installed()
  */
 function wpd_is_pro_active()
 {
-    if (!function_exists('is_plugin_active')) {
-        include_once(ABSPATH . 'wp-admin/includes/plugin.php');
+    // Check if plugin is active (frontend-safe method)
+    $active_plugins = (array) get_option('active_plugins', array());
+    $is_active = in_array('donasai-pro/donasai-pro.php', $active_plugins, true);
+
+    // For multisite
+    if (!$is_active && is_multisite()) {
+        $network_active = (array) get_site_option('active_sitewide_plugins', array());
+        $is_active = isset($network_active['donasai-pro/donasai-pro.php']);
     }
-    // Check if plugin active
-    $is_active = is_plugin_active('donasai-pro/donasai-pro.php');
 
     // Check if license is valid
     $license_status = get_option('wpd_pro_license_status');
@@ -88,3 +92,4 @@ function wpd_is_pro_active()
 
     return $is_active && $is_license_valid;
 }
+

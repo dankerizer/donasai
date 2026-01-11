@@ -43,6 +43,10 @@ export interface SettingsFormData {
 	donation_layout: string;
 	sidebar_count: number;
 	donor_per_page: number;
+	show_countdown: boolean;
+	show_prayer_tab: boolean;
+	show_updates_tab: boolean;
+	show_donor_list: boolean;
 	// Bank
 	bank_name: string;
 	account_number: string;
@@ -130,6 +134,10 @@ const initialFormData: SettingsFormData = {
 	donation_layout: "default",
 	sidebar_count: 5,
 	donor_per_page: 10,
+	show_countdown: true,
+	show_prayer_tab: true,
+	show_updates_tab: true,
+	show_donor_list: true,
 	// Bank
 	bank_name: "",
 	account_number: "",
@@ -233,6 +241,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 				donation_layout: data.appearance?.donation_layout || "default",
 				sidebar_count: data.appearance?.sidebar_count || 5,
 				donor_per_page: data.appearance?.donor_per_page || 10,
+				show_countdown: data.appearance?.show_countdown !== false && data.appearance?.show_countdown !== "0",
+				show_prayer_tab: data.appearance?.show_prayer_tab !== false && data.appearance?.show_prayer_tab !== "0",
+				show_updates_tab: data.appearance?.show_updates_tab !== false && data.appearance?.show_updates_tab !== "0",
+				show_donor_list: data.appearance?.show_donor_list !== false && data.appearance?.show_donor_list !== "0",
 				// Bank
 				bank_name: data.bank?.bank_name || "",
 				account_number: data.bank?.account_number || "",
@@ -300,6 +312,12 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 					font_size: data.font_size,
 					dark_mode: data.dark_mode,
 					donation_layout: data.donation_layout,
+					sidebar_count: data.sidebar_count,
+					donor_per_page: data.donor_per_page,
+					show_countdown: data.show_countdown,
+					show_prayer_tab: data.show_prayer_tab,
+					show_updates_tab: data.show_updates_tab,
+					show_donor_list: data.show_donor_list,
 				},
 				bank: {
 					bank_name: data.bank_name,
@@ -336,9 +354,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 					opt_in_email: data.opt_in_email,
 					opt_in_whatsapp: data.opt_in_whatsapp,
 				},
-				license: {
-					key: licenseKey,
-				},
+
 			};
 
 			const response = await fetch("/wp-json/wpd/v1/settings", {

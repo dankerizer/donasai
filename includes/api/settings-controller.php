@@ -69,7 +69,11 @@ function wpd_api_get_settings()
         'donor_per_page' => 10,
         'donation_layout' => 'default', // default, split
         'dark_mode' => false,
-        'custom_css' => ''
+        'custom_css' => '',
+        'show_countdown' => true,
+        'show_prayer_tab' => true,
+        'show_updates_tab' => true,
+        'show_donor_list' => true
     ));
 
     // Pro Settings (Midtrans Override)
@@ -249,6 +253,10 @@ function wpd_api_update_settings($request)
             'donation_layout' => sanitize_text_field($params['appearance']['donation_layout'] ?? 'default'),
             'sidebar_count' => intval($params['appearance']['sidebar_count'] ?? 5),
             'donor_per_page' => intval($params['appearance']['donor_per_page'] ?? 10),
+            'show_countdown' => !empty($params['appearance']['show_countdown']),
+            'show_prayer_tab' => !empty($params['appearance']['show_prayer_tab']),
+            'show_updates_tab' => !empty($params['appearance']['show_updates_tab']),
+            'show_donor_list' => !empty($params['appearance']['show_donor_list']),
         );
         update_option('wpd_settings_appearance', $appearance_data);
     }

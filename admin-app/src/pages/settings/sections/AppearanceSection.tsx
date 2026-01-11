@@ -552,6 +552,108 @@ export default function AppearanceSection() {
 							</p>
 						)}
 					</div>
+
+                    {/* Feature Controls (Pro Only) */}
+					<div
+						className={clsx(
+							"border border-gray-200 rounded-lg p-4 bg-gray-50 relative md:col-span-2",
+							!isProActive ? "opacity-60 cursor-pointer" : "",
+						)}
+						onClick={() => !isProActive && setShowProModal(true)}
+					>
+						<div className="flex justify-between items-start mb-4">
+							<div className="font-medium text-gray-900">
+								Kontrol Fitur Halaman
+							</div>
+							{!isProActive ? (
+								<Lock size={14} className="text-gray-400" />
+							) : (
+								<span className="text-xs font-bold text-green-600 bg-green-100 px-2 rounded">
+									Active
+								</span>
+							)}
+						</div>
+
+						{isProActive ? (
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div className="flex items-center gap-3">
+									<label className="relative inline-flex items-center cursor-pointer">
+										<input
+											type="checkbox"
+											className="sr-only peer"
+											checked={formData.show_countdown}
+											onChange={(e) =>
+												setFormData({
+													...formData,
+													show_countdown: e.target.checked,
+												})
+											}
+										/>
+										<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+									</label>
+									<span className="text-sm text-gray-700">Tampilkan Countdown Timer</span>
+								</div>
+
+                                <div className="flex items-center gap-3">
+									<label className="relative inline-flex items-center cursor-pointer">
+										<input
+											type="checkbox"
+											className="sr-only peer"
+											checked={formData.show_prayer_tab}
+											onChange={(e) =>
+												setFormData({
+													...formData,
+													show_prayer_tab: e.target.checked,
+												})
+											}
+										/>
+										<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+									</label>
+									<span className="text-sm text-gray-700">Tampilkan Tab Doa</span>
+								</div>
+
+                                <div className="flex items-center gap-3">
+									<label className="relative inline-flex items-center cursor-pointer">
+										<input
+											type="checkbox"
+											className="sr-only peer"
+											checked={formData.show_updates_tab}
+											onChange={(e) =>
+												setFormData({
+													...formData,
+													show_updates_tab: e.target.checked,
+												})
+											}
+										/>
+										<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+									</label>
+									<span className="text-sm text-gray-700">Tampilkan Kabar Terbaru</span>
+								</div>
+
+                                <div className="flex items-center gap-3">
+									<label className="relative inline-flex items-center cursor-pointer">
+										<input
+											type="checkbox"
+											className="sr-only peer"
+											checked={formData.show_donor_list}
+											onChange={(e) =>
+												setFormData({
+													...formData,
+													show_donor_list: e.target.checked,
+												})
+											}
+										/>
+										<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+									</label>
+									<span className="text-sm text-gray-700">Tampilkan List Donatur Sidebar</span>
+								</div>
+							</div>
+						) : (
+							<p className="text-sm text-gray-500">
+								Aktifkan/nonaktifkan elemen seperti Countdown, Doa, dan List Donatur.
+							</p>
+						)}
+					</div>
 				</div>
 			</div>
 		</div>
