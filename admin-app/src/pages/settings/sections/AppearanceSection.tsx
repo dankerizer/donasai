@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import { Lock } from "lucide-react";
-import { Input } from "/src/components/ui/Input";
-import { Label } from "/src/components/ui/Label";
-import { Select } from "/src/components/ui/Select";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/Label";
+import { Select } from "@/components/ui/Select";
 import { useSettings } from "../SettingsContext";
 
 export default function AppearanceSection() {
