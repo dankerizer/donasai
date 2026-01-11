@@ -1,7 +1,7 @@
 import { Upload, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Label } from "@/components/ui/Label";
+import { Label } from "/src/components/ui/Label";
 
 export interface LogoData {
 	url: string;

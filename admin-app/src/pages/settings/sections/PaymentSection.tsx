@@ -1,8 +1,8 @@
 /** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
 
 import { Crown, Lock, Plus, Trash } from "lucide-react";
-import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
+import { Input } from "/src/components/ui/Input";
+import { Label } from "/src/components/ui/Label";
 import { useSettings } from "../SettingsContext";
 import FeeCoverageSection from "./FeeCoverageSection";
 

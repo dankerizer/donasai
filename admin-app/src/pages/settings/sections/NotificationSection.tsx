@@ -1,6 +1,6 @@
 import { Bell } from "lucide-react";
-import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
+import { Input } from "/src/components/ui/Input";
+import { Label } from "/src/components/ui/Label";
 import { useSettings } from "../SettingsContext";
 
 export default function NotificationSection() {

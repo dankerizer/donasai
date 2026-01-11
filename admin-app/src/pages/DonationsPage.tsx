@@ -10,7 +10,7 @@ import {
 	X,
 } from "lucide-react";
 import { useState } from "react";
-import ManualDonationModal from "@/components/ManualDonationModal";
+import ManualDonationModal from "/src/components/ManualDonationModal";
 
 // Mock Data Type
 interface Donation {
@@ -330,6 +330,7 @@ export default function DonationsPage() {
 							href={getExportUrl()}
 							target="_blank"
 							className="w-full sm:w-auto px-6 py-2.5 bg-gray-900 text-white! rounded-xl hover:bg-black font-bold text-sm flex justify-center items-center gap-2 shadow-lg hover:shadow-xl transition-all active:scale-95"
+							rel="noreferrer"
 						>
 							<svg
 								width="18"
@@ -519,7 +520,7 @@ export default function DonationsPage() {
 												onChange={(e) =>
 													setEditFormData((prev) => ({
 														...prev,
-														amount: parseFloat(e.target.value),
+														amount: Number.parseFloat(e.target.value),
 													}))
 												}
 												className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

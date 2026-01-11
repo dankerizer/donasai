@@ -1,9 +1,9 @@
 /* biome-ignore-all lint/a11y/useSemanticElements: Pro feature cards use divs with role=button for conditional interactivity */
 import clsx from "clsx";
 import { Lock } from "lucide-react";
-import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
-import { Select } from "@/components/ui/Select";
+import { Input } from "/src/components/ui/Input";
+import { Label } from "/src/components/ui/Label";
+import { Select } from "/src/components/ui/Select";
 import { useSettings } from "../SettingsContext";
 
 export default function AppearanceSection() {
@@ -202,7 +202,7 @@ export default function AppearanceSection() {
 							onChange={(e) =>
 								setFormData({
 									...formData,
-									sidebar_count: parseInt(e.target.value) || 5,
+									sidebar_count: Number.parseInt(e.target.value) || 5,
 								})
 							}
 							min={1}
@@ -222,7 +222,7 @@ export default function AppearanceSection() {
 							onChange={(e) =>
 								setFormData({
 									...formData,
-									donor_per_page: parseInt(e.target.value) || 10,
+									donor_per_page: Number.parseInt(e.target.value) || 10,
 								})
 							}
 							min={1}

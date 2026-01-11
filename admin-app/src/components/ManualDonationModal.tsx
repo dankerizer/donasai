@@ -2,11 +2,11 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2, Plus, Search, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
-import { Select } from "@/components/ui/Select";
-import { Textarea } from "@/components/ui/Textarea";
-import { InputMoney } from "./ui/InputMoney";
+import { Input } from "/src/components/ui/Input";
+import { Label } from "/src/components/ui/Label";
+import { Select } from "/src/components/ui/Select";
+import { Textarea } from "/src/components/ui/Textarea";
+import { InputMoney } from "/src/components/ui/InputMoney";
 
 interface ManualDonationModalProps {
 	isOpen: boolean;
@@ -50,6 +50,7 @@ export default function ManualDonationModal({
 		queryFn: async () => {
 			const res = await fetch("/wp-json/wpd-pro/v1/campaigns/list", {
 				headers: {
+					// biome-ignore lint/suspicious/noExplicitAny: gak tahu apa aja
 					"X-WP-Nonce": (window as any).wpdSettings?.nonce,
 				},
 			});

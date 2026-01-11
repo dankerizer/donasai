@@ -4,8 +4,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Crown, DollarSign, Loader2, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
+import { Input } from "/src/components/ui/Input";
+import { Label } from "/src/components/ui/Label";
 
 interface GatewayFeeConfig {
 	percentage: number;

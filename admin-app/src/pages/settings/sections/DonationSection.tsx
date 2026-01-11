@@ -1,6 +1,6 @@
-import { Input } from "@/components/ui/Input";
-import { InputMoney } from "@/components/ui/InputMoney";
-import { Label } from "@/components/ui/Label";
+import { Input } from "/src/components/ui/Input";
+import { InputMoney } from "/src/components/ui/InputMoney";
+import { Label } from "/src/components/ui/Label";
 import { useSettings } from "../SettingsContext";
 
 export default function DonationSection() {
