@@ -2,11 +2,10 @@ import { clsx } from "clsx";
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 
-export interface InputMoneyProps
-  extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement>,
-    "onChange" | "value"
-  > {
+export interface InputMoneyProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "onChange" | "value"
+> {
   value: number | string;
   onChange: (value: number) => void;
   currency?: string;
