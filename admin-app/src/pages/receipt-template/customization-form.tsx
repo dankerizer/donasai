@@ -1,4 +1,5 @@
-import { Save } from "lucide-react";
+import { RefreshCcw, Save } from "lucide-react";
+import { toast } from "sonner";
 // Import shared components
 import { LogoUploader } from "@/components/shared/LogoUploader";
 import { OrganizationForm } from "@/components/shared/OrganizationForm";
@@ -6,6 +7,7 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Radio } from "@/components/ui/Radio";
+import { useSettingsFetch } from "@/pages/settings/hooks/use-settings-data";
 import { FooterEditor } from "./footer-editor";
 import type { ReceiptTemplate } from "./hooks/use-receipt-template";
 
@@ -22,6 +24,9 @@ export function CustomizationForm({
 	onSave,
 	isSaving,
 }: CustomizationFormProps) {
+	// Fetch global settings for Sync
+	const { data: globalSettings } = useSettingsFetch();
+
 	if (!template) {
 		return (
 			<div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
@@ -60,6 +65,45 @@ export function CustomizationForm({
 		});
 	};
 
+	// Function to Sync from General Settings
+	const handleSyncFromGeneral = () => {
+		if (!globalSettings) {
+			toast.error("Gagal memuat pengaturan utama");
+			return;
+		}
+
+		const { formData } = globalSettings;
+
+		// 1. Update Organization Fields
+		handleOrganizationChange({
+			...template.organization,
+			name: formData.org_name,
+			email: formData.org_email,
+			phone: formData.org_phone,
+			// Map general address to line 1, clear others
+			address_line_1: formData.org_address,
+			address_line_2: "",
+			city: "",
+			postal_code: "",
+		});
+
+		// 2. Update Logo (if exists)
+		if (formData.org_logo) {
+			// Note: We don't have attachment ID from string, so we set 0
+			// The PHP backend should handle URL-only logos if ID is 0
+			handleLogoChange({
+				url: formData.org_logo,
+				attachment_id: 0,
+				width: 0,
+				height: 0,
+			});
+		}
+
+		toast.success("Data disinkronkan dari Pengaturan Utama", {
+			description: "Klik Simpan untuk menerapkan perubahan.",
+		});
+	};
+
 	return (
 		<div className="space-y-6">
 			{/* Logo Section */}
@@ -69,17 +113,28 @@ export function CustomizationForm({
 
 			{/* Organization Info Section */}
 			<div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 shadow-sm">
-				<div>
-					<h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-						🏢 Informasi Organisasi
-					</h3>
-					<p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-						Informasi ini akan muncul di semua kuitansi donasi
-					</p>
+				<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+					<div>
+						<h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+							🏢 Informasi Organisasi
+						</h3>
+						<p className="text-sm text-gray-500 dark:text-gray-400">
+							Informasi ini akan muncul di semua kuitansi donasi
+						</p>
+					</div>
+					<button
+						type="button"
+						onClick={handleSyncFromGeneral}
+						className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200 transition-colors"
+						title="Ambil data dari Pengaturan Utama"
+					>
+						<RefreshCcw size={16} />
+						Ambil dari Pengaturan
+					</button>
 				</div>
 				<OrganizationForm
 					data={template.organization}
-					onChange={(organization)=>handleOrganizationChange(organization)}
+					onChange={(organization) => handleOrganizationChange(organization)}
 					mode="detailed"
 					showLogo={false} // Logo is separate above
 				/>
@@ -107,7 +162,10 @@ export function CustomizationForm({
 						<div>
 							<Label>Format Kuitansi</Label>
 							<div className="space-y-3 mt-3">
-								<label htmlFor="format-html" className="flex items-start gap-3 p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50 dark:has-[:checked]:bg-emerald-950">
+								<label
+									htmlFor="format-html"
+									className="flex items-start gap-3 p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50 dark:has-[:checked]:bg-emerald-950"
+								>
 									<div className="mt-0.5">
 										<Radio
 											name="format"
@@ -129,7 +187,10 @@ export function CustomizationForm({
 									</div>
 								</label>
 
-								<label htmlFor="format-pdf" className="flex items-start gap-3 p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50 dark:has-[:checked]:bg-emerald-950">
+								<label
+									htmlFor="format-pdf"
+									className="flex items-start gap-3 p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50 dark:has-[:checked]:bg-emerald-950"
+								>
 									<div className="mt-0.5">
 										<Radio
 											name="format"
@@ -241,7 +302,7 @@ export function CustomizationForm({
 						Pastikan untuk menyimpan perubahan Anda
 					</p>
 					<button
-					type="button"
+						type="button"
 						onClick={onSave}
 						disabled={isSaving}
 						className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-sm hover:shadow-md"

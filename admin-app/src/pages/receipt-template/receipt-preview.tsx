@@ -41,10 +41,10 @@ export function ReceiptPreview({
 			{/* Header */}
 			<div className="flex items-center justify-between">
 				<div>
-					<h3 className="text-lg font-semibold text-gray-900 dark:text-white! flex items-center gap-2">
+					<h3 className="text-lg font-semibold text-gray-900 dark:text-white! flex items-center gap-2 my-0!">
 						👁️ Live Preview
 					</h3>
-					<p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+					<p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5!">
 						Preview menggunakan data donasi contoh
 					</p>
 				</div>

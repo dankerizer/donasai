@@ -1,14 +1,70 @@
-import { Bell, CreditCard, Link as LinkIcon } from "lucide-react";
+import { Bell, CreditCard, Link as LinkIcon, RefreshCcw } from "lucide-react";
+import { toast } from "sonner";
 // Use shared component to avoid redundancy
 import { OrganizationForm } from "@/components/shared/OrganizationForm";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Select } from "@/components/ui/Select";
 import type { ReceiptTemplate } from "@/pages/receipt-template/hooks/use-receipt-template";
+import { useReceiptTemplate } from "@/pages/receipt-template/hooks/use-receipt-template";
 import { useSettings } from "../SettingsContext";
 
+// Sync Button Sub-component to handle conditional hooks
+function ProSyncButton({ formData }: { formData: any }) {
+	const { template, updateTemplate, isUpdating } = useReceiptTemplate();
+
+	const handleSyncToReceipt = () => {
+		if (!template) return;
+
+		updateTemplate({
+			...template,
+			organization: {
+				...template.organization,
+				name: formData.org_name,
+				email: formData.org_email,
+				phone: formData.org_phone,
+				address_line_1: formData.org_address,
+				// Keep existing values for detailed fields that don't map directly
+				address_line_2: "",
+				city: "",
+				postal_code: "",
+				// Update logo (Receipt uses object/string)
+				// The backend handles string URLs if object structure is expected, usually via sanitization
+				// But ReceiptTemplate expects object or string in frontend now?
+				// Interface says: logo: { url... }
+				// But we updated organization form to handle strings.
+				// However backend expects specific structure for template.logo
+			},
+			// Also sync the main logo
+			logo: formData.org_logo
+				? {
+						url: formData.org_logo,
+						attachment_id: 0,
+						width: 0,
+						height: 0,
+					}
+				: template.logo,
+		});
+
+		toast.success("Data organisasi diterapkan ke Template Kuitansi");
+	};
+
+	return (
+		<button
+			type="button"
+			onClick={handleSyncToReceipt}
+			disabled={isUpdating}
+			className="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200 transition-colors"
+			title="Terapkan data ke Template Kuitansi (Pro)"
+		>
+			<RefreshCcw size={16} className={isUpdating ? "animate-spin" : ""} />
+			Terapkan ke Template Kuitansi
+		</button>
+	);
+}
+
 export default function GeneralSection() {
-	const { formData, setFormData, pages } = useSettings();
+	const { formData, setFormData, pages, isProInstalled } = useSettings();
 
 	const handleOrgChange = (newOrgData: any) => {
 		setFormData({
@@ -38,12 +94,17 @@ export default function GeneralSection() {
 	return (
 		<div className="space-y-8">
 			<div>
-				<h3 className="text-lg font-medium text-gray-900 mb-1">
-					Detail Organisasi
-				</h3>
-				<p className="text-sm text-gray-500 mb-4">
-					Informasi ini akan muncul pada kuitansi donasi.
-				</p>
+				<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+					<div>
+						<h3 className="text-lg font-medium text-gray-900 mb-1">
+							Detail Organisasi
+						</h3>
+						<p className="text-sm text-gray-500">
+							Informasi ini akan muncul pada kuitansi donasi.
+						</p>
+					</div>
+					{isProInstalled && <ProSyncButton formData={formData} />}
+				</div>
 
 				{/* Use Shared Component */}
 				<OrganizationForm
