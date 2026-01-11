@@ -1,6 +1,7 @@
+import ManualDonationModal from "@/components/ManualDonationModal";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { clsx } from "clsx";
-import { CheckCircle, ChevronDown, Eye, Pencil, Save, X } from "lucide-react";
+import { CheckCircle, ChevronDown, Eye, Pencil, Plus, Save, X } from "lucide-react";
 import { useState } from "react";
 
 // Mock Data Type
@@ -61,6 +62,12 @@ export default function DonationsPage() {
 	const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
 	const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
 	const [isCampaignDropdownOpen, setIsCampaignDropdownOpen] = useState(false);
+	const [isManualDonationOpen, setIsManualDonationOpen] = useState(false);
+
+	// Check if Pro is active
+	const isPro = (window as any).wpdSettings?.isPro;
+	const proSettings = (window as any).wpdProSettings || {};
+	const isProActive = isPro && (proSettings.licenseStatus === 'active' || proSettings.licenseStatus === 'valid');
 
 	const toggleStatus = (status: string) => {
 		setSelectedStatuses((prev) =>
@@ -163,6 +170,16 @@ export default function DonationsPage() {
 			<div className="flex flex-col gap-4">
 				<div className="flex justify-between items-center">
 					<h2 className="text-2xl font-bold text-gray-800">Donasi</h2>
+					{isProActive && (
+						<button
+							type="button"
+							onClick={() => setIsManualDonationOpen(true)}
+							className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium text-sm flex items-center gap-2 shadow-md"
+						>
+							<Plus size={16} />
+							Tambah Manual
+						</button>
+					)}
 				</div>
 
 				{/* Filter Bar */}
@@ -782,6 +799,13 @@ export default function DonationsPage() {
 					</div>
 				</div>
 			)}
+
+			{/* Manual Donation Modal (Pro) */}
+			<ManualDonationModal
+				isOpen={isManualDonationOpen}
+				onClose={() => setIsManualDonationOpen(false)}
+				onSuccess={() => queryClient.invalidateQueries({ queryKey: ["donations"] })}
+			/>
 		</div>
 	);
 }

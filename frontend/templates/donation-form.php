@@ -34,9 +34,12 @@ $primary_color = $settings_app['brand_color'] ?? '#059669';
 $button_color = $settings_app['button_color'] ?? '#ec4899';
 $font_family = $settings_app['font_family'] ?? 'Inter';
 $font_size = $settings_app['font_size'] ?? '16px';
-$dark_mode = $settings_app['dark_mode'] ?? false;
+// Pro Check for Dark Mode
+$is_pro = defined('WPD_PRO_VERSION'); // simplified check or function
+$dark_mode = ($settings_app['dark_mode'] ?? false) && $is_pro;
+
 $donation_layout = $settings_app['donation_layout'] ?? 'default';
-if (!defined('WPD_PRO_VERSION')) {
+if (!$is_pro) {
     $donation_layout = 'default';
 }
 
@@ -367,6 +370,48 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                         <?php endif; ?>
                     </div>
                 </div>
+
+                <?php
+                // Fee Coverage (Pro Only)
+                if (defined('WPD_PRO_VERSION')) {
+                    $fee_settings = get_option('wpd_pro_fee_coverage', []);
+                    $fee_enabled = !empty($fee_settings['enabled']);
+                    $fee_default_checked = !empty($fee_settings['default_checked']);
+
+                    if ($fee_enabled):
+                        ?>
+                        <div class="wpd-section wpd-fee-coverage-section" id="fee-coverage-section" style="display:none;">
+                            <div class="wpd-fee-wrapper">
+                                <label class="wpd-fee-checkbox">
+                                    <input type="checkbox" name="cover_fee" value="1" id="cover_fee_checkbox" <?php echo $fee_default_checked ? 'checked' : ''; ?>>
+                                    <span class="wpd-fee-check-icon"></span>
+                                    <div class="wpd-fee-text">
+                                        <span class="wpd-fee-label">Saya ingin menanggung biaya admin</span>
+                                        <span class="wpd-fee-amount" id="fee_amount_display">Rp 0</span>
+                                    </div>
+                                </label>
+                                <input type="hidden" name="fee_amount" id="fee_amount" value="0">
+
+                                <div class="wpd-fee-summary" id="fee_summary" style="display:none;">
+                                    <div class="wpd-fee-row">
+                                        <span>Donasi</span>
+                                        <span id="base_amount_display">Rp 0</span>
+                                    </div>
+                                    <div class="wpd-fee-row">
+                                        <span>Biaya Admin</span>
+                                        <span id="fee_display">Rp 0</span>
+                                    </div>
+                                    <div class="wpd-fee-row wpd-fee-total">
+                                        <span>Total</span>
+                                        <span id="total_display">Rp 0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <?php
+                    endif;
+                }
+                ?>
 
                 <!-- FOOTER ACTION -->
                 <div class="wpd-footer-action">
@@ -1029,6 +1074,102 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
             visibility: visible;
             opacity: 1;
             bottom: 50px;
+        }
+
+        /* Fee Coverage Styles */
+        .wpd-fee-coverage-section {
+            background: #f0fdf4;
+            border-top: 1px solid #86efac;
+            border-bottom: 1px solid #86efac;
+        }
+
+        .wpd-fee-wrapper {
+            padding: 5px 0;
+        }
+
+        .wpd-fee-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 10px;
+            transition: background 0.2s;
+        }
+
+        .wpd-fee-checkbox:hover {
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .wpd-fee-checkbox input[type="checkbox"] {
+            display: none;
+        }
+
+        .wpd-fee-check-icon {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #22c55e;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .wpd-fee-checkbox input:checked+.wpd-fee-check-icon {
+            background: #22c55e;
+            border-color: #22c55e;
+        }
+
+        .wpd-fee-checkbox input:checked+.wpd-fee-check-icon::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .wpd-fee-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .wpd-fee-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #166534;
+        }
+
+        .wpd-fee-amount {
+            font-size: 13px;
+            color: #15803d;
+            font-weight: 500;
+        }
+
+        .wpd-fee-summary {
+            margin-top: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #dcfce7;
+        }
+
+        .wpd-fee-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #374151;
+            padding: 6px 0;
+        }
+
+        .wpd-fee-row.wpd-fee-total {
+            border-top: 1px dashed #d1d5db;
+            margin-top: 6px;
+            padding-top: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            color: #111827;
         }
     </style>
 

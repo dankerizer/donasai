@@ -1,9 +1,10 @@
 /** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
 
+import { Crown, Lock, Plus, Trash } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { Crown, Lock, Plus, Trash } from "lucide-react";
 import { useSettings } from "../SettingsContext";
+import FeeCoverageSection from "./FeeCoverageSection";
 
 export default function PaymentSection() {
 	const {
@@ -186,9 +187,10 @@ export default function PaymentSection() {
 						</div>
 
 						{/* Pro Teaser */}
-						<div
+						<button
+							type="button"
 							id="proTeaser"
-							className="bg-gray-50 border border-gray-200 rounded-lg p-3 flex justify-between items-center cursor-pointer hover:bg-gray-100"
+							className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 flex justify-between items-center cursor-pointer hover:bg-gray-100"
 							onClick={() => setShowProModal(true)}
 						>
 							<div className="flex items-center gap-2">
@@ -200,7 +202,7 @@ export default function PaymentSection() {
 							<span className="text-xs text-purple-600 font-bold">
 								Upgrade Pro
 							</span>
-						</div>
+						</button>
 					</div>
 				)}
 			</div>
@@ -337,6 +339,208 @@ export default function PaymentSection() {
 					</div>
 				)}
 			</div>
-		</div>
-	);
+			
+			<div className="border-t border-gray-200 pt-6">
+				<h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+					Xendit Payment Gateway
+					{licenseStatus !== "active" && (
+						<span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">
+							PRO
+						</span>
+					)}
+				</h3>
+
+				{licenseStatus === "active" ? (
+					<div className="space-y-4">
+						<div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4">
+							<p className="text-sm text-gray-600 mb-2">
+								Terima pembayaran via VA, E-Wallet (OVO, DANA, LinkAja), dan QRIS menggunakan Xendit.
+							</p>
+							<div>
+								<Label
+									htmlFor="pro_xendit_api_key"
+									className="text-xs text-gray-700 mb-1"
+								>
+									Xendit Secret API Key
+								</Label>
+								<Input
+									id="pro_xendit_api_key"
+									type="password"
+									className="font-mono text-xs bg-white border-gray-300"
+									value={formData.pro_xendit_api_key}
+									onChange={(e) =>
+										setFormData({
+											...formData,
+											pro_xendit_api_key: e.target.value,
+										})
+									}
+									placeholder="xnd_..."
+								/>
+								<p className="text-[10px] text-gray-400 mt-1">
+									Dapatkan ID di Dashboard Xendit &gt; Settings &gt; API Keys.
+								</p>
+							</div>
+						</div>
+					</div>
+				) : (
+					<div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center space-y-4 relative overflow-hidden">
+						<div className="absolute top-0 right-0 p-2 opacity-5">
+							<Crown size={120} />
+						</div>
+						<div className="relative z-10 flex flex-col items-center">
+							<div className="p-3 bg-purple-100 text-purple-600 rounded-full mb-2">
+								<Lock size={24} />
+							</div>
+							<h4 className="text-lg font-bold text-gray-900">
+								Aktifkan Xendit Gateway
+							</h4>
+							<p className="text-sm text-gray-500 max-w-sm mx-auto mb-4">
+								Dukungan pembayaran lengkap (VA, OVO, DANA, LinkAja, ShopeePay) via Xendit.
+							</p>
+							<button
+								type="button"
+								onClick={() => setShowProModal(true)}
+								className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition"
+							>
+								Upgrade Pro
+							</button>
+						</div>
+					</div>
+				)}
+			</div>
+
+
+	<div className="border-t border-gray-200 pt-6">
+		<h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+			Tripay Payment Gateway
+			{licenseStatus !== "active" && (
+				<span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">
+					PRO
+				</span>
+			)}
+		</h3>
+
+		{licenseStatus === "active" ? (
+			<div className="space-y-4">
+				<div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4">
+					<div className="flex items-center space-x-3">
+						<input
+							type="checkbox"
+							id="tripay_production"
+							checked={formData.pro_tripay_is_production}
+							onChange={(e) =>
+								setFormData((prev) => ({
+									...prev,
+									pro_tripay_is_production: e.target.checked,
+								}))
+							}
+							className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+						/>
+						<label
+							htmlFor="tripay_production"
+							className="text-sm font-medium text-purple-900"
+						>
+							Mode Produksi
+						</label>
+					</div>
+
+					<div className="grid md:grid-cols-2 gap-4">
+						<div>
+							<Label
+								htmlFor="pro_tripay_api_key"
+								className="text-xs text-gray-700 mb-1"
+							>
+								API Key
+							</Label>
+							<Input
+								id="pro_tripay_api_key"
+								type="password"
+								className="font-mono text-xs bg-white border-gray-300"
+								value={formData.pro_tripay_api_key}
+								onChange={(e) =>
+									setFormData({
+										...formData,
+										pro_tripay_api_key: e.target.value,
+									})
+								}
+								placeholder="Tripay API Key..."
+							/>
+						</div>
+						<div>
+							<Label
+								htmlFor="pro_tripay_private_key"
+								className="text-xs text-gray-700 mb-1"
+							>
+								Private Key
+							</Label>
+							<Input
+								id="pro_tripay_private_key"
+								type="password"
+								className="font-mono text-xs bg-white border-gray-300"
+								value={formData.pro_tripay_private_key}
+								onChange={(e) =>
+									setFormData({
+										...formData,
+										pro_tripay_private_key: e.target.value,
+									})
+								}
+								placeholder="Tripay Private Key..."
+							/>
+						</div>
+					</div>
+					<div>
+						<Label
+							htmlFor="pro_tripay_merchant_code"
+							className="text-xs text-gray-700 mb-1"
+						>
+							Merchant Code
+						</Label>
+						<Input
+							id="pro_tripay_merchant_code"
+							type="text"
+							className="font-mono text-xs bg-white border-gray-300"
+							value={formData.pro_tripay_merchant_code}
+							onChange={(e) =>
+								setFormData({
+									...formData,
+									pro_tripay_merchant_code: e.target.value,
+								})
+							}
+							placeholder="e.g. T12345"
+						/>
+					</div>
+				</div>
+			</div>
+		) : (
+			<div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center space-y-4 relative overflow-hidden">
+				<div className="absolute top-0 right-0 p-2 opacity-5">
+					<Crown size={120} />
+				</div>
+				<div className="relative z-10 flex flex-col items-center">
+					<div className="p-3 bg-purple-100 text-purple-600 rounded-full mb-2">
+						<Lock size={24} />
+					</div>
+					<h4 className="text-lg font-bold text-gray-900">
+						Aktifkan Tripay Gateway
+					</h4>
+					<p className="text-sm text-gray-500 max-w-sm mx-auto mb-4">
+						Alternatif payment gateway lokal dengan fee kompetitif dan banyak
+						channel pembayaran.
+					</p>
+					<button
+						type="button"
+						onClick={() => setShowProModal(true)}
+						className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition"
+					>
+						Upgrade Pro
+					</button>
+				</div>
+			</div>
+		)}
+	</div>;
+	<div className="border-t border-gray-200 pt-6">
+		<FeeCoverageSection />
+	</div>;
+	</div>
+	)
 }

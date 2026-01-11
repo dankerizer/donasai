@@ -103,6 +103,14 @@ Kalau mau, ini bisa langsung dipecah jadi:
 - section “Features” untuk landing page Free,  
 - section “Why go Pro?” berisi subset feature Pro + copy marketing singkat yang bisa dibantu disusun berikutnya.
 
+
+-- ide
+- template editor untuk tanda terima
+- validasi QR code
+- Tanda tangan digital dengan QR code
+- Real PDF receipt
+- 
+
 [1](https://wordpress.org/plugins/give/)
 [2](https://givewp.com)
 [3](https://www.wpcharitable.com)

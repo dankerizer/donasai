@@ -30,6 +30,8 @@ function wpd_api_get_settings()
 {
     $bank = get_option('wpd_settings_bank', array('bank_name' => '', 'account_number' => '', 'account_name' => ''));
     $midtrans = get_option('wpd_settings_midtrans', array('enabled' => false, 'is_production' => false, 'server_key' => ''));
+    $xendit = array('api_key' => '');
+    $tripay = array('api_key' => '', 'private_key' => '', 'merchant_code' => '', 'is_production' => false);
     $license = get_option('wpd_license', array('key' => '', 'status' => 'inactive'));
 
     // Check real Pro License from Pro Plugin if available
@@ -59,11 +61,15 @@ function wpd_api_get_settings()
         'button_color' => '#ec4899',
         'container_width' => '1100px',
         'border_radius' => '12px',
-        'campaign_layout' => 'sidebar-right',
-        'font_family' => 'Inter',
+        'campaign_layout' => 'sidebar-right', // sidebar-right, sidebar-left, full-width
+        'hero_style' => 'standard', // standard, wide, overlay
+        'font_family' => 'Inter', // Inter, Roboto, Open Sans, Poppins, Lato
         'font_size' => '16px',
+        'sidebar_count' => 5, // donors in sidebar
+        'donor_per_page' => 10,
+        'donation_layout' => 'default', // default, split
         'dark_mode' => false,
-        'donation_layout' => 'default'
+        'custom_css' => ''
     ));
 
     // Pro Settings (Midtrans Override)
@@ -83,6 +89,15 @@ function wpd_api_get_settings()
         $donation['recurring_intervals'] = $pro_intervals;
 
         $bank['pro_accounts'] = get_option('wpd_pro_bank_accounts', []);
+
+        $xendit['api_key'] = get_option('wpd_pro_xendit_api_key', '');
+
+        $tripay = array(
+            'api_key' => get_option('wpd_pro_tripay_api_key', ''),
+            'private_key' => get_option('wpd_pro_tripay_private_key', ''),
+            'merchant_code' => get_option('wpd_pro_tripay_merchant_code', ''),
+            'is_production' => get_option('wpd_pro_tripay_is_production') == '1'
+        );
     }
 
     // Get all pages for dropdown
@@ -98,6 +113,8 @@ function wpd_api_get_settings()
     return rest_ensure_response(array(
         'bank' => $bank,
         'midtrans' => $midtrans,
+        'xendit' => $xendit,
+        'tripay' => $tripay,
         'license' => $license,
         'organization' => $organization,
         'notifications' => $notifications,
@@ -151,6 +168,19 @@ function wpd_api_update_settings($request)
             update_option('wpd_pro_midtrans_client_key', sanitize_text_field($params['midtrans']['pro_client_key']));
         if (isset($params['midtrans']['pro_is_production']))
             update_option('wpd_pro_midtrans_is_production', !empty($params['midtrans']['pro_is_production']) ? '1' : '0');
+    }
+
+    if (isset($params['xendit'])) {
+        if (isset($params['xendit']['api_key'])) {
+            update_option('wpd_pro_xendit_api_key', sanitize_text_field($params['xendit']['api_key']));
+        }
+    }
+
+    if (isset($params['tripay'])) {
+        update_option('wpd_pro_tripay_api_key', sanitize_text_field($params['tripay']['api_key'] ?? ''));
+        update_option('wpd_pro_tripay_private_key', sanitize_text_field($params['tripay']['private_key'] ?? ''));
+        update_option('wpd_pro_tripay_merchant_code', sanitize_text_field($params['tripay']['merchant_code'] ?? ''));
+        update_option('wpd_pro_tripay_is_production', !empty($params['tripay']['is_production']) ? '1' : '0');
     }
 
     if (isset($params['organization'])) {
@@ -212,6 +242,7 @@ function wpd_api_update_settings($request)
             'container_width' => sanitize_text_field($params['appearance']['container_width'] ?? '1100px'),
             'border_radius' => sanitize_text_field($params['appearance']['border_radius'] ?? '12px'),
             'campaign_layout' => sanitize_text_field($params['appearance']['campaign_layout'] ?? 'sidebar-right'),
+            'hero_style' => sanitize_text_field($params['appearance']['hero_style'] ?? 'standard'),
             'font_family' => sanitize_text_field($params['appearance']['font_family'] ?? 'Inter'),
             'font_size' => sanitize_text_field($params['appearance']['font_size'] ?? '16px'),
             'dark_mode' => $params['appearance']['dark_mode'] ?? false,

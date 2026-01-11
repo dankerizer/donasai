@@ -157,8 +157,16 @@ class WPD_Email
 						</div>
 					<?php endif; ?>
 
-					<?php if ($type === 'complete'): ?>
-						<p><a href="<?php echo esc_url(home_url('/?wpd_receipt=' . $donation->id)); ?>"
+					<?php if ($type === 'complete'):
+						// Generate persistent token for receipt access
+						$token_seed = $donation->id . ($donation->created_at ?? '') . wp_salt('auth');
+						$token = hash('sha256', $token_seed);
+						$receipt_url = add_query_arg([
+							'wpd_receipt' => $donation->id,
+							'token' => $token
+						], home_url('/'));
+						?>
+						<p><a href="<?php echo esc_url($receipt_url); ?>"
 								class="btn"><?php esc_html_e('Download E-Receipt', 'donasai'); ?></a></p>
 					<?php endif; ?>
 

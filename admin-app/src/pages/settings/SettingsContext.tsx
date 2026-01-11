@@ -36,6 +36,7 @@ export interface SettingsFormData {
 	container_width: string;
 	border_radius: string;
 	campaign_layout: string;
+	hero_style: string;
 	font_family: string;
 	font_size: string;
 	dark_mode: boolean;
@@ -55,6 +56,13 @@ export interface SettingsFormData {
 	pro_midtrans_server_key: string;
 	pro_midtrans_client_key: string;
 	pro_midtrans_production: boolean;
+	// Pro Xendit
+	pro_xendit_api_key: string;
+	// Pro Tripay
+	pro_tripay_api_key: string;
+	pro_tripay_private_key: string;
+	pro_tripay_merchant_code: string;
+	pro_tripay_is_production: boolean;
 	// Organization
 	org_name: string;
 	org_address: string;
@@ -115,6 +123,7 @@ const initialFormData: SettingsFormData = {
 	container_width: "1100px",
 	border_radius: "12px",
 	campaign_layout: "sidebar-right",
+	hero_style: "standard",
 	font_family: "Inter",
 	font_size: "16px",
 	dark_mode: false,
@@ -134,6 +143,13 @@ const initialFormData: SettingsFormData = {
 	pro_midtrans_server_key: "",
 	pro_midtrans_client_key: "",
 	pro_midtrans_production: false,
+	// Pro Xendit
+	pro_xendit_api_key: "",
+	// Pro Tripay
+	pro_tripay_api_key: "",
+	pro_tripay_private_key: "",
+	pro_tripay_merchant_code: "",
+	pro_tripay_is_production: false,
 	// Organization
 	org_name: "",
 	org_address: "",
@@ -208,6 +224,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 				container_width: data.appearance?.container_width || "1100px",
 				border_radius: data.appearance?.border_radius || "12px",
 				campaign_layout: data.appearance?.campaign_layout || "sidebar-right",
+				hero_style: data.appearance?.hero_style || "standard",
 				font_family: data.appearance?.font_family || "Inter",
 				font_size: data.appearance?.font_size || "16px",
 				dark_mode:
@@ -232,6 +249,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 				pro_midtrans_server_key: data.midtrans?.pro_server_key || "",
 				pro_midtrans_client_key: data.midtrans?.pro_client_key || "",
 				pro_midtrans_production: data.midtrans?.pro_is_production === true,
+				// Pro Xendit
+				pro_xendit_api_key: data.xendit?.api_key || "",
+				// Pro Tripay
+				pro_tripay_api_key: data.tripay?.api_key || "",
+				pro_tripay_private_key: data.tripay?.private_key || "",
+				pro_tripay_merchant_code: data.tripay?.merchant_code || "",
+				pro_tripay_is_production: data.tripay?.is_production === true,
 				// Organization
 				org_name: data.organization?.org_name || "",
 				org_address: data.organization?.org_address || "",
@@ -271,6 +295,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 					container_width: data.container_width,
 					border_radius: data.border_radius,
 					campaign_layout: data.campaign_layout,
+					hero_style: data.hero_style,
 					font_family: data.font_family,
 					font_size: data.font_size,
 					dark_mode: data.dark_mode,
@@ -290,6 +315,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 					pro_server_key: data.pro_midtrans_server_key,
 					pro_client_key: data.pro_midtrans_client_key,
 					pro_is_production: data.pro_midtrans_production,
+				},
+				xendit: {
+					api_key: data.pro_xendit_api_key,
+				},
+				tripay: {
+					api_key: data.pro_tripay_api_key,
+					private_key: data.pro_tripay_private_key,
+					merchant_code: data.pro_tripay_merchant_code,
+					is_production: data.pro_tripay_is_production,
 				},
 				organization: {
 					org_name: data.org_name,

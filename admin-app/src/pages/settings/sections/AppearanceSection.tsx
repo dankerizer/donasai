@@ -1,8 +1,8 @@
+import clsx from "clsx";
+import { Lock } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Select } from "@/components/ui/Select";
-import clsx from "clsx";
-import { Lock } from "lucide-react";
 import { useSettings } from "../SettingsContext";
 
 export default function AppearanceSection() {
@@ -113,10 +113,11 @@ export default function AppearanceSection() {
 						</label>
 						<div className="grid grid-cols-3 gap-4">
 							{/* Sidebar Right */}
-							<div
+							<button
+								type="button"
 								id="campaign_layout"
 								className={clsx(
-									"border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
+									"w-full text-left border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
 									formData.campaign_layout === "sidebar-right"
 										? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
 										: "border-gray-200 bg-white",
@@ -135,12 +136,13 @@ export default function AppearanceSection() {
 								<div className="text-xs font-medium text-center text-gray-700">
 									Sidebar Kanan
 								</div>
-							</div>
+							</button>
 
 							{/* Sidebar Left */}
-							<div
+							<button
+								type="button"
 								className={clsx(
-									"border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
+									"w-full text-left border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
 									formData.campaign_layout === "sidebar-left"
 										? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
 										: "border-gray-200 bg-white",
@@ -159,12 +161,13 @@ export default function AppearanceSection() {
 								<div className="text-xs font-medium text-center text-gray-700">
 									Sidebar Kiri
 								</div>
-							</div>
+							</button>
 
 							{/* Full Width */}
-							<div
+							<button
+								type="button"
 								className={clsx(
-									"border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
+									"w-full text-left border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
 									formData.campaign_layout === "full-width"
 										? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
 										: "border-gray-200 bg-white",
@@ -182,7 +185,7 @@ export default function AppearanceSection() {
 								<div className="text-xs font-medium text-center text-gray-700">
 									Full Width
 								</div>
-							</div>
+							</button>
 						</div>
 					</div>
 				</div>
@@ -243,6 +246,8 @@ export default function AppearanceSection() {
 				<div className="grid gap-4 md:grid-cols-2">
 					{/* Typography */}
 					<div
+						role="button"
+						tabIndex={0}
 						className={clsx(
 							"border border-gray-200 rounded-lg p-4 bg-gray-50 relative",
 							!isProActive ? "opacity-60 cursor-pointer" : "",
@@ -334,7 +339,7 @@ export default function AppearanceSection() {
 						{isProActive ? (
 							<div className="mt-3">
 								<div className="flex items-center gap-3">
-									<div className="relative inline-flex items-center cursor-pointer">
+									<label className="relative inline-flex items-center cursor-pointer">
 										<input
 											type="checkbox"
 											className="sr-only peer"
@@ -347,7 +352,7 @@ export default function AppearanceSection() {
 											}
 										/>
 										<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-									</div>
+									</label>
 									<span className="text-sm text-gray-600">
 										{formData.dark_mode ? "Aktif" : "Nonaktif"}
 									</span>
@@ -387,9 +392,10 @@ export default function AppearanceSection() {
 						{isProActive ? (
 							<div className="grid grid-cols-2 gap-4">
 								{/* Default */}
-								<div
+								<button
+									type="button"
 									className={clsx(
-										"border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
+										"w-full text-left border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
 										formData.donation_layout === "default"
 											? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
 											: "border-gray-200 bg-white",
@@ -407,12 +413,13 @@ export default function AppearanceSection() {
 									<div className="text-xs font-medium text-center text-gray-700">
 										Tunggal (Default)
 									</div>
-								</div>
+								</button>
 
 								{/* Split */}
-								<div
+								<button
+									type="button"
 									className={clsx(
-										"border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
+										"w-full text-left border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
 										formData.donation_layout === "split"
 											? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
 											: "border-gray-200 bg-white",
@@ -431,11 +438,117 @@ export default function AppearanceSection() {
 									<div className="text-xs font-medium text-center text-gray-700">
 										Split (Kiri Info, Kanan Form)
 									</div>
-								</div>
+								</button>
 							</div>
 						) : (
 							<p className="text-sm text-gray-500">
 								Pilihan tata letak untuk formulir donasi.
+							</p>
+						)}
+					</div>
+
+
+					{/* Hero Style (Pro Only) */}
+					<div
+						className={clsx(
+							"border border-gray-200 rounded-lg p-4 bg-gray-50 relative md:col-span-2",
+							!isProActive ? "opacity-60 cursor-pointer" : "",
+						)}
+						onClick={() => !isProActive && setShowProModal(true)}
+					>
+						<div className="flex justify-between items-start mb-4">
+							<div className="font-medium text-gray-900">
+								Gaya Hero Section
+							</div>
+							{!isProActive ? (
+								<Lock size={14} className="text-gray-400" />
+							) : (
+								<span className="text-xs font-bold text-green-600 bg-green-100 px-2 rounded">
+									Active
+								</span>
+							)}
+						</div>
+
+						{isProActive ? (
+							<div className="grid grid-cols-3 gap-4">
+								{/* Standard */}
+								<button
+									type="button"
+									className={clsx(
+										"w-full text-left border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
+										formData.hero_style === "standard"
+											? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
+											: "border-gray-200 bg-white",
+									)}
+									onClick={() =>
+										setFormData({
+											...formData,
+											hero_style: "standard",
+										})
+									}
+								>
+									<div className="aspect-video bg-gray-100 rounded mb-2 flex flex-col items-center justify-center p-2 gap-1">
+										<div className="bg-gray-300 w-full h-1/2 rounded-sm"></div>
+										<div className="bg-gray-400 w-3/4 h-2 rounded-sm"></div>
+									</div>
+									<div className="text-xs font-medium text-center text-gray-700">
+										Standard
+									</div>
+								</button>
+
+								{/* Wide */}
+								<button
+									type="button"
+									className={clsx(
+										"w-full text-left border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
+										formData.hero_style === "wide"
+											? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
+											: "border-gray-200 bg-white",
+									)}
+									onClick={() =>
+										setFormData({
+											...formData,
+											hero_style: "wide",
+										})
+									}
+								>
+									<div className="aspect-video bg-gray-100 rounded mb-2 flex flex-col gap-1 p-1">
+										<div className="bg-gray-300 w-full h-2/3 rounded-sm"></div>
+										<div className="bg-gray-400 w-1/2 h-2 rounded-sm ml-1"></div>
+									</div>
+									<div className="text-xs font-medium text-center text-gray-700">
+										Wide (Lebar Penuh)
+									</div>
+								</button>
+
+								{/* Overlay */}
+								<button
+									type="button"
+									className={clsx(
+										"w-full text-left border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
+										formData.hero_style === "overlay"
+											? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
+											: "border-gray-200 bg-white",
+									)}
+									onClick={() =>
+										setFormData({
+											...formData,
+											hero_style: "overlay",
+										})
+									}
+								>
+									<div className="aspect-video bg-gray-300 rounded mb-2 flex items-center justify-center relative overflow-hidden">
+										<div className="absolute inset-0 bg-black/30"></div>
+										<div className="relative bg-white w-2/3 h-2 rounded-sm"></div>
+									</div>
+									<div className="text-xs font-medium text-center text-gray-700">
+										Overlay (Teks diatas Gambar)
+									</div>
+								</button>
+							</div>
+						) : (
+							<p className="text-sm text-gray-500">
+								Pilihan gaya tampilan gambar utama (cover) campaign.
 							</p>
 						)}
 					</div>

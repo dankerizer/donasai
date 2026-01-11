@@ -118,5 +118,107 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    // Fee Coverage Logic
+    initFeeCoverage();
 });
 
+/**
+ * Fee Coverage Feature (Pro)
+ */
+function initFeeCoverage() {
+    const feeSection = document.getElementById("fee-coverage-section");
+    const feeCheckbox = document.getElementById("cover_fee_checkbox");
+    const feeSummary = document.getElementById("fee_summary");
+    const amountHidden = document.getElementById("amount");
+    
+    if (!feeSection || !feeCheckbox) return;
+
+    // Show fee section
+    feeSection.style.display = "block";
+
+    // Listen for amount changes
+    if (amountHidden) {
+        const observer = new MutationObserver(() => {
+            updateFeeCalculation();
+        });
+        observer.observe(amountHidden, { attributes: true, attributeFilter: ['value'] });
+        
+        // Also listen for direct value changes via interval (fallback)
+        let lastAmount = amountHidden.value;
+        setInterval(() => {
+            if (amountHidden.value !== lastAmount) {
+                lastAmount = amountHidden.value;
+                updateFeeCalculation();
+            }
+        }, 300);
+    }
+
+    // Listen for payment method changes
+    document.querySelectorAll('input[name="payment_method"]').forEach((radio) => {
+        radio.addEventListener("change", updateFeeCalculation);
+    });
+
+    // Listen for checkbox changes
+    feeCheckbox.addEventListener("change", () => {
+        if (feeSummary) {
+            feeSummary.style.display = feeCheckbox.checked ? "block" : "none";
+        }
+        updateFeeCalculation();
+    });
+
+    // Initial calculation
+    updateFeeCalculation();
+}
+
+async function updateFeeCalculation() {
+    const feeCheckbox = document.getElementById("cover_fee_checkbox");
+    const feeAmountHidden = document.getElementById("fee_amount");
+    const feeAmountDisplay = document.getElementById("fee_amount_display");
+    const feeSummary = document.getElementById("fee_summary");
+    const baseAmountDisplay = document.getElementById("base_amount_display");
+    const feeDisplay = document.getElementById("fee_display");
+    const totalDisplay = document.getElementById("total_display");
+    const amountHidden = document.getElementById("amount");
+
+    if (!feeCheckbox || !amountHidden) return;
+
+    const baseAmount = parseInt(amountHidden.value || "0", 10);
+    const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+    let gateway = paymentMethod ? paymentMethod.value : "manual";
+    
+    // Handle multi-bank manual format (manual_123 -> manual)
+    if (gateway.startsWith("manual_")) {
+        gateway = "manual";
+    }
+
+    if (baseAmount <= 0) {
+        if (feeAmountDisplay) feeAmountDisplay.textContent = "Rp 0";
+        if (feeAmountHidden) feeAmountHidden.value = "0";
+        return;
+    }
+
+    try {
+        const response = await fetch(`/wp-json/wpd-pro/v1/fee/calculate?amount=${baseAmount}&gateway=${gateway}`);
+        const data = await response.json();
+
+        if (feeAmountDisplay) {
+            feeAmountDisplay.textContent = data.fee_formatted || "Rp 0";
+        }
+
+        if (feeCheckbox.checked) {
+            if (feeAmountHidden) feeAmountHidden.value = data.fee || 0;
+            if (baseAmountDisplay) baseAmountDisplay.textContent = "Rp " + formatMoney(baseAmount);
+            if (feeDisplay) feeDisplay.textContent = data.fee_formatted || "Rp 0";
+            if (totalDisplay) totalDisplay.textContent = data.total_formatted || "Rp " + formatMoney(baseAmount);
+            if (feeSummary) feeSummary.style.display = "block";
+        } else {
+            if (feeAmountHidden) feeAmountHidden.value = "0";
+            if (feeSummary) feeSummary.style.display = "none";
+        }
+    } catch (err) {
+        console.warn("Fee calculation error:", err);
+        // Fallback: no fee
+        if (feeAmountHidden) feeAmountHidden.value = "0";
+    }
+}

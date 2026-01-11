@@ -29,6 +29,7 @@ export default function SettingsLayout() {
 		isLoading,
 		saveSettings,
 		setShowProModal,
+		isSaving,
 	} = useSettings();
 
 	// Get initial tab from URL
@@ -110,7 +111,7 @@ export default function SettingsLayout() {
 							{proSettings.connectUrl ? (
 								<a
 									href={proSettings.connectUrl}
-									className="block w-full py-3.5 px-6 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 active:scale-95"
+									className="block w-full py-3.5 px-6 bg-blue-600 hover:bg-blue-700 text-white! font-bold rounded-xl transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 active:scale-95 focus:text-blue-100!"
 								>
 									Hubungkan & Aktivasi
 								</a>
@@ -161,7 +162,7 @@ export default function SettingsLayout() {
 									Premium Features
 								</span>
 							</div>
-							<h3 className="text-2xl font-bold mb-2 tracking-tight text-white!">
+							<h3 className="text-2xl! font-bold mb-2! mt-0! tracking-tight text-white!">
 								Upgrade ke Donasai Pro
 							</h3>
 							<p className="text-emerald-50 text-sm leading-relaxed max-w-md">
@@ -241,6 +242,26 @@ export default function SettingsLayout() {
 						{activeTab === "appearance" && <AppearanceSection />}
 						{activeTab === "advanced" && <AdvancedSection />}
 						{activeTab === "license" && <LicenseSection />}
+						
+						<div className="flex justify-end pt-6 border-t border-gray-100">
+							<button
+								type="submit"
+								disabled={isLoading || isSaving}
+								className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-6 py-2.5 rounded-lg shadow-sm hover:shadow-md transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+							>
+								{isSaving ? (
+									<>
+										<div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+										<span>Menyimpan...</span>
+									</>
+								) : (
+									<>
+										<Check size={18} />
+										<span>Simpan Perubahan</span>
+									</>
+								)}
+							</button>
+						</div>
 					</form>
 				</div>
 			</div>
