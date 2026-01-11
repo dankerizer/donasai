@@ -27,6 +27,7 @@ import Confirmations from "./pages/Confirmations";
 import Dashboard from "./pages/Dashboard";
 import DonationsPage from "./pages/DonationsPage";
 import FundraisersPage from "./pages/FundraisersPage";
+import ReceiptTemplatePage from "./pages/receipt-template";
 import SettingsPage from "./pages/settings";
 
 // ... imports
@@ -35,7 +36,8 @@ function App() {
 	const isPro = (window as any).wpdSettings?.isPro;
 	const proSettings = (window as any).wpdProSettings || {};
 	const isLicenseActive =
-		proSettings.licenseStatus === "active" || proSettings.licenseStatus === "valid";
+		proSettings.licenseStatus === "active" ||
+		proSettings.licenseStatus === "valid";
 
 	// Show Lock if Pro is installed but License is NOT active
 	const showLock = isPro && !isLicenseActive;
@@ -133,6 +135,7 @@ function AppLayout() {
 					<Route path="/confirmations" element={<Confirmations />} />
 					<Route path="/fundraisers" element={<FundraisersPage />} />
 					<Route path="/settings" element={<SettingsPage />} />
+					<Route path="/receipt-template" element={<ReceiptTemplatePage />} />
 				</Routes>
 			</main>
 		</div>

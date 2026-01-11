@@ -5,6 +5,7 @@ import {
 	Check,
 	CreditCard,
 	Crown,
+	FileText,
 	Heart,
 	Lock,
 	Palette,
@@ -39,7 +40,7 @@ export default function SettingsLayout() {
 
 	// Sync activeTab with URL
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-		useEffect(() => {
+	useEffect(() => {
 		const params = new URLSearchParams(window.location.search);
 		const currentTab = params.get("tab");
 		if (currentTab && currentTab !== activeTab) {
@@ -48,6 +49,11 @@ export default function SettingsLayout() {
 	}, []);
 
 	const handleTabChange = (tabId: string) => {
+		if (tabId === "receipt-template") {
+			window.location.hash = "#/receipt-template";
+			return;
+		}
+
 		const params = new URLSearchParams(window.location.search);
 		params.set("tab", tabId);
 		window.history.pushState(
@@ -65,8 +71,12 @@ export default function SettingsLayout() {
 		{ id: "notifications", label: "Notifications", icon: Bell },
 		{ id: "appearance", label: "Appearance", icon: Palette },
 		{ id: "advanced", label: "Advanced", icon: Star },
+		{ id: "receipt-template", label: "Receipt Template", icon: FileText },
 		{ id: "license", label: "License", icon: Lock },
-	].filter((tab) => tab.id !== "license" || isProInstalled);
+	].filter(
+		(tab) =>
+			(tab.id !== "license" && tab.id !== "receipt-template") || isProInstalled,
+	);
 
 	const showActivationLock = isProInstalled && licenseStatus !== "active";
 
@@ -225,7 +235,9 @@ export default function SettingsLayout() {
 														? "Tampilan"
 														: tab.label === "License"
 															? "Lisensi"
-															: tab.label}
+															: tab.label === "Receipt Template"
+																? "Template Kuitansi"
+																: tab.label}
 								</span>
 							</button>
 						);
@@ -242,7 +254,7 @@ export default function SettingsLayout() {
 						{activeTab === "appearance" && <AppearanceSection />}
 						{activeTab === "advanced" && <AdvancedSection />}
 						{activeTab === "license" && <LicenseSection />}
-						
+
 						<div className="flex justify-end pt-6 border-t border-gray-100">
 							<button
 								type="submit"

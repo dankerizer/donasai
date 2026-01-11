@@ -12,7 +12,7 @@ const Label = forwardRef<
     ref={ref}
     className={twMerge(
       clsx(
-        'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-700 mb-2 block',
+        'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-gray-700 dark:text-gray-200! mb-2 block',
         className
       )
     )}

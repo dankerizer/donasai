@@ -1,19 +1,39 @@
+import { Bell, CreditCard, Link as LinkIcon } from "lucide-react";
+// Use shared component to avoid redundancy
+import { OrganizationForm } from "@/components/shared/OrganizationForm";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Select } from "@/components/ui/Select";
-import { Textarea } from "@/components/ui/Textarea";
-import {
-    Bell,
-    CreditCard,
-    Image,
-    Link as LinkIcon,
-    Trash2,
-    Upload,
-} from "lucide-react";
+import type { ReceiptTemplate } from "@/pages/receipt-template/hooks/use-receipt-template";
 import { useSettings } from "../SettingsContext";
 
 export default function GeneralSection() {
 	const { formData, setFormData, pages } = useSettings();
+
+	const handleOrgChange = (newOrgData: any) => {
+		setFormData({
+			...formData,
+			org_name: newOrgData.name,
+			org_email: newOrgData.email,
+			org_phone: newOrgData.phone,
+			org_address: newOrgData.address,
+			org_logo:
+				typeof newOrgData.logo === "string"
+					? newOrgData.logo
+					: newOrgData.logo?.url || "",
+			// Note: Website is not in General Settings schema yet, but component handles it gracefully (ignored)
+		});
+	};
+
+	// Map formData to OrganizationData format
+	const orgData = {
+		name: formData.org_name,
+		email: formData.org_email,
+		phone: formData.org_phone,
+		address: formData.org_address,
+		logo: formData.org_logo,
+		website: "", // Not used in General
+	} as unknown as ReceiptTemplate["organization"];
 
 	return (
 		<div className="space-y-8">
@@ -25,137 +45,13 @@ export default function GeneralSection() {
 					Informasi ini akan muncul pada kuitansi donasi.
 				</p>
 
-				<div className="grid gap-4">
-					<div>
-						<Label htmlFor="orgName">Nama Organisasi</Label>
-						<Input
-							type="text"
-							id="orgName"
-							value={formData.org_name}
-							onChange={(e) =>
-								setFormData({ ...formData, org_name: e.target.value })
-							}
-							placeholder="Contoh: Yayasan Amal Bhakti"
-						/>
-					</div>
-					<div>
-						<Label htmlFor="orgAddress">Alamat</Label>
-						<Textarea
-							id="orgAddress"
-							rows={3}
-							value={formData.org_address}
-							onChange={(e) =>
-								setFormData({ ...formData, org_address: e.target.value })
-							}
-							placeholder="Alamat lengkap..."
-						/>
-					</div>
-					<div className="grid grid-cols-2 gap-4">
-						<div>
-							<Label htmlFor="orgEmail">Email</Label>
-							<Input
-								type="email"
-								value={formData.org_email}
-								onChange={(e) =>
-									setFormData({
-										...formData,
-										org_email: e.target.value,
-									})
-								}
-							/>
-						</div>
-						<div>
-							<Label htmlFor="orgPhone">Telepon / WhatsApp</Label>
-							<Input
-								type="text"
-								value={formData.org_phone}
-								onChange={(e) =>
-									setFormData({
-										...formData,
-										org_phone: e.target.value,
-									})
-								}
-							/>
-						</div>
-					</div>
-					<div>
-						<Label htmlFor="orgLogo">Logo URL</Label>
-						<div className="flex items-start gap-4">
-							<div className="relative group shrink-0">
-								{formData.org_logo ? (
-									<div className="w-24 h-24 rounded-lg border border-gray-200 overflow-hidden bg-gray-50 relative">
-										<img
-											src={formData.org_logo}
-											alt="Logo"
-											className="w-full h-full object-contain"
-										/>
-										<button
-											type="button"
-											onClick={() => setFormData({ ...formData, org_logo: "" })}
-											className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-											title="Hapus Logo"
-										>
-											<Trash2 size={12} />
-										</button>
-									</div>
-								) : (
-									<div className="w-24 h-24 rounded-lg border border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center text-gray-400">
-										<Image size={24} className="mb-1" />
-										<span className="text-[10px]">No Logo</span>
-									</div>
-								)}
-							</div>
-
-							<div className="flex-1">
-								<div className="flex gap-2 mb-2">
-									<Input
-										type="text"
-										id="orgLogo"
-										className="flex-1 bg-gray-50"
-										value={formData.org_logo}
-										readOnly
-										placeholder="URL Logo..."
-									/>
-									<button
-										type="button"
-										onClick={() => {
-											// @ts-expect-error - WP Media
-											const frame = wp.media({
-												title: "Pilih Logo Organisasi",
-												button: {
-													text: "Gunakan Logo Ini",
-												},
-												multiple: false,
-											});
-
-											frame.on("select", () => {
-												const attachment = frame
-													.state()
-													.get("selection")
-													.first()
-													.toJSON();
-												setFormData({
-													...formData,
-													org_logo: attachment.url,
-												});
-											});
-
-											frame.open();
-										}}
-										className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2"
-									>
-										<Upload size={16} />
-										Upload
-									</button>
-								</div>
-								<p className="text-xs text-gray-500">
-									Format: PNG, JPG, atau WebP. Disarankan ukuran persegi (1:1)
-									minimal 512x512px.
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
+				{/* Use Shared Component */}
+				<OrganizationForm
+					data={orgData}
+					onChange={handleOrgChange}
+					mode="simple"
+					showLogo={true}
+				/>
 			</div>
 
 			<div className="border-t border-gray-200 pt-6">
