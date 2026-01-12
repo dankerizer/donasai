@@ -1,6 +1,6 @@
 /* biome-ignore-all lint/a11y/useSemanticElements: Pro feature cards use divs with role=button for conditional interactivity */
 import clsx from "clsx";
-import { Lock } from "lucide-react";
+import { Lock, RotateCcw } from "lucide-react";
 import { Input } from "/src/components/ui/Input";
 import { Label } from "/src/components/ui/Label";
 import { Select } from "/src/components/ui/Select";
@@ -12,12 +12,37 @@ export default function AppearanceSection() {
 
 	const isProActive = ["active", "pro"].includes(licenseStatus);
 
+	const handleResetAppearance = () => {
+		if (window.confirm("Kembalikan pengaturan tampilan ke default?")) {
+			setFormData({
+				...formData,
+				brand_color: "#059669",
+				button_color: "#ec4899",
+				container_width: "1100px",
+				border_radius: "12px",
+				campaign_layout: "sidebar-right",
+				sidebar_count: 5,
+				donor_per_page: 10,
+			});
+		}
+	};
+
 	return (
 		<div className="space-y-8">
 			<div>
-				<h3 className="text-lg font-medium text-gray-900 mb-4">
-					Tampilan & Layout
-				</h3>
+				<div className="flex items-center justify-between mb-4">
+					<h3 className="text-lg font-medium text-gray-900">
+						Tampilan & Layout
+					</h3>
+					<button
+						type="button"
+						onClick={handleResetAppearance}
+						className="text-xs flex items-center gap-1.5 text-gray-500 hover:text-red-600 transition-colors"
+					>
+						<RotateCcw size={12} />
+						Reset Default
+					</button>
+				</div>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					<div>
 						<Label htmlFor="brand_color" className="mb-2">

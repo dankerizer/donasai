@@ -1,5 +1,12 @@
 import clsx from "clsx";
-import { ChevronDown, Layout, Palette, Settings, Type } from "lucide-react";
+import {
+	ChevronDown,
+	Layout,
+	Palette,
+	Settings,
+	Type,
+	RotateCcw,
+} from "lucide-react";
 import { useState } from "react";
 import { Input } from "/src/components/ui/Input";
 import { Label } from "/src/components/ui/Label";
@@ -113,6 +120,20 @@ export function CustomizationForm({
 		onChange({ ...template, [key]: value });
 	};
 
+	const handleResetDesign = () => {
+		if (window.confirm("Kembalikan pengaturan desain ke default?")) {
+			onChange({
+				...template,
+				brand_color: "#059669",
+				button_color: "#ec4899",
+				container_width: "1100px",
+				border_radius: "12px",
+				sidebar_count: 5,
+				donor_per_page: 10,
+			});
+		}
+	};
+
 	return (
 		<div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
 			{/* Design Section */}
@@ -123,6 +144,16 @@ export function CustomizationForm({
 				onToggle={() => toggleSection("design")}
 			>
 				<div className="space-y-4">
+					<div className="flex justify-end">
+						<button
+							type="button"
+							onClick={handleResetDesign}
+							className="text-xs flex items-center gap-1.5 text-gray-500 hover:text-red-600 transition-colors"
+						>
+							<RotateCcw size={12} />
+							Reset Default
+						</button>
+					</div>
 					{/* Colors - Side by side */}
 					<div className="grid grid-cols-2 gap-3">
 						<div>
@@ -242,8 +273,6 @@ export function CustomizationForm({
 					</div>
 				</div>
 			</AccordionSection>
-
-
 
 			{/* Layout Section */}
 			<AccordionSection

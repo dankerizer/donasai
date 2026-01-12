@@ -9,6 +9,7 @@ import {
 	Send,
 	Settings,
 	Tag,
+	RotateCcw,
 } from "lucide-react";
 import { useState } from "react";
 import { LogoUploader } from "/src/components/shared/LogoUploader";
@@ -214,6 +215,20 @@ export function CustomizationForm({
 		setOpenSection(openSection === section ? "" : section);
 	};
 
+	const handleResetDesign = () => {
+		if (window.confirm("Kembalikan pengaturan desain ke default?")) {
+			onChange({
+				...template,
+				design: {
+					template: "modern",
+					header_color: "#059669",
+					button_color: "#2563eb",
+					custom_css: "",
+				},
+			});
+		}
+	};
+
 	// Content Section
 	const ContentSection = ({ type }: { type: EmailType }) => {
 		const content = template.content[type];
@@ -292,6 +307,16 @@ export function CustomizationForm({
 				onToggle={() => toggleSection("design")}
 			>
 				<div className="space-y-4">
+					<div className="flex justify-end">
+						<button
+							type="button"
+							onClick={handleResetDesign}
+							className="text-xs flex items-center gap-1.5 text-gray-500 hover:text-red-600 transition-colors"
+						>
+							<RotateCcw size={12} />
+							Reset Default
+						</button>
+					</div>
 					<div>
 						<Label className="text-xs mb-2 block">Template</Label>
 						<TemplateSelector

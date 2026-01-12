@@ -6,6 +6,7 @@ import {
 	Layout,
 	RefreshCw,
 	User,
+	RotateCcw,
 } from "lucide-react";
 import { useState } from "react";
 import { Input } from "/src/components/ui/Input";
@@ -97,6 +98,17 @@ export function DonationFormCustomizationForm({
 		onChange({ ...template, [key]: value });
 	};
 
+	const handleResetDesign = () => {
+		if (window.confirm("Kembalikan pengaturan desain ke default?")) {
+			onChange({
+				...template,
+				brand_color: "#059669",
+				button_color: "#ec4899",
+				border_radius: "12px",
+			});
+		}
+	};
+
 	return (
 		<div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
 			{/* Design Section */}
@@ -107,6 +119,16 @@ export function DonationFormCustomizationForm({
 				onToggle={() => toggleSection("design")}
 			>
 				<div className="space-y-4">
+					<div className="flex justify-end">
+						<button
+							type="button"
+							onClick={handleResetDesign}
+							className="text-xs flex items-center gap-1.5 text-gray-500 hover:text-red-600 transition-colors"
+						>
+							<RotateCcw size={12} />
+							Reset Default
+						</button>
+					</div>
 					<div className="grid grid-cols-2 gap-3">
 						<div>
 							<Label htmlFor="brand_color" className="text-xs">
@@ -304,8 +326,7 @@ export function DonationFormCustomizationForm({
 												type="checkbox"
 												checked={isChecked}
 												onChange={(e) => {
-													const current =
-														template.recurring_intervals || [];
+													const current = template.recurring_intervals || [];
 													let next;
 													if (e.target.checked) {
 														next = [...current, opt.id];
@@ -352,27 +373,6 @@ export function DonationFormCustomizationForm({
 							className="mt-1"
 							placeholder="Hamba Allah"
 						/>
-					</div>
-
-					<div className="flex items-center justify-between">
-						<div>
-							<Label htmlFor="create_user" className="text-xs">
-								Buat Akun Otomatis
-							</Label>
-							<p className="text-[10px] text-gray-500">
-								Buat akun user untuk donatur baru
-							</p>
-						</div>
-						<label className="relative inline-flex items-center cursor-pointer">
-							<input
-								type="checkbox"
-								id="create_user"
-								className="sr-only peer"
-								checked={template.create_user}
-								onChange={(e) => updateField("create_user", e.target.checked)}
-							/>
-							<div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600" />
-						</label>
 					</div>
 				</div>
 			</AccordionSection>
