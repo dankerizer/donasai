@@ -17,6 +17,7 @@ export interface SettingsFormData {
 	// Donation
 	min_amount: number;
 	presets: string;
+	preset_emoji: string;
 	anonymous_label: string;
 	create_user: boolean;
 	recurring_intervals: string[];
@@ -84,6 +85,7 @@ export const initialFormData: SettingsFormData = {
 	// Donation
 	min_amount: 10000,
 	presets: "50000,100000,200000,500000",
+	preset_emoji: "💖",
 	anonymous_label: "Hamba Allah",
 	create_user: false,
 	recurring_intervals: ["month", "year"],

@@ -313,7 +313,7 @@ export function CustomizationForm({
 					<div>
 						<Label className="text-xs mb-2 block">Format Dokumen</Label>
 						<div className="space-y-2">
-							<label className="flex items-center gap-2 p-2 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-emerald-300 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50/50">
+							<label className="flex items-center gap-2 p-2 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-emerald-300 has-checked:border-emerald-500 has-checked:bg-emerald-50/50">
 								<Radio
 									name="format"
 									value="html"
@@ -326,7 +326,7 @@ export function CustomizationForm({
 									HTML Link
 								</span>
 							</label>
-							<label className="flex items-center gap-2 p-2 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-emerald-300 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50/50">
+							<label className="flex items-center gap-2 p-2 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:border-emerald-300 has-checked:border-emerald-500 has-checked:bg-emerald-50/50">
 								<Radio
 									name="format"
 									value="pdf"

@@ -341,7 +341,7 @@ function EditorContent() {
 	};
 
 	return (
-		<div className="fixed inset-0 z-[99999] flex flex-col bg-gray-100 dark:bg-gray-900">
+		<div className="fixed inset-0 z-99999 flex flex-col bg-gray-100 dark:bg-gray-900">
 			{/* Header */}
 			<header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-2.5 flex items-center justify-between shrink-0">
 				{/* Left: Back + Logo */}
@@ -366,7 +366,7 @@ function EditorContent() {
 							/>
 						</svg>
 					</button>
-					<div className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
+					<div className="w-9 h-9 bg-linear-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
 						<Palette className="w-4 h-4 text-white" />
 					</div>
 					<span className="text-base font-bold text-gray-900 dark:text-white hidden sm:block">
@@ -525,7 +525,7 @@ export function EditorPage() {
 	// Pro-only feature
 	if (!isPro || !isLicenseActive) {
 		return (
-			<div className="fixed inset-0 z-[99999] bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-8">
+			<div className="fixed inset-0 z-99999 bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-8">
 				<div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8 max-w-md text-center">
 					<div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
 						<Palette className="w-8 h-8 text-purple-600 dark:text-purple-400" />

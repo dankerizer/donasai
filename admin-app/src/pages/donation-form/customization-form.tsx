@@ -2,15 +2,16 @@ import clsx from "clsx";
 import {
 	Banknote,
 	ChevronDown,
-	Layout,
 	Palette,
-	Settings,
+	Layout,
+	RefreshCw,
 	User,
 } from "lucide-react";
 import { useState } from "react";
 import { Input } from "/src/components/ui/Input";
 import { Label } from "/src/components/ui/Label";
 import type { DonationFormTemplate } from "./hooks/use-donation-form-template";
+import { LayoutSelector } from "/src/components/shared/LayoutSelector";
 
 interface CustomizationFormProps {
 	template?: DonationFormTemplate;
@@ -179,33 +180,39 @@ export function DonationFormCustomizationForm({
 
 					<div
 						className={clsx(
-							"grid grid-cols-2 gap-3",
+							"mt-2",
 							!isProActive && "opacity-60 pointer-events-none",
 						)}
 					>
-						{[
-							{ id: "default", label: "Tunggal" },
-							{ id: "split", label: "Split (Kiri-Kanan)" },
-						].map((layout) => (
-							<button
-								key={layout.id}
-								type="button"
-								onClick={() =>
-									updateField(
-										"donation_layout",
-										layout.id as DonationFormTemplate["donation_layout"],
-									)
-								}
-								className={clsx(
-									"p-2 rounded-lg border text-center transition-all",
-									template.donation_layout === layout.id
-										? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-500"
-										: "border-gray-200 dark:border-gray-700 hover:border-emerald-200 dark:hover:border-emerald-800",
-								)}
-							>
-								<div className="text-xs font-medium">{layout.label}</div>
-							</button>
-						))}
+						<LayoutSelector
+							value={template.donation_layout}
+							onChange={(val) =>
+								updateField(
+									"donation_layout",
+									val as DonationFormTemplate["donation_layout"],
+								)
+							}
+							gridCols={2}
+							options={[
+								{
+									id: "default",
+									label: "Tunggal",
+									visual: (
+										<div className="bg-gray-300 dark:bg-gray-500 h-full flex-1 rounded-sm" />
+									),
+								},
+								{
+									id: "split",
+									label: "Split (Kiri-Kanan)",
+									visual: (
+										<>
+											<div className="bg-gray-300 dark:bg-gray-500 h-full flex-1 rounded-sm" />
+											<div className="bg-emerald-200 dark:bg-emerald-700 h-full flex-1 rounded-sm opacity-60" />
+										</>
+									),
+								},
+							]}
+						/>
 					</div>
 				</div>
 			</AccordionSection>
@@ -233,22 +240,98 @@ export function DonationFormCustomizationForm({
 						/>
 					</div>
 					<div>
-						<Label htmlFor="presets" className="text-xs">
-							Pilihan Nominal (Pisahkan dengan koma)
-						</Label>
-						<Input
-							id="presets"
-							value={template.presets}
-							onChange={(e) => updateField("presets", e.target.value)}
-							className="mt-1"
-							placeholder="50000,100000,250000"
-						/>
-						<p className="text-[10px] text-gray-500 mt-1">
-							Contoh: 50000,100000,250000
-						</p>
+						<div className="flex gap-3">
+							<div className="w-20">
+								<Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
+									Emoji
+								</Label>
+								<Input
+									value={template.preset_emoji}
+									onChange={(e) =>
+										onChange({ ...template, preset_emoji: e.target.value })
+									}
+									className="bg-white"
+								/>
+							</div>
+							<div className="flex-1">
+								<Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
+									Pilihan Nominal
+								</Label>
+								<Input
+									value={template.presets}
+									onChange={(e) =>
+										onChange({ ...template, presets: e.target.value })
+									}
+									className="bg-white"
+									placeholder="Contoh: 50000,100000,200000"
+								/>
+								<p className="text-[10px] text-gray-400 mt-1">
+									Pisahkan dengan koma
+								</p>
+							</div>
+						</div>
 					</div>
 				</div>
 			</AccordionSection>
+
+			{template.isProInstalled && (
+				<AccordionSection
+					title="Donasi Rutin (PRO)"
+					icon={RefreshCw}
+					isOpen={openSection === "recurring"}
+					onToggle={() => toggleSection("recurring")}
+				>
+					<div className="space-y-4">
+						<div className="space-y-3">
+							<Label className="text-xs font-semibold text-gray-500 mb-1.5 block">
+								Interval Aktif
+							</Label>
+							<div className="grid grid-cols-2 gap-2">
+								{[
+									{ id: "day", label: "Harian" },
+									{ id: "week", label: "Mingguan" },
+									{ id: "month", label: "Bulanan" },
+									{ id: "year", label: "Tahunan" },
+								].map((opt) => {
+									const isChecked =
+										template.recurring_intervals?.includes(opt.id) ?? false;
+									return (
+										<label
+											key={opt.id}
+											className="flex items-center gap-2 text-sm bg-white p-2 rounded border border-gray-200 cursor-pointer hover:border-emerald-500 transition-colors"
+										>
+											<input
+												type="checkbox"
+												checked={isChecked}
+												onChange={(e) => {
+													const current =
+														template.recurring_intervals || [];
+													let next;
+													if (e.target.checked) {
+														next = [...current, opt.id];
+													} else {
+														next = current.filter((i) => i !== opt.id);
+													}
+													onChange({
+														...template,
+														recurring_intervals: next,
+													});
+												}}
+												className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+											/>
+											{opt.label}
+										</label>
+									);
+								})}
+							</div>
+							<p className="text-[10px] text-gray-400">
+								Fitur Donasi Rutin akan muncul jika minimal satu interval
+								dipilih.
+							</p>
+						</div>
+					</div>
+				</AccordionSection>
+			)}
 
 			{/* Donor Fields Section */}
 			<AccordionSection

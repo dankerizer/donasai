@@ -23,6 +23,7 @@ $settings = get_option('wpd_settings_donation', []);
 $min_amount = $settings['min_amount'] ?? 10000;
 $presets = explode(',', $settings['presets'] ?? '50000,100000,200000,500000');
 $presets = array_map('intval', $presets);
+$preset_emoji = $settings['preset_emoji'] ?? '💖';
 
 // Layout Settings
 $settings_app = get_option('wpd_settings_appearance', []);
@@ -234,7 +235,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                         <div class="wpd-grid-presets">
                             <?php foreach ($presets as $val): ?>
                                 <div class="wpd-preset-card" onclick="selectAmount(this, <?php echo esc_attr($val); ?>)">
-                                    <div class="wpd-preset-emoji">💖</div>
+                                    <div class="wpd-preset-emoji"><?php echo esc_html($preset_emoji); ?></div>
                                     <div class="wpd-preset-val">Rp <?php echo esc_html(number_format($val / 1000, 0)); ?>rb
                                     </div>
                                 </div>

@@ -5,6 +5,7 @@ import { Input } from "/src/components/ui/Input";
 import { Label } from "/src/components/ui/Label";
 import { Select } from "/src/components/ui/Select";
 import type { CampaignTemplate } from "./hooks/use-campaign-template";
+import { LayoutSelector } from "/src/components/shared/LayoutSelector";
 
 interface CustomizationFormProps {
 	template: CampaignTemplate | undefined;
@@ -242,6 +243,8 @@ export function CustomizationForm({
 				</div>
 			</AccordionSection>
 
+
+
 			{/* Layout Section */}
 			<AccordionSection
 				title="Layout"
@@ -249,123 +252,110 @@ export function CustomizationForm({
 				isOpen={openSection === "layout"}
 				onToggle={() => toggleSection("layout")}
 			>
-				<div className="space-y-4">
+				<div className="space-y-6">
 					{/* Campaign Layout */}
 					<div>
-						<Label className="text-xs mb-2 block">Layout Halaman</Label>
-						<div className="grid grid-cols-3 gap-2">
-							{[
-								{ id: "sidebar-right", label: "Sidebar Kanan" },
-								{ id: "sidebar-left", label: "Sidebar Kiri" },
-								{ id: "full-width", label: "Full Width" },
-							].map((layout) => (
-								<button
-									key={layout.id}
-									type="button"
-									onClick={() =>
-										updateField(
-											"campaign_layout",
-											layout.id as CampaignTemplate["campaign_layout"],
-										)
-									}
-									className={clsx(
-										"p-2 rounded-lg border text-center transition-all",
-										template.campaign_layout === layout.id
-											? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950"
-											: "border-gray-200 dark:border-gray-700 hover:border-gray-300",
-									)}
-								>
-									<div className="h-8 bg-gray-100 dark:bg-gray-700 rounded mb-1 flex gap-0.5 p-0.5">
-										{layout.id === "sidebar-right" && (
-											<>
-												<div className="bg-gray-300 dark:bg-gray-500 h-full flex-[2] rounded-sm" />
-												<div className="bg-emerald-200 dark:bg-emerald-700 h-full flex-1 rounded-sm" />
-											</>
-										)}
-										{layout.id === "sidebar-left" && (
-											<>
-												<div className="bg-emerald-200 dark:bg-emerald-700 h-full flex-1 rounded-sm" />
-												<div className="bg-gray-300 dark:bg-gray-500 h-full flex-[2] rounded-sm" />
-											</>
-										)}
-										{layout.id === "full-width" && (
-											<div className="bg-gray-300 dark:bg-gray-500 h-full flex-1 rounded-sm" />
-										)}
-									</div>
-									<span className="text-[10px] font-medium text-gray-700 dark:text-gray-300">
-										{layout.label}
-									</span>
-								</button>
-							))}
-						</div>
+						<Label className="text-xs mb-3 block text-gray-500 font-semibold">
+							Layout Halaman
+						</Label>
+						<LayoutSelector
+							value={template.campaign_layout}
+							onChange={(val) =>
+								updateField(
+									"campaign_layout",
+									val as CampaignTemplate["campaign_layout"],
+								)
+							}
+							options={[
+								{
+									id: "sidebar-right",
+									label: "Sidebar Kanan",
+									visual: (
+										<>
+											<div className="bg-gray-300 dark:bg-gray-500 h-full flex-2 rounded-sm" />
+											<div className="bg-emerald-200 dark:bg-emerald-700 h-full flex-1 rounded-sm" />
+										</>
+									),
+								},
+								{
+									id: "sidebar-left",
+									label: "Sidebar Kiri",
+									visual: (
+										<>
+											<div className="bg-emerald-200 dark:bg-emerald-700 h-full flex-1 rounded-sm" />
+											<div className="bg-gray-300 dark:bg-gray-500 h-full flex-2 rounded-sm" />
+										</>
+									),
+								},
+								{
+									id: "full-width",
+									label: "Full Width",
+									visual: (
+										<div className="bg-gray-300 dark:bg-gray-500 h-full flex-1 rounded-sm" />
+									),
+								},
+							]}
+						/>
 					</div>
 
 					{/* Donation Form Layout (PRO) */}
 					{isProActive && (
 						<div>
-							<Label className="text-xs mb-2 block">Layout Form Donasi</Label>
-							<div className="grid grid-cols-2 gap-2">
-								{[
-									{ id: "default", label: "Tunggal" },
-									{ id: "split", label: "Split" },
-								].map((layout) => (
-									<button
-										key={layout.id}
-										type="button"
-										onClick={() =>
-											updateField(
-												"donation_layout",
-												layout.id as CampaignTemplate["donation_layout"],
-											)
-										}
-										className={clsx(
-											"p-2 rounded-lg border text-center transition-all",
-											template.donation_layout === layout.id
-												? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950"
-												: "border-gray-200 dark:border-gray-700 hover:border-gray-300",
-										)}
-									>
-										<div className="text-[10px] font-medium text-gray-700 dark:text-gray-300">
-											{layout.label}
-										</div>
-									</button>
-								))}
-							</div>
+							<Label className="text-xs mb-3 block text-gray-500 font-semibold">
+								Layout Form Donasi
+							</Label>
+							<LayoutSelector
+								value={template.donation_layout}
+								onChange={(val) =>
+									updateField(
+										"donation_layout",
+										val as CampaignTemplate["donation_layout"],
+									)
+								}
+								gridCols={2}
+								options={[
+									{
+										id: "default",
+										label: "Tunggal",
+										visual: (
+											<div className="bg-gray-300 dark:bg-gray-500 h-full flex-1 rounded-sm" />
+										),
+									},
+									{
+										id: "split",
+										label: "Split",
+										visual: (
+											<>
+												<div className="bg-gray-300 dark:bg-gray-500 h-full flex-1 rounded-sm" />
+												<div className="bg-emerald-200 dark:bg-emerald-700 h-full flex-1 rounded-sm opacity-60" />
+											</>
+										),
+									},
+								]}
+							/>
 						</div>
 					)}
 
 					{/* Hero Style (PRO) */}
 					{isProActive && (
 						<div>
-							<Label className="text-xs mb-2 block">Gaya Hero</Label>
-							<div className="grid grid-cols-3 gap-2">
-								{[
+							<Label className="text-xs mb-3 block text-gray-500 font-semibold">
+								Gaya Hero
+							</Label>
+							<LayoutSelector
+								value={template.hero_style}
+								onChange={(val) =>
+									updateField(
+										"hero_style",
+										val as CampaignTemplate["hero_style"],
+									)
+								}
+								options={[
 									{ id: "standard", label: "Standard" },
 									{ id: "wide", label: "Wide" },
 									{ id: "overlay", label: "Overlay" },
-								].map((style) => (
-									<button
-										key={style.id}
-										type="button"
-										onClick={() =>
-											updateField(
-												"hero_style",
-												style.id as CampaignTemplate["hero_style"],
-											)
-										}
-										className={clsx(
-											"p-2 rounded-lg border text-center transition-all",
-											template.hero_style === style.id
-												? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950"
-												: "border-gray-200 dark:border-gray-700 hover:border-gray-300",
-										)}
-									>
-										<div className="text-[10px] font-medium text-gray-700 dark:text-gray-300">
-											{style.label}
-										</div>
-									</button>
-								))}
-							</div>
+								]}
+							/>
 						</div>
 					)}
 				</div>

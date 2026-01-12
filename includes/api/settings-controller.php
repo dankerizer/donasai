@@ -55,7 +55,7 @@ function wpd_api_get_settings()
         'delete_on_uninstall_settings' => false,
         'delete_on_uninstall_tables' => false
     ));
-    $donation = get_option('wpd_settings_donation', array('min_amount' => 10000, 'presets' => '50000,100000,200000,500000', 'anonymous_label' => 'Hamba Allah', 'create_user' => false));
+    $donation = get_option('wpd_settings_donation', array('min_amount' => 10000, 'presets' => '50000,100000,200000,500000', 'anonymous_label' => 'Hamba Allah', 'create_user' => false, 'preset_emoji' => '💖'));
     $appearance = get_option('wpd_settings_appearance', array(
         'brand_color' => '#059669',
         'button_color' => '#ec4899',
@@ -221,6 +221,7 @@ function wpd_api_update_settings($request)
         $don_data = array(
             'min_amount' => intval($params['donation']['min_amount'] ?? 10000),
             'presets' => sanitize_text_field($params['donation']['presets'] ?? '50000,100000,200000,500000'),
+            'preset_emoji' => sanitize_text_field($params['donation']['preset_emoji'] ?? '💖'),
             'anonymous_label' => sanitize_text_field($params['donation']['anonymous_label'] ?? 'Hamba Allah'),
             'create_user' => !empty($params['donation']['create_user']), // Pro
         );

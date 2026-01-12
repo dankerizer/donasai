@@ -37,6 +37,7 @@ export function useSettingsFetch() {
 				// Donation
 				min_amount: data.donation?.min_amount || 10000,
 				presets: data.donation?.presets || "50000,100000,200000,500000",
+				preset_emoji: data.donation?.preset_emoji || "💖",
 				anonymous_label: data.donation?.anonymous_label || "Hamba Allah",
 				create_user:
 					data.donation?.create_user === true ||

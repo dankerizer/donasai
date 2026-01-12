@@ -20,6 +20,11 @@ export interface DonationFormTemplate {
 
 	// Internal (Read-only for preview construction)
 	payment_slug: string;
+	isProInstalled: boolean;
+
+	// New Fields
+	preset_emoji: string;
+	recurring_intervals: string[];
 }
 
 const DEFAULT_TEMPLATE: DonationFormTemplate = {
@@ -32,6 +37,9 @@ const DEFAULT_TEMPLATE: DonationFormTemplate = {
 	anonymous_label: "Hamba Allah",
 	create_user: true,
 	payment_slug: "pay",
+	isProInstalled: false,
+	preset_emoji: "💖",
+	recurring_intervals: ["month", "year"],
 };
 
 export function useDonationFormTemplate() {
@@ -55,8 +63,13 @@ export function useDonationFormTemplate() {
 					anonymous_label: settingsQuery.data.formData.anonymous_label,
 					create_user: settingsQuery.data.formData.create_user,
 
+					// New
+					preset_emoji: settingsQuery.data.formData.preset_emoji,
+					recurring_intervals: settingsQuery.data.formData.recurring_intervals,
+
 					// General
 					payment_slug: settingsQuery.data.formData.payment_slug,
+					isProInstalled: settingsQuery.data.isProInstalled,
 				}
 			: undefined;
 	}, [settingsQuery.data]);
@@ -82,6 +95,8 @@ export function useDonationFormTemplate() {
 						presets: newTemplate.presets,
 						anonymous_label: newTemplate.anonymous_label,
 						create_user: newTemplate.create_user,
+						preset_emoji: newTemplate.preset_emoji,
+						recurring_intervals: newTemplate.recurring_intervals,
 					},
 				}),
 			});
