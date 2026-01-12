@@ -24,7 +24,11 @@ interface SignatureUploaderProps {
 	compact?: boolean;
 }
 
-export function SignatureUploader({ value, onChange, compact = false }: SignatureUploaderProps) {
+export function SignatureUploader({
+	value,
+	onChange,
+	compact = false,
+}: SignatureUploaderProps) {
 	const handleImageChange = (newImage: LogoData) => {
 		onChange({
 			...value,

@@ -11,7 +11,11 @@ interface FooterEditorProps {
 	compact?: boolean;
 }
 
-export function FooterEditor({ footer, onChange, compact = false }: FooterEditorProps) {
+export function FooterEditor({
+	footer,
+	onChange,
+	compact = false,
+}: FooterEditorProps) {
 	const editorRef = useRef<HTMLTextAreaElement>(null);
 
 	const handleContentChange = (content: string) => {

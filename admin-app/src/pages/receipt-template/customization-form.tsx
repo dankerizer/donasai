@@ -373,16 +373,16 @@ export function CustomizationForm({
 							<Checkbox
 								id="include_serial_number"
 								checked={template.serial?.enabled ?? true}
-								onChange={(e) => handleSerialChange("enabled", e.target.checked)}
+								onChange={(e) =>
+									handleSerialChange("enabled", e.target.checked)
+								}
 								className="mt-0.5"
 							/>
 							<div>
 								<span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-emerald-600">
 									Nomor Seri Kuitansi
 								</span>
-								<p className="text-[10px] text-gray-500">
-									Generate nomor unik
-								</p>
+								<p className="text-[10px] text-gray-500">Generate nomor unik</p>
 							</div>
 						</label>
 

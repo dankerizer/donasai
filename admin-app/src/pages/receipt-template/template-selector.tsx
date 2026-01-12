@@ -10,16 +10,28 @@ interface TemplateSelectorProps {
 const TEMPLATES = [
 	{ id: "modern", name: "Modern", color: "bg-emerald-500" },
 	{ id: "classic", name: "Classic", color: "bg-gray-800" },
-	{ id: "minimal", name: "Minimal", color: "bg-gray-100 border border-gray-300" },
+	{
+		id: "minimal",
+		name: "Minimal",
+		color: "bg-gray-100 border border-gray-300",
+	},
 	{ id: "corporate", name: "Corporate", color: "bg-blue-600" },
 	{ id: "bold", name: "Bold", color: "bg-black" },
 	{ id: "elegant", name: "Elegant", color: "bg-amber-600" },
-	{ id: "simple", name: "Simple", color: "bg-white border-2 border-dashed border-gray-400" },
+	{
+		id: "simple",
+		name: "Simple",
+		color: "bg-white border-2 border-dashed border-gray-400",
+	},
 	{ id: "creative", name: "Creative", color: "bg-violet-500" },
 	{ id: "official", name: "Official", color: "bg-slate-700" },
 ];
 
-export function TemplateSelector({ value, onChange, compact = false }: TemplateSelectorProps) {
+export function TemplateSelector({
+	value,
+	onChange,
+	compact = false,
+}: TemplateSelectorProps) {
 	// Compact mode for sidebar
 	if (compact) {
 		return (
@@ -37,7 +49,10 @@ export function TemplateSelector({ value, onChange, compact = false }: TemplateS
 						)}
 					>
 						{value === template.id && (
-							<Check size={10} className="absolute top-1 right-1 text-emerald-600" />
+							<Check
+								size={10}
+								className="absolute top-1 right-1 text-emerald-600"
+							/>
 						)}
 						<div
 							className={clsx(
@@ -89,4 +104,3 @@ export function TemplateSelector({ value, onChange, compact = false }: TemplateS
 		</div>
 	);
 }
-
