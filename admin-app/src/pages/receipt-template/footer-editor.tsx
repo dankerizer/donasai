@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useEffect, useRef } from "react";
 import { Checkbox } from "/src/components/ui/Checkbox";
 import { Label } from "/src/components/ui/Label";
@@ -7,9 +8,10 @@ import type { ReceiptTemplate } from "./hooks/use-receipt-template";
 interface FooterEditorProps {
 	footer: ReceiptTemplate["footer"];
 	onChange: (footer: ReceiptTemplate["footer"]) => void;
+	compact?: boolean;
 }
 
-export function FooterEditor({ footer, onChange }: FooterEditorProps) {
+export function FooterEditor({ footer, onChange, compact = false }: FooterEditorProps) {
 	const editorRef = useRef<HTMLTextAreaElement>(null);
 
 	const handleContentChange = (content: string) => {

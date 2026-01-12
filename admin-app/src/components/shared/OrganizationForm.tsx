@@ -1,32 +1,16 @@
+import clsx from "clsx";
 import { Input } from "/src/components/ui/Input";
 import { Label } from "/src/components/ui/Label";
 import { Textarea } from "/src/components/ui/Textarea";
 import type { ReceiptTemplate } from "/src/pages/receipt-template/hooks/use-receipt-template";
 import { LogoUploader } from "./LogoUploader";
 
-// Unified interface covers both needs
-// export interface OrganizationData {
-// 	name: string;
-// 	email: string;
-// 	phone: string;
-// 	website?: string; // Optional in General?
-// 	// Address handling
-// 	address?: string; // For simple mode
-// 	address_line_1?: string; // For detailed mode
-// 	address_line_2?: string;
-// 	city?: string;
-// 	postal_code?: string;
-
-// 	tax_id?: string; // Detailed only
-// 	// Logo handling
-// 	logo?: string | LogoData; // string for General, LogoData for Receipt
-// }
-
 interface OrganizationFormProps {
 	data: ReceiptTemplate["organization"];
 	onChange: (data: ReceiptTemplate["organization"]) => void;
 	mode?: "simple" | "detailed";
 	showLogo?: boolean;
+	compact?: boolean;
 }
 
 export function OrganizationForm({
@@ -34,6 +18,7 @@ export function OrganizationForm({
 	onChange,
 	mode = "simple",
 	showLogo = true,
+	compact = false,
 }: OrganizationFormProps) {
 	const handleChange = (
 		field: keyof ReceiptTemplate["organization"],
@@ -46,11 +31,11 @@ export function OrganizationForm({
 	};
 
 	return (
-		<div className="space-y-6">
-			<div className="space-y-4">
+		<div className={clsx(compact ? "space-y-3" : "space-y-6")}>
+			<div className={clsx(compact ? "space-y-3" : "space-y-4")}>
 				{/* Name */}
 				<div>
-					<Label htmlFor="org-name">
+					<Label htmlFor="org-name" className={compact ? "text-xs" : ""}>
 						Nama Organisasi <span className="text-red-500">*</span>
 					</Label>
 					<Input
@@ -60,6 +45,7 @@ export function OrganizationForm({
 						onChange={(e) => handleChange("name", e.target.value)}
 						placeholder="contoh: Yayasan Peduli Sesama"
 						required
+						className={compact ? "mt-1 text-sm" : ""}
 					/>
 				</div>
 
