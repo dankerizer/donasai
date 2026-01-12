@@ -57,7 +57,7 @@ export function ReceiptPreview({
 					<iframe
 						title="Receipt Preview"
 						srcDoc={previewHtml.html}
-						className="w-full h-full min-h-full bg-white"
+						className="w-full h-full min-h-[700px] bg-white"
 						style={{ border: "none", display: "block" }}
 					/>
 				) : (
@@ -75,8 +75,7 @@ export function ReceiptPreview({
 				<div className="bg-white/90 dark:bg-gray-800/90 rounded-lg px-3 py-2 flex items-center gap-2">
 					<span className="text-gray-400">ℹ️</span>
 					<p className="text-xs text-gray-500 dark:text-gray-400">
-						Preview menggunakan data contoh. Kuitansi sebenarnya menggunakan
-						data donasi real.
+						Preview menggunakan data contoh. Kuitansi sebenarnya menggunakan data donasi real.
 					</p>
 				</div>
 			</div>
