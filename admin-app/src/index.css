@@ -1,5 +1,5 @@
 @import "tailwindcss";
 
 @theme {
-  --color-emerald-600: lab(55.0481% -49.9246 15.93);
+	--color-emerald-600: lab(55.0481% -49.9246 15.93);
 }

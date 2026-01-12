@@ -2,10 +2,7 @@
 import { Loader2, Mail, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Input } from "/src/components/ui/Input";
-import type {
-	EmailTemplate,
-	EmailType,
-} from "./hooks/use-email-template";
+import type { EmailTemplate, EmailType } from "./hooks/use-email-template";
 
 interface EmailPreviewProps {
 	template: EmailTemplate | undefined;
@@ -56,9 +53,7 @@ export function EmailPreview({
 			<div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8 flex items-center justify-center min-h-[600px] shadow-sm">
 				<div className="text-center">
 					<Loader2 className="w-12 h-12 text-emerald-600 animate-spin mx-auto mb-4" />
-					<p className="text-gray-500 dark:text-gray-400">
-						Memuat template...
-					</p>
+					<p className="text-gray-500 dark:text-gray-400">Memuat template...</p>
 				</div>
 			</div>
 		);

@@ -17,9 +17,9 @@ export default function EmailTemplatePage() {
 		isSendingTestEmail,
 	} = useEmailTemplate();
 
-	const [localTemplate, setLocalTemplate] = useState<
-		EmailTemplate | undefined
-	>(template);
+	const [localTemplate, setLocalTemplate] = useState<EmailTemplate | undefined>(
+		template,
+	);
 
 	// Update local state when template loads
 	React.useEffect(() => {
