@@ -47,7 +47,8 @@ function wpd_api_get_campaigns_list()
 		foreach ($query->posts as $id) {
 			$campaigns[] = array(
 				'id' => $id,
-				'title' => get_the_title($id)
+				'title' => get_the_title($id),
+				'link' => get_permalink($id)
 			);
 		}
 	}

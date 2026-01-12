@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 
-export type EditorComponent = "email" | "receipt";
+export type EditorComponent = "email" | "receipt" | "campaign";
 export type DeviceSize = "mobile" | "tablet" | "desktop";
 
 interface EditorState {

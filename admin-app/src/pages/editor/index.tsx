@@ -3,6 +3,7 @@ import {
 	ChevronDown,
 	ChevronRight,
 	FileText,
+	Layout,
 	Loader2,
 	Mail,
 	Palette,
@@ -28,6 +29,14 @@ import {
 	type ReceiptTemplate,
 } from "../receipt-template/hooks/use-receipt-template";
 
+// Campaign Template
+import { CustomizationForm as CampaignCustomizationForm } from "../campaign-template/customization-form";
+import { CampaignPreview } from "../campaign-template/campaign-preview";
+import {
+	useCampaignTemplate,
+	type CampaignTemplate,
+} from "../campaign-template/hooks/use-campaign-template";
+
 // Editor Components
 import { DevicePreview, DeviceToggle } from "./components/DevicePreview";
 import {
@@ -44,6 +53,7 @@ const COMPONENTS: {
 }[] = [
 	{ id: "email", label: "Template Email", icon: Mail },
 	{ id: "receipt", label: "Template Kuitansi", icon: FileText },
+	{ id: "campaign", label: "Halaman Campaign", icon: Layout },
 ];
 
 // Dropdown Component Selector
@@ -176,6 +186,14 @@ function EditorContent() {
 		ReceiptTemplate | undefined
 	>(undefined);
 
+	// Campaign Template State
+	const campaignQuery = useCampaignTemplate();
+	const [localCampaignTemplate, setLocalCampaignTemplate] = useState<
+		CampaignTemplate | undefined
+	>(undefined);
+	const [lastSavedAt, setLastSavedAt] = useState<number>(0);
+	const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
 	// Sync email template
 	useEffect(() => {
 		if (emailQuery.template) {
@@ -190,6 +208,43 @@ function EditorContent() {
 		}
 	}, [receiptQuery.template]);
 
+	// Sync campaign template
+	useEffect(() => {
+		if (campaignQuery.template) {
+			// Only sync if local is null (first load) or we just saved (to ensure sync)
+			// But for now keeping it simple as memoization prevents loop
+			setLocalCampaignTemplate(campaignQuery.template);
+		}
+	}, [campaignQuery.template]);
+
+	// Auto-save for Campaign
+	useEffect(() => {
+		if (
+			selectedComponent !== "campaign" ||
+			!localCampaignTemplate ||
+			!campaignQuery.template
+		) {
+			return;
+		}
+
+		// Check if changed
+		const hasChanges =
+			JSON.stringify(localCampaignTemplate) !==
+			JSON.stringify(campaignQuery.template);
+
+		if (hasChanges) {
+			if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+
+			saveTimeoutRef.current = setTimeout(() => {
+				handleSave();
+			}, 1000);
+		}
+
+		return () => {
+			if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+		};
+	}, [localCampaignTemplate, campaignQuery.template, selectedComponent]);
+
 	// Save handler
 	const handleSave = useCallback(() => {
 		setIsSaving(true);
@@ -201,20 +256,31 @@ function EditorContent() {
 			receiptQuery.saveTemplate(localReceiptTemplate, {
 				onSettled: () => setIsSaving(false),
 			});
+		} else if (selectedComponent === "campaign" && localCampaignTemplate) {
+			campaignQuery.saveTemplate(localCampaignTemplate, {
+				onSettled: () => {
+					setIsSaving(false);
+					setLastSavedAt(Date.now());
+				},
+			});
 		}
 	}, [
 		selectedComponent,
 		localEmailTemplate,
 		localReceiptTemplate,
+		localCampaignTemplate,
 		emailQuery,
 		receiptQuery,
+		campaignQuery,
 		setIsSaving,
 	]);
 
 	const isLoading =
 		selectedComponent === "email"
 			? emailQuery.isLoading
-			: receiptQuery.isLoading;
+			: selectedComponent === "receipt"
+				? receiptQuery.isLoading
+				: campaignQuery.isLoading;
 
 	const handleGoBack = () => {
 		window.location.hash = "#/settings";
@@ -328,12 +394,20 @@ function EditorContent() {
 								onSendTestEmail={emailQuery.sendTestEmail}
 								isSendingTestEmail={emailQuery.isSendingTestEmail}
 							/>
-						) : (
+						) : selectedComponent === "receipt" ? (
 							<ReceiptCustomizationForm
 								template={localReceiptTemplate}
 								onChange={setLocalReceiptTemplate}
 								onSave={handleSave}
 								isSaving={isSaving}
+							/>
+						) : (
+							<CampaignCustomizationForm
+								template={localCampaignTemplate}
+								onChange={setLocalCampaignTemplate}
+								onSave={handleSave}
+								isSaving={isSaving}
+								isProActive={campaignQuery.isProInstalled}
 							/>
 						)}
 					</div>
@@ -355,11 +429,16 @@ function EditorContent() {
 								previewHtml={emailQuery.previewData}
 								onGeneratePreview={emailQuery.generatePreview}
 							/>
-						) : (
+						) : selectedComponent === "receipt" ? (
 							<ReceiptPreview
 								template={localReceiptTemplate}
 								previewHtml={receiptQuery.previewData}
 								onGeneratePreview={(t) => receiptQuery.generatePreview(t)}
+							/>
+						) : (
+							<CampaignPreview
+								template={localCampaignTemplate}
+								lastSavedAt={lastSavedAt}
 							/>
 						)}
 					</DevicePreview>
