@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import {
+	Banknote,
 	ChevronDown,
 	ChevronRight,
 	FileText,
@@ -37,6 +38,14 @@ import {
 	type CampaignTemplate,
 } from "../campaign-template/hooks/use-campaign-template";
 
+// Donation Form Template
+import { DonationFormCustomizationForm } from "../donation-form/customization-form";
+import { DonationPreview } from "../donation-form/donation-preview";
+import {
+	useDonationFormTemplate,
+	type DonationFormTemplate,
+} from "../donation-form/hooks/use-donation-form-template";
+
 // Editor Components
 import { DevicePreview, DeviceToggle } from "./components/DevicePreview";
 import {
@@ -54,6 +63,7 @@ const COMPONENTS: {
 	{ id: "email", label: "Template Email", icon: Mail },
 	{ id: "receipt", label: "Template Kuitansi", icon: FileText },
 	{ id: "campaign", label: "Halaman Campaign", icon: Layout },
+	{ id: "donation-form", label: "Formulir Donasi", icon: Banknote },
 ];
 
 // Dropdown Component Selector
@@ -147,15 +157,10 @@ function ComponentDropdown() {
 								<p className="text-[10px] text-gray-400 uppercase tracking-wide mb-1">
 									Coming Soon
 								</p>
-								{["Campaign Page", "Donation Form"].map((item) => (
-									<div
-										key={item}
-										className="py-1.5 text-xs text-gray-400 flex items-center gap-2"
-									>
-										<div className="w-4 h-4 rounded bg-gray-200 dark:bg-gray-700" />
-										{item}
-									</div>
-								))}
+								<div className="py-1.5 text-xs text-gray-400 flex items-center gap-2">
+									<div className="w-4 h-4 rounded bg-gray-200 dark:bg-gray-700" />
+									Widgets
+								</div>
 							</div>
 						</div>
 					)}
@@ -191,6 +196,13 @@ function EditorContent() {
 	const [localCampaignTemplate, setLocalCampaignTemplate] = useState<
 		CampaignTemplate | undefined
 	>(undefined);
+
+	// Donation Form Template State
+	const donationFormQuery = useDonationFormTemplate();
+	const [localDonationTemplate, setLocalDonationTemplate] = useState<
+		DonationFormTemplate | undefined
+	>(undefined);
+
 	const [lastSavedAt, setLastSavedAt] = useState<number>(0);
 	const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -211,11 +223,16 @@ function EditorContent() {
 	// Sync campaign template
 	useEffect(() => {
 		if (campaignQuery.template) {
-			// Only sync if local is null (first load) or we just saved (to ensure sync)
-			// But for now keeping it simple as memoization prevents loop
 			setLocalCampaignTemplate(campaignQuery.template);
 		}
 	}, [campaignQuery.template]);
+
+	// Sync donation form template
+	useEffect(() => {
+		if (donationFormQuery.template) {
+			setLocalDonationTemplate(donationFormQuery.template);
+		}
+	}, [donationFormQuery.template]);
 
 	// Auto-save for Campaign
 	useEffect(() => {
@@ -245,6 +262,32 @@ function EditorContent() {
 		};
 	}, [localCampaignTemplate, campaignQuery.template, selectedComponent]);
 
+	// Auto-save for Donation Form
+	useEffect(() => {
+		if (
+			selectedComponent !== "donation-form" ||
+			!localDonationTemplate ||
+			!donationFormQuery.template
+		) {
+			return;
+		}
+
+		const hasChanges =
+			JSON.stringify(localDonationTemplate) !==
+			JSON.stringify(donationFormQuery.template);
+
+		if (hasChanges) {
+			if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+			saveTimeoutRef.current = setTimeout(() => {
+				handleSave();
+			}, 1000);
+		}
+
+		return () => {
+			if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+		};
+	}, [localDonationTemplate, donationFormQuery.template, selectedComponent]);
+
 	// Save handler
 	const handleSave = useCallback(() => {
 		setIsSaving(true);
@@ -263,15 +306,24 @@ function EditorContent() {
 					setLastSavedAt(Date.now());
 				},
 			});
+		} else if (selectedComponent === "donation-form" && localDonationTemplate) {
+			donationFormQuery.saveTemplate(localDonationTemplate, {
+				onSettled: () => {
+					setIsSaving(false);
+					setLastSavedAt(Date.now());
+				},
+			});
 		}
 	}, [
 		selectedComponent,
 		localEmailTemplate,
 		localReceiptTemplate,
 		localCampaignTemplate,
+		localDonationTemplate,
 		emailQuery,
 		receiptQuery,
 		campaignQuery,
+		donationFormQuery,
 		setIsSaving,
 	]);
 
@@ -280,7 +332,9 @@ function EditorContent() {
 			? emailQuery.isLoading
 			: selectedComponent === "receipt"
 				? receiptQuery.isLoading
-				: campaignQuery.isLoading;
+				: selectedComponent === "campaign"
+					? campaignQuery.isLoading
+					: donationFormQuery.isLoading;
 
 	const handleGoBack = () => {
 		window.location.hash = "#/settings";
@@ -321,7 +375,6 @@ function EditorContent() {
 				</div>
 
 				{/* Center: Component Dropdown */}
-
 				<ComponentDropdown />
 
 				{/* Right: Device Toggle + Panel Toggle + Save */}
@@ -401,13 +454,21 @@ function EditorContent() {
 								onSave={handleSave}
 								isSaving={isSaving}
 							/>
-						) : (
+						) : selectedComponent === "campaign" ? (
 							<CampaignCustomizationForm
 								template={localCampaignTemplate}
 								onChange={setLocalCampaignTemplate}
 								onSave={handleSave}
 								isSaving={isSaving}
 								isProActive={campaignQuery.isProInstalled}
+							/>
+						) : (
+							<DonationFormCustomizationForm
+								template={localDonationTemplate}
+								onChange={setLocalDonationTemplate}
+								onSave={handleSave}
+								isSaving={isSaving}
+								isProActive={donationFormQuery.isProInstalled}
 							/>
 						)}
 					</div>
@@ -435,9 +496,14 @@ function EditorContent() {
 								previewHtml={receiptQuery.previewData}
 								onGeneratePreview={(t) => receiptQuery.generatePreview(t)}
 							/>
-						) : (
+						) : selectedComponent === "campaign" ? (
 							<CampaignPreview
 								template={localCampaignTemplate}
+								lastSavedAt={lastSavedAt}
+							/>
+						) : (
+							<DonationPreview
+								template={localDonationTemplate}
 								lastSavedAt={lastSavedAt}
 							/>
 						)}
@@ -448,7 +514,7 @@ function EditorContent() {
 	);
 }
 
-export default function EditorPage() {
+export function EditorPage() {
 	// Check Pro status
 	const isPro = (window as any).wpdSettings?.isPro;
 	const proSettings = (window as any).wpdProSettings || {};
@@ -491,3 +557,5 @@ export default function EditorPage() {
 		</EditorProvider>
 	);
 }
+
+export default EditorPage;
