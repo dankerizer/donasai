@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/security/noDangerouslySetInnerHtml: harus html */
 import { Loader2, RefreshCw } from "lucide-react";
 import { useEffect } from "react";
 import type { ReceiptTemplate } from "./hooks/use-receipt-template";
@@ -15,6 +14,7 @@ export function ReceiptPreview({
 	onGeneratePreview,
 }: ReceiptPreviewProps) {
 	// Generate preview when template changes (debounced)
+	// biome-ignore lint/correctness/useExhaustiveDependencies: onGeneratePreview reference changes each render
 	useEffect(() => {
 		if (!template) return;
 
@@ -23,7 +23,7 @@ export function ReceiptPreview({
 		}, 500);
 
 		return () => clearTimeout(timer);
-	}, [template, onGeneratePreview]);
+	}, [template]);
 
 	if (!template) {
 		return (
@@ -68,16 +68,6 @@ export function ReceiptPreview({
 						</p>
 					</div>
 				)}
-			</div>
-
-			{/* Floating Info - Bottom */}
-			<div className="absolute bottom-4 left-4 right-4 z-10">
-				<div className="bg-white/90 dark:bg-gray-800/90 rounded-lg px-3 py-2 flex items-center gap-2">
-					<span className="text-gray-400">ℹ️</span>
-					<p className="text-xs text-gray-500 dark:text-gray-400">
-						Preview menggunakan data contoh. Kuitansi sebenarnya menggunakan data donasi real.
-					</p>
-				</div>
 			</div>
 		</div>
 	);

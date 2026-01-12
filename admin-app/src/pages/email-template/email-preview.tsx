@@ -1,7 +1,6 @@
 /** biome-ignore-all lint/security/noDangerouslySetInnerHtml: Required for email preview */
-import { Loader2, Mail, RefreshCw } from "lucide-react";
+import { Loader2, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Input } from "/src/components/ui/Input";
 import type { EmailTemplate, EmailType } from "./hooks/use-email-template";
 
 interface EmailPreviewProps {
@@ -11,26 +10,17 @@ interface EmailPreviewProps {
 		template: EmailTemplate;
 		type: EmailType;
 	}) => void;
-	onSendTestEmail: (params: {
-		template: EmailTemplate;
-		type: EmailType;
-		email: string;
-	}) => void;
-	isSendingTestEmail: boolean;
 }
 
 export function EmailPreview({
 	template,
 	previewHtml,
 	onGeneratePreview,
-	onSendTestEmail,
-	isSendingTestEmail,
 }: EmailPreviewProps) {
 	const [activeTab, setActiveTab] = useState<EmailType>("pending");
-	const [testEmail, setTestEmail] = useState("");
-	const [showTestEmailInput, setShowTestEmailInput] = useState(false);
 
 	// Generate preview when template or tab changes
+	// biome-ignore lint/correctness/useExhaustiveDependencies: onGeneratePreview reference changes each render
 	useEffect(() => {
 		if (!template) return;
 
@@ -39,14 +29,7 @@ export function EmailPreview({
 		}, 500);
 
 		return () => clearTimeout(timer);
-	}, [template, activeTab, onGeneratePreview]);
-
-	const handleSendTestEmail = () => {
-		if (!template || !testEmail) return;
-		onSendTestEmail({ template, type: activeTab, email: testEmail });
-		setShowTestEmailInput(false);
-		setTestEmail("");
-	};
+	}, [template, activeTab]);
 
 	if (!template) {
 		return (
@@ -117,57 +100,6 @@ export function EmailPreview({
 						</p>
 					</div>
 				)}
-			</div>
-
-			{/* Floating Test Email - Bottom */}
-			<div className="absolute bottom-4 left-4 right-4 z-10">
-				<div className="bg-white/90 dark:bg-gray-800/90 rounded-lg p-3">
-					{showTestEmailInput ? (
-						<div className="flex items-center gap-2">
-							<Input
-								type="email"
-								placeholder="Enter email address"
-								value={testEmail}
-								onChange={(e) => setTestEmail(e.target.value)}
-								className="flex-1 text-sm"
-							/>
-							<button
-								type="button"
-								onClick={handleSendTestEmail}
-								disabled={!testEmail || isSendingTestEmail}
-								className="px-3 py-2 bg-emerald-600 text-white rounded-lg text-xs font-medium hover:bg-emerald-700 disabled:opacity-50 flex items-center gap-1.5"
-							>
-								{isSendingTestEmail ? (
-									<Loader2 size={14} className="animate-spin" />
-								) : (
-									<Mail size={14} />
-								)}
-								Send
-							</button>
-							<button
-								type="button"
-								onClick={() => setShowTestEmailInput(false)}
-								className="px-2 py-2 text-gray-500 hover:text-gray-700 text-xs"
-							>
-								✕
-							</button>
-						</div>
-					) : (
-						<div className="flex items-center justify-between">
-							<p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
-								<Mail size={14} />
-								Kirim email test untuk melihat hasil di inbox
-							</p>
-							<button
-								type="button"
-								onClick={() => setShowTestEmailInput(true)}
-								className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-600"
-							>
-								Send Test Email
-							</button>
-						</div>
-					)}
-				</div>
 			</div>
 		</div>
 	);

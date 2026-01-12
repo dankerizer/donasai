@@ -325,6 +325,8 @@ function EditorContent() {
 								onChange={setLocalEmailTemplate}
 								onSave={handleSave}
 								isSaving={isSaving}
+								onSendTestEmail={emailQuery.sendTestEmail}
+								isSendingTestEmail={emailQuery.isSendingTestEmail}
 							/>
 						) : (
 							<ReceiptCustomizationForm
@@ -352,8 +354,6 @@ function EditorContent() {
 								template={localEmailTemplate}
 								previewHtml={emailQuery.previewData}
 								onGeneratePreview={emailQuery.generatePreview}
-								onSendTestEmail={emailQuery.sendTestEmail}
-								isSendingTestEmail={emailQuery.isSendingTestEmail}
 							/>
 						) : (
 							<ReceiptPreview

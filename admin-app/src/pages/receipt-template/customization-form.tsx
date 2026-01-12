@@ -411,6 +411,15 @@ export function CustomizationForm({
 					</div>
 				</div>
 			</AccordionSection>
+
+			{/* Info Note */}
+			<div className="px-4 py-3 bg-gray-50 dark:bg-gray-900 flex items-start gap-2">
+				<span className="text-gray-400 shrink-0">ℹ️</span>
+				<p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed my-0!">
+					Preview menggunakan data contoh. Kuitansi sebenarnya akan menggunakan
+					data donasi yang real.
+				</p>
+			</div>
 		</div>
 	);
 }

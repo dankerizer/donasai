@@ -1,5 +1,3 @@
-/** biome-ignore-all lint/a11y/noLabelWithoutControl: karena ini component */
-
 import { clsx } from "clsx";
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";

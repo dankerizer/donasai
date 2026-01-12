@@ -3,7 +3,10 @@ import {
 	ChevronDown,
 	Code,
 	FileText,
+	Loader2,
+	Mail,
 	Palette,
+	Send,
 	Settings,
 	Tag,
 } from "lucide-react";
@@ -23,6 +26,12 @@ interface CustomizationFormProps {
 	onSave: () => void;
 	isSaving: boolean;
 	isProActive?: boolean;
+	onSendTestEmail?: (params: {
+		template: EmailTemplate;
+		type: EmailType;
+		email: string;
+	}) => void;
+	isSendingTestEmail?: boolean;
 }
 
 const MERGE_TAGS = [
@@ -148,8 +157,12 @@ export function CustomizationForm({
 	template,
 	onChange,
 	isProActive = true,
+	onSendTestEmail,
+	isSendingTestEmail = false,
 }: CustomizationFormProps) {
 	const [openSection, setOpenSection] = useState("design");
+	const [testEmail, setTestEmail] = useState("");
+	const [activeTestType, setActiveTestType] = useState<EmailType>("pending");
 
 	if (!template) {
 		return (
@@ -443,6 +456,92 @@ export function CustomizationForm({
 					))}
 				</div>
 			</AccordionSection>
+
+			{/* Send Test Email Section */}
+			{onSendTestEmail && (
+				<AccordionSection
+					title="Kirim Email Test"
+					icon={Send}
+					isOpen={openSection === "test"}
+					onToggle={() => toggleSection("test")}
+				>
+					<div className="space-y-4">
+						<p className="text-xs text-gray-500 dark:text-gray-400">
+							Kirim email test untuk melihat hasil sebenarnya di inbox Anda.
+						</p>
+
+						{/* Email Type Selector */}
+						<div>
+							<Label className="text-xs mb-2 block">Tipe Email</Label>
+							<div className="flex gap-2">
+								<button
+									type="button"
+									onClick={() => setActiveTestType("pending")}
+									className={clsx(
+										"flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors",
+										activeTestType === "pending"
+											? "bg-amber-100 text-amber-700 border border-amber-300"
+											: "bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200",
+									)}
+								>
+									⏳ Pending
+								</button>
+								<button
+									type="button"
+									onClick={() => setActiveTestType("success")}
+									className={clsx(
+										"flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors",
+										activeTestType === "success"
+											? "bg-emerald-100 text-emerald-700 border border-emerald-300"
+											: "bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200",
+									)}
+								>
+									✓ Success
+								</button>
+							</div>
+						</div>
+
+						{/* Email Input */}
+						<div>
+							<Label htmlFor="test-email" className="text-xs">
+								Alamat Email
+							</Label>
+							<Input
+								id="test-email"
+								type="email"
+								value={testEmail}
+								onChange={(e) => setTestEmail(e.target.value)}
+								placeholder="test@example.com"
+								className="mt-1 text-sm"
+							/>
+						</div>
+
+						{/* Send Button */}
+						<button
+							type="button"
+							onClick={() => {
+								if (template && testEmail) {
+									onSendTestEmail({
+										template,
+										type: activeTestType,
+										email: testEmail,
+									});
+									setTestEmail("");
+								}
+							}}
+							disabled={!testEmail || isSendingTestEmail}
+							className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white rounded-lg text-sm font-medium transition-colors"
+						>
+							{isSendingTestEmail ? (
+								<Loader2 size={16} className="animate-spin" />
+							) : (
+								<Mail size={16} />
+							)}
+							{isSendingTestEmail ? "Mengirim..." : "Kirim Test Email"}
+						</button>
+					</div>
+				</AccordionSection>
+			)}
 		</div>
 	);
 }
