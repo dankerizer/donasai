@@ -152,11 +152,11 @@ if (!defined('ABSPATH')) {
     }
 
     .wpd-card {
-        background: #fff;
+            background: var(--wpd-card-bg);
         padding: 2rem;
         border-radius: 16px;
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-        border: 1px solid #f3f4f6;
+        border: 1px solid var(--wpd-border);
     }
 
     .wpd-form-header {
@@ -167,14 +167,14 @@ if (!defined('ABSPATH')) {
     .wpd-form-header h2 {
         font-size: 1.5rem;
         font-weight: 800;
-        color: #111827;
+        color: var(--wpd-text-main);
         margin: 0 0 0.5rem;
         letter-spacing: -0.025em;
     }
 
     .wpd-form-header p {
         font-size: 0.95rem;
-        color: #6b7280;
+        color: var(--wpd-text-muted);
         margin: 0;
         line-height: 1.5;
     }
@@ -214,7 +214,7 @@ if (!defined('ABSPATH')) {
         left: 14px;
         top: 50%;
         transform: translateY(-50%);
-        color: #9ca3af;
+        color: var(--wpd-text-muted);
         font-weight: 600;
         pointer-events: none;
     }
@@ -226,7 +226,7 @@ if (!defined('ABSPATH')) {
     .wpd-input {
         width: 100%;
         padding: 0.75rem 1rem;
-        border: 1px solid #e5e7eb;
+        border: 1px solid var(--wpd-border);
         border-radius: 10px;
         font-size: 0.95rem;
         transition: all 0.2s;
@@ -236,14 +236,14 @@ if (!defined('ABSPATH')) {
     }
 
     .wpd-input:focus {
-        border-color: var(--wpd-primary, #3b82f6);
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: var(--wpd-primary);
+        box-shadow: 0 0 0 3px rgba(var(--wpd-primary-rgb, 59, 130, 246), 0.1);
         outline: none;
     }
 
     .wpd-helper-text {
         font-size: 0.75rem;
-        color: #6b7280;
+        color: var(--wpd-text-muted);
         margin-top: 0.35rem;
     }
 
@@ -262,46 +262,46 @@ if (!defined('ABSPATH')) {
         align-items: center;
         justify-content: center;
         padding: 2rem 1.5rem;
-        border: 2px dashed #e5e7eb;
+        border: 2px dashed var(--wpd-border);
         border-radius: 12px;
-        background: #f9fafb;
+        background: var(--wpd-bg);
         cursor: pointer;
         transition: all 0.2s;
         text-align: center;
     }
 
     .wpd-upload-label:hover {
-        border-color: var(--wpd-primary, #3b82f6);
-        background: #f0f9ff;
+        border-color: var(--wpd-primary);
+        background: var(--wpd-bg-soft);
     }
 
     .wpd-upload-icon-wrapper {
         width: 48px;
         height: 48px;
-        background: #fff;
+            background: var(--wpd-card-bg);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         margin-bottom: 1rem;
-        border: 1px solid #f3f4f6;
+        border: 1px solid var(--wpd-border);
     }
 
     .wpd-upload-icon {
         width: 24px;
         height: 24px;
-        color: var(--wpd-primary, #6b7280);
+        color: var(--wpd-primary);
     }
 
     .wpd-upload-hint {
         font-size: 0.75rem;
-        color: #9ca3af;
+        color: var(--wpd-text-muted);
         margin-top: 0.25rem;
     }
 
     .wpd-btn-submit {
-        background-color: var(--wpd-btn, #2563eb);
+        background-color: var(--wpd-btn);
         color: white;
         width: 100%;
         padding: 0.875rem;

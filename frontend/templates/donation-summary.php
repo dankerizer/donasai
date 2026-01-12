@@ -64,7 +64,7 @@ $button_color = get_option('wpd_appearance_button_color', '#ec4899'); // Pink
             --wpd-text-muted: #64748b;
         }
     </style>
-    </style>
+    
 </head>
 
 <body class="status-<?php echo esc_attr($status); ?>">

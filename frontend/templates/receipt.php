@@ -90,6 +90,35 @@ $is_pro = function_exists('wpd_is_pro_active') && wpd_is_pro_active();
 $appearance = get_option('wpd_settings_appearance', []);
 $dark_mode = !empty($appearance['dark_mode']) && $is_pro;
 ?>
+// Helper to adjust brightness (copied from css-loader for standalone use)
+if (!function_exists('wpd_receipt_adjust_brightness')) {
+    function wpd_receipt_adjust_brightness($hex, $steps) {
+        $steps = max(-255, min(255, $steps));
+        $hex = str_replace('#', '', $hex);
+        if (strlen($hex) == 3) {
+            $hex = str_repeat(substr($hex, 0, 1), 2) . str_repeat(substr($hex, 1, 1), 2) . str_repeat(substr($hex, 2, 1), 2);
+        }
+        $color_parts = str_split($hex, 2);
+        $return = '#';
+        foreach ($color_parts as $color) {
+            $color   = hexdec($color);
+            $color   = max(0, min(255, $color + $steps));
+            $return .= str_pad(dechex($color), 2, '0', STR_PAD_LEFT);
+        }
+        return $return;
+    }
+}
+
+$brand_color = !empty($appearance['brand_color']) ? $appearance['brand_color'] : '#0ea5e9'; // Default Sky
+// Generate Shades
+$brand_50  = wpd_receipt_adjust_brightness($brand_color, 180);
+$brand_100 = wpd_receipt_adjust_brightness($brand_color, 150);
+$brand_500 = $brand_color;
+$brand_600 = wpd_receipt_adjust_brightness($brand_color, -10);
+$brand_700 = wpd_receipt_adjust_brightness($brand_color, -30);
+$brand_800 = wpd_receipt_adjust_brightness($brand_color, -50);
+$brand_900 = wpd_receipt_adjust_brightness($brand_color, -80);
+?>
 <!DOCTYPE html>
 <html lang="id" class="<?php echo $dark_mode ? 'dark' : ''; ?>">
 
@@ -116,13 +145,13 @@ $dark_mode = !empty($appearance['dark_mode']) && $is_pro;
                     },
                     colors: {
                         brand: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            500: '#0ea5e9', // Sky 500
-                            600: '#0284c7', // Sky 600
-                            700: '#0369a1', // Sky 700
-                            800: '#075985', // Sky 800
-                            900: '#0c4a6e', // Sky 900
+                            50: '<?php echo esc_attr($brand_50); ?>',
+                            100: '<?php echo esc_attr($brand_100); ?>',
+                            500: '<?php echo esc_attr($brand_500); ?>', 
+                            600: '<?php echo esc_attr($brand_600); ?>', 
+                            700: '<?php echo esc_attr($brand_700); ?>', 
+                            800: '<?php echo esc_attr($brand_800); ?>', 
+                            900: '<?php echo esc_attr($brand_900); ?>', 
                         }
                     }
                 }
@@ -194,14 +223,14 @@ $dark_mode = !empty($appearance['dark_mode']) && $is_pro;
             left: 0;
             width: 100%;
             height: 120px;
-            background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+            background: linear-gradient(135deg, <?php echo esc_attr($brand_50); ?> 0%, #ffffff 100%);
             border-bottom-right-radius: 50% 20px;
             border-bottom-left-radius: 50% 20px;
             z-index: 0;
         }
 
         .dark .header-curve {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            background: linear-gradient(135deg, <?php echo esc_attr($brand_900); ?> 0%, #0f172a 100%);
         }
 
         .wave-decoration {
@@ -210,13 +239,13 @@ $dark_mode = !empty($appearance['dark_mode']) && $is_pro;
             left: -50px;
             width: 200px;
             height: 200px;
-            background: radial-gradient(circle, rgba(14, 165, 233, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            background: radial-gradient(circle, <?php echo esc_attr($brand_100); ?> 0%, rgba(255, 255, 255, 0) 70%);
             border-radius: 50%;
             z-index: 0;
         }
 
         .dark .wave-decoration {
-            background: radial-gradient(circle, rgba(14, 165, 233, 0.1) 0%, rgba(15, 23, 42, 0) 70%);
+            background: radial-gradient(circle, <?php echo esc_attr($brand_900); ?> 0%, rgba(15, 23, 42, 0) 70%);
         }
     </style>
 </head>

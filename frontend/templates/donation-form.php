@@ -62,73 +62,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <?php wp_head(); ?>
     <style>
-        :root {
-            --wpd-radius:
-                <?php echo esc_attr($border_radius); ?>
-            ;
-            --wpd-primary:
-                <?php echo esc_attr($primary_color); ?>
-            ;
-            --wpd-btn:
-                <?php echo esc_attr($button_color); ?>
-            ;
-
-            /* Light */
-            --wpd-bg: #f3f4f6;
-            /* Form usually has gray bg */
-            --wpd-card-bg: #ffffff;
-            --wpd-text: #1f2937;
-            --wpd-border: #e5e7eb;
-        }
-
-        <?php if ($dark_mode): ?>
-            :root {
-                --wpd-bg: #111827;
-                --wpd-card-bg: #1f2937;
-                --wpd-text: #f3f4f6;
-                --wpd-border: #374151;
-            }
-
-            body.wpd-payment-page {
-                background-color: var(--wpd-bg);
-                color: var(--wpd-text);
-            }
-
-            .wpd-card {
-                background-color: var(--wpd-card-bg);
-                border-color: var(--wpd-border);
-                color: var(--wpd-text);
-            }
-
-            .wpd-input,
-            .wpd-radio-card {
-                background-color: #374151;
-                border-color: #4b5563;
-                color: #fff;
-            }
-
-            .wpd-label-heading,
-            .wpd-campaign-title {
-                color: var(--wpd-text);
-            }
-
-            .wpd-radio-content .wpd-pkg-name {
-                color: #fff;
-            }
-
-            .wpd-radio-content .wpd-pkg-price {
-                color: #9ca3af;
-            }
-
-        <?php endif; ?>
-
-        body {
-            font-family: '<?php echo esc_attr($font_family); ?>', sans-serif;
-            font-size:
-                <?php echo esc_attr($font_size); ?>
-            ;
-        }
-
+        /* Local overrides using variables */
         .wpd-card,
         .btn,
         .wpd-radio-card,
@@ -138,7 +72,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
     </style>
 </head>
 
-<body <?php body_class('wpd-payment-page'); ?>>
+<body <?php body_class('wpd-payment-page' . ($dark_mode ? ' dark' : '')); ?>>
 
     <div class="wpd-layout-wrapper">
 
@@ -448,7 +382,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
         body {
             margin: 0;
             padding: 0;
-            background-color: #f3f4f6;
+            background-color: var(--wpd-bg);
         }
 
         .admin-bar .wpd-layout-wrapper {
@@ -456,7 +390,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
         }
 
         .wpd-layout-wrapper {
-            background-color: #f3f4f6;
+            background-color: var(--wpd-bg);
             min-height: 100vh;
             padding-top: 50px;
             padding-bottom: 90px;
@@ -465,7 +399,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
         }
 
         .wpd-card {
-            background: white;
+            background: var(--wpd-card-bg);
             max-width: 550px;
             margin: 0 auto;
             min-height: 100vh;
@@ -505,8 +439,8 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                     grid-column: 1;
                     grid-row: 1 / 3;
                     /* Span full height */
-                    background: #fdfdfd;
-                    border-right: 1px solid #f1f5f9;
+                    background: var(--wpd-input-bg);
+                    border-right: 1px solid var(--wpd-border);
                     border-bottom: none;
                     flex-direction: column;
                     align-items: flex-start;
@@ -537,7 +471,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                 }
 
                 .wpd-campaign-label {
-                    color: #64748b;
+                    color: var(--wpd-text-muted);
                     margin-bottom: 8px;
                     font-size: 12px;
                     font-weight: 600;
@@ -547,7 +481,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
                 .wpd-campaign-title {
                     font-size: 24px;
                     line-height: 1.3;
-                    color: #1e293b;
+                    color: var(--wpd-text-main);
                     font-weight: 800;
                 }
 
@@ -572,7 +506,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
             display: flex;
             align-items: center;
             padding: 15px 20px;
-            background: white;
+            background: var(--wpd-card-bg);
             border-bottom: 1px solid #f3f4f6;
             position: fixed;
             top: 0;
@@ -593,7 +527,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
         }
 
         .wpd-back-btn {
-            color: #374151;
+            color: var(--wpd-text-main);
             margin-right: 15px;
             display: flex;
             align-items: center;
@@ -603,17 +537,17 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
         .wpd-header-title {
             font-size: 16px;
             font-weight: 700;
-            color: #111827;
+            color: var(--wpd-text-main);
         }
 
         /* Campaign Summary */
         .wpd-campaign-summary {
             padding: 20px 24px;
-            background: #fdfdfd;
+            background: var(--wpd-input-bg);
             display: flex;
             align-items: center;
             gap: 15px;
-            border-bottom: 1px solid #f3f4f6;
+            border-bottom: 1px solid var(--wpd-bg);
         }
 
         .wpd-campaign-thumb {
@@ -626,7 +560,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
 
         .wpd-campaign-label {
             font-size: 11px;
-            color: #6b7280;
+            color: var(--wpd-text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 600;
@@ -636,7 +570,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
             margin: 2px 0 0 0;
             font-size: 15px;
             line-height: 1.3;
-            color: #1f2937;
+            color: var(--wpd-text-main);
             font-weight: 700;
         }
 
@@ -647,16 +581,16 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
 
         .wpd-divider {
             height: 8px;
-            background: #f3f4f6;
-            border-top: 1px solid #e5e7eb;
-            border-bottom: 1px solid #e5e7eb;
+            background: var(--wpd-bg);
+            border-top: 1px solid var(--wpd-border);
+            border-bottom: 1px solid var(--wpd-border);
         }
 
         .wpd-label-heading {
             display: block;
             font-size: 16px;
             font-weight: 700;
-            color: #111827;
+            color: var(--wpd-text-main);
             margin-bottom: 16px;
         }
 
@@ -669,20 +603,20 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
         }
 
         .wpd-preset-card {
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--wpd-border);
             border-radius: 12px;
             padding: 16px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s;
-            background: white;
+            background: var(--wpd-card-bg);
             position: relative;
             overflow: hidden;
         }
 
         .wpd-preset-card:hover {
-            border-color: #d1d5db;
-            background: #f9fafb;
+            border-color: var(--wpd-input-border);
+            background: var(--wpd-bg);
         }
 
         .wpd-preset-card.active {
@@ -698,7 +632,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
 
         .wpd-preset-val {
             font-weight: 700;
-            color: #374151;
+            color: var(--wpd-text-main);
             font-size: 15px;
         }
 
@@ -708,7 +642,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
             border-radius: 12px;
             border: 1px solid #d1d5db;
             overflow: hidden;
-            background: white;
+            background: var(--wpd-card-bg);
             transition: all 0.2s;
         }
 
@@ -723,7 +657,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
             top: 50%;
             transform: translateY(-50%);
             font-weight: 700;
-            color: #9ca3af;
+            color: var(--wpd-text-muted);
             font-size: 18px;
         }
 
@@ -765,7 +699,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
 
         .wpd-input:focus,
         .wpd-textarea:focus {
-            background: white;
+            background: var(--wpd-card-bg);
             border-color: var(--wpd-primary, #2563eb);
         }
 
@@ -799,12 +733,12 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
         .wpd-user-profile .name {
             font-weight: 600;
             font-size: 14px;
-            color: #111827;
+            color: var(--wpd-text-main);
         }
 
         .wpd-user-profile .email {
             font-size: 12px;
-            color: #6b7280;
+            color: var(--wpd-text-muted);
         }
 
         .wpd-login-prompt {
@@ -900,7 +834,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
             padding: 16px;
             border: 1px solid #e5e7eb;
             border-radius: 12px;
-            background: white;
+            background: var(--wpd-card-bg);
             transition: all 0.2s;
         }
 
@@ -935,7 +869,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
 
         .wpd-payment-details .desc {
             font-size: 12px;
-            color: #6b7280;
+            color: var(--wpd-text-muted);
         }
 
         .wpd-badge-instant {
@@ -970,7 +904,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
             left: 5px;
             width: 6px;
             height: 6px;
-            background: white;
+            background: var(--wpd-card-bg);
             border-radius: 50%;
         }
 
@@ -980,7 +914,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
             bottom: 0;
             left: 0;
             right: 0;
-            background: white;
+            background: var(--wpd-card-bg);
             padding: 16px 20px;
             box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
             z-index: 100;
@@ -1028,14 +962,14 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
             justify-content: center;
             gap: 6px;
             font-size: 12px;
-            color: #9ca3af;
+            color: var(--wpd-text-muted);
             margin-top: 12px;
         }
 
         .wpd-powered-by {
             text-align: center;
             font-size: 13px;
-            color: #9ca3af;
+            color: var(--wpd-text-muted);
             margin-top: 10px;
             padding-bottom: 30px;
             /* Extra padding for bottom */
@@ -1151,7 +1085,7 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
         .wpd-fee-summary {
             margin-top: 15px;
             padding: 12px;
-            background: white;
+            background: var(--wpd-card-bg);
             border-radius: 8px;
             border: 1px solid #dcfce7;
         }
@@ -1160,17 +1094,17 @@ $font_url = isset($fonts_map[$font_family]) ? "https://fonts.googleapis.com/css2
             display: flex;
             justify-content: space-between;
             font-size: 13px;
-            color: #374151;
+            color: var(--wpd-text-main);
             padding: 6px 0;
         }
 
         .wpd-fee-row.wpd-fee-total {
-            border-top: 1px dashed #d1d5db;
+            border-top: 1px dashed var(--wpd-input-border);
             margin-top: 6px;
             padding-top: 10px;
             font-weight: 700;
             font-size: 15px;
-            color: #111827;
+            color: var(--wpd-text-main);
         }
     </style>
 

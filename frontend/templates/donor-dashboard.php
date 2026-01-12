@@ -32,24 +32,24 @@ if (false === $donations) {
     <h3><?php esc_html_e('Riwayat Donasi Saya', 'donasai'); ?></h3>
 
     <?php if (empty($donations)): ?>
-        <div style="background:#f9fafb; padding:40px; text-align:center; border-radius:8px; border:1px solid #e5e7eb;">
-            <p style="color:#6b7280; font-size:16px; margin-bottom:20px;">
+        <div style="background:var(--wpd-bg); padding:40px; text-align:center; border-radius:var(--wpd-radius); border:1px solid var(--wpd-border);">
+            <p style="color:var(--wpd-text-muted); font-size:16px; margin-bottom:20px;">
                 <?php esc_html_e('Belum ada riwayat donasi.', 'donasai'); ?>
             </p>
             <a href="<?php echo esc_url(home_url('/campaigns')); ?>" class="button"
-                style="background:#2563eb; color:white; padding:10px 20px; text-decoration:none; border-radius:6px;"><?php esc_html_e('Mulai Berdonasi', 'donasai'); ?></a>
+                style="background:var(--wpd-btn); color:white; padding:10px 20px; text-decoration:none; border-radius:var(--wpd-radius);"><?php esc_html_e('Mulai Berdonasi', 'donasai'); ?></a>
         </div>
     <?php else: ?>
         <div style="overflow-x:auto;">
             <table class="wpd-table"
-                style="width:100%; border-collapse:separate; border-spacing:0; border:1px solid #e5e7eb; border-radius:8px; overflow:hidden;">
-                <thead style="background:#f9fafb; color:#374151;">
+                style="width:100%; border-collapse:separate; border-spacing:0; border:1px solid var(--wpd-border); border-radius:var(--wpd-radius); overflow:hidden;">
+                <thead style="background:var(--wpd-bg); color:var(--wpd-text-main);">
                     <tr>
                         <th
                             style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;">
                             #ID</th>
                         <th
-                            style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;">
+                            style="padding:12px 16px; text-align:left; border-bottom:1px solid var(--wpd-border); font-weight:600; font-size:14px;">
                             <?php esc_html_e('Tanggal', 'donasai'); ?>
                         </th>
                         <th
@@ -70,21 +70,21 @@ if (false === $donations) {
                         </th>
                     </tr>
                 </thead>
-                <tbody style="background:white;">
+                <tbody style="background:var(--wpd-card-bg);">
                     <?php foreach ($donations as $donation):
                         $campaign_title = get_the_title($donation->campaign_id);
                         ?>
-                        <tr style="border-bottom:1px solid #e5e7eb;">
-                            <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6; color:#6b7280; font-size:13px;">
+                        <tr style="border-bottom:1px solid var(--wpd-border);">
+                            <td style="padding:12px 16px; border-bottom:1px solid var(--wpd-bg); color:var(--wpd-text-muted); font-size:13px;">
                                 #<?php echo esc_html($donation->id); ?></td>
-                            <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6; color:#111827; font-size:14px;">
+                            <td style="padding:12px 16px; border-bottom:1px solid var(--wpd-bg); color:var(--wpd-text-main); font-size:14px;">
                                 <?php echo esc_html(date_i18n('d M Y', strtotime($donation->created_at))); ?>
                             </td>
-                            <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6;">
+                            <td style="padding:12px 16px; border-bottom:1px solid var(--wpd-bg);">
                                 <a href="<?php echo esc_url(get_permalink($donation->campaign_id)); ?>"
-                                    style="color:#2563eb; text-decoration:none; font-weight:500; font-size:14px;"><?php echo esc_html($campaign_title); ?></a>
+                                    style="color:var(--wpd-primary); text-decoration:none; font-weight:500; font-size:14px;"><?php echo esc_html($campaign_title); ?></a>
                             </td>
-                            <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6; font-weight:600; color:#111827;">Rp
+                            <td style="padding:12px 16px; border-bottom:1px solid var(--wpd-bg); font-weight:600; color:var(--wpd-text-main);">Rp
                                 <?php echo esc_html(number_format($donation->amount, 0, ',', '.')); ?>
                             </td>
                             <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6;">
@@ -92,7 +92,7 @@ if (false === $donations) {
                                     <?php echo esc_html(ucfirst($donation->status)); ?>
                                 </span>
                             </td>
-                            <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6; text-align:right;">
+                            <td style="padding:12px 16px; border-bottom:1px solid var(--wpd-bg); text-align:right;">
                                 <?php if ('pending' === $donation->status && 'midtrans' === $donation->payment_method): ?>
                                     <!-- Ideally link to payment -->
                                     <button disabled class="button-small"
@@ -100,9 +100,9 @@ if (false === $donations) {
                                 <?php else: ?>
                                     <a href="<?php echo esc_url(add_query_arg('wpd_receipt', $donation->id, home_url('/'))); ?>"
                                         target="_blank" class="button-small"
-                                        style="font-size:12px; color:#2563eb; text-decoration:none; margin-right:5px;"><?php esc_html_e('Receipt', 'donasai'); ?></a>
+                                        style="font-size:12px; color:var(--wpd-primary); text-decoration:none; margin-right:5px;"><?php esc_html_e('Receipt', 'donasai'); ?></a>
                                     <a href="<?php echo esc_url(get_permalink($donation->campaign_id)); ?>" class="button-small"
-                                        style="font-size:12px; color:#4b5563; text-decoration:none;"><?php esc_html_e('View', 'donasai'); ?></a>
+                                        style="font-size:12px; color:var(--wpd-text-muted); text-decoration:none;"><?php esc_html_e('View', 'donasai'); ?></a>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -166,16 +166,16 @@ if (false === $donations) {
                         </th>
                     </tr>
                 </thead>
-                <tbody style="background:white;">
+                <tbody style="background:var(--wpd-card-bg);">
                     <?php foreach ($subscriptions as $sub): ?>
-                        <tr style="border-bottom:1px solid #e5e7eb;">
-                            <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6; color:#6b7280; font-size:13px;">
+                        <tr style="border-bottom:1px solid var(--wpd-border);">
+                            <td style="padding:12px 16px; border-bottom:1px solid var(--wpd-bg); color:var(--wpd-text-muted); font-size:13px;">
                                 #<?php echo esc_html($sub->id); ?></td>
                             <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6;">
                                 <a href="<?php echo esc_url(get_permalink($sub->campaign_id)); ?>"
-                                    style="color:#2563eb; text-decoration:none; font-weight:500; font-size:14px;"><?php echo esc_html($sub->campaign_title); ?></a>
+                                    style="color:var(--wpd-primary); text-decoration:none; font-weight:500; font-size:14px;"><?php echo esc_html($sub->campaign_title); ?></a>
                             </td>
-                            <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6; font-weight:600; color:#111827;">Rp
+                            <td style="padding:12px 16px; border-bottom:1px solid var(--wpd-bg); font-weight:600; color:var(--wpd-text-main);">Rp
                                 <?php echo esc_html(number_format($sub->amount, 0, ',', '.')); ?>
                             </td>
                             <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6; font-size:13px;">
@@ -234,7 +234,7 @@ if (false === $donations) {
     }
 
     .wpd-table tr:hover {
-        background-color: #f9fafb;
+        background-color: var(--wpd-bg);
     }
 
     .wpd-status-badge {

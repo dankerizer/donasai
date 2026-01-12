@@ -25,20 +25,8 @@ $query = new WP_Query($args);
 
 ?>
 
-<div class="wpd-campaign-list-wrapper" style="font-family: '<?php echo esc_attr($font_family); ?>', sans-serif;">
-    <style>
-        .wpd-campaign-list-wrapper {
-            --wpd-primary:
-                <?php echo esc_attr($primary_color); ?>
-            ;
-            --wpd-btn:
-                <?php echo esc_attr($button_color); ?>
-            ;
-            --wpd-radius:
-                <?php echo esc_attr($border_radius); ?>
-            ;
-        }
-    </style>
+    <!-- CSS Variables are now handled by css-loader.php -->
+    <div class="wpd-campaign-list-wrapper">
 
 
 
@@ -83,7 +71,7 @@ $query = new WP_Query($args);
                                     style="width: <?php echo esc_attr($progress['percentage']); ?>%;"></div>
                             </div>
                             <div
-                                style="display:flex; justify-content:flex-end; font-size:12px; font-weight:600; color:var(--wpd-primary, <?php echo esc_attr($primary_color); ?>);">
+                                style="display:flex; justify-content:flex-end; font-size:12px; font-weight:600; color:var(--wpd-primary);">
                                 <?php echo esc_html($progress['percentage']); ?>%
                             </div>
                         </div>

@@ -527,22 +527,22 @@ export function EditorPage() {
 		return (
 			<div className="fixed inset-0 z-99999 bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-8">
 				<div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8 max-w-md text-center">
-					<div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
-						<Palette className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+					<div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+						<Palette className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
 					</div>
-					<h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+					<h2 className="text-lg! md:text-xl! my-0! font-bold text-gray-900 dark:text-white mb-2">
 						Donasai Editor
 					</h2>
 					<p className="text-gray-600 dark:text-gray-400 mb-6">
 						Fitur ini hanya tersedia untuk pengguna{" "}
-						<span className="font-bold text-purple-600">Donasai Pro</span>.
+						<span className="font-bold text-emerald-600">Donasai Pro</span>.
 						Upgrade untuk membuka visual editor dengan live preview.
 					</p>
 					<a
 						href="https://donasai.com/pricing"
 						target="_blank"
 						rel="noopener noreferrer"
-						className="inline-block px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors"
+						className="inline-block px-6 py-3 bg-emerald-600 hover:bg-emerald-50-700 text-white! font-medium rounded-lg transition-colors"
 					>
 						Upgrade ke Pro
 					</a>
