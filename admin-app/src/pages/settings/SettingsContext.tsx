@@ -87,7 +87,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 					pending_expiry_hours: data.pending_expiry_hours,
 					email_reminder_enabled: data.email_reminder_enabled,
 					email_reminder_delay: data.email_reminder_delay,
-					enable_pdf_download: data.enable_pdf_download,
 				},
 				appearance: {
 					brand_color: data.brand_color,

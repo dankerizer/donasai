@@ -24,7 +24,6 @@ export interface SettingsFormData {
 	pending_expiry_hours: number;
 	email_reminder_enabled: boolean;
 	email_reminder_delay: number;
-	enable_pdf_download: boolean;
 	// Appearance
 	brand_color: string;
 	button_color: string;
@@ -96,7 +95,6 @@ export const initialFormData: SettingsFormData = {
 	pending_expiry_hours: 48,
 	email_reminder_enabled: false,
 	email_reminder_delay: 24,
-	enable_pdf_download: true,
 	// Appearance
 	brand_color: "#059669",
 	button_color: "#ec4899",
