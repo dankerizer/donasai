@@ -89,7 +89,7 @@ $is_pro = function_exists('wpd_is_pro_active') && wpd_is_pro_active();
 // Dark Mode Check
 $appearance = get_option('wpd_settings_appearance', []);
 $dark_mode = !empty($appearance['dark_mode']) && $is_pro;
-?>
+
 // Helper to adjust brightness (copied from css-loader for standalone use)
 if (!function_exists('wpd_receipt_adjust_brightness')) {
     function wpd_receipt_adjust_brightness($hex, $steps) {
