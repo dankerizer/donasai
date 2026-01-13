@@ -379,6 +379,16 @@ function wpd_api_get_donations($request)
 {
     global $wpdb;
 
+    // Pagination Parameters
+    $page = $request->get_param('page') ? intval($request->get_param('page')) : 1;
+    $per_page = $request->get_param('per_page') ? intval($request->get_param('per_page')) : 20;
+
+    if ($page < 1) $page = 1;
+    if ($per_page < 1) $per_page = 20;
+    if ($per_page > 100) $per_page = 100; // Hard max
+
+    $offset = ($page - 1) * $per_page;
+
     // Build Query
     $params = array(
         'campaign_id' => $request->get_param('campaign_id'),
@@ -388,17 +398,39 @@ function wpd_api_get_donations($request)
     );
 
     $query_parts = wpd_build_donations_where_clause($params);
+    $table_name = $wpdb->prefix . 'wpd_donations';
+    $where_sql = $query_parts['where'];
+    $args = $query_parts['args'];
+
+    // 1. Get Total Count
+    if (!empty($args)) {
+        $count_query = $wpdb->prepare("SELECT COUNT(*) FROM {$table_name} WHERE {$where_sql}", $args);
+    } else {
+        $count_query = "SELECT COUNT(*) FROM {$table_name}";
+    }
+    $total_items = (int) $wpdb->get_var($count_query);
+    $total_pages = ceil($total_items / $per_page);
+
+    // 2. Get Data
+    $args[] = $per_page;
+    $args[] = $offset;
 
     if (!empty($query_parts['args'])) {
+        // We need to re-merge args because we added LIMIT/OFFSET
+        // $args already contains WHERE params + LIMIT + OFFSET 
         $query = $wpdb->prepare(
-            "SELECT * FROM {$wpdb->prefix}wpd_donations WHERE " . $query_parts['where'] . " ORDER BY created_at DESC",
-            $query_parts['args']
+            "SELECT * FROM {$table_name} WHERE " . $where_sql . " ORDER BY created_at DESC LIMIT %d OFFSET %d",
+            $args
         );
     } else {
-        $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wpd_donations ORDER BY created_at DESC LIMIT %d", 10000);
+        $query = $wpdb->prepare(
+            "SELECT * FROM {$table_name} ORDER BY created_at DESC LIMIT %d OFFSET %d",
+            $per_page,
+            $offset
+        );
     }
 
-    $results = $wpdb->get_results($wpdb->prepare($query));
+    $results = $wpdb->get_results($query);
 
     // Format data for frontend
     $data = array_map(function ($row) {
@@ -417,5 +449,13 @@ function wpd_api_get_donations($request)
         );
     }, $results);
 
-    return rest_ensure_response($data);
+    return rest_ensure_response(array(
+        'data' => $data,
+        'meta' => array(
+            'current_page' => $page,
+            'per_page' => $per_page,
+            'total' => $total_items,
+            'total_pages' => $total_pages
+        )
+    ));
 }

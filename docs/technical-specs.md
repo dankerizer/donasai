@@ -94,7 +94,7 @@ CREATE TABLE {$wpdb->prefix}wpd_donations (
     amount decimal(12,2) NOT NULL,
     currency varchar(3) DEFAULT 'IDR',
     payment_method varchar(50) NOT NULL,  -- 'offline', 'stripe', etc
-    status enum('pending','processing','complete','failed','refunded') DEFAULT 'pending',
+    status enum('pending','processing','complete','failed','refunded','expired') DEFAULT 'pending',
     gateway varchar(50) NULL,
     gateway_txn_id varchar(100) NULL,
     metadata longtext NULL,

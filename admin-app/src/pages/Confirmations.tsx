@@ -12,7 +12,7 @@ export default function Confirmations() {
 	>("unconfirmed");
 
 	// Fetch Donations
-	const { data: donations, isLoading } = useQuery({
+	const { data: queryData, isLoading } = useQuery({
 		queryKey: ["donations"],
 		queryFn: async () => {
 			const response = await fetch("/wp-json/wpd/v1/donations", {
@@ -23,7 +23,9 @@ export default function Confirmations() {
 		},
 	});
 
-	const filteredDonations = (donations || [])
+	const donations = queryData?.data || [];
+
+	const filteredDonations = donations
 		.filter((d: any) => {
 			// Check for manual proof
 			const hasProof = d.metadata?.proof_url;

@@ -7,6 +7,7 @@ import {
 	Pencil,
 	Plus,
 	Save,
+	Trash2,
 	X,
 } from "lucide-react";
 import { useState } from "react";
@@ -19,7 +20,7 @@ interface Donation {
 	email: string;
 	phone: string;
 	amount: number;
-	status: "pending" | "complete" | "failed";
+	status: "pending" | "complete" | "failed" | "expired";
 	payment_method: string;
 	gateway_txn_id: string;
 	note: string;
@@ -71,6 +72,10 @@ export default function DonationsPage() {
 	const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
 	const [isCampaignDropdownOpen, setIsCampaignDropdownOpen] = useState(false);
 	const [isManualDonationOpen, setIsManualDonationOpen] = useState(false);
+	
+	// Pagination State
+	const [page, setPage] = useState(1);
+	const perPage = 20;
 
 	// Check if Pro is active
 	const isPro = (window as any).wpdSettings?.isPro;
@@ -81,29 +86,38 @@ export default function DonationsPage() {
 			proSettings.licenseStatus === "valid");
 
 	const toggleStatus = (status: string) => {
-		setSelectedStatuses((prev) =>
-			prev.includes(status)
-				? prev.filter((s) => s !== status)
-				: [...prev, status],
-		);
+		setPage(1); // Reset page on filter change
+		setSelectedStatuses((prev) => {
+			const list = Array.isArray(prev) ? prev : [];
+			return list.includes(status)
+				? list.filter((s) => s !== status)
+				: [...list, status];
+		});
 	};
 
 	const toggleCampaign = (id: string) => {
-		setSelectedCampaigns((prev) =>
-			prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id],
-		);
+		setPage(1); // Reset page on filter change
+		setSelectedCampaigns((prev) => {
+			const list = Array.isArray(prev) ? prev : [];
+			return list.includes(id)
+				? list.filter((c) => c !== id)
+				: [...list, id];
+		});
 	};
 
-	const { data: donations, isLoading } = useQuery({
+	const { data: queryData, isLoading } = useQuery({
 		queryKey: [
 			"donations",
 			startDate,
 			endDate,
 			selectedStatuses,
 			selectedCampaigns,
+			page,
 		],
 		queryFn: async () => {
 			const params = new URLSearchParams();
+			params.append("page", String(page));
+			params.append("per_page", String(perPage));
 			if (startDate) params.append("start_date", startDate);
 			if (endDate) params.append("end_date", endDate);
 			if (selectedStatuses.length > 0)
@@ -117,10 +131,13 @@ export default function DonationsPage() {
 					headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
 				},
 			);
-			if (!response.ok) return [];
+			if (!response.ok) return { data: [], meta: { total: 0, total_pages: 0 } };
 			return response.json();
 		},
 	});
+
+	const donations = queryData?.data || [];
+	const meta = queryData?.meta || { total: 0, total_pages: 0, current_page: 1 };
 
 	// Mutation for update
 	const mutation = useMutation({
@@ -165,6 +182,35 @@ export default function DonationsPage() {
 		},
 	});
 
+	// Expire Mutation
+	const expireMutation = useMutation({
+		mutationFn: async () => {
+			const formData = new FormData();
+			formData.append('action', 'wpd_expire_donations_manual');
+			// formData.append('nonce', ...); // Optional if enforced
+
+			const ajaxUrl = (window as any).ajaxurl || '/wp-admin/admin-ajax.php';
+
+			const response = await fetch(ajaxUrl, {
+				method: 'POST',
+				body: formData,
+			});
+			if (!response.ok) throw new Error('Network error');
+			return response.json();
+		},
+		onSuccess: (data: any) => {
+			if (data.success) {
+				alert(data.data.message);
+				queryClient.invalidateQueries({ queryKey: ["donations"] });
+			} else {
+				alert('Error: ' + data.data);
+			}
+		},
+		onError: () => {
+			alert('Failed to connect to server.');
+		}
+	});
+
 	const getExportUrl = () => {
 		let url = `/wp-json/wpd/v1/export/donations?_wpnonce=${(window as any).wpdSettings?.nonce}`;
 		if (startDate) url += `&start_date=${startDate}`;
@@ -182,14 +228,33 @@ export default function DonationsPage() {
 				<div className="flex justify-between items-center">
 					<h2 className="text-2xl font-bold text-gray-800">Donasi</h2>
 					{isProActive && (
-						<button
-							type="button"
-							onClick={() => setIsManualDonationOpen(true)}
-							className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium text-sm flex items-center gap-2 shadow-md"
-						>
-							<Plus size={16} />
-							Tambah Manual
-						</button>
+						<div className="flex gap-2">
+							<button
+								type="button"
+								onClick={() => {
+									if (confirm('Bersihkan donasi pending yang sudah expired?')) {
+										expireMutation.mutate();
+									}
+								}}
+								disabled={expireMutation.isPending}
+								className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium text-sm flex items-center gap-2 shadow-sm"
+							>
+								{expireMutation.isPending ? 'Processing...' : (
+									<>
+										<Trash2 size={16} />
+										Cleanup Expired
+									</>
+								)}
+							</button>
+							<button
+								type="button"
+								onClick={() => setIsManualDonationOpen(true)}
+								className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-medium text-sm flex items-center gap-2 shadow-md"
+							>
+								<Plus size={16} />
+								Tambah Manual
+							</button>
+						</div>
 					)}
 				</div>
 
@@ -208,7 +273,10 @@ export default function DonationsPage() {
 									aria-label="Tanggal Mulai"
 									className="px-2 py-1.5 bg-transparent border-none! text-sm focus:ring-0! text-gray-700 w-[130px] outline-none!"
 									value={startDate}
-									onChange={(e) => setStartDate(e.target.value)}
+									onChange={(e) => {
+										setPage(1);
+										setStartDate(e.target.value);
+									}}
 								/>
 								<span className="text-gray-400 font-medium">-</span>
 								<input
@@ -216,7 +284,10 @@ export default function DonationsPage() {
 									aria-label="Tanggal Selesai"
 									className="px-2 py-1.5 bg-transparent border-none! text-sm focus:ring-0! text-gray-700 w-[130px] outline-none!"
 									value={endDate}
-									onChange={(e) => setEndDate(e.target.value)}
+									onChange={(e) => {
+										setPage(1);
+										setEndDate(e.target.value);
+									}}
 								/>
 							</div>
 						</div>
@@ -227,7 +298,7 @@ export default function DonationsPage() {
 								Status
 							</span>
 							<div className="flex gap-2">
-								{["pending", "complete", "failed"].map((status) => {
+								{["pending", "complete", "failed", "expired"].map((status) => {
 									const isSelected = selectedStatuses.includes(status);
 									return (
 										<button
@@ -245,7 +316,11 @@ export default function DonationsPage() {
 												? "Selesai"
 												: status === "pending"
 													? "Menunggu"
-													: "Gagal"}
+													: status === "failed"
+														? "Gagal"
+														: status === "expired"
+															? "Kadaluarsa"
+															: status}
 											{isSelected && (
 												<div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
 											)}
@@ -395,7 +470,9 @@ export default function DonationsPage() {
 													? "bg-green-100 text-green-700"
 													: donation.status === "pending"
 														? "bg-yellow-100 text-yellow-700"
-														: "bg-red-100 text-red-700",
+														: donation.status === "failed" 
+															? "bg-red-100 text-red-700"
+															: "bg-gray-100 text-gray-700", // expired
 											)}
 										>
 											{donation.status === "complete"
@@ -404,7 +481,9 @@ export default function DonationsPage() {
 													? "Menunggu"
 													: donation.status === "failed"
 														? "Gagal"
-														: donation.status}
+														: donation.status === "expired"
+															? "Kadaluarsa"
+															: donation.status}
 										</span>
 									</td>
 									<td className="px-6 py-4">{donation.date}</td>
@@ -446,6 +525,34 @@ export default function DonationsPage() {
 						)}
 					</tbody>
 				</table>
+				
+				{/* Pagination Controls */}
+				<div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between bg-gray-50">
+					<span className="text-sm text-gray-500">
+						Menampilkan {donations.length} dari {meta.total} data
+					</span>
+					<div className="flex gap-2">
+						<button
+							type="button"
+							onClick={() => setPage(p => Math.max(1, p - 1))}
+							disabled={page === 1}
+							className="px-3 py-1 bg-white border border-gray-300 rounded text-sm disabled:opacity-50 hover:bg-gray-50"
+						>
+							Previous
+						</button>
+						<span className="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded">
+							Page {page} of {meta.total_pages || 1}
+						</span>
+						<button
+							type="button"
+							onClick={() => setPage(p => (meta.total_pages && p < meta.total_pages ? p + 1 : p))}
+							disabled={!meta.total_pages || page >= meta.total_pages}
+							className="px-3 py-1 bg-white border border-gray-300 rounded text-sm disabled:opacity-50 hover:bg-gray-50"
+						>
+							Next
+						</button>
+					</div>
+				</div>
 			</div>
 
 			{/* Donation Detail Modal */}
@@ -547,6 +654,7 @@ export default function DonationsPage() {
 												<option value="pending">Menunggu</option>
 												<option value="complete">Selesai</option>
 												<option value="failed">Gagal</option>
+												<option value="expired">Kadaluarsa</option>
 											</select>
 										</div>
 									</div>
@@ -665,7 +773,9 @@ export default function DonationsPage() {
 														? "bg-green-100 text-green-700"
 														: selectedDonation.status === "pending"
 															? "bg-yellow-100 text-yellow-700"
-															: "bg-red-100 text-red-700",
+															: selectedDonation.status === "failed"
+																? "bg-red-100 text-red-700"
+																: "bg-gray-100 text-gray-700",
 												)}
 											>
 												{selectedDonation.status === "complete"
@@ -674,7 +784,9 @@ export default function DonationsPage() {
 														? "Menunggu"
 														: selectedDonation.status === "failed"
 															? "Gagal"
-															: selectedDonation.status}
+															: selectedDonation.status === "expired"
+																? "Kadaluarsa"
+																: selectedDonation.status}
 											</span>
 										</div>
 									</div>
