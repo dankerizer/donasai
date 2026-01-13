@@ -142,6 +142,38 @@ export default function DonationSection() {
 							Otomatis buat Pengguna WordPress dari Email Donatur
 						</label>
 					</div>
+
+					<h3 className="text-lg font-medium text-gray-900 mb-2 mt-6 flex items-center gap-2">
+						Kadaluarsa Donasi Manual{" "}
+						<span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">
+							PRO
+						</span>
+					</h3>
+					<div className="grid gap-2">
+						<label
+							htmlFor="expiryHours"
+							className="text-sm font-medium text-gray-700"
+						>
+							Batas Waktu Pembayaran (Jam)
+						</label>
+						<Input
+							type="number"
+							id="expiryHours"
+							min={1}
+							value={formData.pending_expiry_hours}
+							onChange={(e) =>
+								setFormData({
+									...formData,
+									pending_expiry_hours: parseInt(e.target.value) || 48,
+								})
+							}
+							placeholder="48"
+						/>
+						<p className="text-xs text-gray-500">
+							Donasi manual dengan status 'pending' akan dianggap kadaluarsa
+							setelah melewati waktu ini.
+						</p>
+					</div>
 				</div>
 			) : (
 				<div className="border-t border-gray-200 pt-6">

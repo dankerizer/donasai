@@ -21,6 +21,7 @@ export interface SettingsFormData {
 	anonymous_label: string;
 	create_user: boolean;
 	recurring_intervals: string[];
+	pending_expiry_hours: number;
 	// Appearance
 	brand_color: string;
 	button_color: string;
@@ -89,6 +90,7 @@ export const initialFormData: SettingsFormData = {
 	anonymous_label: "Hamba Allah",
 	create_user: false,
 	recurring_intervals: ["month", "year"],
+	pending_expiry_hours: 48,
 	// Appearance
 	brand_color: "#059669",
 	button_color: "#ec4899",

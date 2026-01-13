@@ -72,7 +72,7 @@ export default function DonationsPage() {
 	const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
 	const [isCampaignDropdownOpen, setIsCampaignDropdownOpen] = useState(false);
 	const [isManualDonationOpen, setIsManualDonationOpen] = useState(false);
-	
+
 	// Pagination State
 	const [page, setPage] = useState(1);
 	const perPage = 20;
@@ -99,9 +99,7 @@ export default function DonationsPage() {
 		setPage(1); // Reset page on filter change
 		setSelectedCampaigns((prev) => {
 			const list = Array.isArray(prev) ? prev : [];
-			return list.includes(id)
-				? list.filter((c) => c !== id)
-				: [...list, id];
+			return list.includes(id) ? list.filter((c) => c !== id) : [...list, id];
 		});
 	};
 
@@ -186,16 +184,16 @@ export default function DonationsPage() {
 	const expireMutation = useMutation({
 		mutationFn: async () => {
 			const formData = new FormData();
-			formData.append('action', 'wpd_expire_donations_manual');
+			formData.append("action", "wpd_expire_donations_manual");
 			// formData.append('nonce', ...); // Optional if enforced
 
-			const ajaxUrl = (window as any).ajaxurl || '/wp-admin/admin-ajax.php';
+			const ajaxUrl = (window as any).ajaxurl || "/wp-admin/admin-ajax.php";
 
 			const response = await fetch(ajaxUrl, {
-				method: 'POST',
+				method: "POST",
 				body: formData,
 			});
-			if (!response.ok) throw new Error('Network error');
+			if (!response.ok) throw new Error("Network error");
 			return response.json();
 		},
 		onSuccess: (data: any) => {
@@ -203,12 +201,12 @@ export default function DonationsPage() {
 				alert(data.data.message);
 				queryClient.invalidateQueries({ queryKey: ["donations"] });
 			} else {
-				alert('Error: ' + data.data);
+				alert("Error: " + data.data);
 			}
 		},
 		onError: () => {
-			alert('Failed to connect to server.');
-		}
+			alert("Failed to connect to server.");
+		},
 	});
 
 	const getExportUrl = () => {
@@ -232,14 +230,16 @@ export default function DonationsPage() {
 							<button
 								type="button"
 								onClick={() => {
-									if (confirm('Bersihkan donasi pending yang sudah expired?')) {
+									if (confirm("Bersihkan donasi pending yang sudah expired?")) {
 										expireMutation.mutate();
 									}
 								}}
 								disabled={expireMutation.isPending}
 								className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium text-sm flex items-center gap-2 shadow-sm"
 							>
-								{expireMutation.isPending ? 'Processing...' : (
+								{expireMutation.isPending ? (
+									"Processing..."
+								) : (
 									<>
 										<Trash2 size={16} />
 										Cleanup Expired
@@ -470,7 +470,7 @@ export default function DonationsPage() {
 													? "bg-green-100 text-green-700"
 													: donation.status === "pending"
 														? "bg-yellow-100 text-yellow-700"
-														: donation.status === "failed" 
+														: donation.status === "failed"
 															? "bg-red-100 text-red-700"
 															: "bg-gray-100 text-gray-700", // expired
 											)}
@@ -525,7 +525,7 @@ export default function DonationsPage() {
 						)}
 					</tbody>
 				</table>
-				
+
 				{/* Pagination Controls */}
 				<div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between bg-gray-50">
 					<span className="text-sm text-gray-500">
@@ -534,7 +534,7 @@ export default function DonationsPage() {
 					<div className="flex gap-2">
 						<button
 							type="button"
-							onClick={() => setPage(p => Math.max(1, p - 1))}
+							onClick={() => setPage((p) => Math.max(1, p - 1))}
 							disabled={page === 1}
 							className="px-3 py-1 bg-white border border-gray-300 rounded text-sm disabled:opacity-50 hover:bg-gray-50"
 						>
@@ -545,7 +545,11 @@ export default function DonationsPage() {
 						</span>
 						<button
 							type="button"
-							onClick={() => setPage(p => (meta.total_pages && p < meta.total_pages ? p + 1 : p))}
+							onClick={() =>
+								setPage((p) =>
+									meta.total_pages && p < meta.total_pages ? p + 1 : p,
+								)
+							}
 							disabled={!meta.total_pages || page >= meta.total_pages}
 							className="px-3 py-1 bg-white border border-gray-300 rounded text-sm disabled:opacity-50 hover:bg-gray-50"
 						>

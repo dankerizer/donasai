@@ -84,6 +84,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 					anonymous_label: data.anonymous_label,
 					create_user: data.create_user,
 					recurring_intervals: data.recurring_intervals,
+					pending_expiry_hours: data.pending_expiry_hours,
 				},
 				appearance: {
 					brand_color: data.brand_color,

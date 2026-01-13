@@ -102,6 +102,8 @@ function wpd_api_get_settings()
             'merchant_code' => get_option('wpd_pro_tripay_merchant_code', ''),
             'is_production' => get_option('wpd_pro_tripay_is_production') == '1'
         );
+
+        $donation['pending_expiry_hours'] = (int) get_option('wpd_pending_expiry_hours', 48);
     }
 
     // Get all pages for dropdown
@@ -229,6 +231,10 @@ function wpd_api_update_settings($request)
 
         if (isset($params['donation']['recurring_intervals']) && is_array($params['donation']['recurring_intervals'])) {
             update_option('wpd_pro_recurring_intervals', array_map('sanitize_text_field', $params['donation']['recurring_intervals']));
+        }
+    
+        if (isset($params['donation']['pending_expiry_hours'])) {
+             update_option('wpd_pending_expiry_hours', intval($params['donation']['pending_expiry_hours']));
         }
     }
 
