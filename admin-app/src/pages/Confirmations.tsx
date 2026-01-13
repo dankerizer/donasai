@@ -1,6 +1,6 @@
 /** biome-ignore-all lint/a11y/useSemanticElements: gak perlu di cek */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bot, ExternalLink, Lock, Search } from "lucide-react";
+import { ExternalLink, Search } from "lucide-react";
 import { useState } from "react";
 
 export default function Confirmations() {
@@ -125,7 +125,7 @@ export default function Confirmations() {
 			</div>
 
 			{/* AI Banner (Locked) */}
-			<div className="bg-linear-to-r from-emerald-50 to-teal-50 border border-emerald-100 rounded-xl p-4 flex items-center justify-between">
+			{/* <div className="bg-linear-to-r from-emerald-50 to-teal-50 border border-emerald-100 rounded-xl p-4 flex items-center justify-between">
 				<div className="flex items-center gap-4">
 					<div className="p-3 bg-white text-emerald-600 rounded-lg shadow-sm">
 						<Bot size={24} />
@@ -150,7 +150,7 @@ export default function Confirmations() {
 				>
 					Upgrade untuk Mengaktifkan
 				</button>
-			</div>
+			</div> */}
 
 			<div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
 				<table className="w-full text-left">

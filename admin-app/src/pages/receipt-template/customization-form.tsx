@@ -309,7 +309,6 @@ export function CustomizationForm({
 								}
 							}
 							onChange={handleSignatureChange}
-							compact
 						/>
 					</div>
 				</div>
@@ -325,7 +324,6 @@ export function CustomizationForm({
 				<FooterEditor
 					footer={template.footer}
 					onChange={handleFooterChange}
-					compact
 				/>
 			</AccordionSection>
 

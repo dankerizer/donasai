@@ -6,16 +6,25 @@ import type { EmailTemplate, EmailType } from "./hooks/use-email-template";
 interface EmailPreviewProps {
 	template: EmailTemplate | undefined;
 	previewHtml?: { success: boolean; html: string };
+
 	onGeneratePreview: (params: {
 		template: EmailTemplate;
 		type: EmailType;
 	}) => void;
+	onSendTestEmail: (params: {
+		template: EmailTemplate;
+		type: EmailType;
+		email: string;
+	}) => void;
+	isSendingTestEmail: boolean;
 }
 
 export function EmailPreview({
 	template,
 	previewHtml,
 	onGeneratePreview,
+	onSendTestEmail,
+	isSendingTestEmail,
 }: EmailPreviewProps) {
 	const [activeTab, setActiveTab] = useState<EmailType>("pending");
 
@@ -80,6 +89,29 @@ export function EmailPreview({
 					title="Refresh preview"
 				>
 					<RefreshCw size={16} />
+				</button>
+
+				{/* Send Test Email Button */}
+				<button
+					type="button"
+					onClick={() => {
+						const email = prompt(
+							"Masukkan alamat email tujuan:",
+							"admin@example.com",
+						);
+						if (email && template) {
+							onSendTestEmail({ template, type: activeTab, email });
+						}
+					}}
+					disabled={isSendingTestEmail}
+					className="p-2 bg-white/80 dark:bg-gray-800/80 rounded-lg text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950 transition-colors disabled:opacity-50"
+					title="Send Test Email"
+				>
+					{isSendingTestEmail ? (
+						<Loader2 size={16} className="animate-spin" />
+					) : (
+						<span className="text-xs font-bold">Try</span>
+					)}
 				</button>
 			</div>
 

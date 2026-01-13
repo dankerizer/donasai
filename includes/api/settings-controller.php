@@ -104,6 +104,8 @@ function wpd_api_get_settings()
         );
 
         $donation['pending_expiry_hours'] = (int) get_option('wpd_pending_expiry_hours', 48);
+        $donation['email_reminder_enabled'] = get_option('wpd_email_reminder_enabled') == '1';
+        $donation['email_reminder_delay'] = (int) get_option('wpd_email_reminder_delay', 24);
     }
 
     // Get all pages for dropdown
@@ -235,6 +237,14 @@ function wpd_api_update_settings($request)
     
         if (isset($params['donation']['pending_expiry_hours'])) {
              update_option('wpd_pending_expiry_hours', intval($params['donation']['pending_expiry_hours']));
+        }
+
+        if (isset($params['donation']['email_reminder_enabled'])) {
+            update_option('wpd_email_reminder_enabled', !empty($params['donation']['email_reminder_enabled']) ? '1' : '0');
+        }
+
+        if (isset($params['donation']['email_reminder_delay'])) {
+            update_option('wpd_email_reminder_delay', intval($params['donation']['email_reminder_delay']));
         }
     }
 

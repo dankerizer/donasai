@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import {
 	type LogoData,
 	LogoUploader,
@@ -21,13 +20,11 @@ interface SignatureValue {
 interface SignatureUploaderProps {
 	value: SignatureValue;
 	onChange: (value: SignatureValue) => void;
-	compact?: boolean;
 }
 
 export function SignatureUploader({
 	value,
 	onChange,
-	compact = false,
 }: SignatureUploaderProps) {
 	const handleImageChange = (newImage: LogoData) => {
 		onChange({

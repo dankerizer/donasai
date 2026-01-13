@@ -31,11 +31,11 @@ export default function LicenseSection() {
 								</h3>
 								<p className="text-gray-500 text-sm">
 									Terhubung dengan{" "}
-									<strong>{proSettings.licenseDomain || "Domain ini"}</strong>
+									<strong>{(proSettings.licenseDomain as string) || "Domain ini"}</strong>
 								</p>
-								{proSettings.licenseExp && (
+								{!!proSettings.licenseExp && (
 									<p className="text-xs text-gray-400 mt-1">
-										Berlaku hingga: {proSettings.licenseExp}
+										Berlaku hingga: {proSettings.licenseExp as string}
 									</p>
 								)}
 							</div>
@@ -100,7 +100,7 @@ export default function LicenseSection() {
 
 							{proSettings.connectUrl ? (
 								<a
-									href={proSettings.connectUrl}
+									href={proSettings.connectUrl as string}
 									className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white! font-medium visited:text-white! rounded-lg hover:bg-blue-700 transition shadow-sm focus:text-blue-100!"
 								>
 									Hubungkan & Aktivasi
@@ -116,7 +116,7 @@ export default function LicenseSection() {
 			</div>
 
 			{/* Pro Features Quick Links */}
-			{licenseStatus === "active" && (
+			{/* {licenseStatus === "active" && (
 				<div className="mt-6 p-6 border border-gray-200 rounded-lg bg-white">
 					<h4 className="font-semibold text-gray-900 mb-4">Fitur Pro</h4>
 					<a
@@ -159,7 +159,7 @@ export default function LicenseSection() {
 						</svg>
 					</a>
 				</div>
-			)}
+			)} */}
 		</div>
 	);
 }

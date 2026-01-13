@@ -174,6 +174,63 @@ export default function DonationSection() {
 							setelah melewati waktu ini.
 						</p>
 					</div>
+
+					<h3 className="text-lg font-medium text-gray-900 mb-2 mt-6 flex items-center gap-2">
+						Pengingat Email{" "}
+						<span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">
+							PRO
+						</span>
+					</h3>
+					<div className="space-y-4">
+						<div className="flex items-center space-x-3">
+							<input
+								id="emailReminder"
+								type="checkbox"
+								checked={formData.email_reminder_enabled}
+								onChange={(e) =>
+									setFormData({
+										...formData,
+										email_reminder_enabled: e.target.checked,
+									})
+								}
+								className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+							/>
+							<label
+								htmlFor="emailReminder"
+								className="text-sm font-medium text-gray-700"
+							>
+								Kirim Pengingat Pembayaran Otomatis
+							</label>
+						</div>
+
+						{formData.email_reminder_enabled && (
+							<div className="pl-7 grid gap-2">
+								<label
+									htmlFor="reminderDelay"
+									className="text-sm font-medium text-gray-700"
+								>
+									Kirim Setelah (Jam)
+								</label>
+								<Input
+									type="number"
+									id="reminderDelay"
+									min={1}
+									value={formData.email_reminder_delay}
+									onChange={(e) =>
+										setFormData({
+											...formData,
+											email_reminder_delay: parseInt(e.target.value) || 24,
+										})
+									}
+									placeholder="24"
+								/>
+								<p className="text-xs text-amber-600">
+									⚠️ Pastikan durasi ini LEBIH KECIL dari Batas Waktu Kadaluarsa
+									di atas (contoh: Ingatkan setelah 24 jam, Kadaluarsa 48 jam).
+								</p>
+							</div>
+						)}
+					</div>
 				</div>
 			) : (
 				<div className="border-t border-gray-200 pt-6">

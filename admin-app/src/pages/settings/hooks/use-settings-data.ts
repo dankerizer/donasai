@@ -46,6 +46,11 @@ export function useSettingsFetch() {
 					"month",
 					"year",
 				],
+				pending_expiry_hours: data.donation?.pending_expiry_hours || 48,
+				email_reminder_enabled:
+					data.donation?.email_reminder_enabled === true ||
+					data.donation?.email_reminder_enabled === "1",
+				email_reminder_delay: data.donation?.email_reminder_delay || 24,
 				// Appearance
 				brand_color: data.appearance?.brand_color || "#059669",
 				button_color: data.appearance?.button_color || "#ec4899",

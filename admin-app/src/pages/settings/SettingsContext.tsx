@@ -85,6 +85,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 					create_user: data.create_user,
 					recurring_intervals: data.recurring_intervals,
 					pending_expiry_hours: data.pending_expiry_hours,
+					email_reminder_enabled: data.email_reminder_enabled,
+					email_reminder_delay: data.email_reminder_delay,
 				},
 				appearance: {
 					brand_color: data.brand_color,

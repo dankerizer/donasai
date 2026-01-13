@@ -489,6 +489,8 @@ function EditorContent() {
 								template={localEmailTemplate}
 								previewHtml={emailQuery.previewData}
 								onGeneratePreview={emailQuery.generatePreview}
+								onSendTestEmail={emailQuery.sendTestEmail}
+								isSendingTestEmail={emailQuery.isSendingTestEmail}
 							/>
 						) : selectedComponent === "receipt" ? (
 							<ReceiptPreview

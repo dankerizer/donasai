@@ -119,7 +119,7 @@ export default function SettingsLayout() {
 						<div className="space-y-3">
 							{proSettings.connectUrl ? (
 								<a
-									href={proSettings.connectUrl}
+									href={proSettings.connectUrl as string}
 									className="block w-full py-3.5 px-6 bg-blue-600 hover:bg-blue-700 text-white! font-bold rounded-xl transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 active:scale-95 focus:text-blue-100!"
 								>
 									Hubungkan & Aktivasi
