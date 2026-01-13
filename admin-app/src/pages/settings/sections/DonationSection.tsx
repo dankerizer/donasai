@@ -231,6 +231,36 @@ export default function DonationSection() {
 							</div>
 						)}
 					</div>
+
+					<h3 className="text-lg font-medium text-gray-900 mb-2 mt-6 flex items-center gap-2">
+						Kwitansi PDF{" "}
+						<span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">
+							PRO
+						</span>
+					</h3>
+					<div className="flex items-center space-x-3">
+						<input
+							id="enablePdfDownload"
+							type="checkbox"
+							checked={formData.enable_pdf_download}
+							onChange={(e) =>
+								setFormData({
+									...formData,
+									enable_pdf_download: e.target.checked,
+								})
+							}
+							className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+						/>
+						<label
+							htmlFor="enablePdfDownload"
+							className="text-sm font-medium text-gray-700"
+						>
+							Aktifkan Download PDF Kwitansi
+						</label>
+					</div>
+					<p className="text-xs text-gray-500 mt-1 ml-7">
+						Donatur dapat mengunduh kwitansi dalam format PDF.
+					</p>
 				</div>
 			) : (
 				<div className="border-t border-gray-200 pt-6">

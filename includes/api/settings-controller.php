@@ -106,6 +106,7 @@ function wpd_api_get_settings()
         $donation['pending_expiry_hours'] = (int) get_option('wpd_pending_expiry_hours', 48);
         $donation['email_reminder_enabled'] = get_option('wpd_email_reminder_enabled') == '1';
         $donation['email_reminder_delay'] = (int) get_option('wpd_email_reminder_delay', 24);
+        $donation['enable_pdf_download'] = get_option('wpd_enable_pdf_download', '1') == '1';
     }
 
     // Get all pages for dropdown
@@ -245,6 +246,10 @@ function wpd_api_update_settings($request)
 
         if (isset($params['donation']['email_reminder_delay'])) {
             update_option('wpd_email_reminder_delay', intval($params['donation']['email_reminder_delay']));
+        }
+
+        if (isset($params['donation']['enable_pdf_download'])) {
+            update_option('wpd_enable_pdf_download', !empty($params['donation']['enable_pdf_download']) ? '1' : '0');
         }
     }
 

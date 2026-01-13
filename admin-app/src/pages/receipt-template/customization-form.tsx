@@ -348,7 +348,7 @@ export function CustomizationForm({
 										handleAdvancedChange("format", e.target.value)
 									}
 								/>
-								<span className="text-xs font-medium text-gray-900">
+								<span className="text-xs font-medium text-gray-900 dark:text-white">
 									HTML Link
 								</span>
 							</label>
@@ -361,7 +361,7 @@ export function CustomizationForm({
 										handleAdvancedChange("format", e.target.value)
 									}
 								/>
-								<span className="text-xs font-medium text-gray-900">
+								<span className="text-xs font-medium text-gray-900 dark:text-white">
 									PDF Attachment
 								</span>
 							</label>
