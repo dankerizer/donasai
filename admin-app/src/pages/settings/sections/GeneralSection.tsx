@@ -253,6 +253,81 @@ export default function GeneralSection() {
 				</div>
 			</div>
 
+			{/* Tracking Pixels */}
+			<div className="border-t border-gray-200 pt-6 dark:border-gray-700">
+				<div className="flex items-center gap-3 mb-4">
+					<div className="p-2 bg-indigo-50 rounded-lg text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">
+						<svg
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+						>
+							<path d="M2 12h20" />
+							<path d="M2 12l5-5" />
+							<path d="M2 12l5 5" />
+							<circle cx="12" cy="12" r="3" />
+						</svg>
+					</div>
+					<div>
+						<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+							Tracking Pixels Global
+						</h3>
+						<p className="text-sm text-gray-500 dark:text-gray-400">
+							Pengaturan ini akan diterapkan ke semua kampanye secara otomatis jika tidak ada pengaturan spesifik di kampanye tersebut.
+						</p>
+					</div>
+				</div>
+
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+					<div>
+						<Label htmlFor="pixelFb">Facebook Pixel ID</Label>
+						<Input
+							id="pixelFb"
+							value={formData.pixel_fb || ""}
+							onChange={(e) =>
+								setFormData({ ...formData, pixel_fb: e.target.value })
+							}
+							placeholder="1234567890"
+							className="mt-1"
+						/>
+					</div>
+					<div>
+						<Label htmlFor="pixelTiktok">TikTok Pixel ID</Label>
+						<Input
+							id="pixelTiktok"
+							value={formData.pixel_tiktok || ""}
+							onChange={(e) =>
+								setFormData({ ...formData, pixel_tiktok: e.target.value })
+							}
+							placeholder="CXXXXXXXXXXXX"
+							className="mt-1"
+						/>
+					</div>
+					<div>
+						<Label htmlFor="pixelGa4">GA4 Measurement ID</Label>
+						<Input
+							id="pixelGa4"
+							value={formData.pixel_ga4 || ""}
+							onChange={(e) =>
+								setFormData({ ...formData, pixel_ga4: e.target.value })
+							}
+							placeholder="G-XXXXXXXXXX"
+							className="mt-1"
+						/>
+					</div>
+				</div>
+				<div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-lg text-sm text-blue-700 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-300">
+					<p>
+						<strong>Catatan:</strong> Pixel yang diisi di sini akan berfungsi sebagai fallback. Jika Anda mengisi Pixel ID di pengaturan spesifik kampanye, maka Pixel ID di kampanye tersebut yang akan digunakan (menggantikan yang global).
+					</p>
+				</div>
+			</div>
+
 			<div className="border-t border-gray-200 pt-6 dark:border-gray-700">
 				<h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2 dark:text-gray-100">
 					Branding

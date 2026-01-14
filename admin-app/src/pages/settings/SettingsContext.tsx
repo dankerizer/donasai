@@ -77,6 +77,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 					payment_slug: data.payment_slug,
 					remove_branding: data.remove_branding,
 					confirmation_page: data.confirmation_page,
+					pixel_fb: data.pixel_fb,
+					pixel_tiktok: data.pixel_tiktok,
+					pixel_ga4: data.pixel_ga4,
 				},
 				donation: {
 					min_amount: data.min_amount,

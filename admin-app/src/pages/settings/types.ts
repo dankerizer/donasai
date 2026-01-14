@@ -14,6 +14,10 @@ export interface SettingsFormData {
 	confirmation_page: string;
 	delete_on_uninstall_settings: boolean;
 	delete_on_uninstall_tables: boolean;
+	// Marketing Pixels
+	pixel_fb: string;
+	pixel_tiktok: string;
+	pixel_ga4: string;
 	// Donation
 	min_amount: number;
 	presets: string;
@@ -92,6 +96,10 @@ export const initialFormData: SettingsFormData = {
 	confirmation_page: "",
 	delete_on_uninstall_settings: false,
 	delete_on_uninstall_tables: false,
+	// Marketing Pixels
+	pixel_fb: "",
+	pixel_tiktok: "",
+	pixel_ga4: "",
 	// Donation
 	min_amount: 10000,
 	presets: "50000,100000,200000,500000",

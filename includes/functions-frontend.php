@@ -235,8 +235,26 @@ function wpd_head_pixels()
 {
     if (is_singular('wpd_campaign')) {
         $pixels = get_post_meta(get_the_ID(), '_wpd_pixel_ids', true);
+        
+        // Fallback to Global Settings
+        $global_settings = get_option('wpd_settings_general', []);
+        
+        // Function to resolve pixel ID (Campaign > Global)
+        $fb_pixel = !empty($pixels['fb']) ? $pixels['fb'] : ($global_settings['pixel_fb'] ?? '');
+        $tiktok_pixel = !empty($pixels['tiktok']) ? $pixels['tiktok'] : ($global_settings['pixel_tiktok'] ?? '');
+        $ga4_pixel = !empty($pixels['ga4']) ? $pixels['ga4'] : ($global_settings['pixel_ga4'] ?? '');
 
-        if (!empty($pixels['fb'])) {
+        $donation_id = isset($_GET['donation_success']) ? intval($_GET['donation_success']) : 0;
+        $donation_amount = 0;
+
+        // Fetch Donation Amount if Success Page
+        if ($donation_id > 0) {
+            global $wpdb;
+            $table = $wpdb->prefix . 'wpd_donations';
+            $donation_amount = $wpdb->get_var($wpdb->prepare("SELECT amount FROM {$table} WHERE id = %d", $donation_id));
+        }
+
+        if (!empty($fb_pixel)) {
             // Echo generic FB Pixel Code with ID
             echo "<!-- Facebook Pixel Code -->
             <script>
@@ -248,16 +266,43 @@ function wpd_head_pixels()
             t.src=v;s=b.getElementsByTagName(e)[0];
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '" . esc_js($pixels['fb']) . "');
+            fbq('init', '" . esc_js($fb_pixel) . "');
             fbq('track', 'PageView');
+            " . ($donation_amount > 0 ? "fbq('track', 'Purchase', {value: " . floatval($donation_amount) . ", currency: 'IDR'});" : "") . "
             </script>
             <!-- End Facebook Pixel Code -->\n";
         }
 
-        if (!empty($pixels['tiktok'])) {
+        if (!empty($tiktok_pixel)) {
             // Echo TikTok Pixel placeholder
             echo "<!-- TikTok Pixel Code -->\n";
-            echo "<script>!function (w, d, t) { w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=[\"page\",\"track\",\"identify\",\"instances\",\"debug\",\"on\",\"off\",\"once\",\"ready\",\"alias\",\"group\",\"enableCookie\",\"disableCookie\"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq.methods[i],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(t,ttq.methods[n]);return t},ttq.load=function(e,n){var i=\"https://analytics.tiktok.com/i18n/pixel/events.js\";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement(\"script\");o.type=\"text/javascript\",o.async=!0,o.src=i+\"?sdkid=\"+e+\"&lib=\"+t;var a=document.getElementsByTagName(\"script\")[0];a.parentNode.insertBefore(o,a)}; ttq.load('" . esc_js($pixels['tiktok']) . "'); ttq.page(); }(window, document, 'ttq');</script>\n";
+            echo "<script>!function (w, d, t) { w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=[\"page\",\"track\",\"identify\",\"instances\",\"debug\",\"on\",\"off\",\"once\",\"ready\",\"alias\",\"group\",\"enableCookie\",\"disableCookie\"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq.methods[i],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(t,ttq.methods[n]);return t},ttq.load=function(e,n){var i=\"https://analytics.tiktok.com/i18n/pixel/events.js\";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement(\"script\");o.type=\"text/javascript\",o.async=!0,o.src=i+\"?sdkid=\"+e+\"&lib=\"+t;var a=document.getElementsByTagName(\"script\")[0];a.parentNode.insertBefore(o,a)}; ttq.load('" . esc_js($tiktok_pixel) . "'); ttq.page();
+            " . ($donation_amount > 0 ? "ttq.track('CompletePayment', {content_type: 'product', quantity: 1, description: 'Donation', content_id: '" . get_the_ID() . "', currency: 'IDR', value: " . floatval($donation_amount) . "});" : "") . "
+            }(window, document, 'ttq');</script>\n";
+        }
+
+        if (!empty($ga4_pixel)) {
+            // Echo GA4 Code
+            echo "<!-- Google tag (gtag.js) -->
+            <script async src=\"https://www.googletagmanager.com/gtag/js?id=" . esc_js($ga4_pixel) . "\"></script>
+            <script>
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+            
+              gtag('config', '" . esc_js($ga4_pixel) . "');
+              " . ($donation_amount > 0 ? "gtag('event', 'purchase', {
+                  transaction_id: '" . intval($donation_id) . "',
+                  value: " . floatval($donation_amount) . ",
+                  currency: 'IDR',
+                  items: [{
+                    item_id: '" . get_the_ID() . "',
+                    item_name: 'Donation',
+                    price: " . floatval($donation_amount) . ",
+                    quantity: 1
+                  }]
+              });" : "") . "
+            </script>\n";
         }
     }
 }

@@ -198,6 +198,11 @@ function wpd_campaign_options_callback($post)
 				<input type="text" name="wpd_pixel_ids[tiktok]" id="wpd_pixel_tiktok"
 					value="<?php echo esc_attr($pixels['tiktok'] ?? ''); ?>" class="widefat" style="max-width: 300px;">
 			</p>
+			<p>
+				<label for="wpd_pixel_ga4">GA4 Measurement ID</label><br>
+				<input type="text" name="wpd_pixel_ids[ga4]" id="wpd_pixel_ga4" placeholder="G-XXXXXXXXXX"
+					value="<?php echo esc_attr($pixels['ga4'] ?? ''); ?>" class="widefat" style="max-width: 300px;">
+			</p>
 
 			<h4>WhatsApp Support (Flying Button)</h4>
 			<p>
