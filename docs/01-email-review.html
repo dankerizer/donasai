@@ -1,0 +1,1173 @@
+Delivered-To: hadie87@gmail.com
+Received: by 2002:a59:9086:0:b0:553:d9f8:81b7 with SMTP id m6csp708463vqg;
+        Wed, 14 Jan 2026 12:44:01 -0800 (PST)
+X-Received: by 2002:a05:620a:414c:b0:8c5:2dbc:623c with SMTP id af79cd13be357-8c52fb90abcmr615524085a.42.1768423440710;
+        Wed, 14 Jan 2026 12:44:00 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1768423440; cv=none;
+        d=google.com; s=arc-20240605;
+        b=LNH7ZfyD75RgNBbbxPTqbvlXGBHQS2yKv0Q0+O/kKBjsGYSc8hIACH8UV/adJCrUA2
+         qiyy9zZxTkhOtOfLsa/Uo6cZ3kDfu33MCQt/jhfe1Hls/y8L3jd1lC8w4qdPpVk+W9kw
+         OlJ9DY3wcBsCzCGtYWC4/JsqLDQI8+kAK5KMTt2vSNiubsSrRDHWBi9ShRw1/CSb8+B9
+         51ML3rR1PsPZnOtE55XfrI4dic4VAYmm4uw9SeldY35Mh74YEA+gmZTKpE10RLR0qQ/V
+         LScxQLOROJXihHFzhxGSOFDSdLC1OrjfBmChfA0Gx4O+HsiCjT/J6i26HxzM0TiEaIm0
+         KBiA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=mime-version:date:message-id:cfbl-feedback-id:cfbl-address:subject
+         :to:from:dkim-signature:dkim-signature;
+        bh=rfWMVeylgiH1fNp9vfOTQGnBWd/729e/KUhytnV5tUw=;
+        fh=SPDs7yeRUf3VIBJMWgaXoAwDkr4dkYQUmldxv/vcHtM=;
+        b=D9iEkexAEtjIml7eQnZN4DAkAAL1Z/bJWgctLykUdmPAh4alL91y+BEPloA7M5Rtu3
+         0QjJjBWG0f/niO1ayjyV5WfWjEjXP0xn+jrCWRbbgac0Iv6qEdRptMHiXH0V2e8UaA3C
+         BDn53vVTXQ900w5GFU2Q5qPPL+1+A9+T0pc97k9Xmz2DrBDuRrPcV6tfJPwc4iujbI3k
+         OPfVR/e/dYuslu2Uq13y8LirzvnRFG8K1eqOrDs3jwGMs6dFXrofoY2MqhzQZoG1aHGB
+         vyxIVKdGRNr/jQJMl/6yQfEPNBREANxNrNvPbl5R8nXrXkR+BKA6DbFRvoWHuNp0fRJ4
+         o+hA==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@wordpress.org header.s=strong1 header.b=neA16RYn;
+       dkim=pass header.i=@helpscout.net header.s=strong1 header.b=DcNW6wbB;
+       spf=pass (google.com: domain of l195xvpwn8.nmylx5k8p6+v1@bounce.helpscout.net designates 52.20.146.34 as permitted sender) smtp.mailfrom=l195xvpwn8.nmylx5k8p6+v1@bounce.helpscout.net;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=wordpress.org
+Return-Path: <l195xvpwn8.nmylx5k8p6+v1@bounce.helpscout.net>
+Received: from mail3.helpscout.net (mail3.helpscout.net. [52.20.146.34])
+        by mx.google.com with ESMTPS id af79cd13be357-8c530c28c8dsi353035485a.440.2026.01.14.12.44.00
+        for <hadie87@gmail.com>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Jan 2026 12:44:00 -0800 (PST)
+Received-SPF: pass (google.com: domain of l195xvpwn8.nmylx5k8p6+v1@bounce.helpscout.net designates 52.20.146.34 as permitted sender) client-ip=52.20.146.34;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@wordpress.org header.s=strong1 header.b=neA16RYn;
+       dkim=pass header.i=@helpscout.net header.s=strong1 header.b=DcNW6wbB;
+       spf=pass (google.com: domain of l195xvpwn8.nmylx5k8p6+v1@bounce.helpscout.net designates 52.20.146.34 as permitted sender) smtp.mailfrom=l195xvpwn8.nmylx5k8p6+v1@bounce.helpscout.net;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=wordpress.org
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; s=strong1; d=wordpress.org; h=From:To:Subject:X-Msg-Context:CFBL-Address:CFBL-Feedback-ID:Message-Id:Date: Content-Type:MIME-Version:from:to:subject:reply-to:cc; i=plugins@wordpress.org; bh=rfWMVeylgiH1fNp9vfOTQGnBWd/729e/KUhytnV5tUw=; b=neA16RYnFnCkyDPlQGE6LbDeEeNvLV8MNHuf8cg9V2JOOUZc1SZW0FXs42EtGmdhRw2QejFRYCnt
+   6fTCPDxdHt+QJPVmXD8zwaiyauW7CLzpgJojDpohEk9OgYwcOJ6SCF3/Wh1NVm152zRkyKzAhLWp
+   5HQl7rE2y/AQmfJNR3M=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; s=strong1; d=helpscout.net; h=From:To:Subject:X-Msg-Context:CFBL-Address:CFBL-Feedback-ID:Message-Id:Date: Content-Type:MIME-Version:from:to:subject:reply-to:cc; bh=rfWMVeylgiH1fNp9vfOTQGnBWd/729e/KUhytnV5tUw=; b=DcNW6wbBrBOf3Hjk5aUNB9DTvPzF0TGxK6s5/c7W6bf227z4wF4dMBWFdv1FzL7QGc/Hbxaq1D+9
+   fDgr3SqUzwYzBMVJ0tXxRSqs0tyODr9QOxt61O5vI0Dg9+grS+1CsJUv2xdiD2p1/FNnk2F0RwMA
+   yGAEOTatLwdNIvwoTrU=
+Received: by mail3.helpscout.net id hd00103bd48k for <hadie87@gmail.com>; Wed, 14 Jan 2026 20:43:00 +0000 (envelope-from <l195xvpwn8.nmylx5k8p6+v1@bounce.helpscout.net>)
+From: "WordPress.org Plugin Directory" <plugins@wordpress.org>
+To: Hadie Danker <hadie87@gmail.com>
+Subject: [WordPress Plugin Directory] Review in Progress: Donasai - Platform Donasi & Penggalangan Dana
+X-Hs-Format: 2
+X-Msg-Context: HS-1-168033-3198804326-9748572898
+CFBL-Address: fbl@helpscout.net; report=arf
+CFBL-Feedback-ID: HS-1-168033-3198804326-9748572898
+X-Hs-Cid: 83653
+X-Hs-Uid: Mb6XLnV5D2YMVPpJ3zOj
+X-Report-Abuse: Please forward a copy of this message, including all headers, to abuse@helpscout.net
+X-Hs-State: 3
+Message-Id: <reply-83653-3198804326-9748572898-1768423380-537945174@helpscout.net>
+X-Msg-Timestamp: 2026-01-14T20:43:00+00:00
+Date: Wed, 14 Jan 2026 20:43:00 +0000
+Content-Type: multipart/alternative; boundary="=_2b8f6e7d025fab1cb1c63ea2f165fb94"
+MIME-Version: 1.0
+
+--=_2b8f6e7d025fab1cb1c63ea2f165fb94
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+-- Please reply above this line --
+
+
+            =F0=9F=91=8B hadie-danker - let=E2=80=99s improve your plugin!T=
+hank you for
+submitting your plugin, "Donasai =E2=80=93 Platform Donasi & Penggalangan
+Dana".Before your plugin reaches a human reviewer, our automated tools
+=E2=80=94 which help the team handle around 1,000 plugin reviews per week
+=E2=80=94 have flagged a few potential issues that you may need to address.
+To avoid delays and help streamline the manual review process, we=E2=80=99v=
+e
+pended your submission to give you a chance to review and fix these
+common issues.=F0=9F=A4=96 This is an automated message generated using a
+combination of algorithms and AI. It hasn=E2=80=99t necessarily been
+reviewed by a human. Its purpose is to help you resolve potential
+common issues early, before manual review begins. All AI outputs are
+marked with the emoji =E2=9C=A8 and it's quite accurate.Who are we?We are a
+group of volunteers who help you identify common issues so that you
+can make your plugin more secure, compatible, reliable and compliant
+with the guidelines.For consistency and better communication, your
+plugin review will be assigned to a single volunteer who will assist
+you throughout the entire review. However, response times may vary
+depending on how much time the volunteer is able to contribute to the
+team and if whether they need to consult something with the rest of
+the team.The review process
+
+Please read this email in full and check each issue, as well as the
+links to the documentation and the provided examples. Also, search for
+any other similar occurrences of the same issue that are not
+explicitly mentioned in the email.Make sure you understand the issues
+so that you can incorporate them into your existing skillset.If you
+decide to continue with the review process, you must fix any issues,
+test your plugin, upload a corrected version and then reply to this
+email.In case of any doubt, please fix everything else and ask your
+questions alongside the update.Your plugin is manually checked by a
+volunteer who sends you the remaining identified issues in the
+plugin.We will be devoting our time to reviewing your plugin, we ask
+that you honor this by following the instructions.Note: Volunteers are
+not your QA team. They are here to help you identify and understand
+issues so that you can improve and maintain your plugin in the future.
+Fixing the issues is your responsibility.If there are no further
+issues, the plugin will be approved =F0=9F=8E=89Be brief and direct in your
+reply (please, avoid copy-pasting bloated AI responses, our AI is
+quite brief), be patient and make sure you have addressed all the
+issues and tested your plugin before responding.It is disheartening to
+receive an updated plugin only to find that only a few issues have
+been resolved, or that it causes a fatal error upon activation.When
+not making adequate progress in your review, it will be delayed and
+eventually rejected, for the sake of volunteers devoting their time
+and other plugin authors who correctly follow the review process.Each
+volunteer can review up to 300 plugins per week, and they love to have
+life besides reviewing plugins, so please make things easier for
+us.Understanding the Review QueueWhen you reply, your plugin enters
+the review queue again. Fewer review cycles mean quicker approval,
+while multiple reviews can extend the process to weeks or months.Tip:
+Carefully fix all issues and test your plugin before resubmitting to
+speed up approval.This process is designed to help you improve your
+plugin while making the review experience faster and more efficient
+for everyone.Have you read the guidelines and this plugin complies
+with them?Upon submitting your plugin, you agreed and confirmed that
+it complies with the WordPress.org Plugin Directory Guidelines, which
+apply to all plugins in the directory.Our automated tools have
+detected patterns that may require a closer look regarding compliance
+with certain guidelines. We will verify this during our manual review,
+but it=E2=80=99s best to address any potential issues beforehand. In
+particular, please pay attention to the following:Any included code
+must be GPL-compatible. This means, among others, that the users have
+to receive the four essential freedoms: (0) to run the program, (1) to
+study and change the program in source code form, (2) to redistribute
+exact copies, and (3) to distribute modified versions. (Guidelines 1 &
+4)Developers must provide public, maintained access to their source
+code and any build tools in one of the following ways: (1) Include the
+source code in the deployed plugin, (2) A link in the readme to the
+development location. (Guidelines 1, 4)Plugins must not restrict or
+lock functionality. (Guidelines 1, 5, & 9 =E2=80=94 see clarification on
+SaaS in Guideline 6)Your plugin may not embed external links or
+credits on the public site without explicit user permission.
+(Guideline 10)Please check it, and if you think everything is fine, do
+not worry. Our tools are very thorough and may highlight different
+things as potential issues.Are you the rightful owner of this
+plugin?We know this might seem like an odd question =E2=80=94 especially
+coming from an algorithm =E2=80=94 but bear with us; it=E2=80=99ll all make=
+ sense
+soon.Here's how it works: If your plugin uses a name or URL associated
+with a specific entity, we need to confirm that you actually represent
+that entity. It's that simple.So, how do we verify your identity? In
+most cases, we rely on the domain in your email address.This situation
+usually comes up if you're using a personal account to submit a plugin
+meant to represent a company or if you=E2=80=99re a third party attempting
+to upload a plugin on someone else=E2=80=99s behalf (please don=E2=80=99t d=
+o
+that).This is what we know about this plugin:Plugin name: "Donasai -
+Platform Donasi & Penggalangan Dana" in the readme.txt  filePlugin
+name: "Donasai - Platform Donasi & Penggalangan Dana" in the
+donasai.php  fileSlug: donasaiAuthor: Hadie DankerAuthor URI:
+http://profiles.wordpress.org/hadie-dankerPlugin URI:
+https://donasai.comContributors:hadie dankerThis is what we know about
+you:Username: hadie-danker=E2=9A=A0=EF=B8=8F Your username does not match a=
+ny of
+the contributors declared in the plugin.Email: hadie87@gmail.com=E2=9A=A0=
+=EF=B8=8F
+Your email domain "gmail.com" does not seem to be related to any of
+the URLs, names, trademarks and/or or services declared in the
+plugin.=E2=9A=A0=EF=B8=8F A gmail.com account cannot be used as a valid for=
+m of
+identification towards clarifying ownership, even if it contains your
+or your company's name. Anyone can create any gmail.com account that
+is not already in use. You could be you, but you could also be anyone
+else.Please note that we carry out these checks to protect people like
+you. If someone else submitted a plugin under your name or your
+company's name, you would rightly be upset if we failed to confirm
+ownership in a demonstrably reliable way.=E2=98=91=EF=B8=8F You can demonst=
+rate or
+clarify ownership in one of the following ways:=F0=9F=93=A9 Update your
+WordPress.org email address to one under the domain of the entity
+associated with the plugin. You can change it in Your WordPress.org
+profile, we cannot change it for you.Note: We will continue the review
+in this email thread. Any new emails will be sent to the new email
+account.=F0=9F=91=A4 Reply asking us to transfer this submission to the
+correct WordPress.org account. Please, tell us the username. If the
+owner does not yet have an account, they can create it using an email
+that is under the domain of the entity associated to the plugin.=E2=9A=A0=
+=EF=B8=8F
+Do not resubmit this plugin using the new account. I will transfer it
+for you. Simply reply to this email with the new username.Note: Once
+the plugin has been approved, you can ask the owner to add you as a
+committer in the "Advanced" section of the plugin, so that you can
+commit code using your account.=F0=9F=9B=A0 Change the plugin=E2=80=99s dis=
+play name
+and slug to make it clear that the plugin is not officially affiliated
+with any other entity. Upload an updated version of your plugin and
+change the slug via the "Add your plugin" page.Reply to this email
+clarifying the situation, we know that sometimes you might be using an
+email account that belongs to the same entity or an entity that owns
+the other entity. Also, if you already have established plugins in the
+directory under the same account we can use that as tacit
+verification.Remember that, if you own other plugins, all the plugins
+belonging to the same entity should be under the same WordPress.org
+account.=E2=9A=A0=EF=B8=8F Please do not resubmit this plugin using a diffe=
+rent
+account. Both submissions will be rejected if you do so, and your
+accounts may be suspended until the situation is resolved. Instead,
+ask us to change the owner =E2=80=94 we can certainly do that.Have you
+checked for common technical issues?Please ensure that your plugin
+adheres to best practices, including the following:=F0=9F=94=B4 Proper
+sanitization of inputs=E2=84=B9=EF=B8=8F Why it matters: Sanitizing inputs =
+is
+crucial for protecting against security vulnerabilities like SQL
+injection, handling invalid data, and ensuring that only safe,
+expected data is processed.Please check the official WordPress docs on
+sanitizing for details =E2=80=94 this is a quick summary.=F0=9F=94=8D Ident=
+ify
+unsanitized inputs: Check any input coming from sources such as: $_GET
+, $_POST , $_REQUEST , $_COOKIE , $_SERVER , $_SESSION If these inputs
+aren=E2=80=99t sanitized first, that=E2=80=99s a potential risk! =F0=9F=95=
+=B5=EF=B8=8F=F0=9F=9B=A0 Fix
+it: Always wrap any input with the right sanitization function, like:
+
+ContentFunctionPlain textsanitize_text_field() Emailsanitize_email()
+URLesc_url_raw() Keysanitize_key() Integerabsint() Refer to the
+official WordPress documentation for a complete list of sanitization
+functions.=F0=9F=91=89 Use the most restrictive function that fits the
+expected content.=F0=9F=91=89 Sanitize as early as possible =E2=80=94 ideal=
+ly as
+soon as the data is received.=F0=9F=91=89 Only trust what you=E2=80=99ve cl=
+eaned
+yourself.Example:$post_id =3D (int) $_GET['post_id']; // Sanitized as an
+integer
+$email =3D sanitize_email( $_GET['email'] ); // Sanitized as an email
+Your data is now sanitized! =F0=9F=A7=BC=F0=9F=8D=8FNote: When checking a n=
+once using
+wp_verify_nonce  you will need to sanitize the input using wp_unslash=20
+AND sanitize_text_field , this is because this function is pluggable,
+and extenders should not trust its input values.Example:if ( ! isset(
+$_POST['dona82pl_nonce'] ) || ! wp_verify_nonce( sanitize_text_field(
+wp_unslash ( $_POST['dona82pl_nonce'] ) ) , 'dona82pl_nonce' ) )
+Example(s) from your plugin:includes/api/donations-controller.php:250
+if (!wp_verify_nonce($nonce, 'wp_rest')) {
+=E2=9C=94=EF=B8=8F You can check this using Plugin Check.=F0=9F=94=B4 Nonce=
+s and User
+Permissions Before Processing Requests=E2=84=B9=EF=B8=8F Why it matters: No=
+nces
+and permissions checks ensure that the request comes from a trusted
+source, protecting against security threats like CSRF (Cross-Site
+Request Forgery) attacks.Please check the official WordPress docs on
+nonces and this article for details =E2=80=94 this is a quick summary.=F0=
+=9F=94=8D
+Spot it: Look for functions that interact with $_GET , $_POST ,
+$_REQUEST  and perform actions triggered by the user/browser that
+modify data or perform sensitive actions (e.g., privileged actions or
+data manipulation). For such actions, you should always check for a
+nonce.Additionally, verify user permissions if the action is
+restricted to certain roles (e.g., admin, editor).When in doubt, play
+it safe: always check.=F0=9F=9B=A0 Fix itCreate a nonce ( wp_nonce_field() =
+,
+wp_nonce_url() , wp_create_nonce()  ). If you need to pass the nonce
+to JavaScript you can make use of wp_localize_script() Pass it with
+the request.Check the nonce ( check_admin_referer() ,
+check_ajax_referer() , wp_verify_nonce()  ) , and permissions if
+applicable ( current_user_can()  ) .Example (nonce check):function
+dona82pl_save_email(){
+    if ( !isset( $_POST['dona82pl_nonce'] ) || !wp_verify_nonce(
+sanitize_text_field( wp_unslash( $_POST['dona82pl_nonce'] ) ),
+'dona82pl_save_email_action' ) ) {
+        wp_send_json_error( 'Invalid nonce.' );
+    }
+
+    if ( !current_user_can( 'edit_posts' ) ) {
+        wp_send_json_error( 'Insufficient permissions.' );
+    }
+
+    if ( isset( $_POST['post_id'] ) && isset( $_POST['price'] ) ) {
+        update_post_meta( absint( $_POST['post_id'] ), 'price',
+floatval( $_POST['price'] ) );
+    }
+}
+add_action( 'wp_ajax_dona82pl_save_email', 'dona82pl_save_email' );
+=E2=9A=A0=EF=B8=8F Without nonce and permissions checks, anyone could call =
+this
+AJAX endpoint and change the price data for any post - risky!=F0=9F=94=B4 U=
+se
+Prefixes for declarations, globals and stored data=E2=84=B9=EF=B8=8F Why it
+matters: Prefixing avoid naming collisions with other themes, plugins,
+or WordPress core functions.A prefix is a string placed in front of a
+name to avoid collisions. It must be at least 4 characters long, feel
+distinct and unique to the plugin (do not use common words), and be
+separated by an underscore or dash.Please check the official WordPress
+docs on avoiding name collisions.=F0=9F=94=8D Identify not prefixed names:
+Look for any name that is used in a place where it can create a
+collision.
+
+Type of elementAffected elementsDeclarationsFunctions, classes, etc
+(if not under a namespace)GlobalsGlobal variables, namespaces,
+define() .Data storageupdate_option() , set_transient() ,
+update_post_meta() , etc.WordPress declarationsadd_shortcode() ,
+register_post_type() , add_menu_page() , wp_register_script() ,
+wp_localize_script() , add_action( 'wp_ajax_...' ) , etc.If the
+defined name for that is not prefixed, that=E2=80=99s a potential issue!
+=F0=9F=95=B5=EF=B8=8F=F0=9F=9B=A0 Fix it: Always prefix those names, for ex=
+ample if your
+plugin is called "Donasai =E2=80=93 Platform Donasi & Penggalangan Dana"
+then you could use names like these:function dona82pl_save_post(){ ...
+}class DONA82PL_Admin { ... }update_option( 'dona82pl_options',
+$options );register_setting( 'dona82pl_settings', 'dona82pl_user_id',
+... );define( 'DONA82PL_PLUGIN_DIR', plugin_dir_path( __FILE__ )
+);global $dona82pl_options;add_action('wp_ajax_dona82pl_save_data',
+... );namespace hadiedankerdonasai;=F0=9F=94=B4 Use wp_enqueue commands=E2=
+=84=B9=EF=B8=8F
+Why it matters: Because of performance and compatibility, please make
+use of the built in functions for including static and dynamic JS
+and/or CSS.=F0=9F=94=8D Identify JS and CSS outputs: Look for any
+<script>  or <style>  HTML tags in your plugin. In the
+majority of cases you could enqueue them.=F0=9F=9B=A0 Fix it: Make use of t=
+he
+specific function for enqueue them:
+
+Type of codeFunctionsStatic JSwp_register_script() ,
+wp_enqueue_script() , admin_enqueue_scripts() Inline
+JSwp_add_inline_script() Static CSSwp_register_style() ,
+wp_enqueue_style() Inline CSSwp_add_inline_style() =F0=9F=91=89 In the publ=
+ic
+pages you can enqueue them using the hook wp_enqueue_scripts() .=F0=9F=91=
+=89
+In the admin pages you can enqueue them using the hook=20
+admin_enqueue_scripts() . You can also use admin_print_scripts()  and
+admin_print_styles() .=F0=9F=91=89 As of WordPress 6.3, you can easily pass
+attributes like defer or async, as of WordPress 5.7, you can pass
+other attributes by using functions and filters.Example:function
+dona82pl_enqueue_script() {
+    wp_enqueue_script( 'dona82pl_js', plugins_url( 'inc/main.js',
+__FILE__ ), array(), DONA82PL_VERSION, true );
+}
+add_action( 'wp_enqueue_scripts', 'dona82pl_enqueue_script' );
+Your JS/CSS is now enqueued!Possible cases from your plugin
+include:frontend/templates/donation-form.php:60 <style>
+frontend/templates/donation-summary.php:51 <style>
+frontend/templates/donor-dashboard.php:206 <script>
+includes/admin/campaign-columns.php:205 echo '<style>
+frontend/templates/confirmation-form.php:145 <style>
+includes/functions-frontend.php:228 <script>
+frontend/templates/donation-form.php:399 <style>
+frontend/templates/donation-form.php:1035 <script>
+... out of a total of 21 incidences.=F0=9F=94=B4 Trialware and Locked
+FeaturesPlease review your plugin to ensure that it does not include
+any locked or restricted built-in functionality. This is not permitted
+under the WordPress.org Plugin Directory Guidelines you agreed to when
+submitting the plugin.=E2=9D=8C Guideline 5 =E2=80=93 TrialwarePlugins must=
+ be
+fully functional. You may not:Lock, disable or limit built-in features
+behind a license key, trial period, usage limit, time, quota or any
+other kind of intended restriction.Even if the locked feature is
+present in the code "just in case the user upgrades," it=E2=80=99s still no=
+t
+allowed. Your plugin may point out which features are available
+through a separated plugin, but that's it. All plugin code hosted on
+WordPress.org must be free and fully functional.=F0=9F=8C=90 Guideline 6 =
+=E2=80=93
+ServicewarePlugins may connect to a legitimate external service to
+perform certain functionality, provided:The service performs actual
+processing on external servers.The functionality provided cannot be
+done locally by the plugin.The service is clearly documented in your
+readme, including Terms of Use and Privacy Policy links.For example: a
+"Spam checker" plugin that connects to a external service to check for
+spam (and thus uses it to provide that functionality) is generally
+acceptable. A plugin that simply checks a license key to unlock local
+features is not.=E2=9C=85 Ask yourself:Does any function only work after a
+license check or payment?Is any functionality in the plugin code
+disabled or limited until it=E2=80=99s unlocked?Are there any limitations o=
+n
+the plugin after a certain amount of time or usage?After excluding
+functionalities provided by legitimate external services, if the
+answer is yes to any of the above, the plugin does not comply.=F0=9F=94=A7 =
+How
+to fix it:Remove all license checks or other mechanisms that control
+access to features built in in the plugin code.Remove or fully enable
+any built in features that are currently locked or limited.Make sure
+external services are compliant and clearly documented.=E2=84=B9=EF=B8=8F
+Important clarification:WordPress.org is not a marketplace. It's a
+repository for free, fully functional, GPL-compliant plugins.If you
+are not offering a service and want to offer additional features
+through a paid version, that code must be:Hosted elsewhere (e.g., your
+own website).Not included in the plugin hosted on WordPress.org.GPL
+compliant: Do not include any mechanisms that would prevent a plug-in
+from being used after a license has been checked.Other detailsWe've
+detected some other details that you may want to check.## Undocumented
+use of a 3rd Party / external servicePlugins are permitted to require
+the use of third party/external services as long as they are clearly
+documented.When your plugin reach out to external services, you must
+disclose it. This is true even if you are the one providing that
+service.You are required to document it in a clear and plain language,
+so users are aware of: what data is sent, why, where and under which
+conditions.To do this, you must update your readme file to  clearly
+explain that your plugin relies on third party/external services, and
+include at least the following information for each third
+party/external service that this plugin uses:What the service is and
+what it is used for.What data is sent and when.Provide links to the
+service's terms of service and privacy policy.Remember, this is for
+your own legal protection. Use of services must be upfront and well
+documented. This allows users to ensure that any legal issues with
+data transmissions are covered.Example:=3D=3D External services =3D=3D
+
+This plugin connects to an API to obtain weather information, it's
+needed to show the weather information and forecasts in the included
+widget.
+
+It sends the user's location every time the widget is loaded (If the
+location isn't available and/or the user hasn't given their consent,
+it displays a configurable default location).
+This service is provided by "PRT Weather INC": terms of use, privacy
+policy.
+Example(s) from your plugin:includes/functions-frontend.php:236
+'https://connect.facebook.net/en_US/fbevents.js');
+## Review: Missing permission_callback  in REST API RouteWhen using
+register_rest_route()  or wp_register_ability()  to define custom REST
+API endpoints, it is crucial to include a proper permission_callback
+.=F0=9F=94=92 This callback function ensures that only authorized users can
+access or modify data through your endpoint.Code example, checking
+that the user can change options:register_rest_route( 'donasai/v1',
+'/my-endpoint', array(
+    'methods' =3D> 'GET',
+    'callback' =3D> 'donasai_callback_function',
+    'permission_callback' =3D> function() {
+        return current_user_can( 'manage_options' );
+    }
+) );
+Please check the register_rest_route() documentation and the
+current_user_can() documentation.=E2=9C=85 When a permission_callback  is
+NOT Required:There are valid use cases for public endpoints, such as
+publicly available data (e.g., posts, public metadata) or endpoints
+designed for unauthenticated access (e.g., fetching public stats or
+information).In these cases, you should use __return_true  as the
+permission_callback  to indicate that the endpoint is intentionally
+public.=F0=9F=94=92 When a permission_callback  IS Required:For endpoints t=
+hat
+involve sensitive data or actions (e.g., getting not public data,
+creating, updating, or deleting content).In these cases, you should
+always implement proper permission checks.Possible cases found on this
+plugin's code:includes/api/campaigns-controller.php:12
+register_rest_route('wpd/v1', '/campaigns/(?P<id>\d+)/donate',
+array('methods' =3D> 'POST', 'callback' =3D>
+'wpd_api_create_donation', 'permission_callback' =3D>
+'__return_true'));
+includes/api/fundraisers-controller.php:23
+register_rest_route('wpd/v1', '/fundraisers', array(
+    'methods' =3D> 'GET',
+    'callback' =3D> 'wpd_api_get_fundraisers',
+    // Public route for leaderboard? Or admin only?
+    // If accessing specific user stats -> auth required.
+    // If accessing leaderboard -> public.
+    'permission_callback' =3D> '__return_true',
+));
+includes/api/webhook-controller.php:12 register_rest_route('wpd/v1',
+'/midtrans/webhook', array('methods' =3D> 'POST', 'callback' =3D>
+'wpd_api_midtrans_webhook', 'permission_callback' =3D>
+'__return_true'));
+## PHP libraries that might conflict with the same library loaded by
+other pluginsYour plugin has included a copy of a library in a way
+that might conflict with other copies of the same library loaded by
+other plugins.Remember that all WordPress plugins share the same
+execution space, which means that you have to pay special attention to
+how libraries are loaded, as you might be trying to load a library
+that another plugin has already loaded.Fortunately, there are ways to
+avoid these types of conflictsRecommended: Using composer, a tool to
+manage PHP dependencies, is one of the most convenient and
+maintainable ways to load a PHP library, it will avoid this kind of
+conflicts and you'll easily manage the updates of the library.Checking
+if the library was already loaded using class_exists  or
+function_exists  and avoid loading yourself if that's already
+loaded.However, after getting around the conflicts of loading the same
+library, we come to another point of conflict: Dealing with different
+versions of the same library.Your plugin may find that another plugin
+has loaded a different version of the same library (before your plugin
+was able to load it) that is incompatible with your code. While this
+may not be necessary in stable libraries when using well-established
+functions, there are some ways to handle this and make your plugin
+resilient:Recommended: If you are using Composer, you can use one of
+the available tools to automatically assign your namespace to these
+libraries.coenjacobs/mozart :
+https://github.com/coenjacobs/mozartbrianhenryie/strauss :
+https://github.com/brianhenryie/strausshumbug/php-scoper :
+https://github.com/humbug/php-scoperThere are some libraries that
+provide tools to give a namespace or prefix to the generated
+library.You can manually provide your namespace to this library. Since
+this would require you to modify the library, it may not be the most
+practical choice.From your plugin:#
+09_13-34-43_donasai/includes/gateways/stripe.php
+=F0=9F=91=89 Your next stepsThis is your checklist:Have you read the
+guidelines and this plugin complies with them?Are you the rightful
+owner of this plugin?Have you checked for common technical
+issues?Other detailsIf there is something that needs to be fixed,
+please take your time, fix it and update your plugin files at the "Add
+your plugin" page, while being logged in with your account
+"hadie-danker".Please be concise and do not list the changes done =E2=80=94
+we will review the entire plugin again =E2=80=94 but do share any
+clarifications or important context you want us to know.If after
+checking the list and do the changes you feel that everything is right
+or need further clarification, please reply to this email and a
+volunteer will assist you.If you believe there is a requirement you
+cannot accomplish and choose not to make changes, your plugin
+submission will be rejected after three months.Thanks!By taking these
+steps, you're helping the Plugin Review Team work more efficiently =E2=80=
+=94
+meaning your plugin (along with the thousands of others in the queue)
+can be reviewed faster. =F0=9F=9A=80 We really appreciate your
+contribution!DisclaimersIf, at any time during the review process, you
+wish to change your permalink (aka the plugin slug) "donasai", you
+must explicitly and clearly tell us what you would like it to be. Just
+changing it in your code and in the display name is not sufficient.
+Remember, permalinks cannot be altered after approval.This email was
+partially auto-generated, so please be aware that some information
+might not be entirely accurate. No personal data was shared with the
+AI during this process. If you notice any obvious errors or something
+seems off, feel free to reply =E2=80=94 we=E2=80=99ll be happy to take a cl=
+oser
+look and readjust this automation.Review ID: AUTOPREREVIEW =E2=9D=97OWN-LIC
+donasai/hadie-danker/14Jan26/T1 14Jan26/3.7.1
+--
+WordPress Plugins Team |=C2=A0plugins@wordpress.org
+https://make.wordpress.org/plugins/=20
+https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guide=
+lines/
+https://wordpress.org/plugins/plugin-check/
+                   =20
+
+
+
+--=_2b8f6e7d025fab1cb1c63ea2f165fb94
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<html lang=3D"en">
+<head>
+    <meta content=3D"text/html; charset=3Dutf-8" http-equiv=3D"Content-Type=
+">
+</head>
+<body bgcolor=3D"#ffffff">
+<div id=3D"hsReplyAbove" class=3D"hsReplyAbove">
+    <div class=3D"kickstarter-compatible" style=3D"font-family:sans-serif;"=
+>
+       =20
+                        <div><h2>=F0=9F=91=8B hadie-danker - let=E2=80=99s =
+improve your plugin!</h2><br>Thank you for submitting your plugin, "Donasai=
+ =E2=80=93 Platform Donasi &amp; Penggalangan Dana".<br><br>Before your plu=
+gin reaches a human reviewer, our automated tools =E2=80=94 which help the =
+team handle around <strong>1,000 plugin reviews per week</strong> =E2=80=94=
+ have flagged a few potential issues that you may need to address. To avoid=
+ delays and help streamline the manual review process, we=E2=80=99ve <stron=
+g>pended</strong> your submission to give you a chance to review and fix th=
+ese common issues.<br><br>=F0=9F=A4=96 <i>This is an automated message gene=
+rated using a combination of algorithms and AI. It hasn=E2=80=99t necessari=
+ly been reviewed by a human. Its purpose is to help you resolve potential c=
+ommon issues early, before manual review begins. All AI outputs are marked =
+with the emoji =E2=9C=A8 and it's quite accurate.</i><br><br><h3>Who are we=
+?</h3><br>We are a group of volunteers who <strong>help you identify common=
+ issues</strong> so that <strong>you can make your plugin more secure, comp=
+atible, reliable and compliant</strong> with the guidelines.<br><br>For con=
+sistency and better communication, your plugin review will be assigned to a=
+ single volunteer who will assist you throughout the entire review. However=
+, response times may vary depending on how much time the volunteer is able =
+to contribute to the team and if whether they need to consult something wit=
+h the rest of the team.<br><br><h3>The review process</h3><br>
+ =20
+<table class=3D"hs-table" style=3D"font-family: Arial,'Helvetica Neue',Helv=
+etica,Tahoma,sans-serif; font-size: 14px; border: solid 1px #c8d3deff; bord=
+er-collapse: collapse; border-spacing: 0; table-layout: fixed;"><tbody><tr>=
+<td style=3D"background-color: #fff; border: solid 1px #c8d3deff; color: #2=
+53642ff; padding: 5px 15px; min-width: 30px;" bgcolor=3D"#fff"><p><img src=
+=3D"https://make.wordpress.org/plugins/files/2025/07/manual-review-2.png" a=
+lt=3D"A email envelope." style=3D"width: 150px; "></p></td><td style=3D"bac=
+kground-color: #fff; border: solid 1px #c8d3deff; color: #253642ff; padding=
+: 5px 15px; min-width: 30px;" bgcolor=3D"#fff">Please <strong>read this ema=
+il in full and check each issue</strong>, as well as the links to the docum=
+entation and the provided examples. Also, search for any other similar occu=
+rrences of the same issue that are not explicitly mentioned in the email.<b=
+r>Make sure you understand the issues so that you can incorporate them into=
+ your existing skillset.<br></td></tr><tr><td style=3D"background-color: #f=
+ff; border: solid 1px #c8d3deff; color: #253642ff; padding: 5px 15px; min-w=
+idth: 30px;" bgcolor=3D"#fff"><p><img src=3D"https://make.wordpress.org/plu=
+gins/files/2025/07/manual-review-3.png" alt=3D"A plugin author fixing the i=
+ssues." style=3D"width: 150px; "></p></td><td style=3D"background-color: #f=
+ff; border: solid 1px #c8d3deff; color: #253642ff; padding: 5px 15px; min-w=
+idth: 30px;" bgcolor=3D"#fff">If you decide to continue with the review pro=
+cess, <strong>you must fix any issues, test your plugin, upload a corrected=
+ version</strong> and then reply to this email.<br>In case of any doubt, pl=
+ease fix everything else and ask your questions alongside the update.<br></=
+td></tr><tr><td style=3D"background-color: #fff; border: solid 1px #c8d3def=
+f; color: #253642ff; padding: 5px 15px; min-width: 30px;" bgcolor=3D"#fff">=
+<p><img src=3D"https://make.wordpress.org/plugins/files/2025/07/manual-revi=
+ew-1.png" alt=3D"A volunteer reviewing the plugin." style=3D"width: 150px; =
+"></p></td><td style=3D"background-color: #fff; border: solid 1px #c8d3deff=
+; color: #253642ff; padding: 5px 15px; min-width: 30px;" bgcolor=3D"#fff">Y=
+our plugin is <strong>manually checked by a volunteer</strong> who sends yo=
+u the remaining identified issues in the plugin.<br><strong>We will be devo=
+ting our time to reviewing your plugin</strong>, we ask that you honor this=
+ by following the instructions.<br><i>Note: Volunteers are not your QA team=
+. They are here to help you identify and understand issues so that you can =
+improve and maintain your plugin in the future. Fixing the issues is your r=
+esponsibility</i>.<br></td></tr><tr><td style=3D"background-color: #fff; bo=
+rder: solid 1px #c8d3deff; color: #253642ff; padding: 5px 15px; min-width: =
+30px;" bgcolor=3D"#fff"><p><img src=3D"https://make.wordpress.org/plugins/f=
+iles/2025/07/manual-review-4.png" alt=3D"A new review of the plugin." style=
+=3D"width: 150px; "></p></td><td style=3D"background-color: #fff; border: s=
+olid 1px #c8d3deff; color: #253642ff; padding: 5px 15px; min-width: 30px;" =
+bgcolor=3D"#fff">If there are no further issues, the plugin will be approve=
+d =F0=9F=8E=89<br></td></tr><tr><td style=3D"background-color: #fff; border=
+: solid 1px #c8d3deff; color: #253642ff; padding: 5px 15px; min-width: 30px=
+;" bgcolor=3D"#fff"><p><img src=3D"https://make.wordpress.org/plugins/files=
+/2025/07/manual-review-warning-1.png" alt=3D"A warning." style=3D"width: 15=
+0px; "></p></td><td style=3D"background-color: #fff; border: solid 1px #c8d=
+3deff; color: #253642ff; padding: 5px 15px; min-width: 30px;" bgcolor=3D"#f=
+ff"><strong>Be brief and direct in your reply</strong> (please, avoid copy-=
+pasting bloated AI responses, our AI is quite brief), be patient and make s=
+ure you have <strong>addressed all the issues and tested your plugin before=
+ responding</strong>.<br><i>It is disheartening to receive an updated plugi=
+n only to find that only a few issues have been resolved, or that it causes=
+ a fatal error upon activation</i>.<br><br>When not making adequate progres=
+s in your review, <strong>it will be delayed and eventually rejected</stron=
+g>, for the sake of volunteers devoting their time and other plugin authors=
+ who correctly follow the review process.<br><br>Each volunteer can review =
+up to 300 plugins per week, and they love to have life besides reviewing pl=
+ugins, so please make things easier for us.<br></td></tr></tbody></table><b=
+r><br><h3>Understanding the Review Queue</h3><br>When you reply, your plugi=
+n enters the review queue again. Fewer review cycles mean quicker approval,=
+ while multiple reviews can extend the process to weeks or months.<br>Tip: =
+Carefully fix all issues and test your plugin before resubmitting to speed =
+up approval.<br><br>This process is designed to help you improve your plugi=
+n while making the review experience faster and more efficient for everyone=
+.<br><br><br><h2>Have you read the guidelines and this plugin complies with=
+ them?</h2><br>Upon submitting your plugin, you agreed and confirmed that i=
+t complies with the <a href=3D"https://developer.wordpress.org/plugins/word=
+press-org/detailed-plugin-guidelines/">WordPress.org Plugin Directory Guide=
+lines</a>, which apply to all plugins in the directory.<br><br>Our automate=
+d tools have detected patterns that may require a closer look regarding com=
+pliance with certain guidelines. We will verify this during our manual revi=
+ew, but it=E2=80=99s best to address any potential issues beforehand. In pa=
+rticular, please pay attention to the following:<br><ul><li>Any included co=
+de <strong>must be GPL-compatible</strong>. This means, among others, that =
+the users have to receive the four essential freedoms: (0) to run the progr=
+am, (1) to study and change the program in source code form, (2) to redistr=
+ibute exact copies, and (3) to distribute modified versions. <i>(Guidelines=
+ 1 &amp; 4)</i><br></li><li>Developers <strong>must provide public, maintai=
+ned access to their source code and any build tools</strong> in one of the =
+following ways: (1) Include the source code in the deployed plugin, (2) A l=
+ink in the readme to the development location. <i>(Guidelines 1, 4)</i><br>=
+</li><li>Plugins <strong>must not restrict or lock functionality</strong>. =
+<i>(Guidelines 1, 5, &amp; 9 =E2=80=94 see clarification on SaaS in Guideli=
+ne 6)</i><br></li><li>Your plugin <strong>may not embed external links or c=
+redits</strong> on the public site without explicit user permission. <i>(Gu=
+ideline 10)</i><br></li></ul><br>Please check it, and if you think everythi=
+ng is fine, do not worry. Our tools are very thorough and may highlight dif=
+ferent things as potential issues.<br><br><h2>Are you the rightful owner of=
+ this plugin?</h2><br>We know this might seem like an odd question =E2=80=
+=94 especially coming from an algorithm =E2=80=94 but bear with us; it=E2=
+=80=99ll all make sense soon.<br><br>Here's how it works: If your plugin us=
+es a name or URL associated with a specific entity, we need to confirm that=
+ you actually represent that entity. It's that simple.<br><br>So, how do we=
+ verify your identity? In most cases, we rely on the domain in your email a=
+ddress.<br><br>This situation usually comes up if you're using a personal a=
+ccount to submit a plugin meant to represent a company or if you=E2=80=99re=
+ a third party attempting to upload a plugin on someone else=E2=80=99s beha=
+lf (please don=E2=80=99t do that).<br><br>This is what we know <strong>abou=
+t this plugin</strong>:<br><ul><li>Plugin name: <strong>"Donasai - Platform=
+ Donasi &amp; Penggalangan Dana"</strong> in the <code class=3D"inline-code=
+">readme.txt</code>  file<br></li><li>Plugin name: <strong>"Donasai - Platf=
+orm Donasi &amp; Penggalangan Dana"</strong> in the <code class=3D"inline-c=
+ode">donasai.php</code>  file<br></li><li>Slug: donasai<br></li><li>Author:=
+ Hadie Danker<br></li><li>Author URI: <a href=3D"http://profiles.wordpress.=
+org/hadie-danker" target=3D"_blank">http://profiles.wordpress.org/hadie-dan=
+ker</a><br></li><li>Plugin URI: <a href=3D"https://donasai.com" target=3D"_=
+blank">https://donasai.com</a><br></li><li>Contributors:<br><ul><li>hadie d=
+anker<br></li></ul></li></ul><br>This is what we know <strong>about you</st=
+rong>:<br><ul><li>Username: <strong>hadie-danker</strong><br><ul><li>=E2=9A=
+=A0=EF=B8=8F Your username does not match any of the contributors declared =
+in the plugin.<br></li></ul></li><li>Email: <strong><a href=3D"mailto:hadie=
+87@gmail.com">hadie87@gmail.com</a></strong><br><ul><li>=E2=9A=A0=EF=B8=8F =
+Your email domain "gmail.com" does not seem to be related to any of the URL=
+s, names, trademarks and/or or services declared in the plugin.<br></li><li=
+>=E2=9A=A0=EF=B8=8F A gmail.com account cannot be used as a valid form of i=
+dentification towards clarifying ownership, even if it contains your or you=
+r company's name. Anyone can create any gmail.com account that is not alrea=
+dy in use. You could be you, but you could also be anyone else.<br></li></u=
+l></li></ul><br>Please note that we carry out these checks to protect peopl=
+e like you. If someone else submitted a plugin under your name or your comp=
+any's name, you would rightly be upset if we failed to confirm ownership in=
+ a demonstrably reliable way.<br><br><br><h3>=E2=98=91=EF=B8=8F You can dem=
+onstrate or clarify ownership in <strong>one</strong> of the following ways=
+:</h3><ul><li>=F0=9F=93=A9 <strong>Update your WordPress.org email address<=
+/strong> to one under the domain of the entity associated with the plugin. =
+You can change it in <a href=3D"https://profiles.wordpress.org/hadie-danker=
+/profile/edit/group/3/?screen=3Dhome">Your WordPress.org profile</a>, we ca=
+nnot change it for you.<br><i>Note: We will continue the review in this ema=
+il thread. Any new emails will be sent to the new email account.</i><br></l=
+i><li>=F0=9F=91=A4 <strong>Reply asking us to transfer this submission to t=
+he correct WordPress.org account.</strong> Please, tell us the username. If=
+ the owner does not yet have an account, they can create it using an email =
+that is under the domain of the entity associated to the plugin.<br>=E2=9A=
+=A0=EF=B8=8F <i>Do not resubmit this plugin using the new account. I will t=
+ransfer it for you. Simply reply to this email with the new username.</i><b=
+r><i>Note: Once the plugin has been approved, you can ask the owner to add =
+you as a committer in the "Advanced" section of the plugin, so that you can=
+ commit code using your account.</i><br></li><li>=F0=9F=9B=A0 <strong>Chang=
+e the plugin=E2=80=99s display name and slug</strong> to make it clear that=
+ the plugin is not officially affiliated with any other entity. Upload an u=
+pdated version of your plugin and change the slug via the "<a href=3D"https=
+://wordpress.org/plugins/developers/add/">Add your plugin</a>" page.<br></l=
+i><li>Reply to this email clarifying the situation, we know that sometimes =
+you might be using an email account that belongs to the same entity or an e=
+ntity that owns the other entity. Also, if you already have established plu=
+gins in the directory under the same account we can use that as tacit verif=
+ication.<br></li></ul><br>Remember that, if you own other plugins, all the =
+plugins belonging to the same entity should be under the same WordPress.org=
+ account.<br><br>=E2=9A=A0=EF=B8=8F Please do not resubmit this plugin usin=
+g a different account. Both submissions will be rejected if you do so, and =
+your accounts may be suspended until the situation is resolved. Instead, as=
+k us to change the owner =E2=80=94 we can certainly do that.<br><br><h2>Hav=
+e you checked for common technical issues?</h2><br>Please ensure that your =
+plugin adheres to best practices, including the following:<br><br><h3>=F0=
+=9F=94=B4 Proper sanitization of inputs</h3><br><strong>=E2=84=B9=EF=B8=8F =
+Why it matters</strong>: Sanitizing inputs is crucial for protecting agains=
+t security vulnerabilities like SQL injection, handling invalid data, and e=
+nsuring that only safe, expected data is processed.<br><i>Please </i><a hre=
+f=3D"https://developer.wordpress.org/apis/security/sanitizing/"><i>check th=
+e official WordPress docs on sanitizing</i></a><i> for details =E2=80=94 th=
+is is a quick summary.</i><br><br><strong>=F0=9F=94=8D Identify unsanitized=
+ inputs</strong>: Check any input coming from sources such as: <code class=
+=3D"inline-code">$_GET</code> , <code class=3D"inline-code">$_POST</code> ,=
+ <code class=3D"inline-code">$_REQUEST</code> , <code class=3D"inline-code"=
+>$_COOKIE</code> , <code class=3D"inline-code">$_SERVER</code> , <code clas=
+s=3D"inline-code">$_SESSION</code> <br>If these inputs aren=E2=80=99t sanit=
+ized first, that=E2=80=99s a potential risk! =F0=9F=95=B5=EF=B8=8F<br><br><=
+strong>=F0=9F=9B=A0 Fix it</strong>: Always wrap any input with the right s=
+anitization function, like:<br>
+ =20
+<table class=3D"hs-table" style=3D"font-family: Arial,'Helvetica Neue',Helv=
+etica,Tahoma,sans-serif; font-size: 14px; border: solid 1px #c8d3deff; bord=
+er-collapse: collapse; border-spacing: 0; table-layout: fixed;"><tbody><tr>=
+<th style=3D"background-color: #f9fafaff; border: solid 1px #c8d3deff; colo=
+r: #253642ff; font-weight: 700; padding: 5px 15px; min-width: 30px;" bgcolo=
+r=3D"#f9fafaff">Content<br></th><th style=3D"background-color: #f9fafaff; b=
+order: solid 1px #c8d3deff; color: #253642ff; font-weight: 700; padding: 5p=
+x 15px; min-width: 30px;" bgcolor=3D"#f9fafaff">Function<br></th></tr><tr><=
+td style=3D"background-color: #fff; border: solid 1px #c8d3deff; color: #25=
+3642ff; padding: 5px 15px; min-width: 30px;" bgcolor=3D"#fff">Plain text<br=
+></td><td style=3D"background-color: #fff; border: solid 1px #c8d3deff; col=
+or: #253642ff; padding: 5px 15px; min-width: 30px;" bgcolor=3D"#fff"><code =
+class=3D"inline-code">sanitize_text_field()</code> <br></td></tr><tr><td st=
+yle=3D"background-color: #fff; border: solid 1px #c8d3deff; color: #253642f=
+f; padding: 5px 15px; min-width: 30px;" bgcolor=3D"#fff">Email<br></td><td =
+style=3D"background-color: #fff; border: solid 1px #c8d3deff; color: #25364=
+2ff; padding: 5px 15px; min-width: 30px;" bgcolor=3D"#fff"><code class=3D"i=
+nline-code">sanitize_email()</code> <br></td></tr><tr><td style=3D"backgrou=
+nd-color: #fff; border: solid 1px #c8d3deff; color: #253642ff; padding: 5px=
+ 15px; min-width: 30px;" bgcolor=3D"#fff">URL<br></td><td style=3D"backgrou=
+nd-color: #fff; border: solid 1px #c8d3deff; color: #253642ff; padding: 5px=
+ 15px; min-width: 30px;" bgcolor=3D"#fff"><code class=3D"inline-code">esc_u=
+rl_raw()</code> <br></td></tr><tr><td style=3D"background-color: #fff; bord=
+er: solid 1px #c8d3deff; color: #253642ff; padding: 5px 15px; min-width: 30=
+px;" bgcolor=3D"#fff">Key<br></td><td style=3D"background-color: #fff; bord=
+er: solid 1px #c8d3deff; color: #253642ff; padding: 5px 15px; min-width: 30=
+px;" bgcolor=3D"#fff"><code class=3D"inline-code">sanitize_key()</code> <br=
+></td></tr><tr><td style=3D"background-color: #fff; border: solid 1px #c8d3=
+deff; color: #253642ff; padding: 5px 15px; min-width: 30px;" bgcolor=3D"#ff=
+f">Integer<br></td><td style=3D"background-color: #fff; border: solid 1px #=
+c8d3deff; color: #253642ff; padding: 5px 15px; min-width: 30px;" bgcolor=3D=
+"#fff"><code class=3D"inline-code">absint()</code> <br></td></tr></tbody></=
+table><br><i>Refer to the </i><a href=3D"https://developer.wordpress.org/ap=
+is/security/sanitizing/"><i>official WordPress documentation</i></a><i> for=
+ a complete list of sanitization functions.</i><br>=F0=9F=91=89 Use the mos=
+t restrictive function that fits the expected content.<br>=F0=9F=91=89 Sani=
+tize as early as possible =E2=80=94 ideally as soon as the data is received=
+.<br>=F0=9F=91=89 Only trust what you=E2=80=99ve cleaned yourself.<br><br>E=
+xample:<br><pre>$post_id =3D (int) $_GET['post_id']; // Sanitized as an int=
+eger
+$email =3D sanitize_email( $_GET['email'] ); // Sanitized as an email
+</pre>Your data is now <strong>sanitized</strong>! =F0=9F=A7=BC=F0=9F=8D=8F=
+<br><br><br><strong>Note</strong>: When checking a nonce using <code class=
+=3D"inline-code">wp_verify_nonce</code>  you will need to sanitize the inpu=
+t using <code class=3D"inline-code">wp_unslash</code>  AND <code class=3D"i=
+nline-code">sanitize_text_field</code> , <a href=3D"https://developer.wordp=
+ress.org/news/2023/08/understand-and-use-wordpress-nonces-properly/#verifyi=
+ng-the-nonce">this is because this function is pluggable, and extenders sho=
+uld not trust its input values</a>.<br><br>Example:<br><pre>if ( ! isset( $=
+_POST['dona82pl_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_uns=
+lash ( $_POST['dona82pl_nonce'] ) ) , 'dona82pl_nonce' ) )
+</pre><br>Example(s) from your plugin:<br><pre>includes/api/donations-contr=
+oller.php:250 if (!wp_verify_nonce($nonce, 'wp_rest')) {
+</pre><br><br>=E2=9C=94=EF=B8=8F You can check this using <a href=3D"https:=
+//wordpress.org/plugins/plugin-check/">Plugin Check</a>.<br><br><h3>=F0=9F=
+=94=B4 Nonces and User Permissions Before Processing Requests</h3><br><stro=
+ng>=E2=84=B9=EF=B8=8F Why it matters</strong>: Nonces and permissions check=
+s ensure that the request comes from a trusted source, protecting against s=
+ecurity threats like CSRF (Cross-Site Request Forgery) attacks.<br><i>Pleas=
+e </i><a href=3D"https://developer.wordpress.org/apis/security/nonces/"><i>=
+check the official WordPress docs on nonces</i></a><i> and </i><a href=3D"h=
+ttps://developer.wordpress.org/news/2023/08/understand-and-use-wordpress-no=
+nces-properly/#when-to-use-nonces"><i>this article</i></a><i> for details =
+=E2=80=94 this is a quick summary.</i><br><br><strong>=F0=9F=94=8D Spot it<=
+/strong>: Look for functions that interact with <code class=3D"inline-code"=
+>$_GET</code> , <code class=3D"inline-code">$_POST</code> , <code class=3D"=
+inline-code">$_REQUEST</code>  and perform actions triggered by the user/br=
+owser that modify data or perform sensitive actions (e.g., privileged actio=
+ns or data manipulation). For such actions, you should always check for a n=
+once.<br>Additionally, verify user permissions if the action is restricted =
+to certain roles (e.g., admin, editor).<br>When in doubt, play it safe: alw=
+ays check.<br><br><strong>=F0=9F=9B=A0 Fix it</strong><br><ol><li>Create a =
+nonce ( <code class=3D"inline-code">wp_nonce_field()</code> , <code class=
+=3D"inline-code">wp_nonce_url()</code> , <code class=3D"inline-code">wp_cre=
+ate_nonce()</code>  ). If you need to pass the nonce to JavaScript you can =
+make use of <code class=3D"inline-code">wp_localize_script()</code> <br></l=
+i><li>Pass it with the request.<br></li><li>Check the nonce ( <code class=
+=3D"inline-code">check_admin_referer()</code> , <code class=3D"inline-code"=
+>check_ajax_referer()</code> , <code class=3D"inline-code">wp_verify_nonce(=
+)</code>  ) , and permissions if applicable ( <code class=3D"inline-code">c=
+urrent_user_can()</code>  ) .<br></li></ol><br>Example (nonce check):<br><p=
+re>function dona82pl_save_email(){
+    if ( !isset( $_POST['dona82pl_nonce'] ) || !wp_verify_nonce( sanitize_t=
+ext_field( wp_unslash( $_POST['dona82pl_nonce'] ) ), 'dona82pl_save_email_a=
+ction' ) ) {
+        wp_send_json_error( 'Invalid nonce.' );
+    }
+
+    if ( !current_user_can( 'edit_posts' ) ) {
+        wp_send_json_error( 'Insufficient permissions.' );
+    }
+
+    if ( isset( $_POST['post_id'] ) &amp;&amp; isset( $_POST['price'] ) ) {
+        update_post_meta( absint( $_POST['post_id'] ), 'price', floatval( $=
+_POST['price'] ) );
+    }
+}
+add_action( 'wp_ajax_dona82pl_save_email', 'dona82pl_save_email' );
+</pre>=E2=9A=A0=EF=B8=8F Without nonce and permissions checks, anyone could=
+ call this AJAX endpoint and change the price data for any post - risky!<br=
+><br><h3>=F0=9F=94=B4 Use Prefixes for declarations, globals and stored dat=
+a</h3><br><strong>=E2=84=B9=EF=B8=8F Why it matters</strong>: Prefixing avo=
+id naming collisions with other themes, plugins, or WordPress core function=
+s.<br>A prefix is a string placed in front of a name to avoid collisions. <=
+strong>It must be at least 4 characters long, feel distinct and unique to t=
+he plugin (do not use common words)</strong>, and be separated by an unders=
+core or dash.<br><i>Please </i><a href=3D"https://developer.wordpress.org/p=
+lugins/plugin-basics/best-practices/#avoid-naming-collisions"><i>check the =
+official WordPress docs on avoiding name collisions</i></a><i>.</i><br><br>=
+<strong>=F0=9F=94=8D Identify not prefixed names</strong>: Look for any nam=
+e that is used in a place where it can create a collision.<br>
+ =20
+<table class=3D"hs-table" style=3D"font-family: Arial,'Helvetica Neue',Helv=
+etica,Tahoma,sans-serif; font-size: 14px; border: solid 1px #c8d3deff; bord=
+er-collapse: collapse; border-spacing: 0; table-layout: fixed;"><tbody><tr>=
+<th style=3D"background-color: #f9fafaff; border: solid 1px #c8d3deff; colo=
+r: #253642ff; font-weight: 700; padding: 5px 15px; min-width: 30px;" bgcolo=
+r=3D"#f9fafaff">Type of element<br></th><th style=3D"background-color: #f9f=
+afaff; border: solid 1px #c8d3deff; color: #253642ff; font-weight: 700; pad=
+ding: 5px 15px; min-width: 30px;" bgcolor=3D"#f9fafaff">Affected elements<b=
+r></th></tr><tr><td style=3D"background-color: #fff; border: solid 1px #c8d=
+3deff; color: #253642ff; padding: 5px 15px; min-width: 30px;" bgcolor=3D"#f=
+ff">Declarations<br></td><td style=3D"background-color: #fff; border: solid=
+ 1px #c8d3deff; color: #253642ff; padding: 5px 15px; min-width: 30px;" bgco=
+lor=3D"#fff">Functions, classes, etc (if not under a namespace)<br></td></t=
+r><tr><td style=3D"background-color: #fff; border: solid 1px #c8d3deff; col=
+or: #253642ff; padding: 5px 15px; min-width: 30px;" bgcolor=3D"#fff">Global=
+s<br></td><td style=3D"background-color: #fff; border: solid 1px #c8d3deff;=
+ color: #253642ff; padding: 5px 15px; min-width: 30px;" bgcolor=3D"#fff">Gl=
+obal variables, namespaces, <code class=3D"inline-code">define()</code> .<b=
+r></td></tr><tr><td style=3D"background-color: #fff; border: solid 1px #c8d=
+3deff; color: #253642ff; padding: 5px 15px; min-width: 30px;" bgcolor=3D"#f=
+ff">Data storage<br></td><td style=3D"background-color: #fff; border: solid=
+ 1px #c8d3deff; color: #253642ff; padding: 5px 15px; min-width: 30px;" bgco=
+lor=3D"#fff"><code class=3D"inline-code">update_option()</code> , <code cla=
+ss=3D"inline-code">set_transient()</code> , <code class=3D"inline-code">upd=
+ate_post_meta()</code> , etc.<br></td></tr><tr><td style=3D"background-colo=
+r: #fff; border: solid 1px #c8d3deff; color: #253642ff; padding: 5px 15px; =
+min-width: 30px;" bgcolor=3D"#fff">WordPress declarations<br></td><td style=
+=3D"background-color: #fff; border: solid 1px #c8d3deff; color: #253642ff; =
+padding: 5px 15px; min-width: 30px;" bgcolor=3D"#fff"><code class=3D"inline=
+-code">add_shortcode()</code> , <code class=3D"inline-code">register_post_t=
+ype()</code> , <code class=3D"inline-code">add_menu_page()</code> , <code c=
+lass=3D"inline-code">wp_register_script()</code> , <code class=3D"inline-co=
+de">wp_localize_script()</code> , <code class=3D"inline-code">add_action( '=
+wp_ajax_...' )</code> , etc.<br></td></tr></tbody></table><br>If the define=
+d name for that is not prefixed, that=E2=80=99s a potential issue! =F0=9F=
+=95=B5=EF=B8=8F<br><br><strong>=F0=9F=9B=A0 Fix it</strong>: Always prefix =
+those names, for example if your plugin is called "Donasai =E2=80=93 Platfo=
+rm Donasi &amp; Penggalangan Dana" then you could use names like these:<br>=
+<ul><li>function dona82pl_save_post(){ ... }<br></li><li>class DONA82PL_Adm=
+in { ... }<br></li><li>update_option( 'dona82pl_options', $options );<br></=
+li><li>register_setting( 'dona82pl_settings', 'dona82pl_user_id', ... );<br=
+></li><li>define( 'DONA82PL_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );<br>=
+</li><li>global $dona82pl_options;<br></li><li>add_action('wp_ajax_dona82pl=
+_save_data', ... );<br></li><li>namespace hadiedanker\donasai;<br></li></ul=
+><br><h3>=F0=9F=94=B4 Use wp_enqueue commands</h3><br><strong>=E2=84=B9=EF=
+=B8=8F Why it matters</strong>: Because of performance and compatibility, p=
+lease make use of the built in functions for including static and dynamic J=
+S and/or CSS.<br><br><strong>=F0=9F=94=8D Identify JS and CSS outputs</stro=
+ng>: Look for any <code class=3D"inline-code">&lt;script&gt;</code>  or <co=
+de class=3D"inline-code">&lt;style&gt;</code>  HTML tags in your plugin. In=
+ the majority of cases you could enqueue them.<br><br><strong>=F0=9F=9B=A0 =
+Fix it</strong>: Make use of the specific function for enqueue them:<br>
+ =20
+<table class=3D"hs-table" style=3D"font-family: Arial,'Helvetica Neue',Helv=
+etica,Tahoma,sans-serif; font-size: 14px; border: solid 1px #c8d3deff; bord=
+er-collapse: collapse; border-spacing: 0; table-layout: fixed;"><tbody><tr>=
+<th style=3D"background-color: #f9fafaff; border: solid 1px #c8d3deff; colo=
+r: #253642ff; font-weight: 700; padding: 5px 15px; min-width: 30px;" bgcolo=
+r=3D"#f9fafaff">Type of code<br></th><th style=3D"background-color: #f9fafa=
+ff; border: solid 1px #c8d3deff; color: #253642ff; font-weight: 700; paddin=
+g: 5px 15px; min-width: 30px;" bgcolor=3D"#f9fafaff">Functions<br></th></tr=
+><tr><td style=3D"background-color: #fff; border: solid 1px #c8d3deff; colo=
+r: #253642ff; padding: 5px 15px; min-width: 30px;" bgcolor=3D"#fff">Static =
+JS<br></td><td style=3D"background-color: #fff; border: solid 1px #c8d3deff=
+; color: #253642ff; padding: 5px 15px; min-width: 30px;" bgcolor=3D"#fff"><=
+code class=3D"inline-code">wp_register_script()</code> , <code class=3D"inl=
+ine-code">wp_enqueue_script()</code> , <code class=3D"inline-code">admin_en=
+queue_scripts()</code> <br></td></tr><tr><td style=3D"background-color: #ff=
+f; border: solid 1px #c8d3deff; color: #253642ff; padding: 5px 15px; min-wi=
+dth: 30px;" bgcolor=3D"#fff">Inline JS<br></td><td style=3D"background-colo=
+r: #fff; border: solid 1px #c8d3deff; color: #253642ff; padding: 5px 15px; =
+min-width: 30px;" bgcolor=3D"#fff"><code class=3D"inline-code">wp_add_inlin=
+e_script()</code> <br></td></tr><tr><td style=3D"background-color: #fff; bo=
+rder: solid 1px #c8d3deff; color: #253642ff; padding: 5px 15px; min-width: =
+30px;" bgcolor=3D"#fff">Static CSS<br></td><td style=3D"background-color: #=
+fff; border: solid 1px #c8d3deff; color: #253642ff; padding: 5px 15px; min-=
+width: 30px;" bgcolor=3D"#fff"><code class=3D"inline-code">wp_register_styl=
+e()</code> , <code class=3D"inline-code">wp_enqueue_style()</code> <br></td=
+></tr><tr><td style=3D"background-color: #fff; border: solid 1px #c8d3deff;=
+ color: #253642ff; padding: 5px 15px; min-width: 30px;" bgcolor=3D"#fff">In=
+line CSS<br></td><td style=3D"background-color: #fff; border: solid 1px #c8=
+d3deff; color: #253642ff; padding: 5px 15px; min-width: 30px;" bgcolor=3D"#=
+fff"><code class=3D"inline-code">wp_add_inline_style()</code> <br></td></tr=
+></tbody></table><br>=F0=9F=91=89 In the public pages you can enqueue them =
+using the hook <code class=3D"inline-code">wp_enqueue_scripts()</code> .<br=
+>=F0=9F=91=89 In the admin pages you can enqueue them using the hook  <code=
+ class=3D"inline-code">admin_enqueue_scripts()</code> . You can also use <c=
+ode class=3D"inline-code">admin_print_scripts()</code>  and <code class=3D"=
+inline-code">admin_print_styles()</code> .<br>=F0=9F=91=89 As of WordPress =
+6.3, you can <a href=3D"https://make.wordpress.org/core/2023/07/14/register=
+ing-scripts-with-async-and-defer-attributes-in-wordpress-6-3/">easily pass =
+attributes like defer or async</a>, as of WordPress 5.7, you can <a href=3D=
+"https://make.wordpress.org/core/2021/02/23/introducing-script-attributes-r=
+elated-functions-in-wordpress-5-7/">pass other attributes by using function=
+s and filters</a>.<br><br>Example:<br><pre>function dona82pl_enqueue_script=
+() {
+    wp_enqueue_script( 'dona82pl_js', plugins_url( 'inc/main.js', __FILE__ =
+), array(), DONA82PL_VERSION, true );
+}
+add_action( 'wp_enqueue_scripts', 'dona82pl_enqueue_script' );
+</pre>Your JS/CSS is now <strong>enqueued</strong>!<br><br>Possible cases f=
+rom your plugin include:<br><pre>frontend/templates/donation-form.php:60 &l=
+t;style&gt;
+frontend/templates/donation-summary.php:51 &lt;style&gt;
+frontend/templates/donor-dashboard.php:206 &lt;script&gt;
+includes/admin/campaign-columns.php:205 echo '&lt;style&gt;
+frontend/templates/confirmation-form.php:145 &lt;style&gt;
+includes/functions-frontend.php:228 &lt;script&gt;
+frontend/templates/donation-form.php:399 &lt;style&gt;
+frontend/templates/donation-form.php:1035 &lt;script&gt;
+</pre>... out of a total of 21 incidences.<br><br><h3>=F0=9F=94=B4 Trialwar=
+e and Locked Features</h3>Please review your plugin to ensure that it <stro=
+ng>does not include any locked or restricted built-in functionality</strong=
+>. This is not permitted under the <a href=3D"https://developer.wordpress.o=
+rg/plugins/wordpress-org/detailed-plugin-guidelines/">WordPress.org Plugin =
+Directory Guidelines</a> you agreed to when submitting the plugin.<br><br><=
+h4>=E2=9D=8C Guideline 5 =E2=80=93 Trialware</h4>Plugins must be fully func=
+tional. You may not:<br><ul><li>Lock, disable or limit built-in features be=
+hind a license key, trial period, usage limit, time, quota or any other kin=
+d of intended restriction.<br></li></ul><br>Even if the locked feature is p=
+resent in the code "just in case the user upgrades," it=E2=80=99s still <st=
+rong>not allowed</strong>. Your plugin may point out which features are ava=
+ilable through a separated plugin, but that's it. All plugin code hosted on=
+ WordPress.org must be <strong>free and fully functional</strong>.<br><br><=
+h4>=F0=9F=8C=90 Guideline 6 =E2=80=93 Serviceware</h4>Plugins may connect t=
+o a <strong>legitimate external service to perform certain functionality</s=
+trong>, provided:<br><ul><li>The service performs actual processing on exte=
+rnal servers.<br></li><li>The functionality provided cannot be done locally=
+ by the plugin.<br></li><li>The service is clearly documented in your readm=
+e, including <strong>Terms of Use</strong> and <strong>Privacy Policy</stro=
+ng> links.<br></li></ul><br>For example: a "Spam checker" plugin that conne=
+cts to a external service to check for spam (and thus uses it to provide th=
+at functionality) is generally acceptable. A plugin that simply checks a li=
+cense key to unlock local features is not.<br><br><h4>=E2=9C=85 Ask yoursel=
+f:</h4><ul><li>Does any function <strong>only work after a license check or=
+ payment</strong>?<br></li><li>Is any functionality in the plugin code <str=
+ong>disabled or limited</strong> until it=E2=80=99s unlocked?<br></li><li>A=
+re there any limitations on the plugin <strong>after a certain amount of ti=
+me or usage</strong>?<br></li></ul><br>After excluding functionalities prov=
+ided by legitimate external services, if the answer is <i><strong>yes</stro=
+ng></i> to any of the above, the plugin <strong>does not comply</strong>.<b=
+r><br><h4>=F0=9F=94=A7 How to fix it:</h4><ul><li><strong>Remove all licens=
+e checks</strong> or other mechanisms that control access to features built=
+ in in the plugin code.<br></li><li><strong>Remove or fully enable</strong>=
+ any built in features that are currently locked or limited.<br></li><li>Ma=
+ke sure external services are compliant and clearly documented.<br></li></u=
+l><br><h4>=E2=84=B9=EF=B8=8F Important clarification:</h4>WordPress.org is =
+<strong>not a marketplace</strong>. It's a repository for <strong>free, ful=
+ly functional, GPL-compliant plugins</strong>.<br><br>If you are not offeri=
+ng a service and want to offer additional features through a paid version, =
+that code must be:<br><ul><li><strong>Hosted elsewhere</strong> (e.g., your=
+ own website).<br></li><li><strong>Not included</strong> in the plugin host=
+ed on WordPress.org.<br></li><li><strong>GPL compliant</strong>: Do <strong=
+>not</strong> include any mechanisms that would prevent a plug-in from bein=
+g used after a license has been checked.<br></li></ul><br><br><br><h2>Other=
+ details</h2><br>We've detected some other details that you may want to che=
+ck.<br><br><strong>## Undocumented use of a 3rd Party / external service</s=
+trong><br><br>Plugins are permitted to require the <strong>use of third par=
+ty/external services</strong> as long as they are <strong>clearly documente=
+d</strong>.<br><br>When your plugin reach out to external services, you mus=
+t disclose it. This is true even if you are the one providing that service.=
+<br><br>You are required to document it in a clear and plain language, so u=
+sers are aware of: <strong>what data is sent, why, where and under which co=
+nditions</strong>.<br><br>To do this, you must update your readme file to  =
+<strong>clearly explain that your plugin relies on third party/external ser=
+vices</strong>, and include <strong>at least the following information</str=
+ong> for each third party/external service that this plugin uses:<br><ul><l=
+i>What the service is and what it is used for.<br></li><li>What data is sen=
+t and when.<br></li><li>Provide links to the service's terms of service and=
+ privacy policy.<br></li></ul>Remember, this is for your own legal protecti=
+on. Use of services must be upfront and well documented. This allows users =
+to ensure that any legal issues with data transmissions are covered.<br><br=
+>Example:<br><pre>=3D=3D External services =3D=3D
+
+This plugin connects to an API to obtain weather information, it's needed t=
+o show the weather information and forecasts in the included widget.
+
+It sends the user's location every time the widget is loaded (If the locati=
+on isn't available and/or the user hasn't given their consent, it displays =
+a configurable default location).
+This service is provided by "PRT Weather INC": <a href=3D"https://developer=
+.wordpress.org/plugins/wordpress-org/how-to-use-subversion/">terms of use</=
+a>, <a href=3D"https://developer.wordpress.org/plugins/wordpress-org/plugin=
+-assets/">privacy policy</a>.
+</pre><br><br>Example(s) from your plugin:<br><pre>includes/functions-front=
+end.php:236 'https://connect.facebook.net/en_US/fbevents.js');
+</pre><br><br><br><strong>## Review: Missing </strong><code class=3D"inline=
+-code"><strong>permission_callback</strong></code><strong>  in REST API Rou=
+te</strong><br><br>When using <code class=3D"inline-code">register_rest_rou=
+te()</code>  or <code class=3D"inline-code">wp_register_ability()</code>  t=
+o define custom REST API endpoints, it is crucial to include a proper <code=
+ class=3D"inline-code">permission_callback</code> .<br><br>=F0=9F=94=92 Thi=
+s callback function ensures that only authorized users can access or modify=
+ data through your endpoint.<br><br>Code example, checking that the user ca=
+n change options:<br><pre>register_rest_route( 'donasai/v1', '/my-endpoint'=
+, array(
+    'methods' =3D&gt; 'GET',
+    'callback' =3D&gt; 'donasai_callback_function',
+    'permission_callback' =3D&gt; function() {
+        return current_user_can( 'manage_options' );
+    }
+) );
+</pre><br>Please check the <a href=3D"https://developer.wordpress.org/refer=
+ence/functions/register_rest_route/">register_rest_route() documentation</a=
+> and the <a href=3D"https://developer.wordpress.org/reference/functions/cu=
+rrent_user_can/">current_user_can() documentation</a>.<br><br>=E2=9C=85 <st=
+rong>When a </strong><code class=3D"inline-code"><strong>permission_callbac=
+k</strong></code><strong>  is NOT Required</strong>:<br><br>There are valid=
+ use cases for public endpoints, such as publicly available data (e.g., pos=
+ts, public metadata) or endpoints designed for unauthenticated access (e.g.=
+, fetching public stats or information).<br><br>In these cases, you should =
+use <code class=3D"inline-code">__return_true</code>  as the <code class=3D=
+"inline-code">permission_callback</code>  to indicate that the endpoint is =
+intentionally public.<br><br>=F0=9F=94=92 <strong>When a </strong><code cla=
+ss=3D"inline-code"><strong>permission_callback</strong></code><strong>  IS =
+Required</strong>:<br><br>For endpoints that involve sensitive data or acti=
+ons (e.g., getting not public data, creating, updating, or deleting content=
+).<br><br>In these cases, you should always implement proper permission che=
+cks.<br><br>Possible cases found on this plugin's code:<br><pre>includes/ap=
+i/campaigns-controller.php:12 register_rest_route('wpd/v1', '/campaigns/(?P=
+&lt;id&gt;\\d+)/donate', array('methods' =3D&gt; 'POST', 'callback' =3D&gt;=
+ 'wpd_api_create_donation', 'permission_callback' =3D&gt; '__return_true'))=
+;
+includes/api/fundraisers-controller.php:23 register_rest_route('wpd/v1', '/=
+fundraisers', array(
+    'methods' =3D&gt; 'GET',
+    'callback' =3D&gt; 'wpd_api_get_fundraisers',
+    // Public route for leaderboard? Or admin only?
+    // If accessing specific user stats -&gt; auth required.
+    // If accessing leaderboard -&gt; public.
+    'permission_callback' =3D&gt; '__return_true',
+));
+includes/api/webhook-controller.php:12 register_rest_route('wpd/v1', '/midt=
+rans/webhook', array('methods' =3D&gt; 'POST', 'callback' =3D&gt; 'wpd_api_=
+midtrans_webhook', 'permission_callback' =3D&gt; '__return_true'));
+</pre><br><br><br><strong>## PHP libraries that might conflict with the sam=
+e library loaded by other plugins</strong><br><br>Your plugin has included =
+a copy of a library in a way that might conflict with other copies of the s=
+ame library loaded by other plugins.<br><br>Remember that all WordPress plu=
+gins share the same execution space, which means that you have to pay speci=
+al attention to how libraries are loaded, as you might be trying to load a =
+library that another plugin has already loaded.<br><br>Fortunately, there a=
+re ways to avoid these types of conflicts<br><ul><li>Recommended: Using com=
+poser, a tool to manage PHP dependencies, is one of the most convenient and=
+ maintainable ways to load a PHP library, it will avoid this kind of confli=
+cts and you'll easily manage the updates of the library.<br></li><li>Checki=
+ng if the library was already loaded using <code class=3D"inline-code">clas=
+s_exists</code>  or <code class=3D"inline-code">function_exists</code>  and=
+ avoid loading yourself if that's already loaded.<br></li></ul><br>However,=
+ after getting around the conflicts of loading the same library, we come to=
+ another point of conflict: Dealing with different versions of the same lib=
+rary.<br><br>Your plugin may find that another plugin has loaded a differen=
+t version of the same library (before your plugin was able to load it) that=
+ is incompatible with your code. While this may not be necessary in stable =
+libraries when using well-established functions, there are some ways to han=
+dle this and make your plugin resilient:<br><ul><li>Recommended: If you are=
+ using Composer, you can use one of the available tools to automatically as=
+sign your namespace to these libraries.<br><ul><li>coenjacobs/mozart : <a h=
+ref=3D"https://github.com/coenjacobs/mozart" target=3D"_blank">https://gith=
+ub.com/coenjacobs/mozart</a><br></li><li>brianhenryie/strauss : <a href=3D"=
+https://github.com/brianhenryie/strauss" target=3D"_blank">https://github.c=
+om/brianhenryie/strauss</a><br></li><li>humbug/php-scoper : <a href=3D"http=
+s://github.com/humbug/php-scoper" target=3D"_blank">https://github.com/humb=
+ug/php-scoper</a><br></li></ul></li><li>There are some libraries that provi=
+de tools to give a namespace or prefix to the generated library.<br></li><l=
+i>You can manually provide your namespace to this library. Since this would=
+ require you to modify the library, it may not be the most practical choice=
+.<br></li></ul><br>From your plugin:<br><pre># 09_13-34-43_donasai/includes=
+/gateways/stripe.php
+</pre><br><br><br><br><h2>=F0=9F=91=89 Your next steps</h2><br>This is your=
+ checklist:<br><ol><li>Have you read the guidelines and this plugin complie=
+s with them?<br></li><li>Are you the rightful owner of this plugin?<br></li=
+><li>Have you checked for common technical issues?<br></li><li>Other detail=
+s<br></li></ol><br>If there is something that needs to be fixed, please tak=
+e your time, fix it and update your plugin files at the "<a href=3D"https:/=
+/wordpress.org/plugins/developers/add/">Add your plugin</a>" page, while be=
+ing logged in with your account "hadie-danker".<br><i>Please be concise and=
+ do not list the changes done =E2=80=94 we will review the entire plugin ag=
+ain =E2=80=94 but do share any clarifications or important context you want=
+ us to know.</i><br><br>If after checking the list and do the changes you f=
+eel that everything is right or need further clarification, please reply to=
+ this email and a volunteer will assist you.<br><br>If you believe there is=
+ a requirement you cannot accomplish and choose not to make changes, your p=
+lugin submission will be rejected after three months.<br><br><h2>Thanks!</h=
+2><br>By taking these steps, you're helping the Plugin Review Team work mor=
+e efficiently =E2=80=94 meaning your plugin (along with the thousands of ot=
+hers in the queue) can be reviewed faster. =F0=9F=9A=80 We really appreciat=
+e your contribution!<br><br><h2>Disclaimers</h2><br>If, at any time during =
+the review process, you wish to change your permalink (aka the plugin slug)=
+ "donasai", you <strong>must explicitly and clearly tell us what you would =
+like it to be</strong>. Just changing it in your code and in the display na=
+me is not sufficient. Remember, permalinks cannot be altered after approval=
+.<br>This email was partially auto-generated, so please be aware that some =
+information might not be entirely accurate. No personal data was shared wit=
+h the AI during this process. If you notice any obvious errors or something=
+ seems off, feel free to reply =E2=80=94 we=E2=80=99ll be happy to take a c=
+loser look and readjust this automation.<br><br>Review ID: AUTOPREREVIEW =
+=E2=9D=97OWN-LIC donasai/hadie-danker/14Jan26/T1 14Jan26/3.7.1<br></div><br=
+>
+        <br>--<br>WordPress Plugins Team |=C2=A0plugins@wordpress.org<br>ht=
+tps://make.wordpress.org/plugins/ <br>https://developer.wordpress.org/plugi=
+ns/wordpress-org/detailed-plugin-guidelines/<br>https://wordpress.org/plugi=
+ns/plugin-check/
+                            </div>
+        <span height=3D"0" style=3D"font-size: 0px; height:0px; line-height=
+: 0px; color:#ffffff;" id=3D"hsContentRef">{#HS:3198804326-953818#}</span>
+        <img src=3D"https://secure.helpscout.net/notification/convo/read/31=
+98804326/9748572898/" alt=3D""/>        <br>
+</div>
+
+<div class=3D"gmail_quote" style=3D"font-family:sans-serif;">
+           =20
+</div>
+</body>
+</html>
+
+
+--=_2b8f6e7d025fab1cb1c63ea2f165fb94--

@@ -265,7 +265,7 @@ function wpd_api_export_donations($request)
     global $wpdb;
 
     // Check Nonce (as we using directly in href)
-    $nonce = isset($_GET['_wpnonce']) ? $_GET['_wpnonce'] : '';
+    $nonce = isset($_GET['_wpnonce']) ? sanitize_text_field(wp_unslash($_GET['_wpnonce'])) : '';
     if (!wp_verify_nonce($nonce, 'wp_rest')) {
         wp_die('Invalid nonce');
     }

@@ -12,7 +12,9 @@ add_action('rest_api_init', function () {
 	register_rest_route('wpd/v1', '/campaigns/(?P<id>\d+)/donate', array(
 		'methods' => 'POST',
 		'callback' => 'wpd_api_create_donation',
-		'permission_callback' => '__return_true', // Public endpoint
+		'permission_callback' => function () {
+			return true; // Public endpoint for creating donations
+		},
 	));
 	// GET /campaigns/list (For Dropdowns)
 	register_rest_route('wpd/v1', '/campaigns/list', array(
@@ -28,7 +30,9 @@ add_action('rest_api_init', function () {
 	register_rest_route('wpd/v1', '/campaigns/(?P<id>\d+)/donors', array(
 		'methods' => 'GET',
 		'callback' => 'wpd_api_get_campaign_donors',
-		'permission_callback' => '__return_true', // Public endpoint
+		'permission_callback' => function () {
+			return true; // Public endpoint for listing donors
+		},
 	));
 });
 

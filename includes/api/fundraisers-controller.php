@@ -26,7 +26,12 @@ add_action('rest_api_init', function () {
 		// Public route for leaderboard? Or admin only? 
 		// If accessing specific user stats -> auth required.
 		// If accessing leaderboard -> public.
-		'permission_callback' => '__return_true',
+		'permission_callback' => function () {
+			// Public for Leaderboard (campaign_id)
+			// Private for 'mine' (checked in callback)
+			// Admin for full list (checked in callback)
+			return true;
+		},
 	));
 });
 
