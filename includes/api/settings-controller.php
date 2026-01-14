@@ -74,7 +74,13 @@ function wpd_api_get_settings()
         'show_prayer_tab' => true,
         'show_updates_tab' => true,
         'show_donor_list' => true,
-        'show_leaderboard' => true
+        'show_leaderboard' => true,
+        // Social Proof
+        'social_proof_enabled' => false,
+        'social_proof_position' => 'bottom-left',
+        'social_proof_interval' => 10,
+        'social_proof_duration' => 5,
+        'social_proof_limit' => 10,
     ));
 
     // Pro Settings (Midtrans Override)
@@ -281,6 +287,12 @@ function wpd_api_update_settings($request)
             'show_updates_tab' => !empty($params['appearance']['show_updates_tab']),
             'show_donor_list' => !empty($params['appearance']['show_donor_list']),
             'show_leaderboard' => !empty($params['appearance']['show_leaderboard']),
+            // Social Proof
+            'social_proof_enabled' => !empty($params['appearance']['social_proof_enabled']),
+            'social_proof_position' => sanitize_text_field($params['appearance']['social_proof_position'] ?? 'bottom-left'),
+            'social_proof_interval' => intval($params['appearance']['social_proof_interval'] ?? 10),
+            'social_proof_duration' => intval($params['appearance']['social_proof_duration'] ?? 5),
+            'social_proof_limit' => intval($params['appearance']['social_proof_limit'] ?? 10),
         );
         update_option('wpd_settings_appearance', $appearance_data);
     }

@@ -744,6 +744,236 @@ export default function AppearanceSection() {
 							</p>
 						)}
 					</div>
+
+					{/* Social Proof Popup (Pro Only) */}
+					<div
+						role="button"
+						tabIndex={0}
+						className={clsx(
+							"border border-gray-200 rounded-lg p-4 bg-gray-50 relative md:col-span-2",
+							!isProActive ? "opacity-60 cursor-pointer" : "",
+						)}
+						onClick={() => !isProActive && setShowProModal(true)}
+						onKeyDown={(e) => {
+							if (e.key === "Enter" || e.key === " ") {
+								e.preventDefault();
+								!isProActive && setShowProModal(true);
+							}
+						}}
+					>
+						<div className="flex justify-between items-start mb-4">
+							<div>
+								<div className="font-medium text-gray-900">
+									Social Proof Popup
+								</div>
+								<p className="text-xs text-gray-500 mt-1">
+									Tampilkan notifikasi "Ahmad baru saja berdonasi..." untuk meningkatkan konversi.
+								</p>
+							</div>
+							{!isProActive ? (
+								<Lock size={14} className="text-gray-400" />
+							) : (
+								<span className="text-xs font-bold text-green-600 bg-green-100 px-2 rounded">
+									Active
+								</span>
+							)}
+						</div>
+
+						{isProActive ? (
+							<div className="space-y-4">
+								{/* Enable Toggle */}
+								<div className="flex items-center gap-3">
+									<label className="relative inline-flex items-center cursor-pointer">
+										<input
+											type="checkbox"
+											className="sr-only peer"
+											checked={formData.social_proof_enabled}
+											onChange={(e) =>
+												setFormData({
+													...formData,
+													social_proof_enabled: e.target.checked,
+												})
+											}
+										/>
+										<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+									</label>
+									<span className="text-sm text-gray-700">
+										{formData.social_proof_enabled ? "Aktif" : "Nonaktif"}
+									</span>
+								</div>
+
+								{formData.social_proof_enabled && (
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-200">
+										{/* Position */}
+										<div>
+											<label className="block text-sm font-medium text-gray-700 mb-1">
+												Posisi Popup
+											</label>
+											<select
+												className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+												value={formData.social_proof_position}
+												onChange={(e) =>
+													setFormData({
+														...formData,
+														social_proof_position: e.target.value,
+													})
+												}
+											>
+												<option value="bottom-left">Kiri Bawah</option>
+												<option value="bottom-right">Kanan Bawah</option>
+											</select>
+										</div>
+
+										{/* Interval */}
+										<div>
+											<label className="block text-sm font-medium text-gray-700 mb-1">
+												Interval (detik)
+											</label>
+											<input
+												type="number"
+												className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+												value={formData.social_proof_interval}
+												onChange={(e) =>
+													setFormData({
+														...formData,
+														social_proof_interval: Number.parseInt(e.target.value) || 10,
+													})
+												}
+												min={5}
+												max={60}
+											/>
+											<p className="text-xs text-gray-500 mt-1">
+												Jeda antar notifikasi
+											</p>
+										</div>
+
+										{/* Duration */}
+										<div>
+											<label className="block text-sm font-medium text-gray-700 mb-1">
+												Durasi Tampil (detik)
+											</label>
+											<input
+												type="number"
+												className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+												value={formData.social_proof_duration}
+												onChange={(e) =>
+													setFormData({
+														...formData,
+														social_proof_duration: Number.parseInt(e.target.value) || 5,
+													})
+												}
+												min={3}
+												max={15}
+											/>
+										</div>
+
+										{/* Limit */}
+										<div>
+											<label className="block text-sm font-medium text-gray-700 mb-1">
+												Jumlah Donasi Dirotasi
+											</label>
+											<input
+												type="number"
+												className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+												value={formData.social_proof_limit}
+												onChange={(e) =>
+													setFormData({
+														...formData,
+														social_proof_limit: Number.parseInt(e.target.value) || 10,
+													})
+												}
+												min={5}
+												max={50}
+											/>
+										</div>
+
+										{/* Preview Button */}
+										<div className="md:col-span-2">
+											<button
+												type="button"
+												onClick={() => {
+													// Show preview popup
+													const existingPreview = document.getElementById('wpd-sp-admin-preview');
+													if (existingPreview) existingPreview.remove();
+
+													const previewHtml = `
+														<div id="wpd-sp-admin-preview" style="
+															position: fixed;
+															bottom: 20px;
+															${formData.social_proof_position === 'bottom-right' ? 'right: 20px;' : 'left: 20px;'}
+															background: #fff;
+															border-radius: 12px;
+															box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+															padding: 16px 20px;
+															max-width: 340px;
+															z-index: 99999;
+															animation: wpd-sp-slide-in 0.3s ease-out;
+														">
+															<style>
+																@keyframes wpd-sp-slide-in {
+																	from { opacity: 0; transform: translateY(20px); }
+																	to { opacity: 1; transform: translateY(0); }
+																}
+															</style>
+															<button onclick="this.parentElement.remove()" style="
+																position: absolute;
+																top: 8px;
+																right: 10px;
+																background: none;
+																border: none;
+																font-size: 16px;
+																color: #999;
+																cursor: pointer;
+															">&times;</button>
+															<div style="display: flex; align-items: flex-start; gap: 12px;">
+																<div style="
+																	width: 44px;
+																	height: 44px;
+																	background: linear-gradient(135deg, ${formData.brand_color || '#059669'}, ${formData.brand_color || '#059669'}88);
+																	border-radius: 50%;
+																	display: flex;
+																	align-items: center;
+																	justify-content: center;
+																	color: #fff;
+																	font-weight: 700;
+																	font-size: 18px;
+																">A</div>
+																<div>
+																	<div style="font-weight: 600; color: #1f2937; font-size: 14px;">Ahmad Hidayat</div>
+																	<div style="font-size: 13px; color: #4b5563;">
+																		baru saja berdonasi <strong style="color: ${formData.brand_color || '#059669'}">Rp 100.000</strong>
+																	</div>
+																	<div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">5 menit yang lalu</div>
+																</div>
+															</div>
+														</div>
+													`;
+													document.body.insertAdjacentHTML('beforeend', previewHtml);
+
+													// Auto remove after duration
+													setTimeout(() => {
+														const preview = document.getElementById('wpd-sp-admin-preview');
+														if (preview) preview.remove();
+													}, (formData.social_proof_duration || 5) * 1000);
+												}}
+												className="w-full py-2 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium text-sm hover:from-purple-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2"
+											>
+												<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+												</svg>
+												Lihat Preview
+											</button>
+										</div>
+									</div>
+								)}
+							</div>
+						) : (
+							<p className="text-sm text-gray-500">
+								Tampilkan popup "X baru saja berdonasi..." untuk meningkatkan social proof.
+							</p>
+						)}
+					</div>
 				</div>
 			</div>
 		</div>

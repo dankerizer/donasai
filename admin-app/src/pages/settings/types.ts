@@ -42,6 +42,12 @@ export interface SettingsFormData {
 	show_updates_tab: boolean;
 	show_donor_list: boolean;
 	show_leaderboard: boolean;
+	// Social Proof
+	social_proof_enabled: boolean;
+	social_proof_position: string;
+	social_proof_interval: number;
+	social_proof_duration: number;
+	social_proof_limit: number;
 	// Bank
 	bank_name: string;
 	account_number: string;
@@ -114,6 +120,12 @@ export const initialFormData: SettingsFormData = {
 	show_updates_tab: true,
 	show_donor_list: true,
 	show_leaderboard: true,
+	// Social Proof
+	social_proof_enabled: false,
+	social_proof_position: "bottom-left",
+	social_proof_interval: 10,
+	social_proof_duration: 5,
+	social_proof_limit: 10,
 	// Bank
 	bank_name: "",
 	account_number: "",

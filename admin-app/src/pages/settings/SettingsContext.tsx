@@ -106,6 +106,12 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 					show_updates_tab: data.show_updates_tab,
 					show_donor_list: data.show_donor_list,
 					show_leaderboard: data.show_leaderboard,
+					// Social Proof
+					social_proof_enabled: data.social_proof_enabled,
+					social_proof_position: data.social_proof_position,
+					social_proof_interval: data.social_proof_interval,
+					social_proof_duration: data.social_proof_duration,
+					social_proof_limit: data.social_proof_limit,
 				},
 				bank: {
 					bank_name: data.bank_name,

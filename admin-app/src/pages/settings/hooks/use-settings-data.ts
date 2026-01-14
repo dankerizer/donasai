@@ -81,6 +81,18 @@ export function useSettingsFetch() {
 				show_leaderboard:
 					data.appearance?.show_leaderboard !== false &&
 					data.appearance?.show_leaderboard !== "0",
+				// Social Proof
+				social_proof_enabled:
+					data.appearance?.social_proof_enabled === true ||
+					data.appearance?.social_proof_enabled === "1",
+				social_proof_position:
+					data.appearance?.social_proof_position || "bottom-left",
+				social_proof_interval:
+					Number.parseInt(data.appearance?.social_proof_interval) || 10,
+				social_proof_duration:
+					Number.parseInt(data.appearance?.social_proof_duration) || 5,
+				social_proof_limit:
+					Number.parseInt(data.appearance?.social_proof_limit) || 10,
 				// Bank
 				bank_name: data.bank?.bank_name || "",
 				account_number: data.bank?.account_number || "",
