@@ -31,13 +31,13 @@ export default function AppearanceSection() {
 		<div className="space-y-8">
 			<div>
 				<div className="flex items-center justify-between mb-4">
-					<h3 className="text-lg font-medium text-gray-900">
+					<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
 						Tampilan & Layout
 					</h3>
 					<button
 						type="button"
 						onClick={handleResetAppearance}
-						className="text-xs flex items-center gap-1.5 text-gray-500 hover:text-red-600 transition-colors"
+						className="text-xs flex items-center gap-1.5 text-gray-500 hover:text-red-600 transition-colors dark:text-gray-400 dark:hover:text-red-400"
 					>
 						<RotateCcw size={12} />
 						Reset Default
@@ -61,11 +61,11 @@ export default function AppearanceSection() {
 								}
 								className="h-10 w-20 p-1 cursor-pointer"
 							/>
-							<span className="text-sm text-gray-500 font-mono uppercase">
+							<span className="text-sm text-gray-500 font-mono uppercase dark:text-gray-400">
 								{formData.brand_color}
 							</span>
 						</div>
-						<p className="text-xs text-gray-500 mt-2">
+						<p className="text-xs text-gray-500 mt-2 dark:text-gray-400">
 							Digunakan untuk lencana, jumlah, dan bilah kemajuan.
 						</p>
 					</div>
@@ -86,11 +86,11 @@ export default function AppearanceSection() {
 								}
 								className="h-10 w-20 p-1 cursor-pointer"
 							/>
-							<span className="text-sm text-gray-500 font-mono uppercase">
+							<span className="text-sm text-gray-500 font-mono uppercase dark:text-gray-400">
 								{formData.button_color}
 							</span>
 						</div>
-						<p className="text-xs text-gray-500 mt-2">
+						<p className="text-xs text-gray-500 mt-2 dark:text-gray-400">
 							Tombol CTA utama (Donasi, Kirim).
 						</p>
 					</div>
@@ -108,7 +108,7 @@ export default function AppearanceSection() {
 							}
 							placeholder="1100px"
 						/>
-						<p className="text-xs text-gray-500 mt-2">
+						<p className="text-xs text-gray-500 mt-2 dark:text-gray-400">
 							Lebar maksimal halaman campaign.
 						</p>
 					</div>
@@ -126,14 +126,14 @@ export default function AppearanceSection() {
 							}
 							placeholder="12px"
 						/>
-						<p className="text-xs text-gray-500 mt-2">
+						<p className="text-xs text-gray-500 mt-2 dark:text-gray-400">
 							Kelengkungan sudut (card, tombol, input).
 						</p>
 					</div>
 					<div className="md:col-span-2">
 						<label
 							htmlFor="campaign_layout"
-							className="block text-sm font-medium text-gray-700 mb-3"
+							className="block text-sm font-medium text-gray-700 mb-3 dark:text-gray-300"
 						>
 							Layout Halaman Campaign
 						</label>
@@ -145,8 +145,8 @@ export default function AppearanceSection() {
 								className={clsx(
 									"w-full text-left border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
 									formData.campaign_layout === "sidebar-right"
-										? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
-										: "border-gray-200 bg-white",
+										? "border-blue-600 bg-blue-50 ring-1 ring-blue-600 dark:bg-blue-900/20 dark:border-blue-500"
+										: "border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 dark:hover:border-gray-600",
 								)}
 								onClick={() =>
 									setFormData({
@@ -155,11 +155,11 @@ export default function AppearanceSection() {
 									})
 								}
 							>
-								<div className="aspect-video bg-gray-100 rounded mb-2 flex gap-1 p-1">
-									<div className="bg-gray-300 h-full w-2/3 rounded-sm"></div>
-									<div className="bg-blue-200 h-full w-1/3 rounded-sm"></div>
+								<div className="aspect-video bg-gray-100 rounded mb-2 flex gap-1 p-1 dark:bg-gray-700">
+									<div className="bg-gray-300 h-full w-2/3 rounded-sm dark:bg-gray-600"></div>
+									<div className="bg-blue-200 h-full w-1/3 rounded-sm dark:bg-blue-900"></div>
 								</div>
-								<div className="text-xs font-medium text-center text-gray-700">
+								<div className="text-xs font-medium text-center text-gray-700 dark:text-gray-300">
 									Sidebar Kanan
 								</div>
 							</button>
@@ -170,8 +170,8 @@ export default function AppearanceSection() {
 								className={clsx(
 									"w-full text-left border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
 									formData.campaign_layout === "sidebar-left"
-										? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
-										: "border-gray-200 bg-white",
+										? "border-blue-600 bg-blue-50 ring-1 ring-blue-600 dark:bg-blue-900/20 dark:border-blue-500"
+										: "border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 dark:hover:border-gray-600",
 								)}
 								onClick={() =>
 									setFormData({
@@ -180,11 +180,11 @@ export default function AppearanceSection() {
 									})
 								}
 							>
-								<div className="aspect-video bg-gray-100 rounded mb-2 flex gap-1 p-1">
-									<div className="bg-blue-200 h-full w-1/3 rounded-sm"></div>
-									<div className="bg-gray-300 h-full w-2/3 rounded-sm"></div>
+								<div className="aspect-video bg-gray-100 rounded mb-2 flex gap-1 p-1 dark:bg-gray-700">
+									<div className="bg-blue-200 h-full w-1/3 rounded-sm dark:bg-blue-900"></div>
+									<div className="bg-gray-300 h-full w-2/3 rounded-sm dark:bg-gray-600"></div>
 								</div>
-								<div className="text-xs font-medium text-center text-gray-700">
+								<div className="text-xs font-medium text-center text-gray-700 dark:text-gray-300">
 									Sidebar Kiri
 								</div>
 							</button>
@@ -195,8 +195,8 @@ export default function AppearanceSection() {
 								className={clsx(
 									"w-full text-left border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
 									formData.campaign_layout === "full-width"
-										? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
-										: "border-gray-200 bg-white",
+										? "border-blue-600 bg-blue-50 ring-1 ring-blue-600 dark:bg-blue-900/20 dark:border-blue-500"
+										: "border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 dark:hover:border-gray-600",
 								)}
 								onClick={() =>
 									setFormData({
@@ -205,10 +205,10 @@ export default function AppearanceSection() {
 									})
 								}
 							>
-								<div className="aspect-video bg-gray-100 rounded mb-2 w-full p-1">
-									<div className="bg-gray-300 h-full w-full rounded-sm"></div>
+								<div className="aspect-video bg-gray-100 rounded mb-2 w-full p-1 dark:bg-gray-700">
+									<div className="bg-gray-300 h-full w-full rounded-sm dark:bg-gray-600"></div>
 								</div>
-								<div className="text-xs font-medium text-center text-gray-700">
+								<div className="text-xs font-medium text-center text-gray-700 dark:text-gray-300">
 									Full Width
 								</div>
 							</button>
@@ -217,7 +217,7 @@ export default function AppearanceSection() {
 				</div>
 
 				{/* Donor Limits */}
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-gray-200">
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
 					<div>
 						<Label htmlFor="sidebar_count">Jumlah Donatur di Sidebar</Label>
 						<Input
@@ -234,7 +234,7 @@ export default function AppearanceSection() {
 							max={20}
 							className="mt-1"
 						/>
-						<p className="text-xs text-gray-500 mt-2">
+						<p className="text-xs text-gray-500 mt-2 dark:text-gray-400">
 							Jumlah donatur terakhir yang ditampilkan di sidebar.
 						</p>
 					</div>
@@ -254,7 +254,7 @@ export default function AppearanceSection() {
 							max={50}
 							className="mt-1"
 						/>
-						<p className="text-xs text-gray-500 mt-2">
+						<p className="text-xs text-gray-500 mt-2 dark:text-gray-400">
 							Jumlah donatur yang dimuat per klik "Muat Lebih Banyak".
 						</p>
 					</div>
@@ -262,10 +262,10 @@ export default function AppearanceSection() {
 			</div>
 
 			{/* Pro Teasers */}
-			<div className="border-t border-gray-200 pt-6">
-				<h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+			<div className="border-t border-gray-200 pt-6 dark:border-gray-700">
+				<h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2 dark:text-gray-100">
 					Gaya Lanjutan{" "}
-					<span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">
+					<span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold dark:bg-purple-900/40 dark:text-purple-300">
 						PRO
 					</span>
 				</h3>
@@ -275,7 +275,7 @@ export default function AppearanceSection() {
 						role="button"
 						tabIndex={0}
 						className={clsx(
-							"border border-gray-200 rounded-lg p-4 bg-gray-50 relative",
+							"border border-gray-200 rounded-lg p-4 bg-gray-50 relative dark:bg-gray-800/50 dark:border-gray-700",
 							!isProActive ? "opacity-60 cursor-pointer" : "",
 						)}
 						onClick={() => !isProActive && setShowProModal(true)}
@@ -287,7 +287,7 @@ export default function AppearanceSection() {
 						}}
 					>
 						<div className="flex justify-between items-start mb-2">
-							<div className="font-medium text-gray-900">Tipografi</div>
+							<div className="font-medium text-gray-900 dark:text-gray-100">Tipografi</div>
 							{!isProActive ? (
 								<Lock size={14} className="text-gray-400" />
 							) : (
@@ -343,7 +343,7 @@ export default function AppearanceSection() {
 								</div>
 							</div>
 						) : (
-							<p className="text-sm text-gray-500">
+							<p className="text-sm text-gray-500 dark:text-gray-400">
 								Font Google kustom dan kontrol ukuran.
 							</p>
 						)}
@@ -354,7 +354,7 @@ export default function AppearanceSection() {
 						role="button"
 						tabIndex={0}
 						className={clsx(
-							"border border-gray-200 rounded-lg p-4 bg-gray-50 relative",
+							"border border-gray-200 rounded-lg p-4 bg-gray-50 relative dark:bg-gray-800/50 dark:border-gray-700",
 							!isProActive ? "opacity-60 cursor-pointer" : "",
 						)}
 						onClick={() => !isProActive && setShowProModal(true)}
@@ -366,7 +366,7 @@ export default function AppearanceSection() {
 						}}
 					>
 						<div className="flex justify-between items-start mb-2">
-							<div className="font-medium text-gray-900">Mode Gelap</div>
+							<div className="font-medium text-gray-900 dark:text-gray-100">Mode Gelap</div>
 							{!isProActive ? (
 								<Lock size={14} className="text-gray-400" />
 							) : (
@@ -393,16 +393,16 @@ export default function AppearanceSection() {
 										/>
 										<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
 									</label>
-									<span className="text-sm text-gray-600">
+									<span className="text-sm text-gray-600 dark:text-gray-300">
 										{formData.dark_mode ? "Aktif" : "Nonaktif"}
 									</span>
 								</div>
-								<p className="text-xs text-gray-500 mt-2">
+								<p className="text-xs text-gray-500 mt-2 dark:text-gray-400">
 									Otomatis menyesuaikan warna background dan teks.
 								</p>
 							</div>
 						) : (
-							<p className="text-sm text-gray-500">
+							<p className="text-sm text-gray-500 dark:text-gray-400">
 								Aktifkan dukungan mode gelap di seluruh situs.
 							</p>
 						)}
@@ -413,7 +413,7 @@ export default function AppearanceSection() {
 						role="button"
 						tabIndex={0}
 						className={clsx(
-							"border border-gray-200 rounded-lg p-4 bg-gray-50 relative md:col-span-2",
+							"border border-gray-200 rounded-lg p-4 bg-gray-50 relative md:col-span-2 dark:bg-gray-800/50 dark:border-gray-700",
 							!isProActive ? "opacity-60 cursor-pointer" : "",
 						)}
 						onClick={() => !isProActive && setShowProModal(true)}
@@ -425,7 +425,7 @@ export default function AppearanceSection() {
 						}}
 					>
 						<div className="flex justify-between items-start mb-4">
-							<div className="font-medium text-gray-900">
+							<div className="font-medium text-gray-900 dark:text-gray-100">
 								Layout Formulir Donasi
 							</div>
 							{!isProActive ? (
@@ -445,8 +445,8 @@ export default function AppearanceSection() {
 									className={clsx(
 										"w-full text-left border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
 										formData.donation_layout === "default"
-											? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
-											: "border-gray-200 bg-white",
+											? "border-blue-600 bg-blue-50 ring-1 ring-blue-600 dark:bg-blue-900/20 dark:border-blue-500"
+											: "border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 dark:hover:border-gray-600",
 									)}
 									onClick={() =>
 										setFormData({
@@ -455,10 +455,10 @@ export default function AppearanceSection() {
 										})
 									}
 								>
-									<div className="aspect-video bg-gray-100 rounded mb-2 flex flex-col items-center justify-center p-2">
-										<div className="bg-white w-2/3 h-full rounded shadow-sm border border-gray-200"></div>
+									<div className="aspect-video bg-gray-100 rounded mb-2 flex flex-col items-center justify-center p-2 dark:bg-gray-700">
+										<div className="bg-white w-2/3 h-full rounded shadow-sm border border-gray-200 dark:bg-gray-600 dark:border-gray-500"></div>
 									</div>
-									<div className="text-xs font-medium text-center text-gray-700">
+									<div className="text-xs font-medium text-center text-gray-700 dark:text-gray-300">
 										Tunggal (Default)
 									</div>
 								</button>
@@ -469,8 +469,8 @@ export default function AppearanceSection() {
 									className={clsx(
 										"w-full text-left border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-blue-300",
 										formData.donation_layout === "split"
-											? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
-											: "border-gray-200 bg-white",
+											? "border-blue-600 bg-blue-50 ring-1 ring-blue-600 dark:bg-blue-900/20 dark:border-blue-500"
+											: "border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 dark:hover:border-gray-600",
 									)}
 									onClick={() =>
 										setFormData({
@@ -479,17 +479,17 @@ export default function AppearanceSection() {
 										})
 									}
 								>
-									<div className="aspect-video bg-gray-100 rounded mb-2 flex gap-1 p-1">
-										<div className="bg-blue-100 h-full w-1/2 rounded-sm border border-blue-200"></div>
-										<div className="bg-white h-full w-1/2 rounded-sm border border-gray-200"></div>
+									<div className="aspect-video bg-gray-100 rounded mb-2 flex gap-1 p-1 dark:bg-gray-700">
+										<div className="bg-blue-100 h-full w-1/2 rounded-sm border border-blue-200 dark:bg-blue-900 dark:border-blue-700"></div>
+										<div className="bg-white h-full w-1/2 rounded-sm border border-gray-200 dark:bg-gray-600 dark:border-gray-500"></div>
 									</div>
-									<div className="text-xs font-medium text-center text-gray-700">
+									<div className="text-xs font-medium text-center text-gray-700 dark:text-gray-300">
 										Split (Kiri Info, Kanan Form)
 									</div>
 								</button>
 							</div>
 						) : (
-							<p className="text-sm text-gray-500">
+							<p className="text-sm text-gray-500 dark:text-gray-400">
 								Pilihan tata letak untuk formulir donasi.
 							</p>
 						)}
@@ -500,7 +500,7 @@ export default function AppearanceSection() {
 						role="button"
 						tabIndex={0}
 						className={clsx(
-							"border border-gray-200 rounded-lg p-4 bg-gray-50 relative md:col-span-2",
+							"border border-gray-200 rounded-lg p-4 bg-gray-50 relative md:col-span-2 dark:bg-gray-800/50 dark:border-gray-700",
 							!isProActive ? "opacity-60 cursor-pointer" : "",
 						)}
 						onClick={() => !isProActive && setShowProModal(true)}
@@ -512,7 +512,7 @@ export default function AppearanceSection() {
 						}}
 					>
 						<div className="flex justify-between items-start mb-4">
-							<div className="font-medium text-gray-900">Gaya Hero Section</div>
+							<div className="font-medium text-gray-900 dark:text-gray-100">Gaya Hero Section</div>
 							{!isProActive ? (
 								<Lock size={14} className="text-gray-400" />
 							) : (

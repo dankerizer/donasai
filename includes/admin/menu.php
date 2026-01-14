@@ -170,13 +170,13 @@ function wpd_enqueue_admin_assets($hook)
 			$initial_path = '/';
 			break;
 	}
-
 	// Localize Script for Nonce/Settings
 	wp_localize_script(defined('WPD_DEV_MODE') && WPD_DEV_MODE ? 'wpd-admin-dev' : 'wpd-admin-app', 'wpdSettings', array(
 		'root' => esc_url_raw(rest_url()),
 		'nonce' => wp_create_nonce('wp_rest'),
 		'initialPath' => $initial_path,
 		'isPro' => wpd_is_pro_installed(),
+		'version' => WPD_VERSION,
 	));
 	// Add type="module" to dev and production scripts
 	add_filter('script_loader_tag', function ($tag, $handle, $src) {

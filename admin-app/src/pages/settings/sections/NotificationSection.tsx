@@ -9,10 +9,10 @@ export default function NotificationSection() {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="text-lg font-medium text-gray-900 mb-1">
+				<h3 className="text-lg font-medium text-gray-900 mb-1 dark:text-gray-100">
 					Langganan Pembaruan
 				</h3>
-				<p className="text-sm text-gray-500 mb-4">
+				<p className="text-sm text-gray-500 mb-4 dark:text-gray-400">
 					Terima pembaruan donatur dan pengumuman plugin.
 				</p>
 
@@ -30,7 +30,7 @@ export default function NotificationSection() {
 								})
 							}
 						/>
-						<p className="text-xs text-gray-500 mt-1">
+						<p className="text-xs text-gray-500 mt-1 dark:text-gray-400">
 							Kami akan memverifikasi email ini sebelum mengirim laporan
 							sensitif.
 						</p>
@@ -53,16 +53,16 @@ export default function NotificationSection() {
 				</div>
 			</div>
 
-			<div className="border-t border-gray-200 pt-6">
-				<h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
-					<Bell size={18} className="text-gray-400" />
+			<div className="border-t border-gray-200 pt-6 dark:border-gray-700">
+				<h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2 dark:text-gray-100">
+					<Bell size={18} className="text-gray-400 dark:text-gray-500" />
 					Notifikasi Lanjutan{" "}
-					<span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">
+					<span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold dark:bg-purple-900/40 dark:text-purple-300">
 						PRO
 					</span>
 				</h3>
-				<p className="text-sm text-gray-500 mb-4">Tersedia di versi Pro:</p>
-				<ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
+				<p className="text-sm text-gray-500 mb-4 dark:text-gray-400">Tersedia di versi Pro:</p>
+				<ul className="list-disc pl-5 text-sm text-gray-600 space-y-1 dark:text-gray-300">
 					<li>Ringkasan harian via Email.</li>
 					<li>Peringatan pembayaran gagal.</li>
 				</ul>

@@ -20,15 +20,15 @@ export default function PaymentSection() {
 	return (
 		<div className="space-y-8">
 			<div>
-				<h3 className="text-lg font-medium text-gray-900 mb-4">
+				<h3 className="text-lg font-medium text-gray-900 mb-4 dark:text-gray-100">
 					Transfer Bank (Manual)
 				</h3>
 
 				{licenseStatus === "active" ? (
 					<div className="space-y-4">
-						<div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+						<div className="bg-purple-50 p-4 rounded-lg border border-purple-200 dark:bg-purple-900/20 dark:border-purple-800">
 							<div className="flex justify-between items-center mb-3">
-								<h4 className="text-sm font-bold text-purple-800 flex! items-center gap-2">
+								<h4 className="text-sm font-bold text-purple-800 flex! items-center gap-2 dark:text-purple-300">
 									<Crown size={14} /> Multi-Akun Bank (Pro)
 								</h4>
 								<button
@@ -41,7 +41,7 @@ export default function PaymentSection() {
 							</div>
 
 							{formData.pro_accounts.length === 0 && (
-								<p className="text-sm text-gray-500 italic">
+								<p className="text-sm text-gray-500 italic dark:text-gray-400">
 									Belum ada rekening yang ditambahkan.
 								</p>
 							)}
@@ -50,7 +50,7 @@ export default function PaymentSection() {
 								{formData.pro_accounts.map((acc, idx) => (
 									<div
 										key={acc.id || idx}
-										className="bg-white p-3 rounded border border-gray-200 shadow-sm relative group"
+										className="bg-white p-3 rounded border border-gray-200 shadow-sm relative group dark:bg-gray-800 dark:border-gray-700"
 									>
 										<div className="grid md:grid-cols-3 gap-2 mb-2">
 											<Input
@@ -82,7 +82,7 @@ export default function PaymentSection() {
 											/>
 										</div>
 										<div className="flex justify-between items-center">
-											<label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+											<label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer dark:text-gray-400">
 												<input
 													type="checkbox"
 													checked={acc.is_default}
@@ -107,7 +107,7 @@ export default function PaymentSection() {
 						</div>
 
 						<div className="opacity-50 pointer-events-none">
-							<p className="text-xs text-gray-500 mb-2">
+							<p className="text-xs text-gray-500 mb-2 dark:text-gray-400">
 								Pengaturan Fallback (Gratis):
 							</p>
 							<div className="grid grid-cols-2 gap-4">
@@ -118,7 +118,7 @@ export default function PaymentSection() {
 									<Input
 										type="text"
 										id="bankName"
-										className="bg-gray-100"
+										className="bg-gray-100 dark:bg-gray-800"
 										value={formData.bank_name}
 										readOnly
 									/>
@@ -130,7 +130,7 @@ export default function PaymentSection() {
 									<Input
 										type="text"
 										id="accountNumber"
-										className="bg-gray-100"
+										className="bg-gray-100 dark:bg-gray-800"
 										value={formData.account_number}
 										readOnly
 									/>
@@ -190,12 +190,12 @@ export default function PaymentSection() {
 						<button
 							type="button"
 							id="proTeaser"
-							className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 flex justify-between items-center cursor-pointer hover:bg-gray-100"
+							className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 flex justify-between items-center cursor-pointer hover:bg-gray-100 dark:bg-gray-800/50 dark:border-gray-700 dark:hover:bg-gray-800"
 							onClick={() => setShowProModal(true)}
 						>
 							<div className="flex items-center gap-2">
 								<Crown size={14} className="text-purple-600" />
-								<span className="text-sm font-medium text-gray-600">
+								<span className="text-sm font-medium text-gray-600 dark:text-gray-300">
 									Butuh lebih dari satu rekening bank?
 								</span>
 							</div>
@@ -206,11 +206,11 @@ export default function PaymentSection() {
 					</div>
 				)}
 			</div>
-			<div className="border-t border-gray-200 pt-6">
-				<h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+			<div className="border-t border-gray-200 pt-6 dark:border-gray-700">
+				<h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2 dark:text-gray-100">
 					Gerbang Pembayaran Midtrans
 					{licenseStatus !== "active" && (
-						<span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">
+						<span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold dark:bg-purple-900/40 dark:text-purple-300">
 							PRO
 						</span>
 					)}
@@ -233,14 +233,14 @@ export default function PaymentSection() {
 							/>
 							<label
 								htmlFor="midtrans_enabled"
-								className="text-sm font-medium text-gray-700"
+								className="text-sm font-medium text-gray-700 dark:text-gray-300"
 							>
 								Aktifkan Midtrans
 							</label>
 						</div>
 
 						{formData.midtrans_enabled && (
-							<div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4">
+							<div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4 dark:bg-gray-800/50 dark:border-gray-700">
 								<div className="flex items-center space-x-3">
 									<input
 										type="checkbox"
@@ -266,14 +266,14 @@ export default function PaymentSection() {
 									<div>
 										<Label
 											htmlFor="midtrans_server_key"
-											className="text-xs text-gray-700 mb-1"
+											className="text-xs text-gray-700 mb-1 dark:text-gray-300"
 										>
 											Server Key
 										</Label>
 										<Input
 											id="midtrans_server_key"
 											type="password"
-											className="font-mono text-xs bg-white border-gray-300"
+											className="font-mono text-xs bg-white border-gray-300 dark:bg-gray-900 dark:border-gray-700"
 											value={formData.midtrans_server_key}
 											onChange={(e) =>
 												setFormData({
@@ -287,14 +287,14 @@ export default function PaymentSection() {
 									<div>
 										<Label
 											htmlFor="pro_midtrans_client_key"
-											className="text-xs text-gray-700 mb-1"
+											className="text-xs text-gray-700 mb-1 dark:text-gray-300"
 										>
 											Client Key
 										</Label>
 										<Input
 											id="pro_midtrans_client_key"
 											type="text"
-											className="font-mono text-xs bg-white border-gray-300"
+											className="font-mono text-xs bg-white border-gray-300 dark:bg-gray-900 dark:border-gray-700"
 											// Note: We're using the 'pro' field for client key as standard now
 											// or we should consolidate. Assuming pro_midtrans_client_key is the one.
 											value={formData.pro_midtrans_client_key}
@@ -312,18 +312,18 @@ export default function PaymentSection() {
 						)}
 					</div>
 				) : (
-					<div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center space-y-4 relative overflow-hidden">
+					<div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center space-y-4 relative overflow-hidden dark:bg-gray-800/50 dark:border-gray-700">
 						<div className="absolute top-0 right-0 p-2 opacity-5">
 							<Crown size={120} />
 						</div>
 						<div className="relative z-10 flex flex-col items-center">
-							<div className="p-3 bg-purple-100 text-purple-600 rounded-full mb-2">
+							<div className="p-3 bg-purple-100 text-purple-600 rounded-full mb-2 dark:bg-purple-900/30 dark:text-purple-400">
 								<Lock size={24} />
 							</div>
-							<h4 className="text-lg font-bold text-gray-900">
+							<h4 className="text-lg font-bold text-gray-900 dark:text-gray-100">
 								Upgrade ke Pro untuk Midtrans
 							</h4>
-							<p className="text-sm text-gray-500 max-w-sm mx-auto mb-4">
+							<p className="text-sm text-gray-500 max-w-sm mx-auto mb-4 dark:text-gray-400">
 								Dapatkan pembayaran otomatis via GoPay, OVO, ShopeePay, dan
 								Virtual Account dengan mengaktifkan lisensi Pro.
 							</p>
@@ -338,11 +338,11 @@ export default function PaymentSection() {
 					</div>
 				)}
 			</div>
-			<div className="border-t border-gray-200 pt-6">
-				<h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+			<div className="border-t border-gray-200 pt-6 dark:border-gray-700">
+				<h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2 dark:text-gray-100">
 					Xendit Payment Gateway
 					{licenseStatus !== "active" && (
-						<span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">
+						<span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold dark:bg-purple-900/40 dark:text-purple-300">
 							PRO
 						</span>
 					)}
@@ -350,22 +350,22 @@ export default function PaymentSection() {
 
 				{licenseStatus === "active" ? (
 					<div className="space-y-4">
-						<div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4">
-							<p className="text-sm text-gray-600 mb-2">
+						<div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4 dark:bg-gray-800/50 dark:border-gray-700">
+							<p className="text-sm text-gray-600 mb-2 dark:text-gray-400">
 								Terima pembayaran via VA, E-Wallet (OVO, DANA, LinkAja), dan
 								QRIS menggunakan Xendit.
 							</p>
 							<div>
 								<Label
 									htmlFor="pro_xendit_api_key"
-									className="text-xs text-gray-700 mb-1"
+									className="text-xs text-gray-700 mb-1 dark:text-gray-300"
 								>
 									Xendit Secret API Key
 								</Label>
 								<Input
 									id="pro_xendit_api_key"
 									type="password"
-									className="font-mono text-xs bg-white border-gray-300"
+									className="font-mono text-xs bg-white border-gray-300 dark:bg-gray-900 dark:border-gray-700"
 									value={formData.pro_xendit_api_key}
 									onChange={(e) =>
 										setFormData({
@@ -382,18 +382,18 @@ export default function PaymentSection() {
 						</div>
 					</div>
 				) : (
-					<div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center space-y-4 relative overflow-hidden">
+					<div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center space-y-4 relative overflow-hidden dark:bg-gray-800/50 dark:border-gray-700">
 						<div className="absolute top-0 right-0 p-2 opacity-5">
 							<Crown size={120} />
 						</div>
 						<div className="relative z-10 flex flex-col items-center">
-							<div className="p-3 bg-purple-100 text-purple-600 rounded-full mb-2">
+							<div className="p-3 bg-purple-100 text-purple-600 rounded-full mb-2 dark:bg-purple-900/40 dark:text-purple-400">
 								<Lock size={24} />
 							</div>
-							<h4 className="text-lg font-bold text-gray-900">
+							<h4 className="text-lg font-bold text-gray-900 dark:text-gray-100">
 								Aktifkan Xendit Gateway
 							</h4>
-							<p className="text-sm text-gray-500 max-w-sm mx-auto mb-4">
+							<p className="text-sm text-gray-500 max-w-sm mx-auto mb-4 dark:text-gray-400">
 								Dukungan pembayaran lengkap (VA, OVO, DANA, LinkAja, ShopeePay)
 								via Xendit.
 							</p>
@@ -408,11 +408,11 @@ export default function PaymentSection() {
 					</div>
 				)}
 			</div>
-			<div className="border-t border-gray-200 pt-6">
-				<h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+			<div className="border-t border-gray-200 pt-6 dark:border-gray-700">
+				<h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2 dark:text-gray-100">
 					Tripay Payment Gateway
 					{licenseStatus !== "active" && (
-						<span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold">
+						<span className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-bold dark:bg-purple-900/40 dark:text-purple-300">
 							PRO
 						</span>
 					)}
@@ -420,7 +420,7 @@ export default function PaymentSection() {
 
 				{licenseStatus === "active" ? (
 					<div className="space-y-4">
-						<div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4">
+						<div className="p-4 bg-gray-50 rounded-lg border border-gray-200 space-y-4 dark:bg-gray-800/50 dark:border-gray-700">
 							<div className="flex items-center space-x-3">
 								<input
 									type="checkbox"
@@ -432,11 +432,11 @@ export default function PaymentSection() {
 											pro_tripay_is_production: e.target.checked,
 										}))
 									}
-									className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+									className="h-4 w-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:checked:bg-purple-600"
 								/>
 								<label
 									htmlFor="tripay_production"
-									className="text-sm font-medium text-purple-900"
+									className="text-sm font-medium text-purple-900 dark:text-purple-300"
 								>
 									Mode Produksi
 								</label>
@@ -446,14 +446,14 @@ export default function PaymentSection() {
 								<div>
 									<Label
 										htmlFor="pro_tripay_api_key"
-										className="text-xs text-gray-700 mb-1"
+										className="text-xs text-gray-700 mb-1 dark:text-gray-300"
 									>
 										API Key
 									</Label>
 									<Input
 										id="pro_tripay_api_key"
 										type="password"
-										className="font-mono text-xs bg-white border-gray-300"
+										className="font-mono text-xs bg-white border-gray-300 dark:bg-gray-900 dark:border-gray-700"
 										value={formData.pro_tripay_api_key}
 										onChange={(e) =>
 											setFormData({
@@ -467,14 +467,14 @@ export default function PaymentSection() {
 								<div>
 									<Label
 										htmlFor="pro_tripay_private_key"
-										className="text-xs text-gray-700 mb-1"
+										className="text-xs text-gray-700 mb-1 dark:text-gray-300"
 									>
 										Private Key
 									</Label>
 									<Input
 										id="pro_tripay_private_key"
 										type="password"
-										className="font-mono text-xs bg-white border-gray-300"
+										className="font-mono text-xs bg-white border-gray-300 dark:bg-gray-900 dark:border-gray-700"
 										value={formData.pro_tripay_private_key}
 										onChange={(e) =>
 											setFormData({
@@ -489,14 +489,14 @@ export default function PaymentSection() {
 							<div>
 								<Label
 									htmlFor="pro_tripay_merchant_code"
-									className="text-xs text-gray-700 mb-1"
+									className="text-xs text-gray-700 mb-1 dark:text-gray-300"
 								>
 									Merchant Code
 								</Label>
 								<Input
 									id="pro_tripay_merchant_code"
 									type="text"
-									className="font-mono text-xs bg-white border-gray-300"
+									className="font-mono text-xs bg-white border-gray-300 dark:bg-gray-900 dark:border-gray-700"
 									value={formData.pro_tripay_merchant_code}
 									onChange={(e) =>
 										setFormData({
@@ -510,18 +510,18 @@ export default function PaymentSection() {
 						</div>
 					</div>
 				) : (
-					<div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center space-y-4 relative overflow-hidden">
+					<div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center space-y-4 relative overflow-hidden dark:bg-gray-800/50 dark:border-gray-700">
 						<div className="absolute top-0 right-0 p-2 opacity-5">
 							<Crown size={120} />
 						</div>
 						<div className="relative z-10 flex flex-col items-center">
-							<div className="p-3 bg-purple-100 text-purple-600 rounded-full mb-2">
+							<div className="p-3 bg-purple-100 text-purple-600 rounded-full mb-2 dark:bg-purple-900/40 dark:text-purple-400">
 								<Lock size={24} />
 							</div>
-							<h4 className="text-lg font-bold text-gray-900">
+							<h4 className="text-lg font-bold text-gray-900 dark:text-gray-100">
 								Aktifkan Tripay Gateway
 							</h4>
-							<p className="text-sm text-gray-500 max-w-sm mx-auto mb-4">
+							<p className="text-sm text-gray-500 max-w-sm mx-auto mb-4 dark:text-gray-400">
 								Alternatif payment gateway lokal dengan fee kompetitif dan
 								banyak channel pembayaran.
 							</p>
@@ -536,11 +536,9 @@ export default function PaymentSection() {
 					</div>
 				)}
 			</div>
-			;
-			<div className="border-t border-gray-200 pt-6">
+			<div className="border-t border-gray-200 pt-6 dark:border-gray-700">
 				<FeeCoverageSection />
 			</div>
-			;
 		</div>
 	);
 }

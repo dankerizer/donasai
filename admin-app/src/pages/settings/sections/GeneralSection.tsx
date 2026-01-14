@@ -96,10 +96,10 @@ export default function GeneralSection() {
 			<div>
 				<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
 					<div>
-						<h3 className="text-lg font-medium text-gray-900 mb-1">
+						<h3 className="text-lg font-medium text-gray-900 mb-1 dark:text-gray-100">
 							Detail Organisasi
 						</h3>
-						<p className="text-sm text-gray-500">
+						<p className="text-sm text-gray-500 dark:text-gray-400">
 							Informasi ini akan muncul pada kuitansi donasi.
 						</p>
 					</div>
@@ -115,38 +115,38 @@ export default function GeneralSection() {
 				/>
 			</div>
 
-			<div className="border-t border-gray-200 pt-6">
+			<div className="border-t border-gray-200 pt-6 dark:border-gray-700">
 				<div className="flex items-center gap-3 mb-6">
-					<div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+					<div className="p-2 bg-blue-50 rounded-lg text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
 						<LinkIcon size={20} />
 					</div>
 					<div>
-						<h3 className="text-lg font-medium text-gray-900">
+						<h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
 							Pengaturan Permalink
 						</h3>
 					</div>
 				</div>
 
 				<div className="grid grid-cols-1 gap-6 mb-6">
-					<div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
+					<div className="bg-gray-50 p-5 rounded-xl border border-gray-200 dark:bg-gray-800/50 dark:border-gray-700">
 						<div className="flex items-center gap-2 mb-4">
-							<div className="p-1.5 bg-blue-100 text-blue-600 rounded">
+							<div className="p-1.5 bg-blue-100 text-blue-600 rounded dark:bg-blue-900/50 dark:text-blue-400">
 								<LinkIcon size={16} />
 							</div>
-							<h4 className="text-sm font-semibold text-gray-900">
+							<h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
 								Struktur URL Kampanye
 							</h4>
 						</div>
 
 						<div className="flex flex-col sm:flex-row sm:items-center gap-3">
 							<div className="flex-1 relative flex items-center max-w-full">
-								<div className="flex items-center w-full rounded-lg border border-gray-300 bg-white shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
-									<span className="pl-3 pr-1 py-2.5 text-gray-500 text-sm bg-gray-50 border-r border-gray-200 select-none whitespace-nowrap">
+								<div className="flex items-center w-full rounded-lg border border-gray-300 bg-white shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 dark:bg-gray-900 dark:border-gray-600">
+									<span className="pl-3 pr-1 py-2.5 text-gray-500 text-sm bg-gray-50 border-r border-gray-200 select-none whitespace-nowrap dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700">
 										{window.location.host}/
 									</span>
 									<Input
 										type="text"
-										className="flex-1 min-w-[100px] border-none! focus:ring-0! max-w-[200px]! shadow-none! rounded-none! text-sm text-gray-900 font-semibold px-3 py-2.5 placeholder-gray-400"
+										className="flex-1 min-w-[100px] border-none! focus:ring-0! max-w-[200px]! shadow-none! rounded-none! text-sm text-gray-900 font-semibold px-3 py-2.5 placeholder-gray-400 dark:bg-transparent! dark:text-gray-100"
 										value={formData.campaign_slug}
 										onChange={(e) =>
 											setFormData({
@@ -156,7 +156,7 @@ export default function GeneralSection() {
 										}
 										placeholder="campaign"
 									/>
-									<span className="pl-1 pr-3 py-2.5 text-gray-400 text-sm bg-white select-none whitespace-nowrap">
+									<span className="pl-1 pr-3 py-2.5 text-gray-400 text-sm bg-white select-none whitespace-nowrap dark:bg-gray-900 dark:text-gray-500">
 										/ nama-kampanye
 									</span>
 								</div>
@@ -168,25 +168,25 @@ export default function GeneralSection() {
 						</p>
 					</div>
 
-					<div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
+					<div className="bg-gray-50 p-5 rounded-xl border border-gray-200 dark:bg-gray-800/50 dark:border-gray-700">
 						<div className="flex items-center gap-2 mb-4">
-							<div className="p-1.5 bg-green-100 text-green-600 rounded">
+							<div className="p-1.5 bg-green-100 text-green-600 rounded dark:bg-green-900/40 dark:text-green-400">
 								<CreditCard size={16} />
 							</div>
-							<h4 className="text-sm font-semibold text-gray-900">
+							<h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
 								Struktur URL Pembayaran
 							</h4>
 						</div>
 
 						<div className="flex flex-col sm:flex-row sm:items-center gap-3">
 							<div className="flex-1 relative flex items-center max-w-full">
-								<div className="flex items-center w-full rounded-lg border border-gray-300 bg-white shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500">
-									<span className="pl-3 pr-1 py-2.5 text-gray-500 text-sm bg-gray-50 border-r border-gray-200 select-none whitespace-nowrap max-w-[180px] overflow-hidden text-ellipsis">
+								<div className="flex items-center w-full rounded-lg border border-gray-300 bg-white shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 dark:bg-gray-900 dark:border-gray-600">
+									<span className="pl-3 pr-1 py-2.5 text-gray-500 text-sm bg-gray-50 border-r border-gray-200 select-none whitespace-nowrap max-w-[180px] overflow-hidden text-ellipsis dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700">
 										.../{formData.campaign_slug}/nama-campaign
 									</span>
 									<Input
 										type="text"
-										className="flex-1! min-w-[100px]! border-none! focus:ring-0! shadow-none! rounded-none! text-sm text-gray-900 font-semibold px-3 py-2.5 placeholder-gray-400"
+										className="flex-1! min-w-[100px]! border-none! focus:ring-0! shadow-none! rounded-none! text-sm text-gray-900 font-semibold px-3 py-2.5 placeholder-gray-400 dark:bg-transparent! dark:text-gray-100"
 										value={formData.payment_slug}
 										onChange={(e) =>
 											setFormData({
@@ -206,7 +206,7 @@ export default function GeneralSection() {
 					</div>
 				</div>
 
-				<div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex gap-3 text-amber-800">
+				<div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex gap-3 text-amber-800 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400">
 					<Bell size={18} className="shrink-0 mt-0.5" />
 					<div className="text-sm">
 						<p className="font-semibold mb-1">
@@ -221,8 +221,8 @@ export default function GeneralSection() {
 				</div>
 			</div>
 
-			<div className="border-t border-gray-200 pt-6">
-				<h3 className="text-lg font-medium text-gray-900 mb-4">
+			<div className="border-t border-gray-200 pt-6 dark:border-gray-700">
+				<h3 className="text-lg font-medium text-gray-900 mb-4 dark:text-gray-100">
 					Pengaturan Konfirmasi
 				</h3>
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -253,8 +253,8 @@ export default function GeneralSection() {
 				</div>
 			</div>
 
-			<div className="border-t border-gray-200 pt-6">
-				<h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2">
+			<div className="border-t border-gray-200 pt-6 dark:border-gray-700">
+				<h3 className="text-lg font-medium text-gray-900 mb-2 flex items-center gap-2 dark:text-gray-100">
 					Branding
 				</h3>
 				<div className="flex items-center space-x-3">
@@ -272,7 +272,7 @@ export default function GeneralSection() {
 					/>
 					<label
 						htmlFor="removeBranding"
-						className="text-sm font-medium text-gray-700"
+						className="text-sm font-medium text-gray-700 dark:text-gray-300"
 					>
 						Hapus Branding "Powered by Donasai"
 					</label>

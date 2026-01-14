@@ -1,5 +1,10 @@
 @import "tailwindcss";
+@custom-variant dark (&:is(.dark *));
+
 
 @theme {
 	--color-emerald-600: lab(55.0481% -49.9246 15.93);
+}
+#wpd-admin-app {
+	@apply -ml-2 md:-ml-5! relative md:min-h-screen ;
 }

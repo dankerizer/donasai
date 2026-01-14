@@ -104,12 +104,12 @@ export default function FeeCoverageSection() {
 
 	if (!isProActive) {
 		return (
-			<div className="bg-purple-50 border border-purple-200 rounded-xl p-6 text-center">
+			<div className="bg-purple-50 border border-purple-200 rounded-xl p-6 text-center dark:bg-purple-900/20 dark:border-purple-800">
 				<Crown className="mx-auto mb-3 text-purple-500" size={32} />
-				<h4 className="text-lg font-bold text-purple-900 mb-2">
+				<h4 className="text-lg font-bold text-purple-900 mb-2 dark:text-purple-300">
 					Fee Coverage (Pro)
 				</h4>
-				<p className="text-sm text-purple-700 mb-4">
+				<p className="text-sm text-purple-700 mb-4 dark:text-purple-400">
 					Aktifkan fitur ini agar donatur dapat memilih untuk menanggung biaya
 					admin pembayaran.
 				</p>
@@ -129,11 +129,11 @@ export default function FeeCoverageSection() {
 		<div className="space-y-6">
 			<div className="flex items-center justify-between">
 				<div>
-					<h3 className="text-lg font-semibold text-gray-900 flex! items-center gap-2 ">
+					<h3 className="text-lg font-semibold text-gray-900 flex! items-center gap-2 dark:text-gray-100">
 						<DollarSign size={20} className="text-green-600" />
 						Fee Coverage
 					</h3>
-					<p className="text-sm text-gray-500 mt-1">
+					<p className="text-sm text-gray-500 mt-1 dark:text-gray-400">
 						Biarkan donatur menanggung biaya admin payment gateway.
 					</p>
 				</div>
@@ -146,13 +146,13 @@ export default function FeeCoverageSection() {
 						}
 						className="sr-only peer"
 					/>
-					<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600" />
+					<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600 dark:bg-gray-700 dark:peer-focus:ring-green-900 dark:after:border-gray-600 dark:after:bg-gray-200" />
 				</label>
 			</div>
 
 			{settings.enabled && (
 				<>
-					<div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+					<div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200 dark:bg-gray-800/50 dark:border-gray-700">
 						<input
 							type="checkbox"
 							id="default_checked"
@@ -163,24 +163,24 @@ export default function FeeCoverageSection() {
 									default_checked: e.target.checked,
 								}))
 							}
-							className="w-4 h-4 text-green-600 rounded"
+							className="w-4 h-4 text-green-600 rounded dark:bg-gray-700 dark:border-gray-600 dark:checked:bg-green-600"
 						/>
-						<label htmlFor="default_checked" className="text-sm text-gray-700">
+						<label htmlFor="default_checked" className="text-sm text-gray-700 dark:text-gray-300">
 							Checkbox dicentang secara default
 						</label>
 					</div>
 
 					<div className="space-y-4">
-						<h4 className="text-sm font-bold text-gray-700 uppercase tracking-wide">
+						<h4 className="text-sm font-bold text-gray-700 uppercase tracking-wide dark:text-gray-300">
 							Pengaturan Fee Per Gateway
 						</h4>
 
 						{Object.entries(settings.gateways).map(([gateway, config]) => (
 							<div
 								key={gateway}
-								className="p-4 border border-gray-200 rounded-lg bg-white"
+								className="p-4 border border-gray-200 rounded-lg bg-white dark:bg-gray-900 dark:border-gray-700"
 							>
-								<h5 className="font-medium text-gray-900 capitalize mb-3">
+								<h5 className="font-medium text-gray-900 capitalize mb-3 dark:text-gray-100">
 									{gateway === "manual" ? "Transfer Bank" : gateway}
 								</h5>
 								<div className="grid grid-cols-3 gap-3">
@@ -218,7 +218,7 @@ export default function FeeCoverageSection() {
 										/>
 									</div>
 								</div>
-								<p className="text-xs text-gray-500 mt-2">
+								<p className="text-xs text-gray-500 mt-2 dark:text-gray-400">
 									Formula: (Nominal × {config.percentage}%) + Rp{" "}
 									{config.fixed.toLocaleString()}
 								</p>

@@ -261,7 +261,7 @@ export default function DonationsPage() {
 		<div className="space-y-6">
 			<div className="flex flex-col gap-4">
 				<div className="flex justify-between items-center">
-					<h2 className="text-2xl font-bold text-gray-800">Donasi</h2>
+					<h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Donasi</h2>
 					{isProActive && (
 						<div className="flex gap-2">
 							<button
@@ -272,7 +272,7 @@ export default function DonationsPage() {
 									}
 								}}
 								disabled={expireMutation.isPending}
-								className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium text-sm flex items-center gap-2 shadow-sm"
+								className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 font-medium text-sm flex items-center gap-2 shadow-sm"
 							>
 								{expireMutation.isPending ? (
 									"Processing..."
@@ -296,19 +296,18 @@ export default function DonationsPage() {
 				</div>
 
 				{/* Filter Bar */}
-				{/* Filter Bar */}
-				<div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-5">
+				<div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 flex flex-col gap-5">
 					<div className="flex flex-wrap gap-6 items-end">
 						{/* Date Range */}
 						<div className="flex flex-col gap-1.5">
-							<span className="text-xs font-bold text-gray-500 uppercase tracking-wide">
+							<span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
 								Periode
 							</span>
-							<div className="flex items-center gap-2 bg-gray-50 p-1 rounded-lg border border-gray-200">
+							<div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-700/50 p-1 rounded-lg border border-gray-200 dark:border-gray-600">
 								<input
 									type="date"
 									aria-label="Tanggal Mulai"
-									className="px-2 py-1.5 bg-transparent border-none! text-sm focus:ring-0! text-gray-700 w-[130px] outline-none!"
+									className="px-2 py-1.5 bg-transparent border-none! text-sm focus:ring-0! text-gray-700 dark:text-gray-200 w-[130px] outline-none!"
 									value={startDate}
 									onChange={(e) => {
 										setPage(1);
@@ -319,7 +318,7 @@ export default function DonationsPage() {
 								<input
 									type="date"
 									aria-label="Tanggal Selesai"
-									className="px-2 py-1.5 bg-transparent border-none! text-sm focus:ring-0! text-gray-700 w-[130px] outline-none!"
+									className="px-2 py-1.5 bg-transparent border-none! text-sm focus:ring-0! text-gray-700 dark:text-gray-200 w-[130px] outline-none!"
 									value={endDate}
 									onChange={(e) => {
 										setPage(1);
@@ -331,7 +330,7 @@ export default function DonationsPage() {
 
 						{/* Status Filter */}
 						<div className="flex flex-col gap-1.5">
-							<span className="text-xs font-bold text-gray-500 uppercase tracking-wide">
+							<span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
 								Status
 							</span>
 							<div className="flex gap-2">
@@ -345,8 +344,8 @@ export default function DonationsPage() {
 											className={clsx(
 												"px-3 py-2 rounded-lg text-sm font-medium border transition-all flex items-center gap-1.5",
 												isSelected
-													? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-200"
-													: "bg-white border-gray-300 text-gray-600 hover:bg-gray-50",
+													? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-200 dark:shadow-none"
+													: "bg-white border-gray-300 text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700",
 											)}
 										>
 											{status === "complete"
@@ -370,7 +369,7 @@ export default function DonationsPage() {
 						{/* Gateway Filter - Pro Only */}
 						{isProActive && (
 							<div className="flex flex-col gap-1.5">
-								<span className="text-xs font-bold text-gray-500 uppercase tracking-wide">
+								<span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
 									Gateway
 								</span>
 								<div className="flex gap-2">
@@ -384,8 +383,8 @@ export default function DonationsPage() {
 												className={clsx(
 													"px-3 py-2 rounded-lg text-sm font-medium border transition-all flex items-center gap-1.5",
 													isSelected
-														? "bg-purple-600 border-purple-600 text-white shadow-md shadow-purple-200"
-														: "bg-white border-gray-300 text-gray-600 hover:bg-gray-50",
+														? "bg-purple-600 border-purple-600 text-white shadow-md shadow-purple-200 dark:shadow-none"
+														: "bg-white border-gray-300 text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700",
 												)}
 											>
 												{gateway.label}
@@ -402,7 +401,7 @@ export default function DonationsPage() {
 						{/* Recurring Filter - Pro Only */}
 						{isProActive && (
 							<div className="flex flex-col gap-1.5">
-								<span className="text-xs font-bold text-gray-500 uppercase tracking-wide">
+								<span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
 									Tipe
 								</span>
 								<div className="flex gap-2">
@@ -423,8 +422,8 @@ export default function DonationsPage() {
 												className={clsx(
 													"px-3 py-2 rounded-lg text-sm font-medium border transition-all flex items-center gap-1.5",
 													isSelected
-														? "bg-emerald-600 border-emerald-600 text-white shadow-md shadow-emerald-200"
-														: "bg-white border-gray-300 text-gray-600 hover:bg-gray-50",
+														? "bg-emerald-600 border-emerald-600 text-white shadow-md shadow-emerald-200 dark:shadow-none"
+														: "bg-white border-gray-300 text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700",
 												)}
 											>
 												{option.label}
@@ -451,7 +450,7 @@ export default function DonationsPage() {
 									onClick={() =>
 										setIsCampaignDropdownOpen(!isCampaignDropdownOpen)
 									}
-									className="w-full sm:w-[300px] flex justify-between items-center px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 hover:border-gray-400 focus:ring-2 focus:ring-blue-100 transition-colors text-left"
+									className="w-full sm:w-[300px] flex justify-between items-center px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm text-gray-700 hover:border-gray-400 focus:ring-2 focus:ring-blue-100 transition-colors text-left dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-blue-900"
 								>
 									<span className="truncate">
 										{selectedCampaigns.length === 0
@@ -475,12 +474,12 @@ export default function DonationsPage() {
 											aria-label="Close dropdown"
 											onClick={() => setIsCampaignDropdownOpen(false)}
 										/>
-										<div className="absolute top-full mt-2 left-0 w-full sm:w-[300px] bg-white border border-gray-200 rounded-xl shadow-xl z-20 max-h-[300px] overflow-y-auto p-2">
+										<div className="absolute top-full mt-2 left-0 w-full sm:w-[300px] bg-white border border-gray-200 rounded-xl shadow-xl z-20 max-h-[300px] overflow-y-auto p-2 dark:bg-gray-800 dark:border-gray-700">
 											{campaigns?.map((c: any) => (
 												<label
 													htmlFor={`campaign-${c.id}`}
 													key={c.id}
-													className="flex items-start gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors"
+													className="flex items-start gap-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer transition-colors"
 												>
 													<div className="relative flex items-center mt-0.5">
 														<input
@@ -491,7 +490,7 @@ export default function DonationsPage() {
 															onChange={() => toggleCampaign(String(c.id))}
 														/>
 													</div>
-													<span className="text-sm text-gray-700 leading-snug select-none">
+													<span className="text-sm text-gray-700 dark:text-gray-200 leading-snug select-none">
 														{c.title}
 													</span>
 												</label>
@@ -536,9 +535,9 @@ export default function DonationsPage() {
 				</div>
 			</div>
 
-			<div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-				<table className="w-full text-left text-sm text-gray-600">
-					<thead className="bg-gray-50 border-b border-gray-200 font-medium text-gray-900">
+			<div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
+				<table className="w-full text-left text-sm text-gray-600 dark:text-gray-300">
+					<thead className="bg-gray-50 border-b border-gray-200 font-medium text-gray-900 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-200">
 						<tr>
 							<th className="px-6 py-4">ID</th>
 							<th className="px-6 py-4">Donatur</th>
@@ -557,8 +556,8 @@ export default function DonationsPage() {
 							</tr>
 						) : donations && donations.length > 0 ? (
 							donations.map((donation: Donation) => (
-								<tr key={donation.id} className="hover:bg-gray-50">
-									<td className="px-6 py-4 font-medium text-gray-900">
+								<tr key={donation.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+									<td className="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">
 										#{donation.id}
 									</td>
 									<td className="px-6 py-4">
@@ -599,7 +598,7 @@ export default function DonationsPage() {
 										<button
 											type="button"
 											onClick={() => setSelectedDonation(donation)}
-											className="text-gray-600 hover:text-blue-600 p-1 rounded hover:bg-blue-50 transition-colors"
+											className="text-gray-600 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 p-1 rounded hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
 											title="Lihat Detail"
 										>
 											<Eye size={18} />
@@ -615,7 +614,7 @@ export default function DonationsPage() {
 													})
 												}
 												disabled={mutation.isPending}
-												className="text-green-600 hover:text-green-800 p-1 rounded hover:bg-green-50 transition-colors"
+												className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 p-1 rounded hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
 												title="Tandai Selesai"
 											>
 												<CheckCircle size={18} />
@@ -635,7 +634,7 @@ export default function DonationsPage() {
 				</table>
 
 				{/* Pagination Controls */}
-				<div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between bg-gray-50">
+				<div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
 					<span className="text-sm text-gray-500">
 						Menampilkan {donations.length} dari {meta.total} data
 					</span>
@@ -644,11 +643,11 @@ export default function DonationsPage() {
 							type="button"
 							onClick={() => setPage((p) => Math.max(1, p - 1))}
 							disabled={page === 1}
-							className="px-3 py-1 bg-white border border-gray-300 rounded text-sm disabled:opacity-50 hover:bg-gray-50"
+							className="px-3 py-1 bg-white border border-gray-300 rounded text-sm disabled:opacity-50 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600"
 						>
 							Previous
 						</button>
-						<span className="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded">
+						<span className="px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200">
 							Page {page} of {meta.total_pages || 1}
 						</span>
 						<button
@@ -659,7 +658,7 @@ export default function DonationsPage() {
 								)
 							}
 							disabled={!meta.total_pages || page >= meta.total_pages}
-							className="px-3 py-1 bg-white border border-gray-300 rounded text-sm disabled:opacity-50 hover:bg-gray-50"
+							className="px-3 py-1 bg-white border border-gray-300 rounded text-sm disabled:opacity-50 hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600"
 						>
 							Next
 						</button>
@@ -670,9 +669,9 @@ export default function DonationsPage() {
 			{/* Donation Detail Modal */}
 			{selectedDonation && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-					<div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
-						<div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
-							<h3 className="text-lg font-bold text-gray-800">
+					<div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh] dark:bg-gray-800 dark:border dark:border-gray-700">
+						<div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0 dark:bg-gray-900 dark:border-gray-700">
+							<h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">
 								{isEditing
 									? `Edit Donasi #${selectedDonation.id}`
 									: `Detail Donasi #${selectedDonation.id}`}
@@ -707,7 +706,7 @@ export default function DonationsPage() {
 									<div>
 										<label
 											htmlFor="edit-name"
-											className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1"
+											className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 dark:text-gray-400"
 										>
 											Nama Donatur
 										</label>
@@ -721,14 +720,14 @@ export default function DonationsPage() {
 													name: e.target.value,
 												}))
 											}
-											className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+											className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
 										/>
 									</div>
 									<div className="grid grid-cols-2 gap-4">
 										<div>
 											<label
 												htmlFor="edit-amount"
-												className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1"
+												className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 dark:text-gray-400"
 											>
 												Jumlah
 											</label>
@@ -742,13 +741,13 @@ export default function DonationsPage() {
 														amount: Number.parseFloat(e.target.value),
 													}))
 												}
-												className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+												className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
 											/>
 										</div>
 										<div>
 											<label
 												htmlFor="edit-status"
-												className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1"
+												className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 dark:text-gray-400"
 											>
 												Status
 											</label>
@@ -761,7 +760,7 @@ export default function DonationsPage() {
 														status: e.target.value as any,
 													}))
 												}
-												className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+												className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
 											>
 												<option value="pending">Menunggu</option>
 												<option value="complete">Selesai</option>
@@ -773,7 +772,7 @@ export default function DonationsPage() {
 									<div>
 										<label
 											htmlFor="edit-email"
-											className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1"
+											className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 dark:text-gray-400"
 										>
 											Email
 										</label>
@@ -787,13 +786,13 @@ export default function DonationsPage() {
 													email: e.target.value,
 												}))
 											}
-											className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+											className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
 										/>
 									</div>
 									<div>
 										<label
 											htmlFor="edit-phone"
-											className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1"
+											className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 dark:text-gray-400"
 										>
 											Telepon
 										</label>
@@ -807,13 +806,13 @@ export default function DonationsPage() {
 													phone: e.target.value,
 												}))
 											}
-											className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+											className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
 										/>
 									</div>
 									<div>
 										<label
 											htmlFor="edit-note"
-											className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1"
+											className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 dark:text-gray-400"
 										>
 											Catatan
 										</label>
@@ -826,7 +825,7 @@ export default function DonationsPage() {
 													note: e.target.value,
 												}))
 											}
-											className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+											className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
 											rows={3}
 										/>
 									</div>
@@ -835,47 +834,47 @@ export default function DonationsPage() {
 								<div className="space-y-4">
 									<div className="grid grid-cols-2 gap-4">
 										<div>
-											<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+											<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 dark:text-gray-400">
 												Nama Donatur
 											</p>
-											<p className="font-medium text-gray-900">
+											<p className="font-medium text-gray-900 dark:text-gray-100">
 												{selectedDonation.name}
 											</p>
 										</div>
 										<div>
-											<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+											<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 dark:text-gray-400">
 												Jumlah
 											</p>
-											<p className="font-medium text-green-600 text-lg">
+											<p className="font-medium text-green-600 text-lg dark:text-green-400">
 												Rp {selectedDonation.amount.toLocaleString("id-ID")}
 											</p>
 										</div>
 										<div>
-											<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+											<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 dark:text-gray-400">
 												Email
 											</p>
-											<p className="text-gray-700 break-all">
+											<p className="text-gray-700 break-all dark:text-gray-300">
 												{selectedDonation.email}
 											</p>
 										</div>
 										<div>
-											<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-												Telepon
+											<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 dark:text-gray-400">
+												Catatan
 											</p>
-											<p className="text-gray-700">
-												{selectedDonation.phone || "-"}
+											<p className="text-gray-700 italic dark:text-gray-300">
+												{selectedDonation.note || "-"}
 											</p>
 										</div>
 										<div>
-											<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+											<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 dark:text-gray-400">
 												Metode Pembayaran
 											</p>
-											<p className="capitalize text-gray-700">
+											<p className="capitalize text-gray-700 dark:text-gray-300">
 												{selectedDonation.payment_method}
 											</p>
 										</div>
 										<div>
-											<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+											<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 dark:text-gray-400">
 												Status
 											</p>
 											<span
@@ -906,39 +905,40 @@ export default function DonationsPage() {
 									{/* Confirmation Details (Metadata) */}
 									{selectedDonation.metadata &&
 										(selectedDonation.metadata.sender_bank ||
-											selectedDonation.metadata.proof_url) && (
-											<div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
-												<h4 className="text-sm font-bold text-blue-800 mb-3 flex items-center gap-2">
+											selectedDonation.metadata.proof_url ||
+											selectedDonation.metadata.sender_name) && (
+											<div className="bg-blue-50 p-4 rounded-lg border border-blue-100 dark:bg-blue-950 dark:border-blue-900">
+												<h4 className="text-sm font-bold text-blue-800 mb-3 flex items-center gap-2 dark:text-blue-200">
 													<CheckCircle size={16} /> Konfirmasi Pembayaran
 												</h4>
 												<div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
-													{selectedDonation.metadata.sender_bank && (
-														<div className="col-span-1">
-															<span className="block text-xs text-blue-600 uppercase font-semibold">
-																Bank
-															</span>
-															<span className="text-gray-900 font-medium">
-																{selectedDonation.metadata.sender_bank}
-															</span>
-														</div>
-													)}
-													{selectedDonation.metadata.sender_name && (
-														<div className="col-span-1">
-															<span className="block text-xs text-blue-600 uppercase font-semibold">
+													{selectedDonation.metadata?.sender_name && (
+														<div>
+															<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 dark:text-gray-400">
 																Nama Pengirim
-															</span>
-															<span className="text-gray-900 font-medium">
+															</p>
+															<p className="text-gray-900 dark:text-gray-100">
 																{selectedDonation.metadata.sender_name}
-															</span>
+															</p>
 														</div>
 													)}
-													{selectedDonation.metadata.proof_url && (
-														<div className="col-span-2 pt-2 border-t border-blue-100 mt-1">
+													{selectedDonation.metadata?.sender_bank && (
+														<div>
+															<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 dark:text-gray-400">
+																Bank Pengirim
+															</p>
+															<p className="text-gray-900 dark:text-gray-100">
+																{selectedDonation.metadata.sender_bank}
+															</p>
+														</div>
+													)}
+													{selectedDonation.metadata?.proof_url && (
+														<div className="col-span-2 pt-2 border-t border-blue-100 mt-1 dark:border-blue-900">
 															<a
 																href={selectedDonation.metadata.proof_url}
 																target="_blank"
 																rel="noopener noreferrer"
-																className="text-blue-600 underline hover:text-blue-800 font-medium flex items-center gap-1"
+																className="text-blue-600 underline hover:text-blue-800 font-medium flex items-center gap-1 dark:text-blue-400 dark:hover:text-blue-300"
 															>
 																<Eye size={14} /> Lihat Bukti Transfer
 															</a>
@@ -949,22 +949,42 @@ export default function DonationsPage() {
 										)}
 
 									{selectedDonation.gateway_txn_id && (
-										<div className="bg-gray-50 p-3 rounded border border-gray-200">
-											<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+										<div className="bg-gray-50 p-3 rounded border border-gray-200 dark:bg-gray-900 dark:border-gray-700">
+											<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 dark:text-gray-400">
 												ID Transaksi
 											</p>
-											<code className="text-sm">
+											<code className="text-sm text-gray-800 dark:text-gray-200">
 												{selectedDonation.gateway_txn_id}
 											</code>
 										</div>
 									)}
 
+									{selectedDonation.metadata?.proof_url && (
+										<div className="col-span-2">
+											<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 dark:text-gray-400">
+												Bukti Transfer
+											</p>
+											<a
+												href={selectedDonation.metadata.proof_url}
+												target="_blank"
+												rel="noopener noreferrer"
+												className="block w-full h-48 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center dark:bg-gray-700 dark:border-gray-600"
+											>
+												<img
+													src={selectedDonation.metadata.proof_url}
+													alt="Bukti Transfer"
+													className="object-contain max-h-full max-w-full"
+												/>
+											</a>
+										</div>
+									)}
+
 									{selectedDonation.note && (
 										<div>
-											<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
+											<p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 dark:text-gray-400">
 												Catatan
 											</p>
-											<p className="text-sm text-gray-600 italic bg-gray-50 p-3 rounded border border-gray-100">
+											<p className="text-sm text-gray-600 italic bg-gray-50 p-3 rounded border border-gray-100 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300">
 												"{selectedDonation.note}"
 											</p>
 										</div>
@@ -977,12 +997,12 @@ export default function DonationsPage() {
 							)}
 						</div>
 
-						<div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-2 shrink-0">
+						<div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-2 shrink-0 dark:bg-gray-900 dark:border-gray-700">
 							{isEditing ? (
 								<>
 									<button
 										onClick={handleCancel}
-										className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium text-sm"
+										className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
 										disabled={mutation.isPending}
 										type="button"
 									>
@@ -1022,7 +1042,7 @@ export default function DonationsPage() {
 									)}
 									<button
 										onClick={() => setSelectedDonation(null)}
-										className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium text-sm"
+										className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
 										type="button"
 									>
 										Tutup

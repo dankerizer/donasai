@@ -7,14 +7,14 @@ export default function AdvancedSection() {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="text-lg font-medium text-gray-900 mb-4">
+				<h3 className="text-lg font-medium text-gray-900 mb-4 dark:text-gray-100">
 					Ekspor & Impor Pengaturan
 				</h3>
 
 				{/* Export Settings */}
-				<div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
-					<h4 className="font-medium text-gray-800 mb-2">Ekspor Pengaturan</h4>
-					<p className="text-sm text-gray-600 mb-3">
+				<div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4 dark:bg-gray-800/50 dark:border-gray-700">
+					<h4 className="font-medium text-gray-800 mb-2 dark:text-gray-200">Ekspor Pengaturan</h4>
+					<p className="text-sm text-gray-600 mb-3 dark:text-gray-400">
 						Unduh semua pengaturan plugin Anda sebagai file JSON. Gunakan untuk
 						backup atau memindahkan ke situs lain.
 					</p>
@@ -85,9 +85,9 @@ export default function AdvancedSection() {
 				</div>
 
 				{/* Import Settings */}
-				<div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-					<h4 className="font-medium text-gray-800 mb-2">Impor Pengaturan</h4>
-					<p className="text-sm text-gray-600 mb-3">
+				<div className="bg-gray-50 p-4 rounded-lg border border-gray-200 dark:bg-gray-800/50 dark:border-gray-700">
+					<h4 className="font-medium text-gray-800 mb-2 dark:text-gray-200">Impor Pengaturan</h4>
+					<p className="text-sm text-gray-600 mb-3 dark:text-gray-400">
 						Muat pengaturan dari file JSON yang telah diekspor sebelumnya.
 					</p>
 					<input
@@ -174,11 +174,11 @@ export default function AdvancedSection() {
 			</div>
 
 			{/* Danger Zone */}
-			<div className="border-t border-gray-200 pt-6">
-				<h3 className="text-lg font-bold text-red-700 mb-2">
+			<div className="border-t border-gray-200 pt-6 dark:border-gray-700">
+				<h3 className="text-lg font-bold text-red-700 mb-2 dark:text-red-400">
 					Zona Bahaya: Pengaturan Uninstall
 				</h3>
-				<div className="space-y-3 bg-red-50 p-4 rounded-lg border border-red-100">
+				<div className="space-y-3 bg-red-50 p-4 rounded-lg border border-red-100 dark:bg-red-900/10 dark:border-red-900/20">
 					<div className="flex items-start space-x-3">
 						<input
 							type="checkbox"
@@ -192,14 +192,14 @@ export default function AdvancedSection() {
 							}
 							className="h-4 w-4 text-red-600 border-red-300 rounded focus:ring-red-500 mt-0.5"
 						/>
-						<div>
+						<div className="mt-[-2px]">
 							<label
 								htmlFor="delete_on_uninstall_settings"
-								className="text-sm font-medium text-gray-800"
+								className="text-sm font-medium text-gray-800 dark:text-gray-200"
 							>
 								Hapus Semua Pengaturan
 							</label>
-							<p className="text-xs text-gray-600">
+							<p className="text-xs text-gray-600 dark:text-gray-400">
 								Jika dicentang, semua opsi pengaturan plugin akan dihapus dari
 								database ketika plugin di-uninstall.
 							</p>
@@ -218,14 +218,14 @@ export default function AdvancedSection() {
 							}
 							className="h-4 w-4 text-red-600 border-red-300 rounded focus:ring-red-500 mt-0.5"
 						/>
-						<div>
+						<div className="mt-[-2px]">
 							<label
 								htmlFor="delete_on_uninstall_tables"
-								className="text-sm font-medium text-gray-800"
+								className="text-sm font-medium text-gray-800 dark:text-gray-200"
 							>
 								Hapus Tabel Database
 							</label>
-							<p className="text-xs text-gray-600">
+							<p className="text-xs text-gray-600 dark:text-gray-400">
 								Jika dicentang, tabel donasi dan kampanye akan{" "}
 								<b>DIHAPUS PERMANEN</b> ketika plugin di-uninstall.
 							</p>
