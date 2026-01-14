@@ -12,7 +12,9 @@ add_action( 'rest_api_init', function () {
 	register_rest_route( 'wpd/v1', '/midtrans/webhook', array(
 		'methods'             => 'POST',
 		'callback'            => 'wpd_api_midtrans_webhook',
-		'permission_callback' => '__return_true', // Public endpoint
+		'permission_callback' => function () {
+			return true; // Public endpoint for Webhooks (Validation matches Signature)
+		},
 	) );
 } );
 
