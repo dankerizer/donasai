@@ -226,6 +226,25 @@ function wpd_build_donations_where_clause($params)
         }
     }
 
+    // Payment Method (comma separated) - NEW
+    if (!empty($params['payment_method'])) {
+        $methods = array_map('sanitize_text_field', explode(',', $params['payment_method']));
+        if (!empty($methods)) {
+            $placeholders = implode(',', array_fill(0, count($methods), '%s'));
+            $where .= " AND payment_method IN ($placeholders)";
+            $args = array_merge($args, $methods);
+        }
+    }
+
+    // Recurring filter (has subscription_id) - NEW
+    if (!empty($params['is_recurring'])) {
+        if ($params['is_recurring'] === 'recurring') {
+            $where .= " AND subscription_id IS NOT NULL AND subscription_id > 0";
+        } elseif ($params['is_recurring'] === 'one-time') {
+            $where .= " AND (subscription_id IS NULL OR subscription_id = 0)";
+        }
+    }
+
     // Start Date
     if (!empty($params['start_date'])) {
         $where .= " AND created_at >= %s";
@@ -257,6 +276,8 @@ function wpd_api_export_donations($request)
         'status' => isset($_GET['status']) ? sanitize_text_field(wp_unslash($_GET['status'])) : '',
         'start_date' => isset($_GET['start_date']) ? sanitize_text_field(wp_unslash($_GET['start_date'])) : '',
         'end_date' => isset($_GET['end_date']) ? sanitize_text_field(wp_unslash($_GET['end_date'])) : '',
+        'payment_method' => isset($_GET['payment_method']) ? sanitize_text_field(wp_unslash($_GET['payment_method'])) : '',
+        'is_recurring' => isset($_GET['is_recurring']) ? sanitize_text_field(wp_unslash($_GET['is_recurring'])) : '',
     );
 
     $query_parts = wpd_build_donations_where_clause($params);
@@ -395,6 +416,8 @@ function wpd_api_get_donations($request)
         'status' => $request->get_param('status'),
         'start_date' => $request->get_param('start_date'),
         'end_date' => $request->get_param('end_date'),
+        'payment_method' => $request->get_param('payment_method'),
+        'is_recurring' => $request->get_param('is_recurring'),
     );
 
     $query_parts = wpd_build_donations_where_clause($params);

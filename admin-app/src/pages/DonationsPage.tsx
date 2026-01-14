@@ -12,6 +12,10 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import ManualDonationModal from "/src/components/ManualDonationModal";
+import { useSettingsFetch } from "./settings/hooks/use-settings-data";
+
+// Mock Data Type
+
 
 // Mock Data Type
 interface Donation {
@@ -35,6 +39,17 @@ interface Donation {
 
 export default function DonationsPage() {
 	const queryClient = useQueryClient();
+
+	// Fetch Settings to check active gateways
+	const { data: settingsData } = useSettingsFetch();
+	const settings = settingsData?.formData;
+
+	const activeGateways = [
+		{ id: "manual", label: "Bank" }, // Always active
+		...(settings?.midtrans_enabled ? [{ id: "midtrans", label: "Midtrans" }] : []),
+		...(settings?.pro_xendit_api_key ? [{ id: "xendit", label: "Xendit" }] : []),
+		...(settings?.pro_tripay_api_key ? [{ id: "tripay", label: "Tripay" }] : []),
+	];
 	const [selectedDonation, setSelectedDonation] = useState<Donation | null>(
 		null,
 	);
@@ -70,6 +85,8 @@ export default function DonationsPage() {
 	const [endDate, setEndDate] = useState("");
 	const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
 	const [selectedCampaigns, setSelectedCampaigns] = useState<string[]>([]);
+	const [selectedGateways, setSelectedGateways] = useState<string[]>([]);
+	const [recurringFilter, setRecurringFilter] = useState<string>(""); // '', 'recurring', 'one-time'
 	const [isCampaignDropdownOpen, setIsCampaignDropdownOpen] = useState(false);
 	const [isManualDonationOpen, setIsManualDonationOpen] = useState(false);
 
@@ -103,6 +120,16 @@ export default function DonationsPage() {
 		});
 	};
 
+	const toggleGateway = (gateway: string) => {
+		setPage(1);
+		setSelectedGateways((prev) => {
+			const list = Array.isArray(prev) ? prev : [];
+			return list.includes(gateway)
+				? list.filter((g) => g !== gateway)
+				: [...list, gateway];
+		});
+	};
+
 	const { data: queryData, isLoading } = useQuery({
 		queryKey: [
 			"donations",
@@ -110,6 +137,8 @@ export default function DonationsPage() {
 			endDate,
 			selectedStatuses,
 			selectedCampaigns,
+			selectedGateways,
+			recurringFilter,
 			page,
 		],
 		queryFn: async () => {
@@ -122,6 +151,10 @@ export default function DonationsPage() {
 				params.append("status", selectedStatuses.join(","));
 			if (selectedCampaigns.length > 0)
 				params.append("campaign_id", selectedCampaigns.join(","));
+			if (selectedGateways.length > 0)
+				params.append("payment_method", selectedGateways.join(","));
+			if (recurringFilter)
+				params.append("is_recurring", recurringFilter);
 
 			const response = await fetch(
 				`/wp-json/wpd/v1/donations?${params.toString()}`,
@@ -217,6 +250,10 @@ export default function DonationsPage() {
 			url += `&status=${selectedStatuses.join(",")}`;
 		if (selectedCampaigns.length > 0)
 			url += `&campaign_id=${selectedCampaigns.join(",")}`;
+		if (selectedGateways.length > 0)
+			url += `&payment_method=${selectedGateways.join(",")}`;
+		if (recurringFilter)
+			url += `&is_recurring=${recurringFilter}`;
 		return url;
 	};
 
@@ -329,6 +366,77 @@ export default function DonationsPage() {
 								})}
 							</div>
 						</div>
+
+						{/* Gateway Filter - Pro Only */}
+						{isProActive && (
+							<div className="flex flex-col gap-1.5">
+								<span className="text-xs font-bold text-gray-500 uppercase tracking-wide">
+									Gateway
+								</span>
+								<div className="flex gap-2">
+									{activeGateways.map((gateway) => {
+										const isSelected = selectedGateways.includes(gateway.id);
+										return (
+											<button
+												type="button"
+												key={gateway.id}
+												onClick={() => toggleGateway(gateway.id)}
+												className={clsx(
+													"px-3 py-2 rounded-lg text-sm font-medium border transition-all flex items-center gap-1.5",
+													isSelected
+														? "bg-purple-600 border-purple-600 text-white shadow-md shadow-purple-200"
+														: "bg-white border-gray-300 text-gray-600 hover:bg-gray-50",
+												)}
+											>
+												{gateway.label}
+												{isSelected && (
+													<div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+												)}
+											</button>
+										);
+									})}
+								</div>
+							</div>
+						)}
+
+						{/* Recurring Filter - Pro Only */}
+						{isProActive && (
+							<div className="flex flex-col gap-1.5">
+								<span className="text-xs font-bold text-gray-500 uppercase tracking-wide">
+									Tipe
+								</span>
+								<div className="flex gap-2">
+									{[
+										{ id: "", label: "Semua" },
+										{ id: "one-time", label: "Sekali" },
+										{ id: "recurring", label: "Berlangganan" },
+									].map((option) => {
+										const isSelected = recurringFilter === option.id;
+										return (
+											<button
+												type="button"
+												key={option.id}
+												onClick={() => {
+													setPage(1);
+													setRecurringFilter(option.id);
+												}}
+												className={clsx(
+													"px-3 py-2 rounded-lg text-sm font-medium border transition-all flex items-center gap-1.5",
+													isSelected
+														? "bg-emerald-600 border-emerald-600 text-white shadow-md shadow-emerald-200"
+														: "bg-white border-gray-300 text-gray-600 hover:bg-gray-50",
+												)}
+											>
+												{option.label}
+												{isSelected && option.id !== "" && (
+													<div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+												)}
+											</button>
+										);
+									})}
+								</div>
+							</div>
+						)}
 					</div>
 
 					<div className="flex flex-wrap sm:flex-nowrap justify-between items-end gap-4 border-t border-gray-100 pt-4">
