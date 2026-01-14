@@ -78,6 +78,9 @@ export function useSettingsFetch() {
 				show_donor_list:
 					data.appearance?.show_donor_list !== false &&
 					data.appearance?.show_donor_list !== "0",
+				show_leaderboard:
+					data.appearance?.show_leaderboard !== false &&
+					data.appearance?.show_leaderboard !== "0",
 				// Bank
 				bank_name: data.bank?.bank_name || "",
 				account_number: data.bank?.account_number || "",

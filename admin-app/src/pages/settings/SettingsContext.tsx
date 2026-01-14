@@ -105,6 +105,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 					show_prayer_tab: data.show_prayer_tab,
 					show_updates_tab: data.show_updates_tab,
 					show_donor_list: data.show_donor_list,
+					show_leaderboard: data.show_leaderboard,
 				},
 				bank: {
 					bank_name: data.bank_name,

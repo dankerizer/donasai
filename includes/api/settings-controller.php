@@ -73,7 +73,8 @@ function wpd_api_get_settings()
         'show_countdown' => true,
         'show_prayer_tab' => true,
         'show_updates_tab' => true,
-        'show_donor_list' => true
+        'show_donor_list' => true,
+        'show_leaderboard' => true
     ));
 
     // Pro Settings (Midtrans Override)
@@ -279,6 +280,7 @@ function wpd_api_update_settings($request)
             'show_prayer_tab' => !empty($params['appearance']['show_prayer_tab']),
             'show_updates_tab' => !empty($params['appearance']['show_updates_tab']),
             'show_donor_list' => !empty($params['appearance']['show_donor_list']),
+            'show_leaderboard' => !empty($params['appearance']['show_leaderboard']),
         );
         update_option('wpd_settings_appearance', $appearance_data);
     }

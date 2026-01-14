@@ -80,6 +80,7 @@ $show_countdown = $is_pro && (isset($settings_app['show_countdown']) ? filter_va
 $show_prayer_tab = $is_pro && (isset($settings_app['show_prayer_tab']) ? filter_var($settings_app['show_prayer_tab'], FILTER_VALIDATE_BOOLEAN) : true);
 $show_updates_tab = $is_pro && (isset($settings_app['show_updates_tab']) ? filter_var($settings_app['show_updates_tab'], FILTER_VALIDATE_BOOLEAN) : true);
 $show_donor_list = isset($settings_app['show_donor_list']) ? filter_var($settings_app['show_donor_list'], FILTER_VALIDATE_BOOLEAN) : true;
+$show_leaderboard = $is_pro && (isset($settings_app['show_leaderboard']) ? filter_var($settings_app['show_leaderboard'], FILTER_VALIDATE_BOOLEAN) : true);
 
 
 // DEBUG
@@ -605,6 +606,56 @@ if (!$is_pro) {
                         </div>
                     </div>
                 </div>
+
+                <!-- Fundraiser Leaderboard (Pro) -->
+                <?php if ($show_leaderboard):
+                    $fundraiser_service = new WPD_Fundraiser_Service();
+                    $leaderboard = $fundraiser_service->get_leaderboard($campaign_id, 5);
+                    if (!empty($leaderboard)):
+                ?>
+                    <div class="wpd-card-style" style="overflow:hidden; margin-bottom:20px;">
+                        <div style="padding:15px 20px; background:var(--wpd-bg-tertiary); border-bottom:1px solid var(--wpd-border); font-weight:700; color:var(--wpd-text-body); display:flex; align-items:center; gap:8px;">
+                            <svg style="width:18px; height:18px; color:var(--wpd-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                            Top Penggalang Dana
+                        </div>
+                        <div style="max-height:350px; overflow-y:auto;">
+                            <?php 
+                            $rank = 1;
+                            foreach ($leaderboard as $fr):
+                                $fr_name = esc_html($fr->display_name);
+                                $fr_initial = strtoupper(substr($fr_name, 0, 1));
+                                $fr_total = number_format($fr->total_donations, 0, ',', '.');
+                                $rank_color = $rank === 1 ? '#f59e0b' : ($rank === 2 ? '#9ca3af' : ($rank === 3 ? '#cd7f32' : 'var(--wpd-text-muted)'));
+                            ?>
+                                <div style="padding:12px 20px; border-bottom:1px solid var(--wpd-border); display:flex; align-items:center; gap:12px;">
+                                    <!-- Rank Badge -->
+                                    <div style="width:24px; height:24px; background:<?php echo $rank_color; ?>; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:12px; flex-shrink:0;">
+                                        <?php echo $rank; ?>
+                                    </div>
+                                    <!-- Avatar -->
+                                    <div style="width:36px; height:36px; background:var(--wpd-bg-blue-accent); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:14px; flex-shrink:0;">
+                                        <?php echo $fr_initial; ?>
+                                    </div>
+                                    <!-- Name & Stats -->
+                                    <div style="flex:1; min-width:0;">
+                                        <div style="font-weight:600; color:var(--wpd-text-main); font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                            <?php echo $fr_name; ?>
+                                        </div>
+                                        <div style="font-size:12px; color:var(--wpd-text-muted);">
+                                            <span style="color:var(--wpd-primary); font-weight:600;">Rp <?php echo $fr_total; ?></span>
+                                            &bull; <?php echo intval($fr->donation_count); ?> donasi
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php 
+                            $rank++;
+                            endforeach; 
+                            ?>
+                        </div>
+                    </div>
+                <?php endif; endif; ?>
 
                 <!-- Recent Donors Sidebar -->
                 <?php if ($show_donor_list): ?>

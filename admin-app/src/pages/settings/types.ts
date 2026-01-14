@@ -41,6 +41,7 @@ export interface SettingsFormData {
 	show_prayer_tab: boolean;
 	show_updates_tab: boolean;
 	show_donor_list: boolean;
+	show_leaderboard: boolean;
 	// Bank
 	bank_name: string;
 	account_number: string;
@@ -112,6 +113,7 @@ export const initialFormData: SettingsFormData = {
 	show_prayer_tab: true,
 	show_updates_tab: true,
 	show_donor_list: true,
+	show_leaderboard: true,
 	// Bank
 	bank_name: "",
 	account_number: "",
