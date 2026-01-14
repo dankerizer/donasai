@@ -13,7 +13,9 @@ export default function AdvancedSection() {
 
 				{/* Export Settings */}
 				<div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4 dark:bg-gray-800/50 dark:border-gray-700">
-					<h4 className="font-medium text-gray-800 mb-2 dark:text-gray-200">Ekspor Pengaturan</h4>
+					<h4 className="font-medium text-gray-800 mb-2 dark:text-gray-200">
+						Ekspor Pengaturan
+					</h4>
 					<p className="text-sm text-gray-600 mb-3 dark:text-gray-400">
 						Unduh semua pengaturan plugin Anda sebagai file JSON. Gunakan untuk
 						backup atau memindahkan ke situs lain.
@@ -86,7 +88,9 @@ export default function AdvancedSection() {
 
 				{/* Import Settings */}
 				<div className="bg-gray-50 p-4 rounded-lg border border-gray-200 dark:bg-gray-800/50 dark:border-gray-700">
-					<h4 className="font-medium text-gray-800 mb-2 dark:text-gray-200">Impor Pengaturan</h4>
+					<h4 className="font-medium text-gray-800 mb-2 dark:text-gray-200">
+						Impor Pengaturan
+					</h4>
 					<p className="text-sm text-gray-600 mb-3 dark:text-gray-400">
 						Muat pengaturan dari file JSON yang telah diekspor sebelumnya.
 					</p>

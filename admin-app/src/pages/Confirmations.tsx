@@ -76,33 +76,35 @@ export default function Confirmations() {
 		<div className="space-y-6">
 			<div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
 				<div>
-					<h2 className="text-2xl font-bold text-gray-800">
+					<h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
 						Konfirmasi Donasi
 					</h2>
-					<p className="text-gray-500">Tinjau bukti transfer manual.</p>
+					<p className="text-gray-500 dark:text-gray-400">
+						Tinjau bukti transfer manual.
+					</p>
 				</div>
 
 				<div className="flex items-center gap-3 w-full sm:w-auto">
 					{/* Status Filter */}
-					<div className="bg-white border border-gray-300 rounded-lg p-1 flex">
+					<div className="bg-white border border-gray-300 rounded-lg p-1 flex dark:bg-gray-900 dark:border-gray-700">
 						<button
 							type="button"
 							onClick={() => setFilterStatus("unconfirmed")}
-							className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${filterStatus === "unconfirmed" ? "bg-gray-100 text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-900"}`}
+							className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${filterStatus === "unconfirmed" ? "bg-gray-100 text-gray-900 shadow-sm dark:bg-gray-700 dark:text-gray-100" : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"}`}
 						>
 							Belum Dikonfirmasi
 						</button>
 						<button
 							type="button"
 							onClick={() => setFilterStatus("approved")}
-							className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${filterStatus === "approved" ? "bg-green-50 text-green-700 shadow-sm" : "text-gray-500 hover:text-gray-900"}`}
+							className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${filterStatus === "approved" ? "bg-green-50 text-green-700 shadow-sm dark:bg-green-900/30 dark:text-green-400" : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"}`}
 						>
 							Diterima
 						</button>
 						<button
 							type="button"
 							onClick={() => setFilterStatus("rejected")}
-							className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${filterStatus === "rejected" ? "bg-red-50 text-red-700 shadow-sm" : "text-gray-500 hover:text-gray-900"}`}
+							className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${filterStatus === "rejected" ? "bg-red-50 text-red-700 shadow-sm dark:bg-red-900/30 dark:text-red-400" : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200"}`}
 						>
 							Ditolak
 						</button>
@@ -116,7 +118,7 @@ export default function Confirmations() {
 						<input
 							type="text"
 							placeholder="Cari donatur..."
-							className="pl-8! pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 w-full"
+							className="pl-8! pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 w-full dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.target.value)}
 						/>
@@ -152,33 +154,33 @@ export default function Confirmations() {
 				</button>
 			</div> */}
 
-			<div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+			<div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden dark:bg-gray-900 dark:border-gray-800">
 				<table className="w-full text-left">
-					<thead className="bg-gray-50 border-b border-gray-200">
+					<thead className="bg-gray-50 border-b border-gray-200 dark:bg-gray-800/50 dark:border-gray-800">
 						<tr>
-							<th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
+							<th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">
 								Donasi #
 							</th>
-							<th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
+							<th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">
 								Donatur
 							</th>
-							<th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
+							<th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">
 								Jumlah
 							</th>
-							<th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">
+							<th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase dark:text-gray-400">
 								Bukti
 							</th>
-							<th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-right">
+							<th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase text-right dark:text-gray-400">
 								Aksi
 							</th>
 						</tr>
 					</thead>
-					<tbody className="divide-y divide-gray-200">
+					<tbody className="divide-y divide-gray-200 dark:divide-gray-800">
 						{isLoading ? (
 							<tr>
 								<td
 									colSpan={5}
-									className="px-6 py-10 text-center text-gray-500"
+									className="px-6 py-10 text-center text-gray-500 dark:text-gray-400"
 								>
 									Memuat...
 								</td>
@@ -187,7 +189,7 @@ export default function Confirmations() {
 							<tr>
 								<td
 									colSpan={5}
-									className="px-6 py-10 text-center text-gray-500"
+									className="px-6 py-10 text-center text-gray-500 dark:text-gray-400"
 								>
 									Tidak ada konfirmasi{" "}
 									{filterStatus === "unconfirmed"
@@ -200,19 +202,22 @@ export default function Confirmations() {
 							</tr>
 						) : (
 							filteredDonations.map((donation: any) => (
-								<tr key={donation.id} className="hover:bg-gray-50">
-									<td className="px-6 py-4 font-medium text-gray-900">
+								<tr
+									key={donation.id}
+									className="hover:bg-gray-50 dark:hover:bg-gray-800/30"
+								>
+									<td className="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">
 										#{donation.id}
 									</td>
 									<td className="px-6 py-4">
-										<div className="font-medium text-gray-900">
+										<div className="font-medium text-gray-900 dark:text-gray-200">
 											{donation.name}
 										</div>
-										<div className="text-sm text-gray-500">
+										<div className="text-sm text-gray-500 dark:text-gray-400">
 											{donation.email}
 										</div>
 									</td>
-									<td className="px-6 py-4 font-medium text-green-600">
+									<td className="px-6 py-4 font-medium text-green-600 dark:text-green-400">
 										Rp {donation.amount.toLocaleString("id-ID")}
 									</td>
 									<td className="px-6 py-4">
@@ -220,10 +225,10 @@ export default function Confirmations() {
 											<span
 												className={`inline-flex items-center text-xs font-medium px-2 py-0.5 rounded ${
 													filterStatus === "approved"
-														? "text-green-700 bg-green-100"
+														? "text-green-700 bg-green-100 dark:bg-green-900/40 dark:text-green-400"
 														: filterStatus === "rejected"
-															? "text-red-700 bg-red-100"
-															: "text-yellow-700 bg-yellow-100"
+															? "text-red-700 bg-red-100 dark:bg-red-900/40 dark:text-red-400"
+															: "text-yellow-700 bg-yellow-100 dark:bg-yellow-900/40 dark:text-yellow-400"
 												}`}
 											>
 												{filterStatus === "approved"
@@ -242,7 +247,7 @@ export default function Confirmations() {
 										<button
 											type="button"
 											onClick={() => setSelectedProof(donation)}
-											className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors"
+											className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50"
 										>
 											Tinjau Bukti <ExternalLink size={14} />
 										</button>
@@ -268,14 +273,14 @@ export default function Confirmations() {
 						role="button"
 						tabIndex={0}
 					/>
-					<div className="relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+					<div className="relative bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col dark:bg-gray-900 dark:border dark:border-gray-800">
 						{/* Header */}
-						<div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+						<div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50 dark:border-gray-800">
 							<div>
-								<h3 className="font-bold text-gray-900">
+								<h3 className="font-bold text-gray-900 dark:text-gray-100">
 									Tinjau Bukti Pembayaran
 								</h3>
-								<p className="text-xs text-gray-500">
+								<p className="text-xs text-gray-500 dark:text-gray-400">
 									Donasi #{selectedProof.id} &bull; Rp{" "}
 									{selectedProof.amount.toLocaleString("id-ID")}
 								</p>
@@ -284,19 +289,19 @@ export default function Confirmations() {
 								type="button"
 								onClick={() => setSelectedProof(null)}
 								disabled={updateStatus.isPending}
-								className="p-2 hover:bg-gray-200 rounded-full text-gray-500 disabled:opacity-50"
+								className="p-2 hover:bg-gray-200 rounded-full text-gray-500 disabled:opacity-50 dark:hover:bg-gray-800 dark:text-gray-400"
 							>
 								✕
 							</button>
 						</div>
 
 						{/* Image Body */}
-						<div className="flex-1 overflow-y-auto p-6 bg-gray-100 flex items-center justify-center min-h-[300px]">
+						<div className="flex-1 overflow-y-auto p-6 bg-gray-100 flex items-center justify-center min-h-[300px] dark:bg-gray-950">
 							{selectedProof.metadata?.proof_url ? (
 								<img
 									src={selectedProof.metadata.proof_url}
 									alt="Payment Proof"
-									className="max-w-full max-h-full rounded shadow-lg border border-gray-200"
+									className="max-w-full max-h-full rounded shadow-lg border border-gray-200 dark:border-gray-800"
 								/>
 							) : (
 								<div className="text-gray-400 flex flex-col items-center">
@@ -307,21 +312,21 @@ export default function Confirmations() {
 						</div>
 
 						{/* Metadata & Actions */}
-						<div className="p-6 border-t border-gray-100 bg-white">
+						<div className="p-6 border-t border-gray-100 bg-white dark:bg-gray-900 dark:border-gray-800">
 							<div className="grid grid-cols-2 gap-4 mb-6 text-sm">
 								<div>
-									<span className="block text-gray-500 text-xs uppercase font-semibold mb-1">
+									<span className="block text-gray-500 text-xs uppercase font-semibold mb-1 dark:text-gray-400">
 										Nama Pengirim
 									</span>
-									<div className="font-medium text-gray-900">
+									<div className="font-medium text-gray-900 dark:text-gray-200">
 										{selectedProof.metadata?.sender_name || "-"}
 									</div>
 								</div>
 								<div>
-									<span className="block text-gray-500 text-xs uppercase font-semibold mb-1">
+									<span className="block text-gray-500 text-xs uppercase font-semibold mb-1 dark:text-gray-400">
 										Bank Pengirim
 									</span>
-									<div className="font-medium text-gray-900">
+									<div className="font-medium text-gray-900 dark:text-gray-200">
 										{selectedProof.metadata?.sender_bank || "-"}
 									</div>
 								</div>
@@ -339,7 +344,7 @@ export default function Confirmations() {
 											}); // Reject -> Failed
 										}
 									}}
-									className="px-4 py-3 bg-red-50 text-red-700 font-bold rounded-xl hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+									className="px-4 py-3 bg-red-50 text-red-700 font-bold rounded-xl hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
 								>
 									{updateStatus.isPending ? "Memproses..." : "Tolak"}
 								</button>

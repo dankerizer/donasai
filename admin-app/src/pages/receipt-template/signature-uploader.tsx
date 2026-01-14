@@ -22,10 +22,7 @@ interface SignatureUploaderProps {
 	onChange: (value: SignatureValue) => void;
 }
 
-export function SignatureUploader({
-	value,
-	onChange,
-}: SignatureUploaderProps) {
+export function SignatureUploader({ value, onChange }: SignatureUploaderProps) {
 	const handleImageChange = (newImage: LogoData) => {
 		onChange({
 			...value,

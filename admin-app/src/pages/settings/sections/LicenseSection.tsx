@@ -18,10 +18,10 @@ export default function LicenseSection() {
 					Kelola lisensi Donasai Pro Anda di sini.
 				</p>
 
-				<div className="p-6 border border-gray-200 rounded-lg bg-gray-50 text-center relative overflow-hidden">
+				<div className="p-6 border border-gray-200 rounded-lg bg-gray-50 text-center relative overflow-hidden dark:bg-emerald-950 dark:border-emerald-900">
 					{licenseStatus === "active" ? (
 						<div className="relative z-10 space-y-6">
-							<div className="w-16 h-16 bg-linear-to-br from-green-400 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-green-200">
+							<div className="w-16 h-16 bg-linear-to-br from-green-400 to-emerald-600 dark:from-emerald-600 dark:to-emerald-900 rounded-2xl flex items-center justify-center mx-auto shadow-lg ">
 								<Check size={32} className="text-white" strokeWidth={3} />
 							</div>
 
@@ -31,7 +31,9 @@ export default function LicenseSection() {
 								</h3>
 								<p className="text-gray-500 text-sm">
 									Terhubung dengan{" "}
-									<strong>{(proSettings.licenseDomain as string) || "Domain ini"}</strong>
+									<strong>
+										{(proSettings.licenseDomain as string) || "Domain ini"}
+									</strong>
 								</p>
 								{!!proSettings.licenseExp && (
 									<p className="text-xs text-gray-400 mt-1">
@@ -40,7 +42,7 @@ export default function LicenseSection() {
 								)}
 							</div>
 
-							<div className="bg-white rounded-xl border border-gray-200 p-4 max-w-sm mx-auto shadow-sm">
+							<div className="bg-white rounded-xl border border-gray-200 dark:bg-slate-900 dark:border-slate-800 p-4 max-w-sm mx-auto shadow-sm">
 								<div className="flex justify-between items-center text-sm mb-2">
 									<span className="text-gray-500">Status</span>
 									<span className="text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-md">

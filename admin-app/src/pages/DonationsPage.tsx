@@ -16,7 +16,6 @@ import { useSettingsFetch } from "./settings/hooks/use-settings-data";
 
 // Mock Data Type
 
-
 // Mock Data Type
 interface Donation {
 	id: number;
@@ -46,9 +45,15 @@ export default function DonationsPage() {
 
 	const activeGateways = [
 		{ id: "manual", label: "Bank" }, // Always active
-		...(settings?.midtrans_enabled ? [{ id: "midtrans", label: "Midtrans" }] : []),
-		...(settings?.pro_xendit_api_key ? [{ id: "xendit", label: "Xendit" }] : []),
-		...(settings?.pro_tripay_api_key ? [{ id: "tripay", label: "Tripay" }] : []),
+		...(settings?.midtrans_enabled
+			? [{ id: "midtrans", label: "Midtrans" }]
+			: []),
+		...(settings?.pro_xendit_api_key
+			? [{ id: "xendit", label: "Xendit" }]
+			: []),
+		...(settings?.pro_tripay_api_key
+			? [{ id: "tripay", label: "Tripay" }]
+			: []),
 	];
 	const [selectedDonation, setSelectedDonation] = useState<Donation | null>(
 		null,
@@ -153,8 +158,7 @@ export default function DonationsPage() {
 				params.append("campaign_id", selectedCampaigns.join(","));
 			if (selectedGateways.length > 0)
 				params.append("payment_method", selectedGateways.join(","));
-			if (recurringFilter)
-				params.append("is_recurring", recurringFilter);
+			if (recurringFilter) params.append("is_recurring", recurringFilter);
 
 			const response = await fetch(
 				`/wp-json/wpd/v1/donations?${params.toString()}`,
@@ -252,8 +256,7 @@ export default function DonationsPage() {
 			url += `&campaign_id=${selectedCampaigns.join(",")}`;
 		if (selectedGateways.length > 0)
 			url += `&payment_method=${selectedGateways.join(",")}`;
-		if (recurringFilter)
-			url += `&is_recurring=${recurringFilter}`;
+		if (recurringFilter) url += `&is_recurring=${recurringFilter}`;
 		return url;
 	};
 
@@ -261,7 +264,9 @@ export default function DonationsPage() {
 		<div className="space-y-6">
 			<div className="flex flex-col gap-4">
 				<div className="flex justify-between items-center">
-					<h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Donasi</h2>
+					<h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+						Donasi
+					</h2>
 					{isProActive && (
 						<div className="flex gap-2">
 							<button
@@ -556,7 +561,10 @@ export default function DonationsPage() {
 							</tr>
 						) : donations && donations.length > 0 ? (
 							donations.map((donation: Donation) => (
-								<tr key={donation.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+								<tr
+									key={donation.id}
+									className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
+								>
 									<td className="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">
 										#{donation.id}
 									</td>

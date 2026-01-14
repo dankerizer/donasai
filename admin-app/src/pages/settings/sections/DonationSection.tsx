@@ -10,7 +10,9 @@ export default function DonationSection() {
 	return (
 		<div className="space-y-6">
 			<div>
-				<h3 className="text-lg font-medium text-gray-900 mb-4 dark:text-gray-100">Opsi Donasi</h3>
+				<h3 className="text-lg font-medium text-gray-900 mb-4 dark:text-gray-100">
+					Opsi Donasi
+				</h3>
 				<div className="grid gap-4">
 					<div>
 						<label
@@ -41,7 +43,9 @@ export default function DonationSection() {
 							}
 							placeholder="50000,100000,200000"
 						/>
-						<p className="text-xs text-gray-500 mt-1 dark:text-gray-400">Pisahkan dengan koma.</p>
+						<p className="text-xs text-gray-500 mt-1 dark:text-gray-400">
+							Pisahkan dengan koma.
+						</p>
 					</div>
 					<div>
 						<Label htmlFor="anonymousLabel">Label Anonim</Label>

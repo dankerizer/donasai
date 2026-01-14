@@ -153,7 +153,9 @@ export default function SettingsLayout() {
 			)}
 
 			<div className="flex justify-between items-center">
-				<h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Pengaturan</h2>
+				<h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+					Pengaturan
+				</h2>
 			</div>
 
 			{/* Pro Banner */}
@@ -214,37 +216,35 @@ export default function SettingsLayout() {
 								key={tab.id}
 								onClick={() => handleTabChange(tab.id)}
 								className={clsx(
-									"flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-3 py-2 md:px-4 md:py-3 rounded-lg text-sm font-medium transition-colors text-left whitespace-nowrap",
+									"shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-3 py-2 md:px-4 md:py-3 rounded-lg text-sm font-medium transition-colors text-left whitespace-nowrap",
 									activeTab === tab.id
-										? "bg-white text-blue-600 shadow-sm border border-gray-200 dark:bg-gray-800 dark:text-blue-400 dark:border-gray-700"
-										: "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200",
+										? "bg-white text-blue-600 shadow-sm border border-gray-200 dark:bg-gray-800! dark:text-blue-400! dark:border-gray-700"
+										: "text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400! dark:hover:bg-gray-800 dark:hover:text-gray-200",
 								)}
 							>
 								<Icon size={18} />
-								<span className="md:hidden">
-                                     {tab.label === "General & Org"
-                                         ? "Umum"
-                                         : tab.label}
-                                </span>
-                                <span className="hidden md:inline">
+								<span className="sm:hidden! md:hidden">
+									{tab.label === "General & Org" ? "Umum" : tab.label}
+								</span>
+								<span className="hidden! md:inline!">
 									{tab.label === "General & Org"
 										? "Umum & Organisasi"
 										: tab.label === "Donation Settings"
 											? "Pengaturan Donasi"
 											: tab.label === "Payment"
 												? "Pembayaran"
-											: tab.label === "Notifications"
-												? "Notifikasi"
-											: tab.label === "Appearance"
-												? "Tampilan"
-											: tab.label === "License"
-												? "Lisensi"
-											: tab.label === "Receipt Template"
-												? "Template Kuitansi"
-											: tab.label === "Email Template"
-												? "Template Email"
-											: tab.label}
-                                </span>
+												: tab.label === "Notifications"
+													? "Notifikasi"
+													: tab.label === "Appearance"
+														? "Tampilan"
+														: tab.label === "License"
+															? "Lisensi"
+															: tab.label === "Receipt Template"
+																? "Template Kuitansi"
+																: tab.label === "Email Template"
+																	? "Template Email"
+																	: tab.label}
+								</span>
 							</button>
 						);
 					})}

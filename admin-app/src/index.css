@@ -1,10 +1,33 @@
 @import "tailwindcss";
 @custom-variant dark (&:is(.dark *));
 
-
 @theme {
 	--color-emerald-600: lab(55.0481% -49.9246 15.93);
 }
 #wpd-admin-app {
-	@apply -ml-2 md:-ml-5! relative md:min-h-screen ;
+	@apply -ml-2 md:-ml-5! relative md:min-h-screen font-sans;
+}
+
+/* Fix for WordPress Admin Style Overrides */
+#wpd-admin-app h1,
+#wpd-admin-app h2,
+#wpd-admin-app h3,
+#wpd-admin-app h4,
+#wpd-admin-app h5,
+#wpd-admin-app h6,
+#wpd-admin-app p,
+#wpd-admin-app li,
+#wpd-admin-app a {
+	color: inherit;
+	font-family: inherit;
+}
+
+/* Specific fix for inputs to avoid White Text on White Background in Dark Mode
+   if classes are missing or WP overrides them. */
+.dark #wpd-admin-app input:not([type="checkbox"]):not([type="radio"]),
+.dark #wpd-admin-app select,
+.dark #wpd-admin-app textarea {
+	color: inherit; /* Should be white/gray-100 */
+	/* We don't force background here to avoid transparent inputs on white sections,
+       but we ensure text color follows the theme. */
 }

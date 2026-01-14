@@ -165,7 +165,10 @@ export default function FeeCoverageSection() {
 							}
 							className="w-4 h-4 text-green-600 rounded dark:bg-gray-700 dark:border-gray-600 dark:checked:bg-green-600"
 						/>
-						<label htmlFor="default_checked" className="text-sm text-gray-700 dark:text-gray-300">
+						<label
+							htmlFor="default_checked"
+							className="text-sm text-gray-700 dark:text-gray-300"
+						>
 							Checkbox dicentang secara default
 						</label>
 					</div>

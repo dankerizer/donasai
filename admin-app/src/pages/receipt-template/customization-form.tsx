@@ -321,10 +321,7 @@ export function CustomizationForm({
 				isOpen={openSection === "content"}
 				onToggle={() => toggleSection("content")}
 			>
-				<FooterEditor
-					footer={template.footer}
-					onChange={handleFooterChange}
-				/>
+				<FooterEditor footer={template.footer} onChange={handleFooterChange} />
 			</AccordionSection>
 
 			{/* Settings Section */}

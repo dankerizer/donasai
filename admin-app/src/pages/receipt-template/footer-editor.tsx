@@ -9,10 +9,7 @@ interface FooterEditorProps {
 	onChange: (footer: ReceiptTemplate["footer"]) => void;
 }
 
-export function FooterEditor({
-	footer,
-	onChange,
-}: FooterEditorProps) {
+export function FooterEditor({ footer, onChange }: FooterEditorProps) {
 	const editorRef = useRef<HTMLTextAreaElement>(null);
 
 	const handleContentChange = (content: string) => {

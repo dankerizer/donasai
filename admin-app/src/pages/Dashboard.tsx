@@ -91,7 +91,9 @@ export default function Dashboard() {
 	return (
 		<div className="space-y-8">
 			<div className="flex justify-between items-center">
-				<h2 className="text-2xl! font-bold text-gray-800">Ringkasan Dasbor</h2>
+				<h2 className="text-2xl! font-bold text-gray-800 dark:text-gray-100">
+					Ringkasan Dasbor
+				</h2>
 				<Link
 					to="/donations"
 					className="text-sm font-medium text-red-600 hover:text-red-800"
@@ -102,48 +104,48 @@ export default function Dashboard() {
 
 			{/* Standard Stats (Free) */}
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-				<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+				<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow dark:bg-gray-900 dark:border-gray-800">
 					<div className="flex items-center gap-4">
 						<div className="p-3 bg-emerald-100 text-emerald-600 rounded-lg">
 							<Heart size={24} />
 						</div>
 						<div>
-							<p className="text-sm font-medium text-gray-600 my-0!">
+							<p className="text-sm font-medium text-gray-600 my-0! dark:text-gray-400">
 								Total Donasi
 							</p>
-							<h3 className="text-2xl! font-bold text-gray-900 my-0!">
+							<h3 className="text-2xl! font-bold text-gray-900 my-0! dark:text-gray-100">
 								Rp {stats?.total_donations?.toLocaleString("id-ID") || 0}
 							</h3>
 						</div>
 					</div>
 				</div>
 
-				<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+				<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow dark:bg-gray-900 dark:border-gray-800">
 					<div className="flex items-center gap-4">
-						<div className="p-3 bg-emerald-50 text-emerald-500 rounded-lg">
+						<div className="p-3 bg-emerald-50 text-emerald-500 rounded-lg dark:bg-emerald-900/30 dark:text-emerald-400">
 							<Users size={24} />
 						</div>
 						<div>
-							<p className="text-sm font-medium text-gray-600 my-0!">
+							<p className="text-sm font-medium text-gray-600 my-0! dark:text-gray-400">
 								Total Donatur
 							</p>
-							<h3 className="text-2xl! font-bold text-gray-900 my-0!">
+							<h3 className="text-2xl! font-bold text-gray-900 my-0! dark:text-gray-100">
 								{stats?.total_donors || 0}
 							</h3>
 						</div>
 					</div>
 				</div>
 
-				<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+				<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow dark:bg-gray-900 dark:border-gray-800">
 					<div className="flex items-center gap-4">
 						<div className="p-3 bg-emerald-100 text-emerald-600 rounded-lg">
 							<LayoutDashboard size={24} />
 						</div>
 						<div>
-							<p className="text-sm font-medium text-gray-600 my-0!">
+							<p className="text-sm font-medium text-gray-600 my-0! dark:text-gray-400">
 								Kampanye Aktif
 							</p>
-							<h3 className="text-2xl! font-bold text-gray-900 my-0!">
+							<h3 className="text-2xl! font-bold text-gray-900 my-0! dark:text-gray-100">
 								{stats?.active_campaigns || 0}
 							</h3>
 						</div>
@@ -152,11 +154,15 @@ export default function Dashboard() {
 			</div>
 
 			{/* Donation Trends Chart */}
-			<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+			<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 dark:bg-gray-900 dark:border-gray-800">
 				<div className="flex justify-between items-center mb-6">
 					<div>
-						<h3 className="text-lg font-bold text-gray-800">Tren Donasi</h3>
-						<p className="text-sm text-gray-500">30 Hari Terakhir</p>
+						<h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">
+							Tren Donasi
+						</h3>
+						<p className="text-sm text-gray-500 dark:text-gray-400">
+							30 Hari Terakhir
+						</p>
 					</div>
 					{/* Placeholder for range selector if needed later */}
 				</div>
@@ -223,12 +229,12 @@ export default function Dashboard() {
 			{/* Pro Analytics Wrapper */}
 			<div className="relative">
 				{!isProActive && (
-					<div className="absolute inset-0 z-10 bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center text-center p-6 rounded-xl border border-dashed border-gray-300">
+					<div className="absolute inset-0 z-10 bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center text-center p-6 rounded-xl border border-dashed border-gray-300 dark:bg-gray-900/60 dark:border-gray-700">
 						<div className="max-w-lg space-y-4">
-							<div className="inline-flex items-center justify-center p-3 bg-emerald-100 text-emerald-600 rounded-full mb-2">
+							<div className="inline-flex items-center justify-center p-3 bg-emerald-100 text-emerald-600 rounded-full mb-2 dark:bg-emerald-900/30 dark:text-emerald-400">
 								<TrendingUp size={32} />
 							</div>
-							<h3 className="text-2xl! font-bold text-gray-900">
+							<h3 className="text-2xl! font-bold text-gray-900 dark:text-gray-100">
 								Buka Wawasan Lebih Dalam dengan Pro
 							</h3>
 							<p className="text-gray-600 text-base! md:text-md!">
@@ -260,20 +266,20 @@ export default function Dashboard() {
 				>
 					{/* Pro Analytics (Active) */}
 					<div>
-						<h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+						<h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 dark:text-gray-100">
 							Analitik Lanjutan{" "}
-							<span className="text-xs bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded uppercase">
+							<span className="text-xs bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded uppercase dark:bg-red-900/30 dark:text-red-400">
 								Pro Active
 							</span>
 						</h3>
 						<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 							{/* Growth Rate */}
-							<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+							<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 dark:bg-gray-900 dark:border-gray-800">
 								<div className="flex items-center gap-4 mb-2">
-									<div className="p-2 bg-pink-100 text-pink-600 rounded-lg">
+									<div className="p-2 bg-pink-100 text-pink-600 rounded-lg dark:bg-pink-900/30 dark:text-pink-400">
 										<TrendingUp size={20} />
 									</div>
-									<span className="font-medium text-gray-600">
+									<span className="font-medium text-gray-600 dark:text-gray-400">
 										Pertumbuhan (MoM)
 									</span>
 								</div>
@@ -294,16 +300,16 @@ export default function Dashboard() {
 							</div>
 
 							{/* Recurring Revenue */}
-							<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+							<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 dark:bg-gray-900 dark:border-gray-800">
 								<div className="flex items-center gap-4 mb-2">
-									<div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
+									<div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg dark:bg-indigo-900/30 dark:text-indigo-400">
 										<Calendar size={20} />
 									</div>
-									<span className="font-medium text-gray-600">
+									<span className="font-medium text-gray-600 dark:text-gray-400">
 										Pendapatan Berulang
 									</span>
 								</div>
-								<h3 className="text-2xl font-bold text-gray-900">
+								<h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
 									Rp{" "}
 									{displayStats?.recurring_revenue?.toLocaleString("id-ID") ||
 										0}
@@ -314,16 +320,16 @@ export default function Dashboard() {
 							</div>
 
 							{/* Retention Rate */}
-							<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+							<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 dark:bg-gray-900 dark:border-gray-800">
 								<div className="flex items-center gap-4 mb-2">
-									<div className="p-2 bg-orange-100 text-orange-600 rounded-lg">
+									<div className="p-2 bg-orange-100 text-orange-600 rounded-lg dark:bg-orange-900/30 dark:text-orange-400">
 										<Users size={20} />
 									</div>
-									<span className="font-medium text-gray-600">
+									<span className="font-medium text-gray-600 dark:text-gray-400">
 										Retensi Donatur
 									</span>
 								</div>
-								<h3 className="text-2xl font-bold text-gray-900">
+								<h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
 									{displayStats?.retention_rate || 0}%
 								</h3>
 								<p className="text-xs text-gray-400 mt-1">
@@ -336,8 +342,8 @@ export default function Dashboard() {
 					{/* Additional Charts */}
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 						{/* Payment Methods Pie Chart */}
-						<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-							<h3 className="text-lg font-bold text-gray-800 mb-6">
+						<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 dark:bg-gray-900 dark:border-gray-800">
+							<h3 className="text-lg font-bold text-gray-800 mb-6 dark:text-gray-100">
 								Metode Pembayaran
 							</h3>
 							<div className="h-[300px] w-full">
@@ -372,8 +378,8 @@ export default function Dashboard() {
 						</div>
 
 						{/* Top Campaigns Bar Chart */}
-						<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-							<h3 className="text-lg font-bold text-gray-800 mb-6">
+						<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 dark:bg-gray-900 dark:border-gray-800">
+							<h3 className="text-lg font-bold text-gray-800 mb-6 dark:text-gray-100">
 								Kampanye Terpopuler
 							</h3>
 							<div className="h-[300px] w-full">

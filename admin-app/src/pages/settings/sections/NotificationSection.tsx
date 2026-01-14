@@ -61,7 +61,9 @@ export default function NotificationSection() {
 						PRO
 					</span>
 				</h3>
-				<p className="text-sm text-gray-500 mb-4 dark:text-gray-400">Tersedia di versi Pro:</p>
+				<p className="text-sm text-gray-500 mb-4 dark:text-gray-400">
+					Tersedia di versi Pro:
+				</p>
 				<ul className="list-disc pl-5 text-sm text-gray-600 space-y-1 dark:text-gray-300">
 					<li>Ringkasan harian via Email.</li>
 					<li>Peringatan pembayaran gagal.</li>

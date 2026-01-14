@@ -287,7 +287,9 @@ export default function AppearanceSection() {
 						}}
 					>
 						<div className="flex justify-between items-start mb-2">
-							<div className="font-medium text-gray-900 dark:text-gray-100">Tipografi</div>
+							<div className="font-medium text-gray-900 dark:text-gray-100">
+								Tipografi
+							</div>
 							{!isProActive ? (
 								<Lock size={14} className="text-gray-400" />
 							) : (
@@ -366,7 +368,9 @@ export default function AppearanceSection() {
 						}}
 					>
 						<div className="flex justify-between items-start mb-2">
-							<div className="font-medium text-gray-900 dark:text-gray-100">Mode Gelap</div>
+							<div className="font-medium text-gray-900 dark:text-gray-100">
+								Mode Gelap
+							</div>
 							{!isProActive ? (
 								<Lock size={14} className="text-gray-400" />
 							) : (
@@ -512,7 +516,9 @@ export default function AppearanceSection() {
 						}}
 					>
 						<div className="flex justify-between items-start mb-4">
-							<div className="font-medium text-gray-900 dark:text-gray-100">Gaya Hero Section</div>
+							<div className="font-medium text-gray-900 dark:text-gray-100">
+								Gaya Hero Section
+							</div>
 							{!isProActive ? (
 								<Lock size={14} className="text-gray-400" />
 							) : (
@@ -767,7 +773,8 @@ export default function AppearanceSection() {
 									Social Proof Popup
 								</div>
 								<p className="text-xs text-gray-500 mt-1">
-									Tampilkan notifikasi "Ahmad baru saja berdonasi..." untuk meningkatkan konversi.
+									Tampilkan notifikasi "Ahmad baru saja berdonasi..." untuk
+									meningkatkan konversi.
 								</p>
 							</div>
 							{!isProActive ? (
@@ -836,7 +843,8 @@ export default function AppearanceSection() {
 												onChange={(e) =>
 													setFormData({
 														...formData,
-														social_proof_interval: Number.parseInt(e.target.value) || 10,
+														social_proof_interval:
+															Number.parseInt(e.target.value) || 10,
 													})
 												}
 												min={5}
@@ -859,7 +867,8 @@ export default function AppearanceSection() {
 												onChange={(e) =>
 													setFormData({
 														...formData,
-														social_proof_duration: Number.parseInt(e.target.value) || 5,
+														social_proof_duration:
+															Number.parseInt(e.target.value) || 5,
 													})
 												}
 												min={3}
@@ -879,7 +888,8 @@ export default function AppearanceSection() {
 												onChange={(e) =>
 													setFormData({
 														...formData,
-														social_proof_limit: Number.parseInt(e.target.value) || 10,
+														social_proof_limit:
+															Number.parseInt(e.target.value) || 10,
 													})
 												}
 												min={5}
@@ -893,14 +903,16 @@ export default function AppearanceSection() {
 												type="button"
 												onClick={() => {
 													// Show preview popup
-													const existingPreview = document.getElementById('wpd-sp-admin-preview');
+													const existingPreview = document.getElementById(
+														"wpd-sp-admin-preview",
+													);
 													if (existingPreview) existingPreview.remove();
 
 													const previewHtml = `
 														<div id="wpd-sp-admin-preview" style="
 															position: fixed;
 															bottom: 20px;
-															${formData.social_proof_position === 'bottom-right' ? 'right: 20px;' : 'left: 20px;'}
+															${formData.social_proof_position === "bottom-right" ? "right: 20px;" : "left: 20px;"}
 															background: #fff;
 															border-radius: 12px;
 															box-shadow: 0 10px 40px rgba(0,0,0,0.15);
@@ -929,7 +941,7 @@ export default function AppearanceSection() {
 																<div style="
 																	width: 44px;
 																	height: 44px;
-																	background: linear-gradient(135deg, ${formData.brand_color || '#059669'}, ${formData.brand_color || '#059669'}88);
+																	background: linear-gradient(135deg, ${formData.brand_color || "#059669"}, ${formData.brand_color || "#059669"}88);
 																	border-radius: 50%;
 																	display: flex;
 																	align-items: center;
@@ -941,26 +953,49 @@ export default function AppearanceSection() {
 																<div>
 																	<div style="font-weight: 600; color: #1f2937; font-size: 14px;">Ahmad Hidayat</div>
 																	<div style="font-size: 13px; color: #4b5563;">
-																		baru saja berdonasi <strong style="color: ${formData.brand_color || '#059669'}">Rp 100.000</strong>
+																		baru saja berdonasi <strong style="color: ${formData.brand_color || "#059669"}">Rp 100.000</strong>
 																	</div>
 																	<div style="font-size: 11px; color: #9ca3af; margin-top: 4px;">5 menit yang lalu</div>
 																</div>
 															</div>
 														</div>
 													`;
-													document.body.insertAdjacentHTML('beforeend', previewHtml);
+													document.body.insertAdjacentHTML(
+														"beforeend",
+														previewHtml,
+													);
 
 													// Auto remove after duration
-													setTimeout(() => {
-														const preview = document.getElementById('wpd-sp-admin-preview');
-														if (preview) preview.remove();
-													}, (formData.social_proof_duration || 5) * 1000);
+													setTimeout(
+														() => {
+															const preview = document.getElementById(
+																"wpd-sp-admin-preview",
+															);
+															if (preview) preview.remove();
+														},
+														(formData.social_proof_duration || 5) * 1000,
+													);
 												}}
 												className="w-full py-2 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium text-sm hover:from-purple-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2"
 											>
-												<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-													<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+												<svg
+													className="w-4 h-4"
+													fill="none"
+													stroke="currentColor"
+													viewBox="0 0 24 24"
+												>
+													<path
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														strokeWidth={2}
+														d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+													/>
+													<path
+														strokeLinecap="round"
+														strokeLinejoin="round"
+														strokeWidth={2}
+														d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+													/>
 												</svg>
 												Lihat Preview
 											</button>
@@ -970,7 +1005,8 @@ export default function AppearanceSection() {
 							</div>
 						) : (
 							<p className="text-sm text-gray-500">
-								Tampilkan popup "X baru saja berdonasi..." untuk meningkatkan social proof.
+								Tampilkan popup "X baru saja berdonasi..." untuk meningkatkan
+								social proof.
 							</p>
 						)}
 					</div>
