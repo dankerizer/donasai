@@ -40,9 +40,9 @@ Dokumen ini merinci perbaikan dan peningkatan yang diperlukan berdasarkan review
 ### 4. Kualitas Kode: Prefixing (Awalan Nama)
 *   **Masalah:** Nama fungsi, class, option, atau global variabel yang terlalu umum dan bisa bentrok dengan plugin lain.
 *   **Tindakan yang Diperlukan:**
-    *   [ ] Pastikan SEMUA fungsi, class, dan variabel global di namespace global dimulai dengan `donasai_` atau `wpd_`.
-    *   [ ] Cek `includes/gateways/stripe.php` dan file include lainnya.
-    *   [ ] Cek key `update_option`, `get_option` (harus `donasai_settings`, bukan nama umum).
+    *   [x] Pastikan SEMUA fungsi, class, dan variabel global di namespace global dimulai dengan `donasai_` atau `wpd_`.
+    *   [x] Cek `includes/gateways/stripe.php` dan file include lainnya.
+    *   [x] Cek key `update_option`, `get_option` (harus `donasai_settings`, bukan nama umum).
 
 ### 5. Arsitektur: Enqueuing Assets (CSS/JS)
 *   **Masalah:** Tag `<link>`, `<style>`, dan `<script>` ditemukan langsung di dalam file template (inline).
