@@ -187,22 +187,7 @@ function wpd_campaign_options_callback($post)
 		?>
 
 		<?php if (defined('WPD_PRO_VERSION')): ?>
-			<h4>Marketing Pixels</h4>
-			<p>
-				<label for="wpd_pixel_fb">Facebook Pixel ID</label><br>
-				<input type="text" name="wpd_pixel_ids[fb]" id="wpd_pixel_fb"
-					value="<?php echo esc_attr($pixels['fb'] ?? ''); ?>" class="widefat" style="max-width: 300px;">
-			</p>
-			<p>
-				<label for="wpd_pixel_tiktok">TikTok Pixel ID</label><br>
-				<input type="text" name="wpd_pixel_ids[tiktok]" id="wpd_pixel_tiktok"
-					value="<?php echo esc_attr($pixels['tiktok'] ?? ''); ?>" class="widefat" style="max-width: 300px;">
-			</p>
-			<p>
-				<label for="wpd_pixel_ga4">GA4 Measurement ID</label><br>
-				<input type="text" name="wpd_pixel_ids[ga4]" id="wpd_pixel_ga4" placeholder="G-XXXXXXXXXX"
-					value="<?php echo esc_attr($pixels['ga4'] ?? ''); ?>" class="widefat" style="max-width: 300px;">
-			</p>
+
 
 			<h4>WhatsApp Support (Flying Button)</h4>
 			<p>
@@ -259,15 +244,7 @@ function wpd_save_campaign_options($post_id)
 		update_post_meta($post_id, '_wpd_packages', sanitize_textarea_field(wp_unslash($_POST['wpd_packages'])));
 	}
 
-	if (isset($_POST['wpd_pixel_ids']) && is_array($_POST['wpd_pixel_ids'])) {
-		// Handle array sanitization with unslash
-		$pixels_post = wp_unslash($_POST['wpd_pixel_ids']);
-		$pixels = array();
-		foreach ($pixels_post as $key => $value) {
-			$pixels[sanitize_key($key)] = sanitize_text_field($value);
-		}
-		update_post_meta($post_id, '_wpd_pixel_ids', $pixels);
-	}
+
 
 
 

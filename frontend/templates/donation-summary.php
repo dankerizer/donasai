@@ -47,24 +47,6 @@ $button_color = get_option('wpd_appearance_button_color', '#ec4899'); // Pink
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Terima Kasih - <?php echo esc_html($title); ?></title>
     <?php wp_head(); ?>
-    <?php wp_head(); ?>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-
-        :root {
-            --wpd-primary:
-                <?php echo esc_attr($primary_color); ?>
-            ;
-            --wpd-btn:
-                <?php echo esc_attr($button_color); ?>
-            ;
-            --wpd-bg: #f8fafc;
-            --wpd-card-bg: #ffffff;
-            --wpd-text-main: #0f172a;
-            --wpd-text-muted: #64748b;
-        }
-    </style>
-    
 </head>
 
 <body class="status-<?php echo esc_attr($status); ?>">
@@ -173,12 +155,24 @@ $button_color = get_option('wpd_appearance_button_color', '#ec4899'); // Pink
                     // Get Confirmation URL
                     $settings_gen = get_option('wpd_settings_general');
                     $conf_page_id = isset($settings_gen['confirmation_page']) ? intval($settings_gen['confirmation_page']) : 0;
+                    $conf_url = $conf_page_id ? get_permalink($conf_page_id) : '';
 
+                    // Build JS values
+                    $js_conf_url = $conf_url ? esc_url(add_query_arg('donation_id', $donation_id, $conf_url)) : '';
+                    $js_phone = esc_attr(get_option('wpd_settings_general')['whatsapp_number'] ?? '');
+                    $js_donation_id = esc_attr($donation_id);
+                    $js_amount = esc_attr(number_format($amount, 0, ',', '.'));
+                    
                     if ($conf_page_id) {
-                        $conf_url = add_query_arg('donation_id', $donation_id, get_permalink($conf_page_id));
-                        echo '<a href="' . esc_url($conf_url) . '" class="btn btn-primary">' . esc_html__('Konfirmasi Pembayaran', 'donasai') . '</a>';
+                        echo '<a href="' . $js_conf_url . '" class="btn btn-primary">' . esc_html__('Konfirmasi Pembayaran', 'donasai') . '</a>';
                     } else {
-                        echo '<a href="#" onclick="confirmPayment()" class="btn btn-primary">' . esc_html__('Konfirmasi Pembayaran', 'donasai') . '</a>';
+                         // Use ID and Data Attributes for JS handler
+                        echo '<a href="#" id="wpd-confirm-btn" 
+                                data-url="' . $js_conf_url . '" 
+                                data-phone="' . $js_phone . '" 
+                                data-id="' . $js_donation_id . '" 
+                                data-amount="' . $js_amount . '" 
+                                class="btn btn-primary">' . esc_html__('Konfirmasi Pembayaran', 'donasai') . '</a>';
                     }
                     ?>
                 <?php endif; ?>
@@ -193,82 +187,18 @@ $button_color = get_option('wpd_appearance_button_color', '#ec4899'); // Pink
             $is_branding_removed = !empty($gen_settings['remove_branding']);
 
             if (!$is_branding_removed): ?>
-                <div class="wpd-powered-by"
-                    style="text-align:center; padding-bottom: 20px; color:#9ca3af; font-size:13px; margin-top: -20px;">
-                    Powered by <a href="https://donasai.com" target="_blank"
-                        style="color:inherit; text-decoration:none; font-weight:600;">Donasai</a>
+                <div class="wpd-powered-by">
+                    Powered by <a href="https://donasai.com" target="_blank">Donasai</a>
                 </div>
             <?php endif; ?>
 
         </div>
     </div>
 
-    <script>
-        // Confetti Effect for Complete Status
-        <?php if ($status == 'complete'): ?>
-            window.addEventListener('load', () => {
-                var count = 200;
-                var defaults = {
-                    origin: { y: 0.7 },
-                    zIndex: 9999
-                };
-
-                function fire(particleRatio, opts) {
-                    confetti(Object.assign({}, defaults, opts, {
-                        particleCount: Math.floor(count * particleRatio)
-                    }));
-                }
-
-                fire(0.25, { spread: 26, startVelocity: 55 });
-                fire(0.2, { spread: 60 });
-                fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-                fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-                fire(0.1, { spread: 120, startVelocity: 45 });
-            });
-        <?php endif; ?>
-
-            < script >
-            // Confetti Effect
-            <?php if ($status == 'complete'): ?>
-            window.addEventListener('load', () => {
-                if (typeof confetti === 'function') {
-                    var count = 200;
-                    var defaults = { origin: { y: 0.7 }, zIndex: 9999 };
-                    function fire(particleRatio, opts) {
-                        confetti(Object.assign({}, defaults, opts, {
-                            particleCount: Math.floor(count * particleRatio)
-                        }));
-                    }
-                    fire(0.25, { spread: 26, startVelocity: 55 });
-                    fire(0.2, { spread: 60 });
-                }
-            });
-        <?php endif; ?>
-
-        function confirmPayment() {
-            <?php
-            $settings = get_option('wpd_settings_general');
-            $conf_page_id = isset($settings['confirmation_page']) ? intval($settings['confirmation_page']) : 0;
-            $conf_url = $conf_page_id ? get_permalink($conf_page_id) : '';
-
-            // Build JS values
-            $js_conf_url = $conf_url ? esc_url_raw(add_query_arg('donation_id', $donation_id, $conf_url)) : '';
-            $js_phone = esc_js(get_option('wpd_settings_general')['whatsapp_number'] ?? '');
-            $js_donation_id = esc_js($donation_id);
-            $js_amount = esc_js(number_format($amount, 0, ',', '.'));
-            ?>
-
-            handleConfirmPayment(
-                '<?php echo esc_url($js_conf_url); ?>',
-                '<?php echo esc_js($js_phone); ?>',
-                '<?php echo esc_js($js_donation_id); ?>',
-                '<?php echo esc_js($js_amount); ?>'
-            );
-        }
-
-        // Pass translated messages to JS if needed, or just hardcode in JS for now as simplified.
-        // For copyToClipboard, we use the one in summary.js
-    </script>
+    <?php 
+    // Pass status to JS for Confetti
+    wp_add_inline_script('wpd-summary', 'window.wpd_donation_status = "' . esc_js($status) . '";', 'before');
+    ?>
 
     <?php wp_footer(); ?>
 </body>

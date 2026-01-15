@@ -1,0 +1,179 @@
+/* Scoped Styles for Confirmation Form */
+.wpd-confirmation-wrapper {
+    max-width: 460px;
+    margin: 40px auto;
+    padding: 0 15px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.wpd-card {
+    background: var(--wpd-card-bg, #ffffff);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    border: 1px solid var(--wpd-border, #e2e8f0);
+}
+
+.wpd-form-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.wpd-form-header h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--wpd-text-main, #0f172a);
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.025em;
+}
+
+.wpd-form-header p {
+    font-size: 0.95rem;
+    color: var(--wpd-text-muted, #64748b);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.wpd-alert-error {
+    background: #fef2f2;
+    border: 1px solid #fee2e2;
+    color: #991b1b;
+    padding: 1rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.wpd-text-center {
+    text-align: center;
+}
+
+.wpd-form-group {
+    margin-bottom: 1.25rem;
+}
+
+.wpd-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.wpd-input-group {
+    position: relative;
+}
+
+.wpd-input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--wpd-text-muted, #64748b);
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.wpd-input.wpd-has-icon {
+    padding-left: 38px;
+}
+
+.wpd-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--wpd-border, #e2e8f0);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+.wpd-input:focus {
+    border-color: var(--wpd-primary, #059669);
+    box-shadow: 0 0 0 3px rgba(var(--wpd-primary-rgb, 5, 150, 105), 0.1);
+    outline: none;
+}
+
+.wpd-helper-text {
+    font-size: 0.75rem;
+    color: var(--wpd-text-muted, #64748b);
+    margin-top: 0.35rem;
+}
+
+/* Upload Box */
+.wpd-upload-box {
+    position: relative;
+}
+
+.wpd-file-input {
+    display: none;
+}
+
+.wpd-upload-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+    border: 2px dashed var(--wpd-border, #e2e8f0);
+    border-radius: 12px;
+    background: var(--wpd-bg, #f8fafc);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.wpd-upload-label:hover {
+    border-color: var(--wpd-primary, #059669);
+    background: var(--wpd-bg-soft, #f1f5f9);
+}
+
+.wpd-upload-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    background: var(--wpd-card-bg, #ffffff);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+    border: 1px solid var(--wpd-border, #e2e8f0);
+}
+
+.wpd-upload-icon {
+    width: 24px;
+    height: 24px;
+    color: var(--wpd-primary, #059669);
+}
+
+.wpd-upload-hint {
+    font-size: 0.75rem;
+    color: var(--wpd-text-muted, #64748b);
+    margin-top: 0.25rem;
+}
+
+.wpd-btn-submit {
+    background-color: var(--wpd-btn, #ec4899);
+    color: white;
+    width: 100%;
+    padding: 0.875rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.wpd-btn-submit:hover {
+    filter: brightness(110%);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.wpd-btn-submit:active {
+    transform: translateY(0);
+}

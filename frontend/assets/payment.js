@@ -121,7 +121,79 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Fee Coverage Logic
     initFeeCoverage();
+
+    // Midtrans Snap Integration
+    initMidtransSnap();
 });
+
+function initMidtransSnap() {
+    if (typeof wpd_payment_vars === 'undefined' || !wpd_payment_vars.is_midtrans_active) return;
+    
+    // Inject Script if not present
+    if (wpd_payment_vars.snap_url) {
+        if (!document.querySelector('script[src="' + wpd_payment_vars.snap_url + '"]')) {
+           const script = document.createElement('script');
+           script.src = wpd_payment_vars.snap_url;
+           if (wpd_payment_vars.client_key) {
+               script.setAttribute('data-client-key', wpd_payment_vars.client_key);
+           }
+           document.body.appendChild(script);
+        }
+    }
+
+    const form = document.getElementById('donationForm');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+        const paymentMethodInput = document.querySelector('input[name="payment_method"]:checked');
+        const method = paymentMethodInput ? paymentMethodInput.value : '';
+        
+        if (method !== 'midtrans') return;
+
+        e.preventDefault(); 
+        const btn = document.querySelector('.wpd-btn-primary'); 
+        const originalText = btn.innerText; 
+        btn.innerText = 'Memproses...'; 
+        btn.disabled = true;
+
+        const formData = new FormData(this); 
+        formData.append('wpd_ajax', '1');
+
+        fetch(window.location.href, { method: 'POST', body: formData })
+        .then(response => response.json())
+        .then(res => {
+            if (res.success) {
+                if (res.data.is_midtrans && res.data.snap_token) { 
+                    if (window.snap) {
+                        window.snap.pay(res.data.snap_token, { 
+                            onSuccess: function (result) { window.location.href = res.data.redirect_url; }, 
+                            onPending: function (result) { window.location.href = res.data.redirect_url; }, 
+                            onError: function (result) { showToast("Pembayaran Gagal!"); btn.disabled = false; btn.innerText = originalText; }, 
+                            onClose: function () { btn.disabled = false; btn.innerText = originalText; } 
+                        }); 
+                    } else {
+                         showToast('Snap JS not loaded yet.');
+                         btn.disabled = false;
+                         btn.innerText = originalText;
+                    }
+                } else {
+                    // Fallback redirect
+                    if (res.data.redirect_url) window.location.href = res.data.redirect_url; 
+                } 
+            } else {
+                showToast('Error: ' + res.data.message);
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            showToast('Terjadi kesalahan koneksi.');
+            btn.disabled = false;
+            btn.innerText = originalText;
+        });
+    });
+}
 
 /**
  * Fee Coverage Feature (Pro)

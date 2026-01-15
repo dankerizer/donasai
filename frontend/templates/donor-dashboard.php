@@ -190,7 +190,13 @@ if (false === $donations) {
                             </td>
                             <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6; text-align:right;">
                                 <?php if ('active' === $sub->status): ?>
-                                    <button onclick="wpdCancelSub(<?php echo esc_attr($sub->id); ?>)" class="button-small"
+                                    <button onclick="wpdCancelSub(
+                                        <?php echo esc_attr($sub->id); ?>,
+                                        '<?php echo esc_js(__('Yakin ingin membatalkan donasi rutin ini?', 'donasai')); ?>',
+                                        '<?php echo esc_js(__('Berhasil dibatalkan.', 'donasai')); ?>',
+                                        '<?php echo esc_js(__('Gagal membatalkan.', 'donasai')); ?>',
+                                        '<?php echo esc_js(wp_create_nonce('wp_rest')); ?>'
+                                    )" class="button-small"
                                         style="background:#fee2e2; color:#991b1b; border:none; padding:4px 8px; border-radius:4px; font-size:11px; cursor:pointer;"><?php esc_html_e('Batalkan', 'donasai'); ?></button>
                                 <?php else: ?>
                                     <span style="color:#9ca3af; font-size:11px;">-</span>
@@ -202,62 +208,4 @@ if (false === $donations) {
             </table>
         </div>
     <?php endif; ?>
-
-    <script>
-        function wpdCancelSub(id) {
-            if (!confirm('<?php echo esc_js(__('Yakin ingin membatalkan donasi rutin ini?', 'donasai')); ?>')) return;
-
-            var nonce = '<?php echo esc_js(wp_create_nonce('wp_rest')); ?>';
-            fetch('/wp-json/wpd/v1/subscriptions/' + id + '/cancel', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-WP-Nonce': nonce
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('<?php echo esc_js(__('Berhasil dibatalkan.', 'donasai')); ?>');
-                        location.reload();
-                    } else {
-                        alert('<?php echo esc_js(__('Gagal membatalkan.', 'donasai')); ?>');
-                    }
-                });
-        }
-    </script>
 </div>
-
-<style>
-    .wpd-table tr:last-child td {
-        border-bottom: none;
-    }
-
-    .wpd-table tr:hover {
-        background-color: var(--wpd-bg);
-    }
-
-    .wpd-status-badge {
-        display: inline-block;
-        padding: 4px 10px;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: capitalize;
-    }
-
-    .wpd-status-complete {
-        background: #d1fae5;
-        color: #065f46;
-    }
-
-    .wpd-status-pending {
-        background: #fef3c7;
-        color: #92400e;
-    }
-
-    .wpd-status-failed {
-        background: #fee2e2;
-        color: #991b1b;
-    }
-</style>

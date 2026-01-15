@@ -47,13 +47,12 @@ Dokumen ini merinci perbaikan dan peningkatan yang diperlukan berdasarkan review
 ### 5. Arsitektur: Enqueuing Assets (CSS/JS)
 *   **Masalah:** Tag `<link>`, `<style>`, dan `<script>` ditemukan langsung di dalam file template (inline).
 *   **Tindakan yang Diperlukan:** Pindahkan ke `wp_enqueue_scripts` / `admin_enqueue_scripts` atau gunakan `wp_add_inline_script` / `wp_add_inline_style`.
-*   **Contoh Spesifik:**
-    *   [ ] `frontend/templates/donation-form.php` (baris 60, 399, 1035)
-    *   [ ] `frontend/templates/donation-summary.php` (baris 51)
-    *   [ ] `frontend/templates/donor-dashboard.php` (baris 206)
-    *   [ ] `includes/admin/campaign-columns.php` (baris 205)
-    *   [ ] `frontend/templates/confirmation-form.php` (baris 145)
-    *   [ ] `includes/functions-frontend.php` (baris 228)
+*   **Status:** Selesai
+    *   [x] `frontend/templates/donation-form.php`
+    *   [x] `frontend/templates/donation-summary.php`
+    *   [x] `frontend/templates/donor-dashboard.php`
+    *   [x] `frontend/templates/confirmation-form.php`
+    *   [x] `includes/admin/campaign-columns.php`
 
 ## 📋 Kepatuhan & Dokumentasi
 

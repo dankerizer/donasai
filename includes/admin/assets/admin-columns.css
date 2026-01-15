@@ -1,0 +1,108 @@
+/**
+ * Admin Columns CSS
+ */
+
+/* Column Widths */
+.column-thumb { width: 60px; }
+.column-stats { width: 25%; }
+.column-dates { width: 15%; }
+.column-wpd_actions { width: 100px; text-align:right; }
+
+/* Thumbnail */
+.wpd-admin-thumb {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.wpd-admin-thumb-placeholder {
+    width: 50px;
+    height: 50px;
+    background: #f0f0f1;
+    display: block;
+    border-radius: 4px;
+}
+
+/* Stats */
+.wpd-stat-row {
+    margin-bottom: 4px;
+}
+
+.wpd-stat-collected {
+    font-weight: 600;
+}
+
+/* Utilities */
+.wpd-text-success { color: #16a34a; }
+.wpd-text-primary { color: #2563eb; }
+.wpd-text-danger { color: #dc2626; }
+
+.wpd-bg-success { background-color: #16a34a; }
+.wpd-bg-primary { background-color: #2563eb; }
+
+.wpd-progress-bar {
+    background: #e5e7eb;
+    height: 4px;
+    width: 100%;
+    margin-top: 5px;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.wpd-progress-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+/* Actions Dropdown */
+.wpd-actions-details {
+    position: relative;
+}
+
+.wpd-actions-details summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.wpd-actions-details summary .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    line-height: inherit;
+}
+
+.wpd-actions-dropdown {
+    position: absolute;
+    right: 0;
+    top: 30px;
+    width: 160px;
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    z-index: 999;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.wpd-action-link {
+    display: block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: #1d2327;
+    border-bottom: 1px solid #f0f0f1;
+    transition: background 0.2s;
+}
+
+.wpd-action-link:hover {
+    background: #f6f7f7;
+}
+
+.wpd-action-link:last-child {
+    border-bottom: none;
+}
+
+.wpd-action-link.is-danger {
+    color: #b32d2e;
+}

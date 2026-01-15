@@ -41,9 +41,9 @@ function wpd_campaign_custom_column($column, $post_id)
     switch ($column) {
         case 'thumb':
             if (has_post_thumbnail($post_id)) {
-                echo wp_kses_post(get_the_post_thumbnail($post_id, array(50, 50), array('style' => 'width:50px;height:50px;object-fit:cover;border-radius:4px;')));
+                echo wp_kses_post(get_the_post_thumbnail($post_id, array(50, 50), array('class' => 'wpd-admin-thumb')));
             } else {
-                echo '<span style="width:50px;height:50px;background:#f0f0f1;display:block;border-radius:4px;"></span>';
+                echo '<span class="wpd-admin-thumb-placeholder"></span>';
             }
             break;
 
@@ -60,15 +60,16 @@ function wpd_campaign_custom_column($column, $post_id)
                 $donors = 0;
 
             $percent = $target > 0 ? ($collected / $target) * 100 : 0;
-            $color = $percent >= 100 ? '#16a34a' : '#2563eb';
+            $text_class = $percent >= 100 ? 'wpd-text-success' : 'wpd-text-primary';
+            $bg_class = $percent >= 100 ? 'wpd-bg-success' : 'wpd-bg-primary';
 
-            echo '<div style="margin-bottom:4px;"><strong>Target:</strong> Rp ' . esc_html(number_format((float) $target, 0, ',', '.')) . '</div>';
-            echo '<div style="margin-bottom:4px;"><strong>Collected:</strong> <span style="color:' . esc_attr($color) . '">Rp ' . esc_html(number_format((float) $collected, 0, ',', '.')) . '</span></div>';
+            echo '<div class="wpd-stat-row"><strong>Target:</strong> Rp ' . esc_html(number_format((float) $target, 0, ',', '.')) . '</div>';
+            echo '<div class="wpd-stat-row"><strong>Collected:</strong> <span class="' . esc_attr($text_class) . '">' . 'Rp ' . esc_html(number_format((float) $collected, 0, ',', '.')) . '</span></div>';
             echo '<div><strong>Donors:</strong> ' . intval($donors) . '</div>';
 
             // Progress bar
-            echo '<div style="background:#e5e7eb;height:4px;width:100%;margin-top:5px;border-radius:2px;overflow:hidden;">';
-            echo '<div style="background:' . esc_attr($color) . ';height:100%;width:' . esc_attr(min(100, $percent)) . '%;"></div>';
+            echo '<div class="wpd-progress-bar">';
+            echo '<div class="wpd-progress-fill ' . esc_attr($bg_class) . '" style="width:' . esc_attr(min(100, $percent)) . '%;"></div>';
             echo '</div>';
             break;
 
@@ -80,7 +81,7 @@ function wpd_campaign_custom_column($column, $post_id)
             if ($deadline) {
                 $days_left = ceil((strtotime($deadline) - time()) / 86400);
                 if ($days_left < 0) {
-                    echo '<div style="color:#dc2626;"><strong>End:</strong> ' . esc_html(date_i18n('d M Y', strtotime($deadline))) . ' (Expired)</div>';
+                    echo '<div class="wpd-text-danger"><strong>End:</strong> ' . esc_html(date_i18n('d M Y', strtotime($deadline))) . ' (Expired)</div>';
                 } else {
                     echo '<div><strong>End:</strong> ' . esc_html(date_i18n('d M Y', strtotime($deadline))) . '</div>';
                 }
@@ -118,18 +119,18 @@ function wpd_campaign_custom_column($column, $post_id)
                 '_wpnonce' => $recalc_nonce
             ), $recalc_url);
 
-            echo '<details style="position:relative;">';
-            echo '<summary class="button button-small">Actions <span class="dashicons dashicons-arrow-down-alt2" style="font-size:12px;line-height: inherit;"></span></summary>';
-            echo '<div style="position:absolute; right:0; top:30px; width:160px; background:#fff; border:1px solid #ccd0d4; box-shadow:0 4px 10px rgba(0,0,0,0.1); z-index:999; border-radius:4px; overflow:hidden;">';
+            echo '<details class="wpd-actions-details">';
+            echo '<summary class="button button-small">Actions <span class="dashicons dashicons-arrow-down-alt2"></span></summary>';
+            echo '<div class="wpd-actions-dropdown">';
 
             // Edit
-            echo '<a href="' . esc_url(get_edit_post_link($post_id)) . '" style="display:block; padding:8px 12px; text-decoration:none; color:#1d2327; border-bottom:1px solid #f0f0f1; transition:bg 0.2s;" onmouseover="this.style.background=\'#f6f7f7\'" onmouseout="this.style.background=\'#fff\'">Edit Campaign</a>';
+            echo '<a href="' . esc_url(get_edit_post_link($post_id)) . '" class="wpd-action-link">Edit Campaign</a>';
 
             // Download Donors
-            echo '<a href="' . esc_url($export_url) . '" target="_blank" style="display:block; padding:8px 12px; text-decoration:none; color:#1d2327; border-bottom:1px solid #f0f0f1; transition:bg 0.2s;" onmouseover="this.style.background=\'#f6f7f7\'" onmouseout="this.style.background=\'#fff\'">Download Donors</a>';
+            echo '<a href="' . esc_url($export_url) . '" target="_blank" class="wpd-action-link">Download Donors</a>';
 
             // Recalc Stats
-            echo '<a href="' . esc_url($recalc_url) . '" style="display:block; padding:8px 12px; text-decoration:none; color:#b32d2e; transition:bg 0.2s;" onmouseover="this.style.background=\'#f6f7f7\'" onmouseout="this.style.background=\'#fff\'">Recalculate Stats</a>';
+            echo '<a href="' . esc_url($recalc_url) . '" class="wpd-action-link is-danger">Recalculate Stats</a>';
 
             echo '</div>';
             echo '</details>';
@@ -196,18 +197,12 @@ function wpd_campaign_column_orderby($vars)
 add_filter('request', 'wpd_campaign_column_orderby');
 
 /**
- * Custom CSS for Columns
+ * Enqueue Admin Assets
  */
-function wpd_campaign_admin_css()
-{
+function wpd_campaign_admin_enqueue($hook) {
     global $typenow;
-    if ('wpd_campaign' === $typenow) {
-        echo '<style>
-            .column-thumb { width: 60px; }
-            .column-stats { width: 25%; }
-            .column-dates { width: 15%; }
-            .column-wpd_actions { width: 100px; text-align:right;}
-        </style>';
+    if ('edit.php' === $hook && 'wpd_campaign' === $typenow) {
+        wp_enqueue_style('wpd-admin-columns', WPD_PLUGIN_URL . 'includes/admin/assets/admin-columns.css', array(), WPD_VERSION);
     }
 }
-add_action('admin_head', 'wpd_campaign_admin_css');
+add_action('admin_enqueue_scripts', 'wpd_campaign_admin_enqueue');

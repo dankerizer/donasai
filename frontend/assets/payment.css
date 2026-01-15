@@ -1,12 +1,737 @@
 /* Payment Page Styles */
-/* Extracted from donation-form.php */
+
+/* Reset & Base */
+html,
+body.wpd-payment-page {
+    margin: 0;
+    padding: 0;
+    background-color: var(--wpd-bg);
+}
+
+.admin-bar .wpd-layout-wrapper {
+    padding-top: 80px
+}
+
 .wpd-layout-wrapper {
-    background-color: #f3f4f6;
+    background-color: var(--wpd-bg);
     min-height: 100vh;
     padding-top: 50px;
     padding-bottom: 90px;
+    /* Space for footer */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
-/* ... (Add other static styles here if full extraction is desired, 
-   but for now removing inline <link> and registering assets solves the warning. 
-   Ideally we dump all that CSS here.) */
+
+.wpd-card {
+    background: var(--wpd-card-bg);
+    max-width: 550px;
+    margin: 0 auto;
+    min-height: 100vh;
+    /* Fill on mobile */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    border-radius: var(--wpd-radius, 12px) !important;
+}
+
+.btn,
+.wpd-radio-card,
+.wpd-input {
+    border-radius: var(--wpd-radius, 12px) !important;
+}
+
+@media(min-width: 640px) {
+    .admin-bar .wpd-layout-wrapper {
+        padding-top: 100px
+    }
+
+    .wpd-layout-wrapper {
+        padding: 70px 20px 20px;
+    }
+
+    .wpd-card {
+        min-height: auto;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+}
+
+/* Split Layout Logic */
+@media(min-width: 900px) {
+    body.wpd-layout-split .wpd-card {
+        max-width: 1050px;
+        display: grid;
+        grid-template-columns: 400px 1fr;
+        align-items: stretch;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+    }
+
+    body.wpd-layout-split .wpd-campaign-summary {
+        grid-column: 1;
+        grid-row: 1 / 3;
+        /* Span full height */
+        background: var(--wpd-input-bg);
+        border-right: 1px solid var(--wpd-border);
+        border-bottom: none;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 40px;
+        position: relative;
+    }
+
+    body.wpd-layout-split .wpd-campaign-summary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 6px;
+    }
+
+    body.wpd-layout-split .wpd-campaign-thumb {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16/9;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    body.wpd-layout-split .wpd-campaign-info {
+        text-align: left;
+        width: 100%;
+    }
+
+    body.wpd-layout-split .wpd-campaign-label {
+        color: var(--wpd-text-muted);
+        margin-bottom: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+    body.wpd-layout-split .wpd-campaign-title {
+        font-size: 24px;
+        line-height: 1.3;
+        color: var(--wpd-text-main);
+        font-weight: 800;
+    }
+
+    /* Form Container */
+    body.wpd-layout-split form#donationForm {
+        grid-column: 2;
+        padding: 40px;
+    }
+
+    /* Move Powered By to bottom left? or just hide/move to bottom right */
+    body.wpd-layout-split .wpd-powered-by {
+        grid-column: 2;
+        text-align: center;
+        padding-bottom: 20px;
+    }
+}
+
+
+/* Header */
+.wpd-header-mobile {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    background: var(--wpd-card-bg);
+    border-bottom: 1px solid #f3f4f6;
+    position: fixed;
+    top: 0;
+    z-index: 99;
+    width: 100%;
+    left: 0;
+}
+
+/* Admin Bar Adjustment */
+body.admin-bar .wpd-header-mobile {
+    top: 32px;
+}
+
+@media screen and (max-width: 782px) {
+    body.admin-bar .wpd-header-mobile {
+        top: 46px;
+    }
+}
+
+.wpd-back-btn {
+    color: var(--wpd-text-main);
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.wpd-header-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--wpd-text-main);
+}
+
+/* Campaign Summary */
+.wpd-campaign-summary {
+    padding: 20px 24px;
+    background: var(--wpd-input-bg);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid var(--wpd-bg);
+}
+
+.wpd-campaign-thumb {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.wpd-campaign-label {
+    font-size: 11px;
+    color: var(--wpd-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.wpd-campaign-title {
+    margin: 2px 0 0 0;
+    font-size: 15px;
+    line-height: 1.3;
+    color: var(--wpd-text-main);
+    font-weight: 700;
+}
+
+/* Sections */
+.wpd-section {
+    padding: 20px 24px;
+}
+
+.wpd-divider {
+    height: 8px;
+    background: var(--wpd-bg);
+    border-top: 1px solid var(--wpd-border);
+    border-bottom: 1px solid var(--wpd-border);
+}
+
+.wpd-label-heading {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--wpd-text-main);
+    margin-bottom: 16px;
+}
+
+/* Presets Grid */
+.wpd-grid-presets {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.wpd-preset-card {
+    border: 1px solid var(--wpd-border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--wpd-card-bg);
+    position: relative;
+    overflow: hidden;
+}
+
+.wpd-preset-card:hover {
+    border-color: var(--wpd-input-border);
+    background: var(--wpd-bg);
+}
+
+.wpd-preset-card.active {
+    border-color: var(--wpd-primary, #2563eb);
+    background: var(--wpd-bg-soft, #eff6ff);
+    box-shadow: 0 0 0 1px var(--wpd-primary, #2563eb);
+}
+
+.wpd-preset-emoji {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.wpd-preset-val {
+    font-weight: 700;
+    color: var(--wpd-text-main);
+    font-size: 15px;
+}
+
+/* Money Input */
+.wpd-input-money-wrapper {
+    position: relative;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    overflow: hidden;
+    background: var(--wpd-card-bg);
+    transition: all 0.2s;
+}
+
+.wpd-input-money-wrapper:focus-within {
+    border-color: var(--wpd-primary, #2563eb);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.wpd-currency {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 700;
+    color: var(--wpd-text-muted);
+    font-size: 18px;
+}
+
+.wpd-input-money {
+    width: 100%;
+    border: none !important;
+    padding: 16px 16px 16px 50px !important;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    outline: none !important;
+    box-sizing: border-box;
+    background: transparent;
+}
+
+.wpd-helper-text {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 8px;
+}
+
+/* Inputs */
+.wpd-form-row {
+    margin-bottom: 15px;
+}
+
+.wpd-input,
+.wpd-textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+    background: #fdfdfd;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.wpd-input:focus,
+.wpd-textarea:focus {
+    background: var(--wpd-card-bg);
+    border-color: var(--wpd-primary, #2563eb);
+}
+
+.mt-3 {
+    margin-top: 15px;
+}
+
+/* User Profile */
+.wpd-user-option {
+    margin-bottom: 20px;
+}
+
+.wpd-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: #f9fafb;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+}
+
+.wpd-user-profile img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.wpd-user-profile .name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--wpd-text-main);
+}
+
+.wpd-user-profile .email {
+    font-size: 12px;
+    color: var(--wpd-text-muted);
+}
+
+.wpd-login-prompt {
+    font-size: 14px;
+    color: #4b5563;
+}
+
+.wpd-login-prompt a {
+    color: var(--wpd-primary, #2563eb);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* Switch */
+.wpd-switch-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 10px 0 20px 0;
+}
+
+.wpd-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.wpd-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e5e7eb;
+    transition: .3s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+input:checked+.slider {
+    background-color: var(--wpd-primary, #2563eb);
+}
+
+input:checked+.slider:before {
+    transform: translateX(20px);
+}
+
+.wpd-switch-label {
+    font-size: 14px;
+    color: #4b5563;
+    cursor: pointer;
+}
+
+/* Payment Types */
+.wpd-payment-list {
+    display: grid;
+    gap: 12px;
+}
+
+.wpd-payment-item {
+    display: block;
+    cursor: pointer;
+}
+
+.wpd-payment-item input {
+    display: none;
+}
+
+.wpd-payment-box {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: var(--wpd-card-bg);
+    transition: all 0.2s;
+}
+
+.wpd-payment-item input:checked+.wpd-payment-box {
+    border-color: var(--wpd-primary, #2563eb);
+    background: var(--wpd-bg-soft, #f0fdf4);
+    box-shadow: 0 0 0 1px var(--wpd-primary, #2563eb);
+}
+
+.wpd-payment-icon {
+    font-size: 20px;
+    margin-right: 15px;
+    background: #f3f4f6;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.wpd-payment-details {
+    flex: 1;
+}
+
+.wpd-payment-details .title {
+    font-weight: 700;
+    color: #1f2937;
+    font-size: 15px;
+    margin-bottom: 2px;
+}
+
+.wpd-payment-details .desc {
+    font-size: 12px;
+    color: var(--wpd-text-muted);
+}
+
+.wpd-badge-instant {
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 6px;
+    border-radius: 4px;
+    margin-right: 10px;
+    text-transform: uppercase;
+}
+
+.wpd-check-icon {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 50%;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.wpd-payment-item input:checked+.wpd-payment-box .wpd-check-icon {
+    border-color: var(--wpd-primary, #2563eb);
+    background: var(--wpd-primary, #2563eb);
+}
+
+.wpd-payment-item input:checked+.wpd-payment-box .wpd-check-icon::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 6px;
+    height: 6px;
+    background: var(--wpd-card-bg);
+    border-radius: 50%;
+}
+
+/* Footer Action */
+.wpd-footer-action {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--wpd-card-bg);
+    padding: 16px 20px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+    z-index: 100;
+    text-align: center;
+    border-top: 1px solid #f3f4f6;
+}
+
+@media(min-width: 640px) {
+    .wpd-footer-action {
+        position: static;
+        box-shadow: none;
+        border: none;
+        padding: 20px 0 0 0;
+    }
+}
+
+.wpd-btn-primary {
+    display: block;
+    width: 100%;
+    background: var(--wpd-btn, #2563eb);
+    /* Fallback to blue */
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+    -webkit-appearance: none;
+}
+
+.wpd-btn-primary:hover {
+    opacity: 0.95;
+    background: var(--wpd-btn-hover, #1d4ed8);
+}
+
+.wpd-btn-primary:active {
+    transform: scale(0.98);
+}
+
+.wpd-secure-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--wpd-text-muted);
+    margin-top: 12px;
+}
+
+.wpd-powered-by {
+    text-align: center;
+    font-size: 13px;
+    color: var(--wpd-text-muted);
+    margin-top: 10px;
+    padding-bottom: 30px;
+    /* Extra padding for bottom */
+}
+
+.wpd-powered-by a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.wpd-powered-by a:hover {
+    text-decoration: underline;
+}
+
+/* Toast Notification */
+#wpd-toast {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 12px;
+    position: fixed;
+    z-index: 99999;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s, bottom 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#wpd-toast.show {
+    visibility: visible;
+    opacity: 1;
+    bottom: 50px;
+}
+
+/* Fee Coverage Styles */
+.wpd-fee-coverage-section {
+    background: #f0fdf4;
+    border-top: 1px solid #86efac;
+    border-bottom: 1px solid #86efac;
+}
+
+.wpd-fee-wrapper {
+    padding: 5px 0;
+}
+
+.wpd-fee-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 10px;
+    transition: background 0.2s;
+}
+
+.wpd-fee-checkbox:hover {
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.wpd-fee-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.wpd-fee-check-icon {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #22c55e;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+}
+
+.wpd-fee-checkbox input:checked+.wpd-fee-check-icon {
+    background: #22c55e;
+    border-color: #22c55e;
+}
+
+.wpd-fee-checkbox input:checked+.wpd-fee-check-icon::after {
+    content: '✓';
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.wpd-fee-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.wpd-fee-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #166534;
+}
+
+.wpd-fee-amount {
+    font-size: 13px;
+    color: #15803d;
+    font-weight: 500;
+}
+
+.wpd-fee-summary {
+    margin-top: 15px;
+    padding: 12px;
+    background: var(--wpd-card-bg);
+    border-radius: 8px;
+    border: 1px solid #dcfce7;
+}
+
+.wpd-fee-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--wpd-text-main);
+    padding: 6px 0;
+}
+
+.wpd-fee-row.wpd-fee-total {
+    border-top: 1px dashed var(--wpd-input-border);
+    margin-top: 6px;
+    padding-top: 10px;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--wpd-text-main);
+}

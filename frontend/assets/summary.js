@@ -55,3 +55,44 @@ function handleConfirmPayment(confUrl, phone, donationId, amount) {
          alert('Silakan hubungi admin untuk konfirmasi.');
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Confetti
+    if (window.wpd_donation_status === 'complete' && typeof confetti === 'function') {
+        var count = 200;
+        var defaults = { origin: { y: 0.7 }, zIndex: 9999 };
+
+        function fire(particleRatio, opts) {
+            confetti(Object.assign({}, defaults, opts, {
+                particleCount: Math.floor(count * particleRatio)
+            }));
+        }
+
+        fire(0.25, { spread: 26, startVelocity: 55 });
+        fire(0.2, { spread: 60 });
+        fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+        fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+        fire(0.1, { spread: 120, startVelocity: 45 });
+    }
+
+    // Confirmation Button
+    const confirmBtn = document.getElementById('wpd-confirm-btn');
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const url = confirmBtn.getAttribute('data-url');
+            const phone = confirmBtn.getAttribute('data-phone');
+            const id = confirmBtn.getAttribute('data-id');
+            const amount = confirmBtn.getAttribute('data-amount');
+            handleConfirmPayment(url, phone, id, amount);
+        });
+    }
+
+    // Copy Button (if any)
+    document.querySelectorAll('.wpd-copy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+             const text = btn.getAttribute('data-copy');
+             copyToClipboard(text, 'Disalin!');
+        });
+    });
+});

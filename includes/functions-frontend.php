@@ -113,18 +113,78 @@ function wpd_get_template_part($slug, $name = null)
 /**
  * Enqueue Frontend Assets
  */
+/**
+ * Enqueue Frontend Assets
+ */
 function wpd_enqueue_frontend_assets()
 {
+    $should_load = false;
+
+    // Check for Campaign Single
     if (is_singular('wpd_campaign')) {
+        $should_load = true;
+    }
+
+    // Check for Confirmation Page
+    $settings_gen = get_option('wpd_settings_general', []);
+    $conf_page_id = isset($settings_gen['confirmation_page']) ? intval($settings_gen['confirmation_page']) : 0;
+    if ($conf_page_id && is_page($conf_page_id)) {
+        $should_load = true;
+    }
+
+    if ($should_load) {
         // Core Frontend Styles
         wp_enqueue_style('donasai-frontend', WPD_PLUGIN_URL . 'frontend/assets/frontend.css', array(), WPD_VERSION);
 
-        // Campaign Specific
-        wp_enqueue_style('donasai-campaign', WPD_PLUGIN_URL . 'frontend/assets/campaign.css', array('donasai-frontend'), WPD_VERSION);
-        wp_enqueue_script('donasai-campaign', WPD_PLUGIN_URL . 'frontend/assets/campaign.js', array('jquery'), WPD_VERSION, true);
+        // Inject Branding Variables
+        $settings_app = get_option('wpd_settings_appearance', []);
+        $primary_color = $settings_app['brand_color'] ?? '#059669';
+        $button_color = $settings_app['button_color'] ?? '#ec4899';
+        $radius = $settings_app['border_radius'] ?? '12px';
+        
+        // Helper to calc RGB
+        $hex2rgb = function($hex) {
+            $hex = str_replace("#", "", $hex);
+            if(strlen($hex) == 3) {
+                $r = hexdec(substr($hex,0,1).substr($hex,0,1));
+                $g = hexdec(substr($hex,1,1).substr($hex,1,1));
+                $b = hexdec(substr($hex,2,1).substr($hex,2,1));
+            } else {
+                $r = hexdec(substr($hex,0,2));
+                $g = hexdec(substr($hex,2,2));
+                $b = hexdec(substr($hex,4,2));
+            }
+            return "{$r}, {$g}, {$b}";
+        };
+        $primary_rgb = $hex2rgb($primary_color);
+
+        $custom_css = "
+            :root {
+                --wpd-primary: {$primary_color};
+                --wpd-primary-rgb: {$primary_rgb};
+                --wpd-btn: {$button_color};
+                --wpd-radius: {$radius};
+                --wpd-bg: #f3f4f6; /* Default BG */
+                --wpd-card-bg: #ffffff;
+                --wpd-text-main: #1f2937;
+                --wpd-text-muted: #6b7280;
+                --wpd-input-bg: #ffffff;
+                --wpd-input-border: #d1d5db;
+                --wpd-border: #e5e7eb;
+            }
+            .wpd-dark {
+                 --wpd-bg: #1f2937;
+                 --wpd-card-bg: #111827;
+                 --wpd-text-main: #f3f4f6;
+                 --wpd-text-muted: #9ca3af;
+                 --wpd-input-bg: #374151;
+                 --wpd-input-border: #4b5563;
+                 --wpd-border: #374151;
+            }
+        ";
+        wp_add_inline_style('donasai-frontend', $custom_css);
 
         // Google Fonts
-        $settings_app = get_option('wpd_settings_appearance', []);
         $font_family = $settings_app['font_family'] ?? 'Inter';
         $fonts_map = [
             'Inter' => 'Inter:wght@400;500;600;700',
@@ -137,27 +197,45 @@ function wpd_enqueue_frontend_assets()
             wp_enqueue_style('wpd-google-fonts', 'https://fonts.googleapis.com/css2?family=' . $fonts_map[$font_family] . '&display=swap', array(), WPD_VERSION);
         }
 
-        // Check for Payment Page
-        global $wp_query;
-        $payment_slug = get_option('wpd_settings_general')['payment_slug'] ?? 'pay';
-        if (isset($_GET['donate']) || isset($wp_query->query_vars[$payment_slug])) {
-            // Enqueue Payment specific CSS/JS if separated
-            // For now, we are instructed to just ensure it's not hardcoded. 
-            // We will assume styles are in frontend.css or a new file.
-            // Let's create 'payment.css' to properly offload.
-            wp_enqueue_style('wpd-payment', WPD_PLUGIN_URL . 'frontend/assets/payment.css', array('donasai-frontend'), WPD_VERSION);
-            wp_enqueue_script('wpd-payment', WPD_PLUGIN_URL . 'frontend/assets/payment.js', array('jquery'), WPD_VERSION, true);
+        // Campaign Specific Assets
+        if (is_singular('wpd_campaign')) {
+            wp_enqueue_style('donasai-campaign', WPD_PLUGIN_URL . 'frontend/assets/campaign.css', array('donasai-frontend'), WPD_VERSION);
+            wp_enqueue_script('donasai-campaign', WPD_PLUGIN_URL . 'frontend/assets/campaign.js', array('jquery'), WPD_VERSION, true);
+
+            // Check for Payment Page
+            global $wp_query;
+            $payment_slug = get_option('wpd_settings_general')['payment_slug'] ?? 'pay';
+            if (isset($_GET['donate']) || isset($wp_query->query_vars[$payment_slug])) {
+                wp_enqueue_style('wpd-payment', WPD_PLUGIN_URL . 'frontend/assets/payment.css', array('donasai-frontend'), WPD_VERSION);
+                wp_enqueue_script('wpd-payment', WPD_PLUGIN_URL . 'frontend/assets/payment.js', array('jquery'), WPD_VERSION, true);
+
+                // Localize Payment Script
+                $midtrans = WPD_Gateway_Registry::get_gateway('midtrans');
+                $snap_active = $midtrans && $midtrans->is_active();
+                $client_key = $snap_active && method_exists($midtrans, 'get_client_key') ? $midtrans->get_client_key() : '';
+                $is_prod = $snap_active && method_exists($midtrans, 'is_production') ? $midtrans->is_production() : false;
+                $snap_url = $is_prod ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js';
+
+                wp_localize_script('wpd-payment', 'wpd_payment_vars', array(
+                    'is_midtrans_active' => $snap_active,
+                    'snap_url' => $snap_url,
+                    'client_key' => $client_key
+                ));
+            }
+
+            // Check for Thank You Page
+            $thankyou_slug = get_option('wpd_settings_general')['thankyou_slug'] ?? 'thank-you';
+            if (get_query_var($thankyou_slug)) {
+                wp_enqueue_script('wpd-confetti', WPD_PLUGIN_URL . 'frontend/assets/confetti.js', array(), '1.6.0', true);
+                wp_enqueue_style('wpd-summary', WPD_PLUGIN_URL . 'frontend/assets/summary.css', array('donasai-frontend'), WPD_VERSION);
+                wp_enqueue_script('wpd-summary', WPD_PLUGIN_URL . 'frontend/assets/summary.js', array('jquery', 'wpd-confetti'), WPD_VERSION, true);
+            }
         }
 
-        // Check for Thank You Page
-        $thankyou_slug = get_option('wpd_settings_general')['thankyou_slug'] ?? 'thank-you';
-        if (get_query_var($thankyou_slug)) {
-            wp_enqueue_script('wpd-confetti', WPD_PLUGIN_URL . 'frontend/assets/confetti.js', array(), '1.6.0', true);
-            // We can reuse payment styles or create summary styles. 
-            // For now, let's assume we clean up donation-summary.php to use enqueued styles.
-            // We'll create summary.css for the static parts.
-            wp_enqueue_style('wpd-summary', WPD_PLUGIN_URL . 'frontend/assets/summary.css', array('donasai-frontend'), WPD_VERSION);
-            wp_enqueue_script('wpd-summary', WPD_PLUGIN_URL . 'frontend/assets/summary.js', array('jquery'), WPD_VERSION, true);
+        // Confirmation Page Assets
+        if ($conf_page_id && is_page($conf_page_id)) {
+            wp_enqueue_style('wpd-confirmation', WPD_PLUGIN_URL . 'frontend/assets/confirmation.css', array('donasai-frontend'), WPD_VERSION);
+            wp_enqueue_script('wpd-confirmation', WPD_PLUGIN_URL . 'frontend/assets/confirmation.js', array('jquery'), WPD_VERSION, true);
         }
     }
 }
@@ -222,91 +300,17 @@ function wpd_get_donation_form_html($campaign_id)
  */
 function wpd_shortcode_my_donations()
 {
+    wp_enqueue_style('donasai-frontend', WPD_PLUGIN_URL . 'frontend/assets/frontend.css', array(), WPD_VERSION);
+    wp_enqueue_style('wpd-dashboard', WPD_PLUGIN_URL . 'frontend/assets/dashboard.css', array('donasai-frontend'), WPD_VERSION);
+    wp_enqueue_script('wpd-dashboard', WPD_PLUGIN_URL . 'frontend/assets/dashboard.js', array(), WPD_VERSION, true);
+
     ob_start();
     include WPD_PLUGIN_PATH . 'frontend/templates/donor-dashboard.php';
     return ob_get_clean();
 }
 add_shortcode('wpd_my_donations', 'wpd_shortcode_my_donations');
 
-/**
- * Output Marketing Pixels (Head)
- */
-function wpd_head_pixels()
-{
-    if (is_singular('wpd_campaign')) {
-        $pixels = get_post_meta(get_the_ID(), '_wpd_pixel_ids', true);
-        
-        // Fallback to Global Settings
-        $global_settings = get_option('wpd_settings_general', []);
-        
-        // Function to resolve pixel ID (Campaign > Global)
-        $fb_pixel = !empty($pixels['fb']) ? $pixels['fb'] : ($global_settings['pixel_fb'] ?? '');
-        $tiktok_pixel = !empty($pixels['tiktok']) ? $pixels['tiktok'] : ($global_settings['pixel_tiktok'] ?? '');
-        $ga4_pixel = !empty($pixels['ga4']) ? $pixels['ga4'] : ($global_settings['pixel_ga4'] ?? '');
 
-        $donation_id = isset($_GET['donation_success']) ? intval($_GET['donation_success']) : 0;
-        $donation_amount = 0;
-
-        // Fetch Donation Amount if Success Page
-        if ($donation_id > 0) {
-            global $wpdb;
-            $table = $wpdb->prefix . 'wpd_donations';
-            $donation_amount = $wpdb->get_var($wpdb->prepare("SELECT amount FROM {$table} WHERE id = %d", $donation_id));
-        }
-
-        if (!empty($fb_pixel)) {
-            // Echo generic FB Pixel Code with ID
-            echo "<!-- Facebook Pixel Code -->
-            <script>
-            !function(f,b,e,v,n,t,s)
-            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-            n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];
-            s.parentNode.insertBefore(t,s)}(window, document,'script',
-            'https://connect.facebook.net/en_US/fbevents.js');
-            fbq('init', '" . esc_js($fb_pixel) . "');
-            fbq('track', 'PageView');
-            " . ($donation_amount > 0 ? "fbq('track', 'Purchase', {value: " . floatval($donation_amount) . ", currency: 'IDR'});" : "") . "
-            </script>
-            <!-- End Facebook Pixel Code -->\n";
-        }
-
-        if (!empty($tiktok_pixel)) {
-            // Echo TikTok Pixel placeholder
-            echo "<!-- TikTok Pixel Code -->\n";
-            echo "<script>!function (w, d, t) { w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=[\"page\",\"track\",\"identify\",\"instances\",\"debug\",\"on\",\"off\",\"once\",\"ready\",\"alias\",\"group\",\"enableCookie\",\"disableCookie\"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq.methods[i],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(t,ttq.methods[n]);return t},ttq.load=function(e,n){var i=\"https://analytics.tiktok.com/i18n/pixel/events.js\";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement(\"script\");o.type=\"text/javascript\",o.async=!0,o.src=i+\"?sdkid=\"+e+\"&lib=\"+t;var a=document.getElementsByTagName(\"script\")[0];a.parentNode.insertBefore(o,a)}; ttq.load('" . esc_js($tiktok_pixel) . "'); ttq.page();
-            " . ($donation_amount > 0 ? "ttq.track('CompletePayment', {content_type: 'product', quantity: 1, description: 'Donation', content_id: '" . get_the_ID() . "', currency: 'IDR', value: " . floatval($donation_amount) . "});" : "") . "
-            }(window, document, 'ttq');</script>\n";
-        }
-
-        if (!empty($ga4_pixel)) {
-            // Echo GA4 Code
-            echo "<!-- Google tag (gtag.js) -->
-            <script async src=\"https://www.googletagmanager.com/gtag/js?id=" . esc_js($ga4_pixel) . "\"></script>
-            <script>
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-            
-              gtag('config', '" . esc_js($ga4_pixel) . "');
-              " . ($donation_amount > 0 ? "gtag('event', 'purchase', {
-                  transaction_id: '" . intval($donation_id) . "',
-                  value: " . floatval($donation_amount) . ",
-                  currency: 'IDR',
-                  items: [{
-                    item_id: '" . get_the_ID() . "',
-                    item_name: 'Donation',
-                    price: " . floatval($donation_amount) . ",
-                    quantity: 1
-                  }]
-              });" : "") . "
-            </script>\n";
-        }
-    }
-}
-add_action('wp_head', 'wpd_head_pixels');
 
 /**
  * Output WhatsApp Flying Button (Footer)
