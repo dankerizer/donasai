@@ -53,7 +53,11 @@ function wpd_api_get_settings()
         'remove_branding' => true,
         'confirmation_page' => '',
         'delete_on_uninstall_settings' => false,
-        'delete_on_uninstall_tables' => false
+        'delete_on_uninstall_settings' => false,
+        'delete_on_uninstall_tables' => false,
+        'pixel_fb' => '',
+        'pixel_tiktok' => '',
+        'pixel_ga4' => '',
     ));
     $donation = get_option('wpd_settings_donation', array('min_amount' => 10000, 'presets' => '50000,100000,200000,500000', 'anonymous_label' => 'Hamba Allah', 'create_user' => false, 'preset_emoji' => '💖'));
     $appearance = get_option('wpd_settings_appearance', array(
@@ -217,7 +221,11 @@ function wpd_api_update_settings($request)
             'remove_branding' => !empty($params['general']['remove_branding']),
             'confirmation_page' => isset($params['general']['confirmation_page']) ? intval($params['general']['confirmation_page']) : '',
             'delete_on_uninstall_settings' => !empty($params['general']['delete_on_uninstall_settings']),
+
             'delete_on_uninstall_tables' => !empty($params['general']['delete_on_uninstall_tables']),
+            'pixel_fb' => sanitize_text_field($params['general']['pixel_fb'] ?? ''),
+            'pixel_tiktok' => sanitize_text_field($params['general']['pixel_tiktok'] ?? ''),
+            'pixel_ga4' => sanitize_text_field($params['general']['pixel_ga4'] ?? ''),
         );
 
         // Check if slugs changed, flush rewrite rules might be needed (handled via option update hook or manual flush hint)

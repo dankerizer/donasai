@@ -32,7 +32,7 @@ require_once WPD_PLUGIN_PATH . 'includes/admin/campaign-columns.php';
 // Gateways
 require_once WPD_PLUGIN_PATH . 'includes/gateways/interface.php';
 require_once WPD_PLUGIN_PATH . 'includes/gateways/manual.php';
-require_once WPD_PLUGIN_PATH . 'includes/gateways/midtrans.php';
+
 require_once WPD_PLUGIN_PATH . 'includes/services/gateway-registry.php';
 
 // Services
@@ -43,7 +43,7 @@ require_once WPD_PLUGIN_PATH . 'includes/functions-frontend.php';
 
 // Register Gateways
 add_action('wpd_register_gateways', function () {
-    WPD_Gateway_Registry::register_gateway(new WPD_Gateway_Midtrans());
+
 });
 
 // Initialize
@@ -56,7 +56,7 @@ require_once WPD_PLUGIN_PATH . 'includes/api/settings-controller.php';
 require_once WPD_PLUGIN_PATH . 'includes/api/campaigns-controller.php';
 require_once WPD_PLUGIN_PATH . 'includes/api/fundraisers-controller.php';
 require_once WPD_PLUGIN_PATH . 'includes/api/subscriptions-controller.php';
-require_once WPD_PLUGIN_PATH . 'includes/api/webhook-controller.php';
+
 // Initialize Headers/Hooks
 add_action('init', 'wpd_register_cpt');
 

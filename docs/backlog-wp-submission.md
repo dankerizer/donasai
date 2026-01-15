@@ -59,12 +59,10 @@ Dokumen ini merinci perbaikan dan peningkatan yang diperlukan berdasarkan review
 ### 6. Layanan Eksternal
 *   **Masalah:** Penggunaan layanan pihak ke-3 (Facebook Pixel, Midtrans, dll) tidak didokumentasikan secara eksplisit di `readme.txt`.
 *   **Tindakan yang Diperlukan:**
-    *   [ ] Update `readme.txt` dengan bagian `== External Services ==`.
-    *   [ ] Daftar layanan:
-        *   Facebook Pixel (jika digunakan)
-        *   Midtrans / Payment Gateway (Stripe, dll)
-        *   CDN atau font eksternal (Google Fonts)
-    *   [ ] Untuk setiap layanan, sertakan: Tujuan, Data yang dikirim, Link ke Syarat Ketentuan/Kebijakan Privasi mereka.
+    *   [x] Update `readme.txt` dengan bagian `== External Services ==`.
+    *   [x] Daftar layanan:
+        *   Google Fonts (CDN)
+        *   (Midtrans - Removed from Free Version)
 
 ### 7. Lisensi & Pembatasan (Trialware)
 *   **Masalah:** Potensi fitur terkunci atau kode "Upsell" yang menonaktifkan fungsionalitas di versi gratis.

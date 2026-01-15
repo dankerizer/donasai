@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSettings } from "./SettingsContext";
+import ProModal from "./ProModal";
 import AdvancedSection from "./sections/AdvancedSection";
 import AppearanceSection from "./sections/AppearanceSection";
 import DonationSection from "./sections/DonationSection";
@@ -152,44 +153,53 @@ export default function SettingsLayout() {
 				</div>
 			)}
 
+			<ProModal />
+
 			<div className="flex justify-between items-center">
-				<h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
-					Pengaturan
-				</h2>
+				<h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Pengaturan</h2>
 			</div>
 
 			{/* Pro Banner */}
 			{licenseStatus !== "active" ? (
-				<div className="relative overflow-hidden bg-linear-to-br from-emerald-600 via-emerald-700 to-emerald-800 rounded-2xl p-8 text-white shadow-2xl border border-emerald-500">
-					{/* Decorative Elements */}
-					<div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500 rounded-full opacity-10 blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-					<div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full opacity-5 blur-2xl translate-y-1/2 -translate-x-1/3"></div>
-
-					<div className="relative flex justify-between items-center gap-6">
-						<div className="flex-1">
-							<div className="inline-flex items-center gap-2 bg-emerald-500/30 backdrop-blur-sm px-3 py-1.5 rounded-full mb-3 border border-emerald-400/30">
-								<Crown className="text-yellow-300 w-4 h-4" />
-								<span className="text-xs font-semibold tracking-wide uppercase">
-									Premium Features
-								</span>
+				<div className="bg-linear-to-r from-emerald-50 to-teal-50 border border-emerald-100 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4 dark:from-emerald-900/20 dark:to-teal-900/20 dark:border-emerald-800">
+					<div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 w-full md:w-auto">
+						<div className="flex items-center gap-3 w-full md:w-auto">
+							<div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg shrink-0 dark:bg-emerald-800/50 dark:text-emerald-400">
+								<Crown size={20} />
 							</div>
-							<h3 className="text-2xl! font-bold mb-2! mt-0! tracking-tight text-white!">
-								Upgrade ke Donasai Pro
-							</h3>
-							<p className="text-emerald-50 text-sm leading-relaxed max-w-md">
-								Buka Donasi Berulang, Notifikasi WhatsApp, dan Konfirmasi AI
-								dengan teknologi terdepan.
-							</p>
+							<div>
+								<h3 className="font-bold text-gray-900 text-sm dark:text-gray-100">
+									Upgrade ke Pro
+								</h3>
+								<p className="text-xs text-gray-500 dark:text-gray-400">
+									Buka semua fitur premium
+								</p>
+							</div>
 						</div>
-						<button
-							type="button"
-							onClick={() => setShowProModal(true)}
-							className="group relative bg-white text-emerald-600 px-6 py-3.5 rounded-xl font-bold hover:bg-emerald-50 transition-all shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
-						>
-							<span className="relative z-10">Bandingkan Fitur</span>
-							<div className="absolute inset-0 bg-linear-to-r from-emerald-50 to-white opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
-						</button>
+
+						<div className="flex flex-col sm:flex-row gap-x-6 gap-y-2 w-full md:w-auto pl-12 md:pl-0">
+							<div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+								<Check size={14} className="text-emerald-500" />
+								<span>Payment Gateway Auto</span>
+							</div>
+							<div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+								<Check size={14} className="text-emerald-500" />
+								<span>Donasi Berulang</span>
+							</div>
+							<div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+								<Check size={14} className="text-emerald-500" />
+								<span>Visual Editor</span>
+							</div>
+						</div>
 					</div>
+
+					<button
+						type="button"
+						onClick={() => setShowProModal(true)}
+						className="w-full md:w-auto px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition shadow-sm whitespace-nowrap shrink-0"
+					>
+						Lihat Detail
+					</button>
 				</div>
 			) : (
 				<div className="bg-green-100 border border-green-200 rounded-xl p-4 text-green-800 flex items-center gap-3 dark:bg-green-900/20 dark:border-green-800 dark:text-green-300">
@@ -224,27 +234,29 @@ export default function SettingsLayout() {
 							>
 								<Icon size={18} />
 								<span className="sm:hidden! md:hidden">
-									{tab.label === "General & Org" ? "Umum" : tab.label}
-								</span>
-								<span className="hidden! md:inline!">
+                                     {tab.label === "General & Org"
+                                         ? "Umum"
+                                         : tab.label}
+                                </span>
+                                <span className="hidden! md:inline!">
 									{tab.label === "General & Org"
 										? "Umum & Organisasi"
 										: tab.label === "Donation Settings"
 											? "Pengaturan Donasi"
 											: tab.label === "Payment"
 												? "Pembayaran"
-												: tab.label === "Notifications"
-													? "Notifikasi"
-													: tab.label === "Appearance"
-														? "Tampilan"
-														: tab.label === "License"
-															? "Lisensi"
-															: tab.label === "Receipt Template"
-																? "Template Kuitansi"
-																: tab.label === "Email Template"
-																	? "Template Email"
-																	: tab.label}
-								</span>
+											: tab.label === "Notifications"
+												? "Notifikasi"
+											: tab.label === "Appearance"
+												? "Tampilan"
+											: tab.label === "License"
+												? "Lisensi"
+											: tab.label === "Receipt Template"
+												? "Template Kuitansi"
+											: tab.label === "Email Template"
+												? "Template Email"
+											: tab.label}
+                                </span>
 							</button>
 						);
 					})}

@@ -62,6 +62,16 @@ You need to register an account at [Midtrans](https://midtrans.com), then get th
 = Does it support currencies other than Rupiah? =
 Currently, Donasai is focused on users in Indonesia with Rupiah (IDR) currency.
 
+== External Services ==
+
+This plugin relies on the following external services to function:
+
+1. **Google Fonts**
+   *   **Service**: Google Fonts (CDN)
+   *   **Usage**: Loads font files (Inter, Roboto, Open Sans, etc.) for dashboard and frontend styling.
+   *   **Privacy Policy**: https://policies.google.com/privacy
+   *   **Terms of Service**: https://developers.google.com/fonts/terms
+
 == Changelog ==
 
 = 1.0.0 =

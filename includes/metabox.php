@@ -200,7 +200,10 @@ function wpd_campaign_options_callback($post)
 				<textarea name="wpd_whatsapp_settings[message]" id="wpd_wa_message" class="widefat"
 					style="max-width: 300px;"><?php echo esc_textarea($whatsapp['message'] ?? ''); ?></textarea>
 			</p>
+			</p>
 		<?php endif; ?>
+
+		<?php do_action('wpd_campaign_metabox_end', $post); ?>
 	</div>
 	<?php
 }
