@@ -976,7 +976,7 @@ export default function AppearanceSection() {
 														(formData.social_proof_duration || 5) * 1000,
 													);
 												}}
-												className="w-full py-2 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium text-sm hover:from-purple-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2"
+												className="w-full py-2 px-4 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium text-sm hover:from-purple-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2"
 											>
 												<svg
 													className="w-4 h-4"

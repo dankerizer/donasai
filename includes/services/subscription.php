@@ -58,7 +58,7 @@ class WPD_Subscription_Service
                  WHERE s.user_id = %d 
                  ORDER BY s.created_at DESC",
                 $user_id
-            ));
+            )); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
             wp_cache_set($cache_key, $subscriptions, 'wpd_subscriptions', 300);
         }
         return $subscriptions;

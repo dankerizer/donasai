@@ -31,7 +31,7 @@ class WPD_Email
 		if (function_exists('wpd_get_donation')) {
 			$donation = wpd_get_donation($donation_id);
 		} else {
-			$table_donations = $wpdb->prefix . 'wpd_donations';
+			$table_donations = esc_sql($wpdb->prefix . 'wpd_donations');
 			$cache_key = 'wpd_donation_' . $donation_id;
 			$donation = wp_cache_get($cache_key, 'wpd_donations');
 

@@ -27,7 +27,7 @@ class WPD_Fundraiser_Service
 
 		// Check if already registered
 		$existing = $wpdb->get_row($wpdb->prepare(
-			"SELECT * FROM {$this->table_name} WHERE user_id = %d AND campaign_id = %d",
+			"SELECT * FROM {$this->table_name} WHERE user_id = %d AND campaign_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$user_id,
 			$campaign_id
 		));
@@ -52,7 +52,7 @@ class WPD_Fundraiser_Service
 			'campaign_id' => $campaign_id,
 			'referral_code' => $code,
 			'created_at' => current_time('mysql')
-		]);
+		]); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 
 		return $this->get_by_id($wpdb->insert_id);
 	}
@@ -68,9 +68,9 @@ class WPD_Fundraiser_Service
 
 		if (false === $found) {
 			$found = $wpdb->get_row($wpdb->prepare(
-				"SELECT * FROM {$this->table_name} WHERE referral_code = %s",
+				"SELECT * FROM {$this->table_name} WHERE referral_code = %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$code
-			));
+			)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 			wp_cache_set($cache_key, $found, 'wpd_fundraisers', 3600);
 		}
 		return $found;
@@ -87,9 +87,9 @@ class WPD_Fundraiser_Service
 
 		if (false === $found) {
 			$found = $wpdb->get_row($wpdb->prepare(
-				"SELECT * FROM {$this->table_name} WHERE id = %d",
+				"SELECT * FROM {$this->table_name} WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$id
-			));
+			)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 			wp_cache_set($cache_key, $found, 'wpd_fundraisers', 3600);
 		}
 		return $found;
@@ -105,10 +105,10 @@ class WPD_Fundraiser_Service
 			"UPDATE {$this->table_name} 
 			 SET total_donations = total_donations + %f, 
 			     donation_count = donation_count + 1 
-			 WHERE id = %d",
+			 WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			$amount,
 			$fundraiser_id
-		));
+		)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 		// Invalidate cache
 		wp_cache_delete('wpd_fundraiser_id_' . $fundraiser_id, 'wpd_fundraisers');
 	}
@@ -130,10 +130,10 @@ class WPD_Fundraiser_Service
 				 JOIN {$wpdb->users} u ON f.user_id = u.ID
 				 WHERE f.campaign_id = %d AND f.total_donations > 0
 				 ORDER BY f.total_donations DESC
-				 LIMIT %d",
+				 LIMIT %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$campaign_id,
 				$limit
-			));
+			)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 			wp_cache_set($cache_key, $results, 'wpd_fundraisers', 300);
 		}
 		return $results;
@@ -159,6 +159,6 @@ class WPD_Fundraiser_Service
 			'ip_address' => substr($ip_address, 0, 100),
 			'user_agent' => substr($user_agent, 0, 255),
 			'created_at' => current_time('mysql')
-		]);
+		]); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 	}
 }

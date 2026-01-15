@@ -31,12 +31,13 @@ function wpd_inject_custom_styles() {
     ];
     
     if ( isset($fonts_map[$font_family]) ) {
-        echo '<link rel="preconnect" href="https://fonts.googleapis.com">';
-        echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>';
-        echo '<link href="https://fonts.googleapis.com/css2?family=' . esc_attr($fonts_map[$font_family]) . '&display=swap" rel="stylesheet">';
+        // Enqueue Google Fonts properly
+        wp_enqueue_style( 'wpd-google-fonts', 'https://fonts.googleapis.com/css2?family=' . $fonts_map[$font_family] . '&display=swap', array(), WPD_VERSION );
     }
     ?>
     <style id="wpd-global-styles">
+        /* Preconnects for performance (optional, but good) */
+        /* Note: wp_resource_hints is cleaner but this is simple inline */
         :root {
             /* Branding */
             --wpd-primary:   <?php echo esc_attr( $brand_color ); ?>;

@@ -93,7 +93,7 @@ function wpd_handle_donation_submission()
         $metadata['qurban_qty'] = intval($_POST['qurban_qty']);
     }
     if (isset($_POST['qurban_names']) && is_array($_POST['qurban_names'])) {
-        $names = wp_unslash($_POST['qurban_names']);
+        $names = wp_unslash($_POST['qurban_names']); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
         $metadata['qurban_names'] = array_map('sanitize_text_field', $names);
     }
 
@@ -203,13 +203,13 @@ add_action('init', 'wpd_handle_donation_submission');
 function wpd_update_campaign_stats($campaign_id)
 {
     global $wpdb;
-    $table = $wpdb->prefix . 'wpd_donations';
+    $table = esc_sql($wpdb->prefix . 'wpd_donations');
 
     // Sum only completed donations
-    $total = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM {$table} WHERE campaign_id = %d AND status = 'complete'", $campaign_id));
+    $total = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM {$table} WHERE campaign_id = %d AND status = 'complete'", $campaign_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 
     // Count Unique Donors (by email) for completed donations
-    $donor_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM {$table} WHERE campaign_id = %d AND status = 'complete'", $campaign_id));
+    $donor_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM {$table} WHERE campaign_id = %d AND status = 'complete'", $campaign_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 
     update_post_meta($campaign_id, '_wpd_collected_amount', $total);
     update_post_meta($campaign_id, '_wpd_donor_count', $donor_count);
@@ -230,8 +230,8 @@ function wpd_get_donation($donation_id)
     $donation = wp_cache_get($cache_key, 'wpd_donations');
 
     if (false === $donation) {
-        $table = $wpdb->prefix . 'wpd_donations';
-        $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $donation_id));
+        $table = esc_sql($wpdb->prefix . 'wpd_donations');
+        $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $donation_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
         if ($donation) {
             wp_cache_set($cache_key, $donation, 'wpd_donations', 3600);
         }

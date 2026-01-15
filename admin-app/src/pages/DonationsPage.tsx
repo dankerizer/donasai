@@ -976,7 +976,7 @@ export default function DonationsPage() {
 												href={selectedDonation.metadata.proof_url}
 												target="_blank"
 												rel="noopener noreferrer"
-												className="block w-full h-48 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center dark:bg-gray-700 dark:border-gray-600"
+												className=" w-full h-48 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center dark:bg-gray-700 dark:border-gray-600"
 											>
 												<img
 													src={selectedDonation.metadata.proof_url}

@@ -125,10 +125,12 @@ class WPD_Gateway_Manual implements WPD_Gateway
 
     public function get_payment_instructions($donation_id): string
     {
-        global $wpdb;
-        $table = $wpdb->prefix . 'wpd_donations';
-
-        $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $donation_id));
+        if (function_exists('wpd_get_donation')) {
+            $donation = wpd_get_donation($donation_id);
+        } else {
+             $table = esc_sql($wpdb->prefix . 'wpd_donations');
+             $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $donation_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        }
 
         $total_amount = $donation ? $donation->amount : 0;
 

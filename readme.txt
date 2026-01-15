@@ -40,7 +40,7 @@ This plugin supports various types of donations such as **Zakat Maal**, **Zakat 
 1.  Upload the `donasai` folder to the `/wp-content/plugins/` directory or install via Plugins > Add New in WordPress.
 2.  Activate the plugin through the 'Plugins' menu.
 3.  The **Donasai** menu will appear in the admin sidebar.
-4.  Go to **Donasai > Settings** to configure Payment Gateways (Midtrans) and Bank Accounts.
+4.  Go to **Donasai > Settings** to configure Bank Accounts, appearance, and Your Organization Profile.
 5.  Create your first campaign in **Donasai > Campaigns**.
 6.  Use the shortcode `[wpd_donation_form]` (if manual) or let the plugin create pages automatically.
 

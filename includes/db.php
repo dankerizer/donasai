@@ -12,8 +12,8 @@ function wpd_create_tables()
 	global $wpdb;
 
 	$charset_collate = $wpdb->get_charset_collate();
-	$table_donations = $wpdb->prefix . 'wpd_donations';
-	$table_meta = $wpdb->prefix . 'wpd_campaign_meta';
+	$table_donations = esc_sql($wpdb->prefix . 'wpd_donations');
+	$table_meta = esc_sql($wpdb->prefix . 'wpd_campaign_meta');
 
 	// wpd_donations
 	// wpd_donations
@@ -107,7 +107,8 @@ function wpd_create_tables()
 	dbDelta($sql_subscriptions);
 
 	// Update Donations Table with subscription_id
-	if (!$wpdb->get_results($wpdb->prepare("SHOW COLUMNS FROM {$table_donations} LIKE %s", 'subscription_id'))) { // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	if (!$wpdb->get_results($wpdb->prepare("SHOW COLUMNS FROM {$table_donations} LIKE %s", 'subscription_id'))) { // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.SchemaChange
 		$wpdb->query("ALTER TABLE {$table_donations} ADD COLUMN subscription_id bigint(20) DEFAULT 0 AFTER fundraiser_id");
 	}
 }

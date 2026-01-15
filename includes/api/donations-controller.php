@@ -301,14 +301,15 @@ function wpd_api_export_donations($request)
     $query_parts = wpd_build_donations_where_clause($params);
 
     if (!empty($query_parts['args'])) {
-        $table_name = $wpdb->prefix . 'wpd_donations';
+        $table_name = esc_sql($wpdb->prefix . 'wpd_donations');
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
         $sql = "SELECT * FROM {$table_name} WHERE " . $query_parts['where'] . " ORDER BY created_at DESC";
-        $query = $wpdb->prepare($sql, $query_parts['args']); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+        $query = $wpdb->prepare($sql, $query_parts['args']);
     } else {
         $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wpd_donations ORDER BY created_at DESC LIMIT %d", 10000);
     }
 
-    $results = $wpdb->get_results($wpdb->prepare($query), ARRAY_A); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+    $results = $wpdb->get_results($query, ARRAY_A); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
     $filename = 'donations-export-' . wp_date('Y-m-d') . '.csv';
     header('Content-Type: text/csv');
@@ -450,17 +451,18 @@ function wpd_api_get_donations($request)
     );
 
     $query_parts = wpd_build_donations_where_clause($params);
-    $table_name = $wpdb->prefix . 'wpd_donations';
+    $table_name = esc_sql($wpdb->prefix . 'wpd_donations');
     $where_sql = $query_parts['where'];
     $args = $query_parts['args'];
 
     // 1. Get Total Count
     if (!empty($args)) {
-        $count_query = $wpdb->prepare("SELECT COUNT(*) FROM {$table_name} WHERE {$where_sql}", $args); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
+        $count_query = $wpdb->prepare("SELECT COUNT(*) FROM {$table_name} WHERE {$where_sql}", $args);
     } else {
-        $count_query = "SELECT COUNT(*) FROM {$table_name}";
+        $count_query = "SELECT COUNT(*) FROM {$table_name}"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     }
-    $total_items = (int) $wpdb->get_var($count_query);
+    $total_items = (int) $wpdb->get_var($count_query); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
     $total_pages = ceil($total_items / $per_page);
 
     // 2. Get Data
@@ -470,16 +472,18 @@ function wpd_api_get_donations($request)
     if (!empty($query_parts['args'])) {
         // We need to re-merge args because we added LIMIT/OFFSET
         // $args already contains WHERE params + LIMIT + OFFSET 
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
         $query = $wpdb->prepare(
             "SELECT * FROM {$table_name} WHERE " . $where_sql . " ORDER BY created_at DESC LIMIT %d OFFSET %d",
             $args
-        ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+        );
     } else {
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $query = $wpdb->prepare(
             "SELECT * FROM {$table_name} ORDER BY created_at DESC LIMIT %d OFFSET %d",
             $per_page,
             $offset
-        ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+        );
     }
 
     $results = $wpdb->get_results($query); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared

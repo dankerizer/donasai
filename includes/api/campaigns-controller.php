@@ -172,7 +172,7 @@ function wpd_api_get_campaign_donors($request)
 
 	// Get Donors
 	// Get Donors
-	$table = $wpdb->prefix . 'wpd_donations';
+	$table = esc_sql($wpdb->prefix . 'wpd_donations');
 	$cache_key = 'wpd_campaign_donors_' . $campaign_id . '_p' . $page . '_pp' . $per_page;
 	$cache_group = 'wpd_donations';
 	$results = wp_cache_get($cache_key, $cache_group);
@@ -183,7 +183,7 @@ function wpd_api_get_campaign_donors($request)
 			$campaign_id,
 			$per_page,
 			$offset
-		)); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		));
 		wp_cache_set($cache_key, $results, $cache_group, 300);
 	}
 

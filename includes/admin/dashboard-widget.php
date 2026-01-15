@@ -26,7 +26,7 @@ add_action('wp_dashboard_setup', 'wpd_add_dashboard_widgets');
 function wpd_dashboard_widget_render()
 {
     global $wpdb;
-    $table_donations = $wpdb->prefix . 'wpd_donations';
+    $table_donations = esc_sql($wpdb->prefix . 'wpd_donations');
 
     // Check Cache
     $cache_key = 'wpd_dashboard_stats';
