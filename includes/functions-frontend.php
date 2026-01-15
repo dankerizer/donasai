@@ -622,3 +622,17 @@ function wpd_shortcode_campaign_list($atts)
     return ob_get_clean();
 }
 add_shortcode('donasai_campaign_list', 'wpd_shortcode_campaign_list');
+
+/**
+ * Enqueue assets for receipt page
+ */
+function wpd_enqueue_receipt_assets() {
+    if (isset($_GET['wpd_receipt'])) {
+        // Tailwind (CDN for now, or local if built)
+        wp_enqueue_script('wpd-tailwind', 'https://cdn.tailwindcss.com', array(), '3.4.0', false);
+        
+        // Google Fonts
+        wp_enqueue_style('wpd-receipt-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap', array(), null);
+    }
+}
+add_action('wp_enqueue_scripts', 'wpd_enqueue_receipt_assets');

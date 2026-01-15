@@ -15,7 +15,7 @@ if ($donation_id) {
         $donation = wpd_get_donation($donation_id);
     } else {
         global $wpdb;
-        $table = $wpdb->prefix . 'wpd_donations';
+        $table = esc_sql($wpdb->prefix . 'wpd_donations');
         $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $donation_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
     }
 }
@@ -129,16 +129,6 @@ $brand_900 = wpd_receipt_adjust_brightness($brand_color, -80);
     
     <?php wp_head(); ?>
 
-    <!-- Fonts -->
-    <!-- phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap"
-        rel="stylesheet">
-    <!-- Tailwind CSS -->
-    <!-- phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript, PluginCheck.CodeAnalysis.Offloading.OffloadedContent -->
-    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',

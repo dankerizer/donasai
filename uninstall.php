@@ -22,11 +22,11 @@ global $wpdb;
  */
 if (!empty($general_settings['delete_on_uninstall_tables'])) {
     $tables = array(
-        $wpdb->prefix . 'wpd_donations',
-        $wpdb->prefix . 'wpd_campaign_meta',
-        $wpdb->prefix . 'wpd_fundraisers',
-        $wpdb->prefix . 'wpd_referral_logs',
-        $wpdb->prefix . 'wpd_subscriptions'
+        esc_sql($wpdb->prefix . 'wpd_donations'),
+        esc_sql($wpdb->prefix . 'wpd_campaign_meta'),
+        esc_sql($wpdb->prefix . 'wpd_fundraisers'),
+        esc_sql($wpdb->prefix . 'wpd_referral_logs'),
+        esc_sql($wpdb->prefix . 'wpd_subscriptions')
     );
 
     foreach ($tables as $table) {

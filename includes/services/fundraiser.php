@@ -15,7 +15,7 @@ class WPD_Fundraiser_Service
 	public function __construct()
 	{
 		global $wpdb;
-		$this->table_name = $wpdb->prefix . 'wpd_fundraisers';
+		$this->table_name = esc_sql($wpdb->prefix . 'wpd_fundraisers');
 	}
 
 	/**
@@ -105,7 +105,7 @@ class WPD_Fundraiser_Service
 			"UPDATE {$this->table_name} 
 			 SET total_donations = total_donations + %f, 
 			     donation_count = donation_count + 1 
-			 WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			 WHERE id = %d",
 			$amount,
 			$fundraiser_id
 		)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
@@ -130,7 +130,7 @@ class WPD_Fundraiser_Service
 				 JOIN {$wpdb->users} u ON f.user_id = u.ID
 				 WHERE f.campaign_id = %d AND f.total_donations > 0
 				 ORDER BY f.total_donations DESC
-				 LIMIT %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				 LIMIT %d",
 				$campaign_id,
 				$limit
 			)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery

@@ -17,7 +17,8 @@ if (!$donation_id) {
 }
 
 global $wpdb;
-$donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wpd_donations WHERE id = %d", $donation_id));
+$table_donations = esc_sql($wpdb->prefix . 'wpd_donations');
+$donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_donations} WHERE id = %d", $donation_id));
 
 if (!$donation) {
     wp_die('Donasi tidak ditemukan.', 'Error', array('response' => 404));
