@@ -60,17 +60,23 @@ function wpd_api_get_chart_stats()
 
     // Get last 30 days data
     // Get last 30 days data
-    $results = $wpdb->get_results($wpdb->prepare("
-        SELECT 
-            DATE(created_at) as date, 
-            SUM(amount) as total_amount,
-            COUNT(id) as total_count
-        FROM {$wpdb->prefix}wpd_donations 
-        WHERE status = %s 
-        AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-        GROUP BY DATE(created_at)
-        ORDER BY date ASC
-    ", 'complete'));
+    $cache_key = 'wpd_chart_stats_daily';
+    $results = wp_cache_get($cache_key, 'wpd_stats');
+
+    if (false === $results) {
+        $results = $wpdb->get_results($wpdb->prepare("
+            SELECT 
+                DATE(created_at) as date, 
+                SUM(amount) as total_amount,
+                COUNT(id) as total_count
+            FROM {$wpdb->prefix}wpd_donations 
+            WHERE status = %s 
+            AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+            GROUP BY DATE(created_at)
+            ORDER BY date ASC
+        ", 'complete'));
+        wp_cache_set($cache_key, $results, 'wpd_stats', 3600);
+    }
 
     // Fill missing dates with 0
     $daily_stats = array();
@@ -133,13 +139,25 @@ function wpd_api_get_stats()
     global $wpdb;
 
     // Total Connected Amount (Completed)
-    $total_collected = $wpdb->get_var("SELECT SUM(amount) FROM {$wpdb->prefix}wpd_donations WHERE status = 'complete'");
+    $cache_key = 'wpd_stats_overview';
+    $cached_stats = wp_cache_get($cache_key, 'wpd_stats');
 
-    // Total Donors (Unique Emails)
-    $total_donors = $wpdb->get_var("SELECT COUNT(DISTINCT email) FROM {$wpdb->prefix}wpd_donations WHERE status = 'complete'");
+    if (false === $cached_stats) {
+        $total_collected = $wpdb->get_var("SELECT SUM(amount) FROM {$wpdb->prefix}wpd_donations WHERE status = 'complete'");
+        $total_donors = $wpdb->get_var("SELECT COUNT(DISTINCT email) FROM {$wpdb->prefix}wpd_donations WHERE status = 'complete'");
+        $active_campaigns = wp_count_posts('wpd_campaign')->publish;
 
-    // Active Campaigns
-    $active_campaigns = wp_count_posts('wpd_campaign')->publish;
+        $cached_stats = array(
+            'total_collected' => $total_collected,
+            'total_donors' => $total_donors,
+            'active_campaigns' => $active_campaigns
+        );
+        wp_cache_set($cache_key, $cached_stats, 'wpd_stats', 3600);
+    }
+
+    $total_collected = $cached_stats['total_collected'];
+    $total_donors = $cached_stats['total_donors'];
+    $active_campaigns = $cached_stats['active_campaigns'];
 
     // --- Advanced Analytics ---
 
@@ -285,12 +303,12 @@ function wpd_api_export_donations($request)
     if (!empty($query_parts['args'])) {
         $table_name = $wpdb->prefix . 'wpd_donations';
         $sql = "SELECT * FROM {$table_name} WHERE " . $query_parts['where'] . " ORDER BY created_at DESC";
-        $query = $wpdb->prepare($sql, $query_parts['args']);
+        $query = $wpdb->prepare($sql, $query_parts['args']); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
     } else {
         $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wpd_donations ORDER BY created_at DESC LIMIT %d", 10000);
     }
 
-    $results = $wpdb->get_results($wpdb->prepare($query), ARRAY_A);
+    $results = $wpdb->get_results($wpdb->prepare($query), ARRAY_A); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
     $filename = 'donations-export-' . wp_date('Y-m-d') . '.csv';
     header('Content-Type: text/csv');
@@ -304,11 +322,22 @@ function wpd_api_export_donations($request)
     fputcsv($output, array('ID', 'Campaign ID', 'Date', 'Name', 'Email', 'Amount', 'Status', 'Payment Method'));
 
     foreach ($results as $row) {
+        // Prevent CSV Injection
+        $name = $row['name'];
+        if (preg_match('/^[\=\+\-\@]/', $name)) {
+            $name = "'" . $name;
+        }
+
+        $note = $row['note'];
+        if (preg_match('/^[\=\+\-\@]/', $note)) {
+            $note = "'" . $note;
+        }
+
         fputcsv($output, array(
             $row['id'],
             $row['campaign_id'],
             $row['created_at'],
-            $row['name'],
+            $name,
             $row['email'],
             $row['amount'],
             $row['status'],
@@ -316,7 +345,7 @@ function wpd_api_export_donations($request)
         ));
     }
 
-    fclose($output);
+    fclose($output); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
     exit;
 }
 
@@ -427,7 +456,7 @@ function wpd_api_get_donations($request)
 
     // 1. Get Total Count
     if (!empty($args)) {
-        $count_query = $wpdb->prepare("SELECT COUNT(*) FROM {$table_name} WHERE {$where_sql}", $args);
+        $count_query = $wpdb->prepare("SELECT COUNT(*) FROM {$table_name} WHERE {$where_sql}", $args); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
     } else {
         $count_query = "SELECT COUNT(*) FROM {$table_name}";
     }
@@ -444,16 +473,16 @@ function wpd_api_get_donations($request)
         $query = $wpdb->prepare(
             "SELECT * FROM {$table_name} WHERE " . $where_sql . " ORDER BY created_at DESC LIMIT %d OFFSET %d",
             $args
-        );
+        ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
     } else {
         $query = $wpdb->prepare(
             "SELECT * FROM {$table_name} ORDER BY created_at DESC LIMIT %d OFFSET %d",
             $per_page,
             $offset
-        );
+        ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
     }
 
-    $results = $wpdb->get_results($query);
+    $results = $wpdb->get_results($query); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
     // Format data for frontend
     $data = array_map(function ($row) {

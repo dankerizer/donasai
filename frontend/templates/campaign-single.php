@@ -88,7 +88,7 @@ $debug_active_plugins = (array) get_option('active_plugins', array());
 $debug_in_array = in_array('donasai-pro/donasai-pro.php', $debug_active_plugins, true);
 $debug_license = get_option('wpd_pro_license_status');
 $debug_func_exists = function_exists('wpd_is_pro_active');
-echo "<!-- DEBUG_WPD_DETAILED: func_exists=" . ($debug_func_exists ? '1' : '0') . " active_plugins_count=" . count($debug_active_plugins) . " has_pro_in_list=" . ($debug_in_array ? '1' : '0') . " license_status='" . $debug_license . "' is_pro=" . ($is_pro ? '1' : '0') . " show_donor_list=" . ($show_donor_list ? '1' : '0') . " settings_val=" . (isset($settings_app['show_donor_list']) ? var_export($settings_app['show_donor_list'], true) : 'unset') . " -->";
+// Debugging removed
 
 if (!$is_pro) {
     $show_countdown = false;
@@ -463,8 +463,8 @@ if (!$is_pro) {
 
                         <?php if ($total_donors > count($donors)): ?>
                             <div style="text-align:center; margin-top:20px;">
-                                <button id="wpd-load-more-donors" onclick="wpdLoadMoreDonors()" data-page="1"
-                                    data-campaign="<?php echo $campaign_id; ?>"
+                                    <button id="wpd-load-more-donors" onclick="wpdLoadMoreDonors()" data-page="1"
+                                    data-campaign="<?php echo esc_attr($campaign_id); ?>"
                                     style="padding:8px 20px; background:var(--wpd-bg-secondary); color:var(--wpd-text-body); border:none; border-radius:6px; cursor:pointer; font-weight:500;">
                                     Muat Lebih Banyak
                                 </button>
@@ -500,22 +500,22 @@ if (!$is_pro) {
                                 style="padding:15px; margin-bottom:20px; background:var(--wpd-bg-blue-light); border:1px solid rgba(37, 99, 235, 0.2); text-align:center;">
                                 <div style="font-size:13px; color:var(--wpd-text-muted); margin-bottom:5px;">Sisa Waktu Campaign
                                 </div>
-                                <div
+                                    <div
                                     style="display:flex; justify-content:center; gap:10px; font-weight:700; color:var(--wpd-primary); font-size:18px;">
                                     <div>
-                                        <span><?php echo $days; ?></span>
+                                        <span><?php echo esc_html($days); ?></span>
                                         <span
                                             style="display:block; font-size:10px; color:var(--wpd-text-muted); font-weight:400;">Hari</span>
                                     </div>
                                     <div style="color:var(--wpd-text-muted);">:</div>
                                     <div>
-                                        <span><?php echo $hours; ?></span>
+                                        <span><?php echo esc_html($hours); ?></span>
                                         <span
                                             style="display:block; font-size:10px; color:var(--wpd-text-muted); font-weight:400;">Jam</span>
                                     </div>
                                     <div style="color:var(--wpd-text-muted);">:</div>
                                     <div>
-                                        <span><?php echo $minutes; ?></span>
+                                        <span><?php echo esc_html($minutes); ?></span>
                                         <span
                                             style="display:block; font-size:10px; color:var(--wpd-text-muted); font-weight:400;">Menit</span>
                                     </div>
@@ -631,20 +631,20 @@ if (!$is_pro) {
                             ?>
                                 <div style="padding:12px 20px; border-bottom:1px solid var(--wpd-border); display:flex; align-items:center; gap:12px;">
                                     <!-- Rank Badge -->
-                                    <div style="width:24px; height:24px; background:<?php echo $rank_color; ?>; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:12px; flex-shrink:0;">
-                                        <?php echo $rank; ?>
+                                    <div style="width:24px; height:24px; background:<?php echo esc_attr($rank_color); ?>; color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:12px; flex-shrink:0;">
+                                        <?php echo esc_html($rank); ?>
                                     </div>
                                     <!-- Avatar -->
                                     <div style="width:36px; height:36px; background:var(--wpd-bg-blue-accent); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:14px; flex-shrink:0;">
-                                        <?php echo $fr_initial; ?>
+                                        <?php echo esc_html($fr_initial); ?>
                                     </div>
                                     <!-- Name & Stats -->
                                     <div style="flex:1; min-width:0;">
                                         <div style="font-weight:600; color:var(--wpd-text-main); font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                            <?php echo $fr_name; ?>
+                                            <?php echo esc_html($fr_name); ?>
                                         </div>
                                         <div style="font-size:12px; color:var(--wpd-text-muted);">
-                                            <span style="color:var(--wpd-primary); font-weight:600;">Rp <?php echo $fr_total; ?></span>
+                                            <span style="color:var(--wpd-primary); font-weight:600;">Rp <?php echo esc_html($fr_total); ?></span>
                                             &bull; <?php echo intval($fr->donation_count); ?> donasi
                                         </div>
                                     </div>
@@ -766,7 +766,7 @@ if (!$is_pro) {
             loading.style.display = 'inline-block';
 
             // API Call
-            fetch('<?php echo get_rest_url(null, 'wpd/v1/campaigns/'); ?>' + campaignId + '/donors?page=' + page + '&per_page=<?php echo esc_js($per_page_limit); ?>')
+            fetch('<?php echo esc_url_raw(get_rest_url(null, 'wpd/v1/campaigns/')); ?>' + campaignId + '/donors?page=' + page + '&per_page=<?php echo esc_js($per_page_limit); ?>')
                 .then(response => response.json())
                 .then(data => {
                     loading.style.display = 'none';

@@ -289,7 +289,7 @@ $brand_900 = wpd_receipt_adjust_brightness($brand_color, -80);
                 <?php else: ?>
                     <div
                         class="h-16 w-16 bg-brand-100 dark:bg-brand-900/30 rounded-lg flex items-center justify-center text-brand-600 font-bold text-2xl">
-                        <?php echo substr($org_name, 0, 1); ?>
+                        <?php echo esc_html(substr($org_name, 0, 1)); ?>
                     </div>
                 <?php endif; ?>
                 <div>
@@ -337,7 +337,7 @@ $brand_900 = wpd_receipt_adjust_brightness($brand_color, -80);
                         <div class="flex">
                             <span class="w-32 text-gray-500 dark:text-gray-400">Jam</span>
                             <span class="font-semibold text-gray-900 dark:text-gray-200">:
-                                <?php echo date_i18n(get_option('time_format'), strtotime($donation->created_at)); ?>
+                                <?php echo esc_html(date_i18n(get_option('time_format'), strtotime($donation->created_at))); ?>
                                 WIB</span>
                         </div>
                     <?php endif; ?>
@@ -441,7 +441,7 @@ $brand_900 = wpd_receipt_adjust_brightness($brand_color, -80);
                 <span class="text-xs text-gray-500 dark:text-gray-400">dibuat dengan donasai</span>
             </div>
             <p class="text-[10px] text-gray-400">
-                &copy; <?php echo date('Y'); ?> <?php echo esc_html($org_name); ?>. All rights reserved.
+                &copy; <?php echo esc_html(wp_date('Y')); ?> <?php echo esc_html($org_name); ?>. All rights reserved.
             </p>
         </div>
 

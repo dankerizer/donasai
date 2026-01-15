@@ -250,11 +250,17 @@ function wpd_get_recent_donors($campaign_id, $limit = 10)
     $table = $wpdb->prefix . 'wpd_donations';
 
     // Only completed donations
-    $results = $wpdb->get_results($wpdb->prepare(
-        "SELECT * FROM {$table} WHERE campaign_id = %d AND status = 'complete' ORDER BY created_at DESC LIMIT %d",
-        $campaign_id,
-        $limit
-    ));
+    $cache_key = 'wpd_recent_donors_' . $campaign_id . '_limit_' . $limit;
+    $results = wp_cache_get($cache_key, 'wpd_donations');
+
+    if (false === $results) {
+        $results = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$table} WHERE campaign_id = %d AND status = 'complete' ORDER BY created_at DESC LIMIT %d",
+            $campaign_id,
+            $limit
+        )); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        wp_cache_set($cache_key, $results, 'wpd_donations', 300);
+    }
 
     return $results;
 }
@@ -267,10 +273,18 @@ function wpd_get_donor_count($campaign_id)
     global $wpdb;
     $table = $wpdb->prefix . 'wpd_donations';
 
-    return (int) $wpdb->get_var($wpdb->prepare(
-        "SELECT COUNT(id) FROM {$table} WHERE campaign_id = %d AND status = 'complete'",
-        $campaign_id
-    ));
+    $cache_key = 'wpd_donor_count_' . $campaign_id;
+    $count = wp_cache_get($cache_key, 'wpd_donations');
+
+    if (false === $count) {
+        $count = (int) $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(id) FROM {$table} WHERE campaign_id = %d AND status = 'complete'",
+            $campaign_id
+        )); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        wp_cache_set($cache_key, $count, 'wpd_donations', 300);
+    }
+
+    return $count;
 }
 
 /**

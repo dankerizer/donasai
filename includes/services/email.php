@@ -32,7 +32,15 @@ class WPD_Email
 			$donation = wpd_get_donation($donation_id);
 		} else {
 			$table_donations = $wpdb->prefix . 'wpd_donations';
-			$donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_donations} WHERE id = %d", $donation_id));
+			$cache_key = 'wpd_donation_' . $donation_id;
+			$donation = wp_cache_get($cache_key, 'wpd_donations');
+
+			if (false === $donation) {
+				$donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_donations} WHERE id = %d", $donation_id)); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				if ($donation) {
+					wp_cache_set($cache_key, $donation, 'wpd_donations', 300);
+				}
+			}
 		}
 
 		if (!$donation || empty($donation->email)) {

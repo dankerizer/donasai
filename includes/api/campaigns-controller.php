@@ -171,13 +171,21 @@ function wpd_api_get_campaign_donors($request)
 	$offset = ($page - 1) * $per_page;
 
 	// Get Donors
+	// Get Donors
 	$table = $wpdb->prefix . 'wpd_donations';
-	$results = $wpdb->get_results($wpdb->prepare(
-		"SELECT * FROM {$table} WHERE campaign_id = %d AND status = 'complete' ORDER BY created_at DESC LIMIT %d OFFSET %d",
-		$campaign_id,
-		$per_page,
-		$offset
-	));
+	$cache_key = 'wpd_campaign_donors_' . $campaign_id . '_p' . $page . '_pp' . $per_page;
+	$cache_group = 'wpd_donations';
+	$results = wp_cache_get($cache_key, $cache_group);
+
+	if (false === $results) {
+		$results = $wpdb->get_results($wpdb->prepare(
+			"SELECT * FROM {$table} WHERE campaign_id = %d AND status = 'complete' ORDER BY created_at DESC LIMIT %d OFFSET %d",
+			$campaign_id,
+			$per_page,
+			$offset
+		)); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		wp_cache_set($cache_key, $results, $cache_group, 300);
+	}
 
 	// Get Total for this campaign
 	$total = (int) $wpdb->get_var($wpdb->prepare(

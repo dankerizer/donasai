@@ -1,5 +1,5 @@
 === Donasai - Platform Donasi & Penggalangan Dana ===
-Contributors: hadie danker
+Contributors: hadie-danker
 Tags: donation, fundraising, zakat, qurban, midtrans
 Requires at least: 6.4
 Tested up to: 6.9
@@ -76,5 +76,5 @@ This plugin relies on the following external services to function:
 
 = 1.0.0 =
 *   Initial release.
-*   Fitur dasar: Kampanye, Donasi, Zakat, Midtrans, Transfer Manual.
+*   Fitur dasar: Kampanye, Donasi, Zakat,  Transfer Manual.
 

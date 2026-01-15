@@ -255,11 +255,12 @@ function wpd_save_campaign_options($post_id)
 		$wa_settings = wp_unslash($_POST['wpd_whatsapp_settings']);
 		$wa = array();
 		foreach ($wa_settings as $key => $value) {
+			$clean_key = sanitize_key($key);
 			// Message might need textarea sanitization
-			if ($key === 'message') {
-				$wa[$key] = sanitize_textarea_field($value);
+			if ($clean_key === 'message') {
+				$wa[$clean_key] = sanitize_textarea_field($value);
 			} else {
-				$wa[$key] = sanitize_text_field($value);
+				$wa[$clean_key] = sanitize_text_field($value);
 			}
 		}
 		update_post_meta($post_id, '_wpd_whatsapp_settings', $wa);

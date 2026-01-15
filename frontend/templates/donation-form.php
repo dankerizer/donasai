@@ -85,7 +85,7 @@ if ($donation_layout === 'split') $body_classes .= ' wpd-layout-split';
                 <input type="hidden" name="campaign_id" value="<?php echo esc_attr($campaign_id); ?>">
 
                 <!-- Alert Success -->
-                <?php if (isset($_GET['donation_success']) && '1' === sanitize_text_field(wp_unslash($_GET['donation_success']))): ?>
+                <?php if (isset($_GET['donation_success']) && '1' === sanitize_text_field(wp_unslash($_GET['donation_success']))): // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
                     <div class="wpd-alert-success">
                         <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -127,7 +127,7 @@ if ($donation_layout === 'split') $body_classes .= ' wpd-layout-split';
                                     <div class="wpd-radio-check"></div>
                                     <div class="wpd-radio-content">
                                         <div class="wpd-pkg-name"><?php echo esc_html($pkg['name']); ?></div>
-                                        <div class="wpd-pkg-price">Rp <?php echo number_format($pkg['price'], 0, ',', '.'); ?>
+                                        <div class="wpd-pkg-price">Rp <?php echo esc_html(number_format($pkg['price'], 0, ',', '.')); ?>
                                         </div>
                                     </div>
                                 </label>

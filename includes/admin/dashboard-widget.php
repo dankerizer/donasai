@@ -36,7 +36,7 @@ function wpd_dashboard_widget_render()
         $stats = array();
 
         // Total Collected (Complete)
-        $stats['total_collected'] = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM {$table_donations} WHERE status = %s", 'complete'));
+        $stats['total_collected'] = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM {$table_donations} WHERE status = %s", 'complete')); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
         // Total Donors
         $stats['total_donors'] = $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM {$table_donations} WHERE status = %s", 'complete'));

@@ -153,7 +153,7 @@ function wpd_enqueue_admin_assets($hook)
 	}
 
 	// Determine Initial Path based on Page Slug
-	$current_page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : 'wpd-dashboard';
+	$current_page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : 'wpd-dashboard'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	$initial_path = '/';
 
 	switch ($current_page) {

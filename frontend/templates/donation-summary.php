@@ -17,8 +17,7 @@ if (!$donation_id) {
 }
 
 global $wpdb;
-$table = $wpdb->prefix . 'wpd_donations';
-$donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $donation_id));
+$donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wpd_donations WHERE id = %d", $donation_id));
 
 if (!$donation) {
     wp_die('Donasi tidak ditemukan.', 'Error', array('response' => 404));
@@ -157,22 +156,27 @@ $button_color = get_option('wpd_appearance_button_color', '#ec4899'); // Pink
                     $conf_page_id = isset($settings_gen['confirmation_page']) ? intval($settings_gen['confirmation_page']) : 0;
                     $conf_url = $conf_page_id ? get_permalink($conf_page_id) : '';
 
-                    // Build JS values
-                    $js_conf_url = $conf_url ? esc_url(add_query_arg('donation_id', $donation_id, $conf_url)) : '';
-                    $js_phone = esc_attr(get_option('wpd_settings_general')['whatsapp_number'] ?? '');
-                    $js_donation_id = esc_attr($donation_id);
-                    $js_amount = esc_attr(number_format($amount, 0, ',', '.'));
+                    // Build values
+                    $conf_url_final = $conf_url ? add_query_arg('donation_id', $donation_id, $conf_url) : '';
+                    $raw_phone = get_option('wpd_settings_general')['whatsapp_number'] ?? '';
+                    $fmt_amount = number_format($amount, 0, ',', '.');
                     
                     if ($conf_page_id) {
-                        echo '<a href="' . $js_conf_url . '" class="btn btn-primary">' . esc_html__('Konfirmasi Pembayaran', 'donasai') . '</a>';
+                        printf(
+                            '<a href="%s" class="btn btn-primary">%s</a>',
+                            esc_url($conf_url_final),
+                            esc_html__('Konfirmasi Pembayaran', 'donasai')
+                        );
                     } else {
                          // Use ID and Data Attributes for JS handler
-                        echo '<a href="#" id="wpd-confirm-btn" 
-                                data-url="' . $js_conf_url . '" 
-                                data-phone="' . $js_phone . '" 
-                                data-id="' . $js_donation_id . '" 
-                                data-amount="' . $js_amount . '" 
-                                class="btn btn-primary">' . esc_html__('Konfirmasi Pembayaran', 'donasai') . '</a>';
+                        printf(
+                            '<a href="#" id="wpd-confirm-btn" data-url="%s" data-phone="%s" data-id="%s" data-amount="%s" class="btn btn-primary">%s</a>',
+                            esc_url($conf_url_final),
+                            esc_attr($raw_phone),
+                            esc_attr($donation_id),
+                            esc_attr($fmt_amount),
+                            esc_html__('Konfirmasi Pembayaran', 'donasai')
+                        );
                     }
                     ?>
                 <?php endif; ?>

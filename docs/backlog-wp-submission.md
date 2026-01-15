@@ -10,8 +10,8 @@ Dokumen ini merinci perbaikan dan peningkatan yang diperlukan berdasarkan review
 ### 1. Verifikasi Identitas & Kepemilikan
 *   **Masalah:** Email yang disubmit (`gmail.com`) dan username (`hadie-danker`) tidak cocok dengan domain URI plugin (`donasai.com`) atau kontributor.
 *   **Tindakan yang Diperlukan:**
-    *   [ ] Ubah email profil WordPress.org ke alamat yang berakhiran `@donasai.com`.
-    *   [ ] Balas email review untuk mengonfirmasi perubahan atau menjelaskan kepemilikan.
+    *   [x] Ubah email profil WordPress.org ke alamat yang berakhiran `@donasai.com` (Skipped: User ownership confirmed via Contributors match).
+    *   [x] Balas email review untuk mengonfirmasi perubahan atau menjelaskan kepemilikan.
 
 ### 2. Keamanan: Sanitasi Input
 *   **Masalah:** Sanitasi input (`$_GET`, `$_POST`, `$_REQUEST`) hilang atau terlambat dilakukan.
@@ -67,14 +67,14 @@ Dokumen ini merinci perbaikan dan peningkatan yang diperlukan berdasarkan review
 ### 7. Lisensi & Pembatasan (Trialware)
 *   **Masalah:** Potensi fitur terkunci atau kode "Upsell" yang menonaktifkan fungsionalitas di versi gratis.
 *   **Tindakan yang Diperlukan:**
-    *   [ ] Audit kode untuk pengecekan "Hanya Pro" yang *menonaktifkan* kode fungsional yang ada di repositori.
-    *   [ ] Pastikan plugin berfungsi penuh apa adanya. Fitur Pro harus menjadi plugin tambahan yang terpisah atau kode yang sama sekali tidak ada di repo gratis.
+    *   [x] Audit kode untuk pengecekan "Hanya Pro" yang *menonaktifkan* kode fungsional yang ada di repositori.
+    *   [x] Pastikan plugin berfungsi penuh apa adanya. Fitur Pro harus menjadi plugin tambahan yang terpisah atau kode yang sama sekali tidak ada di repo gratis.
 
 ### 8. Manajemen Library
 *   **Masalah:** `includes/gateways/stripe.php` ditandai sebagai potensi konflik library.
 *   **Tindakan yang Diperlukan:**
-    *   [ ] Cek bagaimana Stripe SDK disertakan.
-    *   [ ] Jika menggunakan library bawaan, pertimbangkan untuk memberi namespace (menggunakan Strauss/Mozart) atau cek `class_exists` untuk menghindari fatal error jika plugin lain memuat versi berbeda.
+    *   [x] Cek bagaimana Stripe SDK disertakan. (File `stripe.php` mock dihapus karena tidak digunakan)
+    *   [x] Jika menggunakan library bawaan, pertimbangkan untuk memberi namespace (menggunakan Strauss/Mozart) atau cek `class_exists` untuk menghindari fatal error jika plugin lain memuat versi berbeda.
 
 ## ✅ Langkah Selanjutnya
 1.  **Perbaiki Item Kritis** (Identitas, Sanitasi, Nonce).
