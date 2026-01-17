@@ -9,8 +9,12 @@ Hello WordPress Plugin Review Team,
 Thank you for the detailed feedback. We have addressed all the issues mentioned in the review. Here is a summary of the changes we have made:
 
 ## 1. Ownership & Identity
-I understand the concern regarding the email address `hadie87@gmail.com` not matching the plugin's domain `donasai.com`.
-> **Action Taken:** I have updated the `Contributors` field in `readme.txt` to strictly match my WordPress.org username (`hadie-danker`). I am an individual developer and I confirm that this account `hadie-danker` is the rightful owner. I will continue using my current email address.
+I understand the concern regarding the email address `hadie87@gmail.com` not matching the plugin's domain `donasai.com`, and the reported timeout on `donasai.com`.
+
+> **Action Taken:** 
+> 1. I have updated the `Contributors` field in `readme.txt` to strictly match my WordPress.org username (`hadie-danker`).
+> 2. I have changed the **Plugin URI** in `donasai.php` to `https://wordpress.org/plugins/donasai` for now, as the domain `donasai.com` is currently maintenance/not publicly accessible (hence the timeout).
+> 3. I confirm I am the sole developer/owner of this plugin.
 
 ## 2. Trialware & Locked Features
 We have removed the features that were previously restricted or appeared to be "upsells" to ensure full compliance with Guideline 5.
