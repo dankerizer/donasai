@@ -105,7 +105,7 @@ if ($donation_layout === 'split') $body_classes .= ' donasai-layout-split';
                         <div class="donasai-callout-blue ">
                             <div class="donasai-form-row">
                                 <label>Pilih Jenis Zakat</label>
-                                <select id="zakat_type" class="donasai-input" onchange="toggleZakatType(this.value)">
+                                <select id="zakat_type" class="donasai-input">
                                     <option value="maal">Zakat Maal</option>
                                     <option value="income">Zakat Penghasilan</option>
                                 </select>
@@ -146,7 +146,7 @@ if ($donation_layout === 'split') $body_classes .= ' donasai-layout-split';
                         <!-- Standard Donation Presets -->
                         <div class="donasai-grid-presets">
                             <?php foreach ($presets as $val): ?>
-                                <div class="donasai-preset-card" onclick="selectAmount(this, <?php echo esc_attr($val); ?>)">
+                                <div class="donasai-preset-card" data-amount="<?php echo esc_attr($val); ?>">
                                     <div class="donasai-preset-emoji"><?php echo esc_html($preset_emoji); ?></div>
                                     <div class="donasai-preset-val">Rp <?php echo esc_html(number_format($val / 1000, 0)); ?>rb
                                     </div>
@@ -354,14 +354,8 @@ if ($donation_layout === 'split') $body_classes .= ' donasai-layout-split';
         </div>
     </div>
 
-    <?php if (is_admin_bar_showing()): ?>
-        <style>
-            .donasai-header-mobile {
-                top: 32px;
-            }
-        </style>
-    <?php endif; ?>
     <?php wp_footer(); ?>
 </body>
 
+</html>
 </html>

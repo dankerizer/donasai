@@ -27,11 +27,11 @@ function wpdCopyRef() {
 }
 
 function wpdRegisterFundraiserHelper(campaignId, nonce) {
-    fetch('/wp-json/donasai/v1/fundraisers', {
+    fetch(donasaiSettings.root + 'donasai/v1/fundraisers', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-WP-Nonce': nonce
+            'X-WP-Nonce': donasaiSettings.nonce
         },
         body: JSON.stringify({ campaign_id: campaignId })
     })

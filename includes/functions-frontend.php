@@ -201,6 +201,12 @@ function donasai_enqueue_frontend_assets()
         if (is_singular('donasai_campaign')) {
             wp_enqueue_style('donasai-campaign', DONASAI_PLUGIN_URL . 'frontend/assets/campaign.css', array('donasai-frontend'), DONASAI_VERSION);
             wp_enqueue_script('donasai-campaign', DONASAI_PLUGIN_URL . 'frontend/assets/campaign.js', array('jquery'), DONASAI_VERSION, true);
+            
+            // Localize Campaign Script
+            wp_localize_script('donasai-campaign', 'donasaiSettings', array(
+                'root' => esc_url_raw(rest_url()),
+                'nonce' => wp_create_nonce('wp_rest')
+            ));
 
             // Check for Payment Page
             global $wp_query;
@@ -219,8 +225,15 @@ function donasai_enqueue_frontend_assets()
                 wp_localize_script('donasai-payment', 'donasai_payment_vars', array(
                     'is_midtrans_active' => $snap_active,
                     'snap_url' => $snap_url,
-                    'client_key' => $client_key
+                    'client_key' => $client_key,
+                    'root' => esc_url_raw(rest_url()),
+                    'nonce' => wp_create_nonce('wp_rest')
                 ));
+
+                // Add Admin Bar Adjustment
+                if (is_admin_bar_showing()) {
+                    wp_add_inline_style('donasai-frontend', '.donasai-header-mobile { top: 32px; }');
+                }
             }
 
             // Check for Thank You Page
@@ -317,6 +330,12 @@ function donasai_shortcode_my_donations()
     wp_enqueue_style('donasai-frontend', DONASAI_PLUGIN_URL . 'frontend/assets/frontend.css', array(), DONASAI_VERSION);
     wp_enqueue_style('donasai-dashboard', DONASAI_PLUGIN_URL . 'frontend/assets/dashboard.css', array('donasai-frontend'), DONASAI_VERSION);
     wp_enqueue_script('donasai-dashboard', DONASAI_PLUGIN_URL . 'frontend/assets/dashboard.js', array(), DONASAI_VERSION, true);
+
+    // Localize Dashboard Script
+    wp_localize_script('donasai-dashboard', 'donasaiSettings', array(
+        'root' => esc_url_raw(rest_url()),
+        'nonce' => wp_create_nonce('wp_rest')
+    ));
 
     ob_start();
     include DONASAI_PLUGIN_PATH . 'frontend/templates/donor-dashboard.php';

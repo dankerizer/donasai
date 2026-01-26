@@ -1,11 +1,11 @@
 function wpdCancelSub(id, confirmMsg, successMsg, failMsg, nonce) {
     if (!confirm(confirmMsg)) return;
 
-    fetch('/wp-json/donasai/v1/subscriptions/' + id + '/cancel', {
+    fetch(donasaiSettings.root + 'donasai/v1/subscriptions/' + id + '/cancel', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-WP-Nonce': nonce
+            'X-WP-Nonce': donasaiSettings.nonce
         }
     })
     .then(response => response.json())
