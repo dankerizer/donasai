@@ -80,6 +80,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 					pixel_fb: data.pixel_fb,
 					pixel_tiktok: data.pixel_tiktok,
 					pixel_ga4: data.pixel_ga4,
+					// Webhooks
+					webhook_url: data.webhook_url,
+					webhook_secret: data.webhook_secret,
+					webhook_enabled: data.webhook_enabled,
 				},
 				donation: {
 					min_amount: data.min_amount,

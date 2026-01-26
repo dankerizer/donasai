@@ -18,6 +18,10 @@ export interface SettingsFormData {
 	pixel_fb: string;
 	pixel_tiktok: string;
 	pixel_ga4: string;
+	// Webhooks
+	webhook_url: string;
+	webhook_secret: string;
+	webhook_enabled: boolean;
 	// Donation
 	min_amount: number;
 	presets: string;
@@ -100,6 +104,10 @@ export const initialFormData: SettingsFormData = {
 	pixel_fb: "",
 	pixel_tiktok: "",
 	pixel_ga4: "",
+	// Webhooks
+	webhook_url: "",
+	webhook_secret: "",
+	webhook_enabled: false,
 	// Donation
 	min_amount: 10000,
 	presets: "50000,100000,200000,500000",

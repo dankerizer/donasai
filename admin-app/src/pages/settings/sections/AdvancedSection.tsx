@@ -29,6 +29,10 @@ export default function AdvancedSection() {
 									payment_slug: formData.payment_slug,
 									remove_branding: formData.remove_branding,
 									confirmation_page: formData.confirmation_page,
+									// Webhooks
+									webhook_url: formData.webhook_url,
+									webhook_secret: formData.webhook_secret,
+									webhook_enabled: formData.webhook_enabled,
 								},
 								donation: {
 									min_amount: formData.min_amount,
@@ -115,6 +119,12 @@ export default function AdvancedSection() {
 										confirmation_page:
 											imported.general?.confirmation_page ||
 											prev.confirmation_page,
+										webhook_url:
+											imported.general?.webhook_url || prev.webhook_url,
+										webhook_secret:
+											imported.general?.webhook_secret || prev.webhook_secret,
+										webhook_enabled:
+											imported.general?.webhook_enabled ?? prev.webhook_enabled,
 										min_amount:
 											imported.donation?.min_amount || prev.min_amount,
 										presets: imported.donation?.presets || prev.presets,

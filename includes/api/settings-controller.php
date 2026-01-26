@@ -58,6 +58,10 @@ function wpd_api_get_settings()
         'pixel_fb' => '',
         'pixel_tiktok' => '',
         'pixel_ga4' => '',
+        // Webhooks
+        'webhook_url' => '',
+        'webhook_secret' => '',
+        'webhook_enabled' => false,
     ));
     $donation = get_option('wpd_settings_donation', array('min_amount' => 10000, 'presets' => '50000,100000,200000,500000', 'anonymous_label' => 'Hamba Allah', 'create_user' => false, 'preset_emoji' => '💖'));
     $appearance = get_option('wpd_settings_appearance', array(
@@ -226,6 +230,10 @@ function wpd_api_update_settings($request)
             'pixel_fb' => sanitize_text_field($params['general']['pixel_fb'] ?? ''),
             'pixel_tiktok' => sanitize_text_field($params['general']['pixel_tiktok'] ?? ''),
             'pixel_ga4' => sanitize_text_field($params['general']['pixel_ga4'] ?? ''),
+            // Webhooks
+            'webhook_url' => esc_url_raw($params['general']['webhook_url'] ?? ''),
+            'webhook_secret' => sanitize_text_field($params['general']['webhook_secret'] ?? ''),
+            'webhook_enabled' => !empty($params['general']['webhook_enabled']),
         );
 
         // Check if slugs changed, flush rewrite rules might be needed (handled via option update hook or manual flush hint)
