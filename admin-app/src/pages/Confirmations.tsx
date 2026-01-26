@@ -15,7 +15,7 @@ export default function Confirmations() {
 	const { data: queryData, isLoading } = useQuery({
 		queryKey: ["donations"],
 		queryFn: async () => {
-			const response = await fetch("/wp-json/wpd/v1/donations", {
+			const response = await fetch("/wp-json/donasai/v1/donations", {
 				headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
 			});
 			if (!response.ok) throw new Error("Failed to fetch donations");
@@ -55,7 +55,7 @@ export default function Confirmations() {
 	// Update Status Mutation
 	const updateStatus = useMutation({
 		mutationFn: async ({ id, status }: { id: number; status: string }) => {
-			const response = await fetch(`/wp-json/wpd/v1/donations/${id}`, {
+			const response = await fetch(`/wp-json/donasai/v1/donations/${id}`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

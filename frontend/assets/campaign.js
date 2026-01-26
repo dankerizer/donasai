@@ -2,17 +2,17 @@
  * Campaign Single JS
  */
 function openWpdTab(tabName) {
-    const x = document.getElementsByClassName("wpd-tab-content");
+    const x = document.getElementsByClassName("donasai-tab-content");
     for (let i = 0; i < x.length; i++) {
         x[i].style.display = "none";
     }
-    const tabs = document.getElementsByClassName("wpd-tab-btn");
+    const tabs = document.getElementsByClassName("donasai-tab-btn");
     for (let i = 0; i < tabs.length; i++) {
         tabs[i].classList.remove("active");
         tabs[i].style.borderBottomColor = "transparent";
         tabs[i].style.color = "#6b7280";
     }
-    document.getElementById("wpd-tab-" + tabName).style.display = "block";
+    document.getElementById("donasai-tab-" + tabName).style.display = "block";
     const activeBtn = document.getElementById("tab-btn-" + tabName);
     activeBtn.classList.add("active");
     activeBtn.style.borderBottomColor = "#2563eb";
@@ -20,14 +20,14 @@ function openWpdTab(tabName) {
 }
 
 function wpdCopyRef() {
-    const copyText = document.getElementById("wpd-ref-link");
+    const copyText = document.getElementById("donasai-ref-link");
     copyText.select();
     document.execCommand("copy");
     alert("Link copied!");
 }
 
 function wpdRegisterFundraiserHelper(campaignId, nonce) {
-    fetch('/wp-json/wpd/v1/fundraisers', {
+    fetch('/wp-json/donasai/v1/fundraisers', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -38,11 +38,11 @@ function wpdRegisterFundraiserHelper(campaignId, nonce) {
     .then(response => response.json())
     .then(data => {
         if (data.referral_link) {
-            const modal = document.getElementById('wpd-fundraiser-modal');
+            const modal = document.getElementById('donasai-fundraiser-modal');
             modal.style.display = 'flex';
-            document.getElementById('wpd-ref-link').value = data.referral_link;
+            document.getElementById('donasai-ref-link').value = data.referral_link;
             const text = "Yuk bantu donasi di campaign ini: " + data.referral_link;
-            document.getElementById('wpd-wa-share').href = "https://wa.me/?text=" + encodeURIComponent(text);
+            document.getElementById('donasai-wa-share').href = "https://wa.me/?text=" + encodeURIComponent(text);
         } else {
             alert('Error: ' + (data.message || 'Something went wrong'));
         }

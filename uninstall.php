@@ -9,7 +9,7 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 }
 
 // Check if user has opted to clean up data
-$general_settings = get_option('wpd_settings_general', []);
+$general_settings = get_option('donasai_settings_general', []);
 
 if (empty($general_settings)) {
     return;
@@ -22,11 +22,11 @@ global $wpdb;
  */
 if (!empty($general_settings['delete_on_uninstall_tables'])) {
     $tables = array(
-        esc_sql($wpdb->prefix . 'wpd_donations'),
-        esc_sql($wpdb->prefix . 'wpd_campaign_meta'),
-        esc_sql($wpdb->prefix . 'wpd_fundraisers'),
-        esc_sql($wpdb->prefix . 'wpd_referral_logs'),
-        esc_sql($wpdb->prefix . 'wpd_subscriptions')
+        esc_sql($wpdb->prefix . 'donasai_donations'),
+        esc_sql($wpdb->prefix . 'donasai_campaign_meta'),
+        esc_sql($wpdb->prefix . 'donasai_fundraisers'),
+        esc_sql($wpdb->prefix . 'donasai_referral_logs'),
+        esc_sql($wpdb->prefix . 'donasai_subscriptions')
     );
 
     foreach ($tables as $table) {
@@ -39,17 +39,17 @@ if (!empty($general_settings['delete_on_uninstall_tables'])) {
  */
 if (!empty($general_settings['delete_on_uninstall_settings'])) {
     $options = array(
-        'wpd_settings_general',
-        'wpd_settings_donation',
-        'wpd_settings_appearance',
-        'wpd_settings_notifications',
-        'wpd_license', // Pro license
-        'wpd_version',
-        'wpd_rewrite_flush_needed'
+        'donasai_settings_general',
+        'donasai_settings_donation',
+        'donasai_settings_appearance',
+        'donasai_settings_notifications',
+        'donasai_license', // Pro license
+        'donasai_version',
+        'donasai_rewrite_flush_needed'
     );
 
     // Pro specific options that might exist
-    $pro_options = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE 'wpd_pro_%'");
+    $pro_options = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE 'donasai_pro_%'");
     if (!empty($pro_options)) {
         $options = array_merge($options, $pro_options);
     }

@@ -1,12 +1,12 @@
-.wpd-table tr:last-child td {
+.donasai-table tr:last-child td {
     border-bottom: none;
 }
 
-.wpd-table tr:hover {
-    background-color: var(--wpd-bg, #f3f4f6);
+.donasai-table tr:hover {
+    background-color: var(--donasai-bg, #f3f4f6);
 }
 
-.wpd-status-badge {
+.donasai-status-badge {
     display: inline-block;
     padding: 4px 10px;
     border-radius: 9999px;
@@ -15,27 +15,27 @@
     text-transform: capitalize;
 }
 
-.wpd-status-complete {
+.donasai-status-complete {
     background: #d1fae5;
     color: #065f46;
 }
 
-.wpd-status-pending {
+.donasai-status-pending {
     background: #fef3c7;
     color: #92400e;
 }
 
-.wpd-status-failed {
+.donasai-status-failed {
     background: #fee2e2;
     color: #991b1b;
 }
 
-.wpd-status-active {
+.donasai-status-active {
     background: #dbeafe;
     color: #1e40af;
 }
 
-.wpd-status-cancelled {
+.donasai-status-cancelled {
     background: #f3f4f6;
     color: #374151;
 }

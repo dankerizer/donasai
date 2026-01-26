@@ -247,7 +247,7 @@ export default function GeneralSection() {
 						</Select>
 						<p className="mt-1 text-xs text-gray-500">
 							Halaman ini harus berisi shortcode{" "}
-							<code>[wpd_confirmation_form]</code>.
+							<code>[donasai_confirmation_form]</code>.
 						</p>
 					</div>
 				</div>

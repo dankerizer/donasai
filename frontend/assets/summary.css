@@ -22,19 +22,19 @@ body::before {
     left: 0;
     right: 0;
     height: 300px;
-    background: linear-gradient(180deg, rgba(var(--wpd-primary-rgb), 0.1) 0%, transparent 100%);
+    background: linear-gradient(180deg, rgba(var(--donasai-primary-rgb), 0.1) 0%, transparent 100%);
     /* Fallback */
     background: linear-gradient(180deg, #ecfdf5 0%, transparent 100%);
     z-index: -1;
 }
 
-.wpd-container {
+.donasai-container {
     width: 100%;
     max-width: 480px;
     padding: 20px;
 }
 
-.wpd-card {
+.donasai-card {
     background: #ffffff;
     border-radius: 24px;
     box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.02);
@@ -43,14 +43,14 @@ body::before {
 }
 
 /* Status Section */
-.wpd-status-hero {
+.donasai-status-hero {
     padding: 40px 30px 30px;
     text-align: center;
     background: #fff;
     position: relative;
 }
 
-.wpd-icon-wrapper {
+.donasai-icon-wrapper {
     width: 80px;
     height: 80px;
     margin: 0 auto 24px;
@@ -63,28 +63,28 @@ body::before {
 }
 
 /* Status Colors */
-.status-complete .wpd-icon-wrapper {
+.status-complete .donasai-icon-wrapper {
     background: #d1fae5;
     color: #059669;
 }
 
-.status-pending .wpd-icon-wrapper {
+.status-pending .donasai-icon-wrapper {
     background: #fef3c7;
     color: #d97706;
 }
 
-.status-failed .wpd-icon-wrapper {
+.status-failed .donasai-icon-wrapper {
     background: #fee2e2;
     color: #dc2626;
 }
 
-.wpd-icon-wrapper svg {
+.donasai-icon-wrapper svg {
     width: 40px;
     height: 40px;
     stroke-width: 2.5;
 }
 
-.wpd-title {
+.donasai-title {
     font-size: 24px;
     font-weight: 800;
     margin: 0 0 8px;
@@ -92,7 +92,7 @@ body::before {
     color: #0f172a;
 }
 
-.wpd-subtitle {
+.donasai-subtitle {
     font-size: 15px;
     color: #64748b;
     line-height: 1.5;
@@ -101,7 +101,7 @@ body::before {
 }
 
 /* Ticket / Instruction Styling */
-.wpd-ticket {
+.donasai-ticket {
     background: #f8fafc;
     margin: 0 24px 24px;
     padding: 24px;
@@ -111,8 +111,8 @@ body::before {
 }
 
 /* Cutout Effect */
-.wpd-ticket::before,
-.wpd-ticket::after {
+.donasai-ticket::before,
+.donasai-ticket::after {
     content: '';
     position: absolute;
     top: 50%;
@@ -124,15 +124,15 @@ body::before {
     box-shadow: inset 0 0 0 1px rgba(226, 232, 240, 0.8);
 }
 
-.wpd-ticket::before {
+.donasai-ticket::before {
     left: -35px;
 }
 
-.wpd-ticket::after {
+.donasai-ticket::after {
     right: -35px;
 }
 
-.wpd-label {
+.donasai-label {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -142,7 +142,7 @@ body::before {
     display: block;
 }
 
-.wpd-bank-info {
+.donasai-bank-info {
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
@@ -153,13 +153,13 @@ body::before {
     justify-content: space-between;
 }
 
-.wpd-bank-logo {
+.donasai-bank-logo {
     font-weight: 800;
     font-size: 18px;
     color: #1e293b;
 }
 
-.wpd-account-number {
+.donasai-account-number {
     font-family: 'Monaco', 'Courier New', monospace;
     font-size: 16px;
     color: #334155;
@@ -167,11 +167,11 @@ body::before {
     letter-spacing: -0.5px;
 }
 
-.wpd-copy-btn {
+.donasai-copy-btn {
     background: none;
     border: none;
     cursor: pointer;
-    color: var(--wpd-primary);
+    color: var(--donasai-primary);
     font-size: 13px;
     font-weight: 600;
     padding: 4px 8px;
@@ -179,16 +179,16 @@ body::before {
     transition: background 0.2s;
 }
 
-.wpd-copy-btn:hover {
+.donasai-copy-btn:hover {
     background: #f1f5f9;
 }
 
 /* Details List */
-.wpd-details {
+.donasai-details {
     padding: 0 30px 30px;
 }
 
-.wpd-row {
+.donasai-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -197,22 +197,22 @@ body::before {
     font-size: 14px;
 }
 
-.wpd-row:last-child {
+.donasai-row:last-child {
     border-bottom: none;
 }
 
-.wpd-row-label {
+.donasai-row-label {
     color: #64748b;
     font-weight: 500;
 }
 
-.wpd-row-value {
+.donasai-row-value {
     color: #0f172a;
     font-weight: 600;
     text-align: right;
 }
 
-.wpd-total {
+.donasai-total {
     margin-top: 20px;
     padding-top: 20px;
     border-top: 2px dashed #e2e8f0;
@@ -221,21 +221,21 @@ body::before {
     align-items: center;
 }
 
-.wpd-total-label {
+.donasai-total-label {
     font-size: 16px;
     font-weight: 700;
     color: #0f172a;
 }
 
-.wpd-total-value {
+.donasai-total-value {
     font-size: 24px;
     font-weight: 800;
-    color: var(--wpd-primary);
+    color: var(--donasai-primary);
     letter-spacing: -0.03em;
 }
 
 /* Actions */
-.wpd-actions {
+.donasai-actions {
     padding: 0 30px 40px;
     display: flex;
     flex-direction: column;
@@ -257,7 +257,7 @@ body::before {
 }
 
 .btn-primary {
-    background: var(--wpd-btn, #ec4899);
+    background: var(--donasai-btn, #ec4899);
     color: white;
     box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
 }
@@ -286,7 +286,7 @@ body::before {
 }
 
 .btn-ghost:hover {
-    color: var(--wpd-primary);
+    color: var(--donasai-primary);
 }
 
 @keyframes popIn {
@@ -300,12 +300,12 @@ body::before {
     }
 }
 
-.wpd-card {
+.donasai-card {
     animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Toast Notification */
-#wpd-toast {
+#donasai-toast {
     visibility: hidden;
     min-width: 250px;
     background-color: #333;
@@ -324,7 +324,7 @@ body::before {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-#wpd-toast.show {
+#donasai-toast.show {
     visibility: visible;
     opacity: 1;
     bottom: 50px;

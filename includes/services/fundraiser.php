@@ -8,14 +8,14 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-class WPD_Fundraiser_Service
+class DONASAI_Fundraiser_Service
 {
 	private $table_name;
 
 	public function __construct()
 	{
 		global $wpdb;
-		$this->table_name = esc_sql($wpdb->prefix . 'wpd_fundraisers');
+		$this->table_name = esc_sql($wpdb->prefix . 'donasai_fundraisers');
 	}
 
 	/**
@@ -63,15 +63,15 @@ class WPD_Fundraiser_Service
 	public function get_by_code($code)
 	{
 		global $wpdb;
-		$cache_key = 'wpd_fundraiser_code_' . $code;
-		$found = wp_cache_get($cache_key, 'wpd_fundraisers');
+		$cache_key = 'donasai_fundraiser_code_' . $code;
+		$found = wp_cache_get($cache_key, 'donasai_fundraisers');
 
 		if (false === $found) {
 			$found = $wpdb->get_row($wpdb->prepare(
 				"SELECT * FROM {$this->table_name} WHERE referral_code = %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$code
 			)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-			wp_cache_set($cache_key, $found, 'wpd_fundraisers', 3600);
+			wp_cache_set($cache_key, $found, 'donasai_fundraisers', 3600);
 		}
 		return $found;
 	}
@@ -82,15 +82,15 @@ class WPD_Fundraiser_Service
 	public function get_by_id($id)
 	{
 		global $wpdb;
-		$cache_key = 'wpd_fundraiser_id_' . $id;
-		$found = wp_cache_get($cache_key, 'wpd_fundraisers');
+		$cache_key = 'donasai_fundraiser_id_' . $id;
+		$found = wp_cache_get($cache_key, 'donasai_fundraisers');
 
 		if (false === $found) {
 			$found = $wpdb->get_row($wpdb->prepare(
 				"SELECT * FROM {$this->table_name} WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$id
 			)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-			wp_cache_set($cache_key, $found, 'wpd_fundraisers', 3600);
+			wp_cache_set($cache_key, $found, 'donasai_fundraisers', 3600);
 		}
 		return $found;
 	}
@@ -110,7 +110,7 @@ class WPD_Fundraiser_Service
 			$fundraiser_id
 		)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 		// Invalidate cache
-		wp_cache_delete('wpd_fundraiser_id_' . $fundraiser_id, 'wpd_fundraisers');
+		wp_cache_delete('donasai_fundraiser_id_' . $fundraiser_id, 'donasai_fundraisers');
 	}
 
 	/**
@@ -120,8 +120,8 @@ class WPD_Fundraiser_Service
 	{
 		global $wpdb;
 
-		$cache_key = 'wpd_leaderboard_' . $campaign_id . '_' . $limit;
-		$results = wp_cache_get($cache_key, 'wpd_fundraisers');
+		$cache_key = 'donasai_leaderboard_' . $campaign_id . '_' . $limit;
+		$results = wp_cache_get($cache_key, 'donasai_fundraisers');
 
 		if (false === $results) {
 			$results = $wpdb->get_results($wpdb->prepare(
@@ -134,7 +134,7 @@ class WPD_Fundraiser_Service
 				$campaign_id,
 				$limit
 			)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-			wp_cache_set($cache_key, $results, 'wpd_fundraisers', 300);
+			wp_cache_set($cache_key, $results, 'donasai_fundraisers', 300);
 		}
 		return $results;
 	}
@@ -145,7 +145,7 @@ class WPD_Fundraiser_Service
 	public function track_visit($fundraiser_id, $campaign_id)
 	{
 		global $wpdb;
-		$table_logs = $wpdb->prefix . 'wpd_referral_logs';
+		$table_logs = $wpdb->prefix . 'donasai_referral_logs';
 
 		// Simple unique check: limit 1 log per IP per hour? Or just log all?
 		// For MVP log all, but in prod we'd want to throttle.

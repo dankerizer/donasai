@@ -11,36 +11,36 @@ if (!defined('ABSPATH')) {
  * Template Loader for Custom Post Types
  */
 // Debugging Template Loader
-function wpd_template_loader($template)
+function donasai_template_loader($template)
 {
 
     // Check for Receipt
-    if (isset($_GET['wpd_receipt'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-        $receipt_template = WPD_PLUGIN_PATH . 'frontend/templates/receipt.php';
+    if (isset($_GET['donasai_receipt'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $receipt_template = DONASAI_PLUGIN_PATH . 'frontend/templates/receipt.php';
         if (file_exists($receipt_template)) {
             return $receipt_template;
         }
     }
 
-    if (is_singular('wpd_campaign')) {
-        $payment_slug = get_option('wpd_settings_general')['payment_slug'] ?? 'pay';
+    if (is_singular('donasai_campaign')) {
+        $payment_slug = get_option('donasai_settings_general')['payment_slug'] ?? 'pay';
 
         // Payment Page (?donate=1 OR /slug/pay)
         // Payment Page (?donate=1 OR /slug/pay)
         global $wp_query;
         if (isset($_GET['donate']) || isset($wp_query->query_vars[$payment_slug])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            $payment_template = WPD_PLUGIN_PATH . 'frontend/templates/donation-form.php';
+            $payment_template = DONASAI_PLUGIN_PATH . 'frontend/templates/donation-form.php';
             if (file_exists($payment_template)) {
                 return $payment_template;
             }
         }
 
         // Thank You Page (?thank-you=ID OR /slug/thank-you/ID)
-        $thankyou_slug = get_option('wpd_settings_general')['thankyou_slug'] ?? 'thank-you';
+        $thankyou_slug = get_option('donasai_settings_general')['thankyou_slug'] ?? 'thank-you';
 
         // Use get_query_var to be robust
         if (get_query_var($thankyou_slug)) {
-            $summary_template = WPD_PLUGIN_PATH . 'frontend/templates/donation-summary.php';
+            $summary_template = DONASAI_PLUGIN_PATH . 'frontend/templates/donation-summary.php';
             if (file_exists($summary_template)) {
                 return $summary_template;
             }
@@ -48,40 +48,40 @@ function wpd_template_loader($template)
 
         // Success Page (?donation_success=1)
         if (isset($_GET['donation_success'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-            $success_template = WPD_PLUGIN_PATH . 'frontend/templates/payment-success.php';
+            $success_template = DONASAI_PLUGIN_PATH . 'frontend/templates/payment-success.php';
             if (file_exists($success_template)) {
                 return $success_template;
             }
         }
 
-        $plugin_template = WPD_PLUGIN_PATH . 'frontend/templates/campaign-single.php';
+        $plugin_template = DONASAI_PLUGIN_PATH . 'frontend/templates/campaign-single.php';
         if (file_exists($plugin_template)) {
             return $plugin_template;
         }
     }
     return $template;
 }
-add_filter('template_include', 'wpd_template_loader');
+add_filter('template_include', 'donasai_template_loader');
 
 /**
  * Disable Canonical Redirect for Thank You Endpoint
  * Fixes issue where /campaign/slug/thank-you/ID redirects back to /campaign/slug/
  */
-function wpd_disable_canonical_redirect($redirect_url)
+function donasai_disable_canonical_redirect($redirect_url)
 {
-    $thankyou_slug = get_option('wpd_settings_general')['thankyou_slug'] ?? 'thank-you';
+    $thankyou_slug = get_option('donasai_settings_general')['thankyou_slug'] ?? 'thank-you';
 
     if (get_query_var($thankyou_slug)) {
         return false;
     }
     return $redirect_url;
 }
-add_filter('redirect_canonical', 'wpd_disable_canonical_redirect');
+add_filter('redirect_canonical', 'donasai_disable_canonical_redirect');
 
 /**
  * Template Loader for Custom Post Types
  */
-function wpd_get_template_part($slug, $name = null)
+function donasai_get_template_part($slug, $name = null)
 {
     $template = '';
 
@@ -91,8 +91,8 @@ function wpd_get_template_part($slug, $name = null)
     }
 
     // Get default slug-name.php
-    if (!$template && $name && file_exists(WPD_PLUGIN_PATH . "frontend/templates/{$slug}-{$name}.php")) {
-        $template = WPD_PLUGIN_PATH . "frontend/templates/{$slug}-{$name}.php";
+    if (!$template && $name && file_exists(DONASAI_PLUGIN_PATH . "frontend/templates/{$slug}-{$name}.php")) {
+        $template = DONASAI_PLUGIN_PATH . "frontend/templates/{$slug}-{$name}.php";
     }
 
     // If not found, look for slug.php
@@ -101,8 +101,8 @@ function wpd_get_template_part($slug, $name = null)
     }
 
     // Default slug.php
-    if (!$template && file_exists(WPD_PLUGIN_PATH . "frontend/templates/{$slug}.php")) {
-        $template = WPD_PLUGIN_PATH . "frontend/templates/{$slug}.php";
+    if (!$template && file_exists(DONASAI_PLUGIN_PATH . "frontend/templates/{$slug}.php")) {
+        $template = DONASAI_PLUGIN_PATH . "frontend/templates/{$slug}.php";
     }
 
     if ($template) {
@@ -116,17 +116,17 @@ function wpd_get_template_part($slug, $name = null)
 /**
  * Enqueue Frontend Assets
  */
-function wpd_enqueue_frontend_assets()
+function donasai_enqueue_frontend_assets()
 {
     $should_load = false;
 
     // Check for Campaign Single
-    if (is_singular('wpd_campaign')) {
+    if (is_singular('donasai_campaign')) {
         $should_load = true;
     }
 
     // Check for Confirmation Page
-    $settings_gen = get_option('wpd_settings_general', []);
+    $settings_gen = get_option('donasai_settings_general', []);
     $conf_page_id = isset($settings_gen['confirmation_page']) ? intval($settings_gen['confirmation_page']) : 0;
     if ($conf_page_id && is_page($conf_page_id)) {
         $should_load = true;
@@ -134,10 +134,10 @@ function wpd_enqueue_frontend_assets()
 
     if ($should_load) {
         // Core Frontend Styles
-        wp_enqueue_style('donasai-frontend', WPD_PLUGIN_URL . 'frontend/assets/frontend.css', array(), WPD_VERSION);
+        wp_enqueue_style('donasai-frontend', DONASAI_PLUGIN_URL . 'frontend/assets/frontend.css', array(), DONASAI_VERSION);
 
         // Inject Branding Variables
-        $settings_app = get_option('wpd_settings_appearance', []);
+        $settings_app = get_option('donasai_settings_appearance', []);
         $primary_color = $settings_app['brand_color'] ?? '#059669';
         $button_color = $settings_app['button_color'] ?? '#ec4899';
         $radius = $settings_app['border_radius'] ?? '12px';
@@ -160,26 +160,26 @@ function wpd_enqueue_frontend_assets()
 
         $custom_css = "
             :root {
-                --wpd-primary: {$primary_color};
-                --wpd-primary-rgb: {$primary_rgb};
-                --wpd-btn: {$button_color};
-                --wpd-radius: {$radius};
-                --wpd-bg: #f3f4f6; /* Default BG */
-                --wpd-card-bg: #ffffff;
-                --wpd-text-main: #1f2937;
-                --wpd-text-muted: #6b7280;
-                --wpd-input-bg: #ffffff;
-                --wpd-input-border: #d1d5db;
-                --wpd-border: #e5e7eb;
+                --donasai-primary: {$primary_color};
+                --donasai-primary-rgb: {$primary_rgb};
+                --donasai-btn: {$button_color};
+                --donasai-radius: {$radius};
+                --donasai-bg: #f3f4f6; /* Default BG */
+                --donasai-card-bg: #ffffff;
+                --donasai-text-main: #1f2937;
+                --donasai-text-muted: #6b7280;
+                --donasai-input-bg: #ffffff;
+                --donasai-input-border: #d1d5db;
+                --donasai-border: #e5e7eb;
             }
-            .wpd-dark {
-                 --wpd-bg: #1f2937;
-                 --wpd-card-bg: #111827;
-                 --wpd-text-main: #f3f4f6;
-                 --wpd-text-muted: #9ca3af;
-                 --wpd-input-bg: #374151;
-                 --wpd-input-border: #4b5563;
-                 --wpd-border: #374151;
+            .donasai-dark {
+                 --donasai-bg: #1f2937;
+                 --donasai-card-bg: #111827;
+                 --donasai-text-main: #f3f4f6;
+                 --donasai-text-muted: #9ca3af;
+                 --donasai-input-bg: #374151;
+                 --donasai-input-border: #4b5563;
+                 --donasai-border: #374151;
             }
         ";
         wp_add_inline_style('donasai-frontend', $custom_css);
@@ -194,29 +194,29 @@ function wpd_enqueue_frontend_assets()
             'Lato' => 'Lato:wght@400;700'
         ];
         if (isset($fonts_map[$font_family])) {
-            wp_enqueue_style('wpd-google-fonts', 'https://fonts.googleapis.com/css2?family=' . $fonts_map[$font_family] . '&display=swap', array(), WPD_VERSION);
+            wp_enqueue_style('donasai-google-fonts', 'https://fonts.googleapis.com/css2?family=' . $fonts_map[$font_family] . '&display=swap', array(), DONASAI_VERSION);
         }
 
         // Campaign Specific Assets
-        if (is_singular('wpd_campaign')) {
-            wp_enqueue_style('donasai-campaign', WPD_PLUGIN_URL . 'frontend/assets/campaign.css', array('donasai-frontend'), WPD_VERSION);
-            wp_enqueue_script('donasai-campaign', WPD_PLUGIN_URL . 'frontend/assets/campaign.js', array('jquery'), WPD_VERSION, true);
+        if (is_singular('donasai_campaign')) {
+            wp_enqueue_style('donasai-campaign', DONASAI_PLUGIN_URL . 'frontend/assets/campaign.css', array('donasai-frontend'), DONASAI_VERSION);
+            wp_enqueue_script('donasai-campaign', DONASAI_PLUGIN_URL . 'frontend/assets/campaign.js', array('jquery'), DONASAI_VERSION, true);
 
             // Check for Payment Page
             global $wp_query;
-            $payment_slug = get_option('wpd_settings_general')['payment_slug'] ?? 'pay';
+            $payment_slug = get_option('donasai_settings_general')['payment_slug'] ?? 'pay';
             if (isset($_GET['donate']) || isset($wp_query->query_vars[$payment_slug])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-                wp_enqueue_style('wpd-payment', WPD_PLUGIN_URL . 'frontend/assets/payment.css', array('donasai-frontend'), WPD_VERSION);
-                wp_enqueue_script('wpd-payment', WPD_PLUGIN_URL . 'frontend/assets/payment.js', array('jquery'), WPD_VERSION, true);
+                wp_enqueue_style('donasai-payment', DONASAI_PLUGIN_URL . 'frontend/assets/payment.css', array('donasai-frontend'), DONASAI_VERSION);
+                wp_enqueue_script('donasai-payment', DONASAI_PLUGIN_URL . 'frontend/assets/payment.js', array('jquery'), DONASAI_VERSION, true);
 
                 // Localize Payment Script
-                $midtrans = WPD_Gateway_Registry::get_gateway('midtrans');
+                $midtrans = DONASAI_Gateway_Registry::get_gateway('midtrans');
                 $snap_active = $midtrans && $midtrans->is_active();
                 $client_key = $snap_active && method_exists($midtrans, 'get_client_key') ? $midtrans->get_client_key() : '';
                 $is_prod = $snap_active && method_exists($midtrans, 'is_production') ? $midtrans->is_production() : false;
                 $snap_url = $is_prod ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js';
 
-                wp_localize_script('wpd-payment', 'wpd_payment_vars', array(
+                wp_localize_script('donasai-payment', 'donasai_payment_vars', array(
                     'is_midtrans_active' => $snap_active,
                     'snap_url' => $snap_url,
                     'client_key' => $client_key
@@ -224,34 +224,34 @@ function wpd_enqueue_frontend_assets()
             }
 
             // Check for Thank You Page
-            $thankyou_slug = get_option('wpd_settings_general')['thankyou_slug'] ?? 'thank-you';
+            $thankyou_slug = get_option('donasai_settings_general')['thankyou_slug'] ?? 'thank-you';
             if (get_query_var($thankyou_slug)) {
-                wp_enqueue_script('wpd-confetti', WPD_PLUGIN_URL . 'frontend/assets/confetti.js', array(), '1.6.0', true);
-                wp_enqueue_style('wpd-summary', WPD_PLUGIN_URL . 'frontend/assets/summary.css', array('donasai-frontend'), WPD_VERSION);
-                wp_enqueue_script('wpd-summary', WPD_PLUGIN_URL . 'frontend/assets/summary.js', array('jquery', 'wpd-confetti'), WPD_VERSION, true);
+                wp_enqueue_script('donasai-confetti', DONASAI_PLUGIN_URL . 'frontend/assets/confetti.js', array(), '1.6.0', true);
+                wp_enqueue_style('donasai-summary', DONASAI_PLUGIN_URL . 'frontend/assets/summary.css', array('donasai-frontend'), DONASAI_VERSION);
+                wp_enqueue_script('donasai-summary', DONASAI_PLUGIN_URL . 'frontend/assets/summary.js', array('jquery', 'donasai-confetti'), DONASAI_VERSION, true);
             }
         }
 
         // Confirmation Page Assets
         if ($conf_page_id && is_page($conf_page_id)) {
-            wp_enqueue_style('wpd-confirmation', WPD_PLUGIN_URL . 'frontend/assets/confirmation.css', array('donasai-frontend'), WPD_VERSION);
-            wp_enqueue_script('wpd-confirmation', WPD_PLUGIN_URL . 'frontend/assets/confirmation.js', array('jquery'), WPD_VERSION, true);
+            wp_enqueue_style('donasai-confirmation', DONASAI_PLUGIN_URL . 'frontend/assets/confirmation.css', array('donasai-frontend'), DONASAI_VERSION);
+            wp_enqueue_script('donasai-confirmation', DONASAI_PLUGIN_URL . 'frontend/assets/confirmation.js', array('jquery'), DONASAI_VERSION, true);
         }
     }
 }
-add_action('wp_enqueue_scripts', 'wpd_enqueue_frontend_assets');
+add_action('wp_enqueue_scripts', 'donasai_enqueue_frontend_assets');
 
 /**
  * Get Recent Donors
  */
-function wpd_get_recent_donors($campaign_id, $limit = 10)
+function donasai_get_recent_donors($campaign_id, $limit = 10)
 {
     global $wpdb;
-    $table = esc_sql($wpdb->prefix . 'wpd_donations');
+    $table = esc_sql($wpdb->prefix . 'donasai_donations');
 
     // Only completed donations
-    $cache_key = 'wpd_recent_donors_' . $campaign_id . '_limit_' . $limit;
-    $results = wp_cache_get($cache_key, 'wpd_donations');
+    $cache_key = 'donasai_recent_donors_' . $campaign_id . '_limit_' . $limit;
+    $results = wp_cache_get($cache_key, 'donasai_donations');
 
     if (false === $results) {
         $results = $wpdb->get_results($wpdb->prepare(
@@ -259,7 +259,7 @@ function wpd_get_recent_donors($campaign_id, $limit = 10)
             $campaign_id,
             $limit
         )); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        wp_cache_set($cache_key, $results, 'wpd_donations', 300);
+        wp_cache_set($cache_key, $results, 'donasai_donations', 300);
     }
 
     return $results;
@@ -268,20 +268,20 @@ function wpd_get_recent_donors($campaign_id, $limit = 10)
 /**
  * Get Total Donor Count
  */
-function wpd_get_donor_count($campaign_id)
+function donasai_get_donor_count($campaign_id)
 {
     global $wpdb;
-    $table = esc_sql($wpdb->prefix . 'wpd_donations');
+    $table = esc_sql($wpdb->prefix . 'donasai_donations');
 
-    $cache_key = 'wpd_donor_count_' . $campaign_id;
-    $count = wp_cache_get($cache_key, 'wpd_donations');
+    $cache_key = 'donasai_donor_count_' . $campaign_id;
+    $count = wp_cache_get($cache_key, 'donasai_donations');
 
     if (false === $count) {
         $count = (int) $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(id) FROM {$table} WHERE campaign_id = %d AND status = 'complete'",
             $campaign_id
         )); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        wp_cache_set($cache_key, $count, 'wpd_donations', 300);
+        wp_cache_set($cache_key, $count, 'donasai_donations', 300);
     }
 
     return $count;
@@ -290,10 +290,10 @@ function wpd_get_donor_count($campaign_id)
 /**
  * Check if a gateway is active
  */
-function wpd_is_gateway_active($gateway_id)
+function donasai_is_gateway_active($gateway_id)
 {
     if ($gateway_id === 'midtrans') {
-        $settings = get_option('wpd_settings_midtrans', []);
+        $settings = get_option('donasai_settings_midtrans', []);
         return !empty($settings['enabled']);
     }
     return false;
@@ -302,37 +302,37 @@ function wpd_is_gateway_active($gateway_id)
 /**
  * Get Donation Form HTML
  */
-function wpd_get_donation_form_html($campaign_id)
+function donasai_get_donation_form_html($campaign_id)
 {
     ob_start();
-    include WPD_PLUGIN_PATH . 'frontend/templates/donation-form.php';
+    include DONASAI_PLUGIN_PATH . 'frontend/templates/donation-form.php';
     return ob_get_clean();
 }
 
 /**
- * Donor Dashboard Shortcode [wpd_my_donations]
+ * Donor Dashboard Shortcode [donasai_my_donations]
  */
-function wpd_shortcode_my_donations()
+function donasai_shortcode_my_donations()
 {
-    wp_enqueue_style('donasai-frontend', WPD_PLUGIN_URL . 'frontend/assets/frontend.css', array(), WPD_VERSION);
-    wp_enqueue_style('wpd-dashboard', WPD_PLUGIN_URL . 'frontend/assets/dashboard.css', array('donasai-frontend'), WPD_VERSION);
-    wp_enqueue_script('wpd-dashboard', WPD_PLUGIN_URL . 'frontend/assets/dashboard.js', array(), WPD_VERSION, true);
+    wp_enqueue_style('donasai-frontend', DONASAI_PLUGIN_URL . 'frontend/assets/frontend.css', array(), DONASAI_VERSION);
+    wp_enqueue_style('donasai-dashboard', DONASAI_PLUGIN_URL . 'frontend/assets/dashboard.css', array('donasai-frontend'), DONASAI_VERSION);
+    wp_enqueue_script('donasai-dashboard', DONASAI_PLUGIN_URL . 'frontend/assets/dashboard.js', array(), DONASAI_VERSION, true);
 
     ob_start();
-    include WPD_PLUGIN_PATH . 'frontend/templates/donor-dashboard.php';
+    include DONASAI_PLUGIN_PATH . 'frontend/templates/donor-dashboard.php';
     return ob_get_clean();
 }
-add_shortcode('wpd_my_donations', 'wpd_shortcode_my_donations');
+add_shortcode('donasai_my_donations', 'donasai_shortcode_my_donations');
 
 
 
 /**
  * Output WhatsApp Flying Button (Footer)
  */
-function wpd_footer_whatsapp()
+function donasai_footer_whatsapp()
 {
-    if (is_singular('wpd_campaign')) {
-        $whatsapp = get_post_meta(get_the_ID(), '_wpd_whatsapp_settings', true);
+    if (is_singular('donasai_campaign')) {
+        $whatsapp = get_post_meta(get_the_ID(), '_donasai_whatsapp_settings', true);
 
         if (!empty($whatsapp['number'])) {
             $number = preg_replace('/\D/', '', $whatsapp['number']);
@@ -350,39 +350,39 @@ function wpd_footer_whatsapp()
         }
     }
 }
-add_action('wp_footer', 'wpd_footer_whatsapp');
+add_action('wp_footer', 'donasai_footer_whatsapp');
 
 /**
  * Handle Referral Tracking
  */
-function wpd_track_referral()
+function donasai_track_referral()
 {
     if (is_admin())
         return;
 
     if (isset($_GET['ref'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
         $ref_code = sanitize_text_field(wp_unslash($_GET['ref'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-        $service = new WPD_Fundraiser_Service();
+        $service = new DONASAI_Fundraiser_Service();
         $fundraiser = $service->get_by_code($ref_code);
 
         if ($fundraiser) {
             // Set Cookie for 30 days
-            setcookie('wpd_ref', $fundraiser->id, time() + (30 * DAY_IN_SECONDS), COOKIEPATH, COOKIE_DOMAIN);
+            setcookie('donasai_ref', $fundraiser->id, time() + (30 * DAY_IN_SECONDS), COOKIEPATH, COOKIE_DOMAIN);
 
             // Log visit if we are on a campaign page (or maybe log all?)
             // If the ref link points to a single campaign, log it.
-            if (is_singular('wpd_campaign')) {
+            if (is_singular('donasai_campaign')) {
                 $service->track_visit($fundraiser->id, get_the_ID());
             }
         }
     }
 }
-add_action('template_redirect', 'wpd_track_referral');
+add_action('template_redirect', 'donasai_track_referral');
 
 /**
- * Fundraiser Stats Shortcode [wpd_fundraiser_stats]
+ * Fundraiser Stats Shortcode [donasai_fundraiser_stats]
  */
-function wpd_shortcode_fundraiser_stats()
+function donasai_shortcode_fundraiser_stats()
 {
     if (!is_user_logged_in()) {
         return '<p>' . __('Silakan login untuk melihat statistik fundraiser Anda.', 'donasai') . '</p>';
@@ -390,7 +390,7 @@ function wpd_shortcode_fundraiser_stats()
 
     global $wpdb;
     $user_id = get_current_user_id();
-    $table_fundraisers = esc_sql($wpdb->prefix . 'wpd_fundraisers');
+    $table_fundraisers = esc_sql($wpdb->prefix . 'donasai_fundraisers');
 
     // Get all campaigns user is fundraising for
     $results = $wpdb->get_results($wpdb->prepare(
@@ -408,9 +408,9 @@ function wpd_shortcode_fundraiser_stats()
 
     ob_start();
     ?>
-    <div class="wpd-fundraiser-dashboard">
+    <div class="donasai-fundraiser-dashboard">
         <h3><?php esc_attr_e('Statistik Kampanye Anda', 'donasai'); ?></h3>
-        <table class="wpd-table" style="width:100%; border-collapse:collapse; margin-top:15px;">
+        <table class="donasai-table" style="width:100%; border-collapse:collapse; margin-top:15px;">
             <thead>
                 <tr style="background:#f9fafb; text-align:left; border-bottom:1px solid #ddd;">
                     <th style="padding:10px;">Campaign</th>
@@ -423,7 +423,7 @@ function wpd_shortcode_fundraiser_stats()
             <tbody>
                 <?php foreach ($results as $row):
                     // Get visit count (lazy query, ideally should act stored count or cached)
-                    $table_logs = esc_sql($wpdb->prefix . 'wpd_referral_logs');
+                    $table_logs = esc_sql($wpdb->prefix . 'donasai_referral_logs');
                     $visit_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(id) FROM {$table_logs} WHERE fundraiser_id = %d", $row->id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
                     $link = add_query_arg('ref', $row->referral_code, get_permalink($row->campaign_id));
                     ?>
@@ -445,12 +445,12 @@ function wpd_shortcode_fundraiser_stats()
     <?php
     return ob_get_clean();
 }
-add_shortcode('wpd_fundraiser_stats', 'wpd_shortcode_fundraiser_stats');
+add_shortcode('donasai_fundraiser_stats', 'donasai_shortcode_fundraiser_stats');
 
 /**
- * User Profile Shortcode [wpd_profile]
+ * User Profile Shortcode [donasai_profile]
  */
-function wpd_shortcode_profile()
+function donasai_shortcode_profile()
 {
     if (!is_user_logged_in()) {
         return sprintf(
@@ -464,8 +464,10 @@ function wpd_shortcode_profile()
     }
 
     // Handle Form Submission
-    if (isset($_POST['wpd_profile_submit']) && isset($_POST['wpd_profile_nonce'])) {
-        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['wpd_profile_nonce'])), 'wpd_profile_update')) {
+    $error_message = '';
+    
+    if (isset($_POST['donasai_profile_submit']) && isset($_POST['donasai_profile_nonce'])) {
+        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['donasai_profile_nonce'])), 'donasai_profile_update')) {
             wp_die('Security check failed');
         }
 
@@ -485,14 +487,13 @@ function wpd_shortcode_profile()
             if ($pass1 === $pass2) {
                 $user_data['user_pass'] = $pass1;
             } else {
-                $_POST['wpd_profile_error'] = 'Password tidak cocok.';
-                // Allow execution to continue to display form with error
+                $error_message = 'Password tidak cocok.';
             }
         }
 
-        if (!isset($_POST['wpd_profile_error'])) {
+        if (empty($error_message)) {
             wp_update_user($user_data);
-            update_user_meta($user_id, '_wpd_phone', $phone);
+            update_user_meta($user_id, '_donasai_phone', $phone);
 
             // Redirect to avoid resubmission
             wp_safe_redirect(add_query_arg('updated', 'true'));
@@ -501,20 +502,20 @@ function wpd_shortcode_profile()
     }
 
     // Pass error to template if exists
-    if (isset($_POST['wpd_profile_error'])) {
-        echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">' . esc_html(sanitize_text_field(wp_unslash($_POST['wpd_profile_error']))) . '</div>';
+    if (!empty($error_message)) {
+        echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">' . esc_html($error_message) . '</div>';
     }
 
     ob_start();
-    include WPD_PLUGIN_PATH . 'frontend/templates/profile.php';
+    include DONASAI_PLUGIN_PATH . 'frontend/templates/profile.php';
     return ob_get_clean();
 }
-add_shortcode('wpd_profile', 'wpd_shortcode_profile');
+add_shortcode('donasai_profile', 'donasai_shortcode_profile');
 
 /**
- * Donation Confirmation Shortcode [wpd_confirmation_form]
+ * Donation Confirmation Shortcode [donasai_confirmation_form]
  */
-function wpd_shortcode_confirmation_form()
+function donasai_shortcode_confirmation_form()
 {
     $success = false;
     $error = '';
@@ -525,7 +526,7 @@ function wpd_shortcode_confirmation_form()
     if (isset($_GET['donation_id'])) {
         global $wpdb;
         $d_id = intval($_GET['donation_id']);
-        $table_donations = esc_sql($wpdb->prefix . 'wpd_donations');
+        $table_donations = esc_sql($wpdb->prefix . 'donasai_donations');
         $donation_row = $wpdb->get_row($wpdb->prepare("SELECT amount FROM {$table_donations} WHERE id = %d", $d_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
         if ($donation_row) {
             $donation_id_val = $d_id;
@@ -533,8 +534,8 @@ function wpd_shortcode_confirmation_form()
         }
     }
 
-    if (isset($_POST['wpd_confirm_submit']) && isset($_POST['_wpnonce'])) {
-        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'wpd_confirm_payment')) {
+    if (isset($_POST['donasai_confirm_submit']) && isset($_POST['_wpnonce'])) {
+        if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'donasai_confirm_payment')) {
             $error = 'Security check failed.';
         } else {
             global $wpdb;
@@ -544,7 +545,7 @@ function wpd_shortcode_confirmation_form()
 
             // Verify Donation Exists
             if ($donation_id > 0) {
-                $table_donations = esc_sql($wpdb->prefix . 'wpd_donations');
+                $table_donations = esc_sql($wpdb->prefix . 'donasai_donations');
                 $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_donations} WHERE id = %d", $donation_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 
                 if (!$donation) {
@@ -604,35 +605,35 @@ function wpd_shortcode_confirmation_form()
 
 
     ob_start();
-    include WPD_PLUGIN_PATH . 'frontend/templates/confirmation-form.php';
+    include DONASAI_PLUGIN_PATH . 'frontend/templates/confirmation-form.php';
     return ob_get_clean();
 }
-add_shortcode('wpd_confirmation_form', 'wpd_shortcode_confirmation_form');
+add_shortcode('donasai_confirmation_form', 'donasai_shortcode_confirmation_form');
 
 /**
  * Campaign List Shortcode [donasai_campaign_list]
  */
-function wpd_shortcode_campaign_list($atts)
+function donasai_shortcode_campaign_list($atts)
 {
-    wp_enqueue_style('donasai-frontend', WPD_PLUGIN_URL . 'frontend/assets/frontend.css', array(), WPD_VERSION);
-    wp_enqueue_style('donasai-campaign-list', WPD_PLUGIN_URL . 'frontend/assets/campaign-list.css', array('donasai-frontend'), WPD_VERSION);
+    wp_enqueue_style('donasai-frontend', DONASAI_PLUGIN_URL . 'frontend/assets/frontend.css', array(), DONASAI_VERSION);
+    wp_enqueue_style('donasai-campaign-list', DONASAI_PLUGIN_URL . 'frontend/assets/campaign-list.css', array('donasai-frontend'), DONASAI_VERSION);
 
     ob_start();
-    include WPD_PLUGIN_PATH . 'frontend/templates/campaign-list.php';
+    include DONASAI_PLUGIN_PATH . 'frontend/templates/campaign-list.php';
     return ob_get_clean();
 }
-add_shortcode('donasai_campaign_list', 'wpd_shortcode_campaign_list');
+add_shortcode('donasai_campaign_list', 'donasai_shortcode_campaign_list');
 
 /**
  * Enqueue assets for receipt page
  */
-function wpd_enqueue_receipt_assets() {
-    if (isset($_GET['wpd_receipt'])) {
+function donasai_enqueue_receipt_assets() {
+    if (isset($_GET['donasai_receipt'])) {
         // Tailwind (CDN for now, or local if built)
-        wp_enqueue_script('wpd-tailwind', 'https://cdn.tailwindcss.com', array(), '3.4.0', false);
+        wp_enqueue_script('donasai-tailwind', 'https://cdn.tailwindcss.com', array(), '3.4.0', false);
         
         // Google Fonts
-        wp_enqueue_style('wpd-receipt-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap', array(), null);
+        wp_enqueue_style('donasai-receipt-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap', array(), null);
     }
 }
-add_action('wp_enqueue_scripts', 'wpd_enqueue_receipt_assets');
+add_action('wp_enqueue_scripts', 'donasai_enqueue_receipt_assets');

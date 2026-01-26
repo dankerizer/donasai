@@ -1,40 +1,40 @@
 /* Scoped Styles for Confirmation Form */
-.wpd-confirmation-wrapper {
+.donasai-confirmation-wrapper {
     max-width: 460px;
     margin: 40px auto;
     padding: 0 15px;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-.wpd-card {
-    background: var(--wpd-card-bg, #ffffff);
+.donasai-card {
+    background: var(--donasai-card-bg, #ffffff);
     padding: 2rem;
     border-radius: 16px;
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
-    border: 1px solid var(--wpd-border, #e2e8f0);
+    border: 1px solid var(--donasai-border, #e2e8f0);
 }
 
-.wpd-form-header {
+.donasai-form-header {
     text-align: center;
     margin-bottom: 2rem;
 }
 
-.wpd-form-header h2 {
+.donasai-form-header h2 {
     font-size: 1.5rem;
     font-weight: 800;
-    color: var(--wpd-text-main, #0f172a);
+    color: var(--donasai-text-main, #0f172a);
     margin: 0 0 0.5rem;
     letter-spacing: -0.025em;
 }
 
-.wpd-form-header p {
+.donasai-form-header p {
     font-size: 0.95rem;
-    color: var(--wpd-text-muted, #64748b);
+    color: var(--donasai-text-muted, #64748b);
     margin: 0;
     line-height: 1.5;
 }
 
-.wpd-alert-error {
+.donasai-alert-error {
     background: #fef2f2;
     border: 1px solid #fee2e2;
     color: #991b1b;
@@ -44,15 +44,15 @@
     margin-bottom: 1.5rem;
 }
 
-.wpd-text-center {
+.donasai-text-center {
     text-align: center;
 }
 
-.wpd-form-group {
+.donasai-form-group {
     margin-bottom: 1.25rem;
 }
 
-.wpd-label {
+.donasai-label {
     display: block;
     font-size: 0.875rem;
     font-weight: 600;
@@ -60,28 +60,28 @@
     margin-bottom: 0.5rem;
 }
 
-.wpd-input-group {
+.donasai-input-group {
     position: relative;
 }
 
-.wpd-input-icon {
+.donasai-input-icon {
     position: absolute;
     left: 14px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--wpd-text-muted, #64748b);
+    color: var(--donasai-text-muted, #64748b);
     font-weight: 600;
     pointer-events: none;
 }
 
-.wpd-input.wpd-has-icon {
+.donasai-input.donasai-has-icon {
     padding-left: 38px;
 }
 
-.wpd-input {
+.donasai-input {
     width: 100%;
     padding: 0.75rem 1rem;
-    border: 1px solid var(--wpd-border, #e2e8f0);
+    border: 1px solid var(--donasai-border, #e2e8f0);
     border-radius: 10px;
     font-size: 0.95rem;
     transition: all 0.2s;
@@ -89,73 +89,73 @@
     box-sizing: border-box;
 }
 
-.wpd-input:focus {
-    border-color: var(--wpd-primary, #059669);
-    box-shadow: 0 0 0 3px rgba(var(--wpd-primary-rgb, 5, 150, 105), 0.1);
+.donasai-input:focus {
+    border-color: var(--donasai-primary, #059669);
+    box-shadow: 0 0 0 3px rgba(var(--donasai-primary-rgb, 5, 150, 105), 0.1);
     outline: none;
 }
 
-.wpd-helper-text {
+.donasai-helper-text {
     font-size: 0.75rem;
-    color: var(--wpd-text-muted, #64748b);
+    color: var(--donasai-text-muted, #64748b);
     margin-top: 0.35rem;
 }
 
 /* Upload Box */
-.wpd-upload-box {
+.donasai-upload-box {
     position: relative;
 }
 
-.wpd-file-input {
+.donasai-file-input {
     display: none;
 }
 
-.wpd-upload-label {
+.donasai-upload-label {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 2rem 1.5rem;
-    border: 2px dashed var(--wpd-border, #e2e8f0);
+    border: 2px dashed var(--donasai-border, #e2e8f0);
     border-radius: 12px;
-    background: var(--wpd-bg, #f8fafc);
+    background: var(--donasai-bg, #f8fafc);
     cursor: pointer;
     transition: all 0.2s;
     text-align: center;
 }
 
-.wpd-upload-label:hover {
-    border-color: var(--wpd-primary, #059669);
-    background: var(--wpd-bg-soft, #f1f5f9);
+.donasai-upload-label:hover {
+    border-color: var(--donasai-primary, #059669);
+    background: var(--donasai-bg-soft, #f1f5f9);
 }
 
-.wpd-upload-icon-wrapper {
+.donasai-upload-icon-wrapper {
     width: 48px;
     height: 48px;
-    background: var(--wpd-card-bg, #ffffff);
+    background: var(--donasai-card-bg, #ffffff);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     margin-bottom: 1rem;
-    border: 1px solid var(--wpd-border, #e2e8f0);
+    border: 1px solid var(--donasai-border, #e2e8f0);
 }
 
-.wpd-upload-icon {
+.donasai-upload-icon {
     width: 24px;
     height: 24px;
-    color: var(--wpd-primary, #059669);
+    color: var(--donasai-primary, #059669);
 }
 
-.wpd-upload-hint {
+.donasai-upload-hint {
     font-size: 0.75rem;
-    color: var(--wpd-text-muted, #64748b);
+    color: var(--donasai-text-muted, #64748b);
     margin-top: 0.25rem;
 }
 
-.wpd-btn-submit {
-    background-color: var(--wpd-btn, #ec4899);
+.donasai-btn-submit {
+    background-color: var(--donasai-btn, #ec4899);
     color: white;
     width: 100%;
     padding: 0.875rem;
@@ -168,12 +168,12 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-.wpd-btn-submit:hover {
+.donasai-btn-submit:hover {
     filter: brightness(110%);
     transform: translateY(-1px);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
-.wpd-btn-submit:active {
+.donasai-btn-submit:active {
     transform: translateY(0);
 }

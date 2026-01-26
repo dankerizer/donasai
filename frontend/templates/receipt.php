@@ -6,16 +6,16 @@ if (!defined('ABSPATH')) {
  * Printable Receipt Template - Professional Design
  */
 
-$donation_id = isset($_GET['wpd_receipt']) ? intval($_GET['wpd_receipt']) : 0;
+$donation_id = isset($_GET['donasai_receipt']) ? intval($_GET['donasai_receipt']) : 0;
 $donation = null;
 
 // 1. Fetch Donation
 if ($donation_id) {
-    if (function_exists('wpd_get_donation')) {
-        $donation = wpd_get_donation($donation_id);
+    if (function_exists('donasai_get_donation')) {
+        $donation = donasai_get_donation($donation_id);
     } else {
         global $wpdb;
-        $table = esc_sql($wpdb->prefix . 'wpd_donations');
+        $table = esc_sql($wpdb->prefix . 'donasai_donations');
         $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $donation_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
     }
 }
@@ -41,7 +41,7 @@ if (isset($_GET['token'])) {
 // Fallback: Check WordPress Nonce
 if (!$is_valid_access) {
     $nonce = isset($_GET['_wpnonce']) ? sanitize_text_field(wp_unslash($_GET['_wpnonce'])) : '';
-    if (wp_verify_nonce($nonce, 'wpd_receipt_' . $donation_id)) {
+    if (wp_verify_nonce($nonce, 'donasai_receipt_' . $donation_id)) {
         $is_valid_access = true;
     }
 }
@@ -70,7 +70,7 @@ $amount = number_format($donation->amount, 0, ',', '.');
 $payment_method = ucfirst($donation->payment_method);
 
 // Fetch Organization Settings
-$settings = get_option('wpd_settings_organization', []);
+$settings = get_option('donasai_settings_organization', []);
 $org_name = !empty($settings['org_name']) ? $settings['org_name'] : get_bloginfo('name');
 $org_address = !empty($settings['org_address']) ? $settings['org_address'] : get_bloginfo('description');
 $org_email = !empty($settings['org_email']) ? $settings['org_email'] : get_option('admin_email');
@@ -84,15 +84,15 @@ if (empty($org_logo)) {
 }
 
 // Pro Feature Check
-$is_pro = function_exists('wpd_is_pro_active') && wpd_is_pro_active();
+$is_pro = function_exists('donasai_is_pro_active') && donasai_is_pro_active();
 
 // Dark Mode Check
-$appearance = get_option('wpd_settings_appearance', []);
+$appearance = get_option('donasai_settings_appearance', []);
 $dark_mode = !empty($appearance['dark_mode']) && $is_pro;
 
 // Helper to adjust brightness (copied from css-loader for standalone use)
-if (!function_exists('wpd_receipt_adjust_brightness')) {
-    function wpd_receipt_adjust_brightness($hex, $steps) {
+if (!function_exists('donasai_receipt_adjust_brightness')) {
+    function donasai_receipt_adjust_brightness($hex, $steps) {
         $steps = max(-255, min(255, $steps));
         $hex = str_replace('#', '', $hex);
         if (strlen($hex) == 3) {
@@ -111,13 +111,75 @@ if (!function_exists('wpd_receipt_adjust_brightness')) {
 
 $brand_color = !empty($appearance['brand_color']) ? $appearance['brand_color'] : '#0ea5e9'; // Default Sky
 // Generate Shades
-$brand_50  = wpd_receipt_adjust_brightness($brand_color, 180);
-$brand_100 = wpd_receipt_adjust_brightness($brand_color, 150);
+$brand_50  = donasai_receipt_adjust_brightness($brand_color, 180);
+$brand_100 = donasai_receipt_adjust_brightness($brand_color, 150);
 $brand_500 = $brand_color;
-$brand_600 = wpd_receipt_adjust_brightness($brand_color, -10);
-$brand_700 = wpd_receipt_adjust_brightness($brand_color, -30);
-$brand_800 = wpd_receipt_adjust_brightness($brand_color, -50);
-$brand_900 = wpd_receipt_adjust_brightness($brand_color, -80);
+$brand_600 = donasai_receipt_adjust_brightness($brand_color, -10);
+$brand_700 = donasai_receipt_adjust_brightness($brand_color, -30);
+$brand_800 = donasai_receipt_adjust_brightness($brand_color, -50);
+$brand_900 = donasai_receipt_adjust_brightness($brand_color, -80);
+
+// Inject Tailwind Config
+$tailwind_config = "
+    tailwind.config = {
+        darkMode: 'class',
+        theme: {
+            extend: {
+                fontFamily: {
+                    sans: ['Inter', 'sans-serif'],
+                    serif: ['Playfair Display', 'serif'],
+                },
+                colors: {
+                    brand: {
+                        50: '" . esc_js($brand_50) . "',
+                        100: '" . esc_js($brand_100) . "',
+                        500: '" . esc_js($brand_500) . "', 
+                        600: '" . esc_js($brand_600) . "', 
+                        700: '" . esc_js($brand_700) . "', 
+                        800: '" . esc_js($brand_800) . "', 
+                        900: '" . esc_js($brand_900) . "', 
+                    }
+                }
+            }
+        }
+    }
+";
+wp_add_inline_script('donasai-tailwind', $tailwind_config);
+
+// Inject Custom CSS
+$custom_css = "
+    /* Print Overrides */
+    @media print {
+        @page { margin: 0; size: auto; }
+        body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .no-print { display: none !important; }
+        .print-container { box-shadow: none !important; max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; border: none !important; }
+        .wave-decoration, .header-curve { z-index: -1; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+        canvas { display: none !important; }
+        html.dark body { background: white !important; color: black !important; }
+        html.dark .print-container { background: white !important; color: black !important; }
+        html.dark .text-gray-100 { color: #f3f4f6 !important; }
+    }
+
+    /* Decorative Curve CSS */
+    .header-curve {
+        position: absolute; top: 0; left: 0; width: 100%; height: 120px;
+        background: linear-gradient(135deg, " . esc_attr($brand_50) . " 0%, #ffffff 100%);
+        border-bottom-right-radius: 50% 20px; border-bottom-left-radius: 50% 20px; z-index: 0;
+    }
+    .dark .header-curve {
+        background: linear-gradient(135deg, " . esc_attr($brand_900) . " 0%, #0f172a 100%);
+    }
+    .wave-decoration {
+        position: absolute; top: -50px; left: -50px; width: 200px; height: 200px;
+        background: radial-gradient(circle, " . esc_attr($brand_100) . " 0%, rgba(255, 255, 255, 0) 70%);
+        border-radius: 50%; z-index: 0;
+    }
+    .dark .wave-decoration {
+        background: radial-gradient(circle, " . esc_attr($brand_900) . " 0%, rgba(15, 23, 42, 0) 70%);
+    }
+";
+wp_add_inline_style('donasai-receipt-fonts', $custom_css);
 ?>
 <!DOCTYPE html>
 <html lang="id" class="<?php echo $dark_mode ? 'dark' : ''; ?>">
@@ -128,121 +190,6 @@ $brand_900 = wpd_receipt_adjust_brightness($brand_color, -80);
     <title><?php esc_html_e('Kuitansi Donasi', 'donasai'); ?> #<?php echo esc_html($donation->id); ?></title>
     
     <?php wp_head(); ?>
-
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        serif: ['Playfair Display', 'serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '<?php echo esc_attr($brand_50); ?>',
-                            100: '<?php echo esc_attr($brand_100); ?>',
-                            500: '<?php echo esc_attr($brand_500); ?>', 
-                            600: '<?php echo esc_attr($brand_600); ?>', 
-                            700: '<?php echo esc_attr($brand_700); ?>', 
-                            800: '<?php echo esc_attr($brand_800); ?>', 
-                            900: '<?php echo esc_attr($brand_900); ?>', 
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* Print Overrides */
-        @media print {
-            @page {
-                margin: 0;
-                size: auto;
-            }
-
-            body {
-                background: white;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-
-            .no-print {
-                display: none !important;
-            }
-
-            .print-container {
-                box-shadow: none !important;
-                max-width: 100% !important;
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                /* Minimized padding */
-                border: none !important;
-            }
-
-            .wave-decoration,
-            .header-curve {
-                /* Keep decorations but ensure they don't break print layout */
-                z-index: -1;
-                print-color-adjust: exact;
-                -webkit-print-color-adjust: exact;
-            }
-
-            canvas {
-                display: none !important;
-            }
-
-            /* Force light mode in print */
-            html.dark body {
-                background: white !important;
-                color: black !important;
-            }
-
-            html.dark .print-container {
-                background: white !important;
-                color: black !important;
-            }
-
-            html.dark .text-gray-100 {
-                color: #f3f4f6 !important;
-            }
-
-            /* Reset */
-        }
-
-        /* Decorative Curve CSS */
-        .header-curve {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 120px;
-            background: linear-gradient(135deg, <?php echo esc_attr($brand_50); ?> 0%, #ffffff 100%);
-            border-bottom-right-radius: 50% 20px;
-            border-bottom-left-radius: 50% 20px;
-            z-index: 0;
-        }
-
-        .dark .header-curve {
-            background: linear-gradient(135deg, <?php echo esc_attr($brand_900); ?> 0%, #0f172a 100%);
-        }
-
-        .wave-decoration {
-            position: absolute;
-            top: -50px;
-            left: -50px;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, <?php echo esc_attr($brand_100); ?> 0%, rgba(255, 255, 255, 0) 70%);
-            border-radius: 50%;
-            z-index: 0;
-        }
-
-        .dark .wave-decoration {
-            background: radial-gradient(circle, <?php echo esc_attr($brand_900); ?> 0%, rgba(15, 23, 42, 0) 70%);
-        }
-    </style>
 </head>
 
 <body
@@ -445,9 +392,10 @@ $brand_900 = wpd_receipt_adjust_brightness($brand_color, -80);
     <!-- Screen-only Confetti -->
     <canvas id="confetti" class="fixed top-0 left-0 w-full h-full pointer-events-none z-50 no-print"></canvas>
 
-    <script>
+    <?php
+    $confetti_script = "
             (function () {
-                if ('<?php echo esc_js($donation->status); ?>' !== 'complete') return;
+                if ('" . esc_js($donation->status) . "' !== 'complete') return;
                 // Simple confetti script
                 const canvas = document.getElementById('confetti');
                 const ctx = canvas.getContext('2d');
@@ -474,8 +422,9 @@ $brand_900 = wpd_receipt_adjust_brightness($brand_color, -80);
                 draw();
                 setTimeout(() => { canvas.style.display = 'none'; }, 4000);
             })();
-    </script>
-    </script>
+    ";
+    wp_add_inline_script('donasai-tailwind', $confetti_script);
+    ?>
     
     <?php wp_footer(); ?>
 </body>

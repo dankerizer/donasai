@@ -39,11 +39,11 @@ import SettingsPage from "./pages/settings";
 // ... imports
 
 function App() {
-	const isPro = (window as any).wpdSettings?.isPro;
-	const proSettings = (window as any).wpdProSettings || {};
+	const isPro = window.donasaiSettings?.isPro;
+	const proSettings = window.donasaiProSettings;
 	const isLicenseActive =
-		proSettings.licenseStatus === "active" ||
-		proSettings.licenseStatus === "valid";
+		proSettings?.licenseStatus === "active" ||
+		proSettings?.licenseStatus === "valid";
 
 	// Show Lock if Pro is installed but License is NOT active
 	const showLock = isPro && !isLicenseActive;
@@ -80,9 +80,9 @@ function AppLayout() {
 	const navigate = useNavigate();
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	// biome-ignore lint/correctness/useExhaustiveDependencies: run only once on mount
 	useEffect(() => {
-		const settings = (window as any).wpdSettings;
+		const settings = window.donasaiSettings;
 		// Check if we have an initial path and we are currently at root (default)
 		// We also check if the hash is empty to avoid overriding direct bookmarks
 		if (
@@ -96,7 +96,8 @@ function AppLayout() {
 	}, [location.pathname]);
 
 	// Close mobile menu on route change
-	useEffect(() => {
+	// biome-ignore lint/correctness/useExhaustiveDependencies: harus ngecek params
+		useEffect(() => {
 		setIsMobileMenuOpen(false);
 	}, [location.pathname]);
 

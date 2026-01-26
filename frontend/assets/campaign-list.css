@@ -1,31 +1,31 @@
 /* Campaign List Styles */
-.wpd-campaign-grid {
+.donasai-campaign-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 24px;
 }
 
-.wpd-card {
+.donasai-card {
     background: #fff;
     border: 1px solid #e5e7eb;
-    border-radius: var(--wpd-radius, 12px);
+    border-radius: var(--donasai-radius, 12px);
     overflow: hidden;
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.wpd-card:hover {
+.donasai-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-.wpd-card-image {
+.donasai-card-image {
     position: relative;
     padding-top: 56.25%;
     /* 16:9 Aspect Ratio */
     background: #f3f4f6;
 }
 
-.wpd-card-image img {
+.donasai-card-image img {
     position: absolute;
     top: 0;
     left: 0;
@@ -33,7 +33,7 @@
     height: 100%;
     object-fit: cover;
 }
-.wpd-card-image .wpd-no-image {
+.donasai-card-image .donasai-no-image {
     position: absolute;
     top: 0;
     left: 0;
@@ -46,11 +46,11 @@
     background-color: #f3f4f6;
 }
 
-.wpd-card-content {
+.donasai-card-content {
     padding: 16px;
 }
 
-.wpd-card-title {
+.donasai-card-title {
     font-size: 18px;
     font-weight: 700;
     margin: 0 0 12px 0;
@@ -58,20 +58,20 @@
     color: #111827;
 }
 
-.wpd-card-title a {
+.donasai-card-title a {
     color: inherit;
     text-decoration: none;
 }
 
-.wpd-card-title a:hover {
-    color: var(--wpd-primary, #059669);
+.donasai-card-title a:hover {
+    color: var(--donasai-primary, #059669);
 }
 
-.wpd-progress-wrap {
+.donasai-progress-wrap {
     margin-bottom: 16px;
 }
 
-.wpd-progress-bar {
+.donasai-progress-bar {
     height: 8px;
     background: #e5e7eb;
     border-radius: 4px;
@@ -79,32 +79,32 @@
     margin-bottom: 8px;
 }
 
-.wpd-progress-fill {
+.donasai-progress-fill {
     height: 100%;
-    background: var(--wpd-primary, #059669);
+    background: var(--donasai-primary, #059669);
     border-radius: 4px;
     width: 0;
     transition: width 1s ease-out;
 }
 
-.wpd-stats-grid {
+.donasai-stats-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
     font-size: 13px;
 }
 
-.wpd-stat-label {
+.donasai-stat-label {
     color: #6b7280;
     margin-bottom: 2px;
 }
 
-.wpd-stat-value {
+.donasai-stat-value {
     font-weight: 600;
     color: #374151;
 }
 
-.wpd-card-footer {
+.donasai-card-footer {
     padding: 12px 16px;
     border-top: 1px solid #f3f4f6;
     display: flex;
@@ -112,9 +112,9 @@
     align-items: center;
 }
 
-.wpd-btn-donate {
+.donasai-btn-donate {
     display: inline-block;
-    background: var(--wpd-btn, #ec4899);
+    background: var(--donasai-btn, #ec4899);
     color: #fff;
     padding: 8px 16px;
     border-radius: 6px;
@@ -124,12 +124,12 @@
     transition: opacity 0.2s;
 }
 
-.wpd-btn-donate:hover {
+.donasai-btn-donate:hover {
     opacity: 0.9;
     color: #fff;
 }
 
-.wpd-infinity {
+.donasai-infinity {
     font-size: 18px;
     line-height: 1;
 }

@@ -21,7 +21,7 @@ Berikut **User Stories wp-donasi** yang sudah dipecah per role dan prioritas (MV
 As an Admin Lembaga, 
 I want to create a new campaign with title, target amount, and deadline
 So that I can start fundraising immediately without coding
-Acceptance: CPT wpd_campaign, auto-generate landing page + form, publish button [web:78][web:80]
+Acceptance: CPT donasai_campaign, auto-generate landing page + form, publish button [web:78][web:80]
 
 As an Admin Lembaga, 
 I want to see dashboard overview with total donations, donor count, active campaigns
@@ -55,7 +55,7 @@ Acceptance: Radio button selection for packages [web:45]
 As a Donatur, 
 I want to see list of active campaigns with progress bar
 So that I can choose which campaign to support
-Acceptance: Shortcode [wpd_campaigns] with grid/list view [web:78][web:80]
+Acceptance: Shortcode [donasai_campaigns] with grid/list view [web:78][web:80]
 
 As a Donatur, 
 I want a simple 1-step donation form with preset amounts + custom input
@@ -65,7 +65,7 @@ Acceptance: Form fields (name,email,phone,amount,note,anonymous), validation [we
 As a Donatur (logged in), 
 I want to view "My Donations" page with my donation history
 So that I can track my contributions
-Acceptance: Shortcode [wpd_my_donations], table with status & amount [web:78][web:83]
+Acceptance: Shortcode [donasai_my_donations], table with status & amount [web:78][web:83]
 
 As a Donatur, 
 I want email confirmation after successful donation
@@ -98,7 +98,7 @@ Acceptance: templates/ folder copyable to theme/wp-donasi/ [web:62][web:83]
 As a Developer, 
 I want shortcodes with basic parameters (category, limit, layout)
 So that I can embed campaigns flexibly
-Acceptance: [wpd_campaigns category="zakat" layout="grid"] [web:78][web:84]
+Acceptance: [donasai_campaigns category="zakat" layout="grid"] [web:78][web:84]
 ```
 
 ***
@@ -159,7 +159,7 @@ Acceptance: Drag-drop field builder in React admin [web:81][web:83]
 As a Developer, 
 I want webhook endpoints for external CRM integration
 So that client data syncs automatically
-Acceptance: wpd_webhook_donation_updated action [web:83][web:89]
+Acceptance: donasai_webhook_donation_updated action [web:83][web:89]
 ```
 
 ### Super Admin (Pro License)
@@ -184,7 +184,7 @@ Acceptance: Vite/wp-scripts setup, dev server proxy [web:63][web:71]
 As a Developer, 
 I want extensible payment gateway architecture
 So that new gateways can be added via hooks
-Acceptance: wpd_register_gateway hook + GatewayInterface [web:81][web:83]
+Acceptance: donasai_register_gateway hook + GatewayInterface [web:81][web:83]
 
 As a WordPress.org reviewer, 
 I want the free version to be fully functional without artificial limits

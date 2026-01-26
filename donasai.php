@@ -19,27 +19,27 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin Constants
-define('WPD_VERSION', '1.0.2');
-define('WPD_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('WPD_PLUGIN_PATH', plugin_dir_path(__FILE__));
-define('WPD_TABLE_PREFIX', 'wpd_');
-if (!defined('WPD_DEV_MODE')) {
-    define('WPD_DEV_MODE', false);
+define('DONASAI_VERSION', '1.0.2');
+define('DONASAI_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('DONASAI_PLUGIN_PATH', plugin_dir_path(__FILE__));
+define('DONASAI_TABLE_PREFIX', 'donasai_');
+if (!defined('DONASAI_DEV_MODE')) {
+    define('DONASAI_DEV_MODE', false);
 }
 
 // Include Bootstrap
-require_once WPD_PLUGIN_PATH . 'includes/bootstrap.php';
+require_once DONASAI_PLUGIN_PATH . 'includes/bootstrap.php';
 
 
 
 
 // Activation Hook
-register_activation_hook(__FILE__, 'wpd_activate');
-function wpd_activate()
+register_activation_hook(__FILE__, 'donasai_activate');
+function donasai_activate()
 {
 	// Create tables
-	if (function_exists('wpd_create_tables')) {
-		wpd_create_tables();
+	if (function_exists('donasai_create_tables')) {
+		donasai_create_tables();
 	}
 
 	// Flush rewrite rules for CPT
@@ -47,8 +47,8 @@ function wpd_activate()
 }
 
 // Deactivation Hook
-register_deactivation_hook(__FILE__, 'wpd_deactivate');
-function wpd_deactivate()
+register_deactivation_hook(__FILE__, 'donasai_deactivate');
+function donasai_deactivate()
 {
 	flush_rewrite_rules();
 }

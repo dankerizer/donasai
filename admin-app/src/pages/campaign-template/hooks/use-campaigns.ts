@@ -10,7 +10,7 @@ export function useCampaigns() {
 	return useQuery<Campaign[]>({
 		queryKey: ["campaigns-list"],
 		queryFn: async () => {
-			const response = await fetch("/wp-json/wpd/v1/campaigns/list", {
+			const response = await fetch("/wp-json/donasai/v1/campaigns/list", {
 				headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
 			});
 

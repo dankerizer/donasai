@@ -28,14 +28,14 @@ We have conducted a thorough audit and fixed all sanitization and security issue
 > **Action Taken:**
 > - **Input Sanitization**: Ensured all `$_POST` and `$_GET` data is sanitized using `sanitize_text_field()`, `sanitize_textarea_field()`, `absint()`, etc. across all files (`metabox.php`, `donations-controller.php`, etc.).
 > - **SQL Escaping**: We replaced `phpcs:ignore` suppressions with actual `esc_sql()` wrappers for dynamic table names in `$wpdb->prepare()` queries. Table names are constructed using `$wpdb->prefix` and now properly escaped.
-> - **Nonces**: Added nonce checks for all form submissions and actions (e.g. `wpd_receipt_` nonce for viewing receipts).
+> - **Nonces**: Added nonce checks for all form submissions and actions (e.g. `donasai_receipt_` nonce for viewing receipts).
 
 ## 4. Enqueued Resources
 We have fixed the instances where scripts and styles were output directly.
 > **Action Taken:**
 > - Removed inline `<link>` and `<script>` tags from `receipt.php`.
-> - Created `wpd_enqueue_receipt_assets()` function attached to `wp_enqueue_scripts` hook to properly load Tailwind CSS (CDN) and Google Fonts on the receipt page.
-> - Ensured all admin scripts verify `WPD_DEV_MODE` before loading development assets.
+> - Created `donasai_enqueue_receipt_assets()` function attached to `wp_enqueue_scripts` hook to properly load Tailwind CSS (CDN) and Google Fonts on the receipt page.
+> - Ensured all admin scripts verify `DONASAI_DEV_MODE` before loading development assets.
 
 ## 5. External Services
 We have documented all external services in `readme.txt` as requested.
@@ -51,7 +51,7 @@ Regarding the `permission_callback` warning:
 
 ## 7. Code Quality & Prefixing
 > **Action Taken:**
-> - Verified all functions and classes use the `wpd_` prefix or `Donasai` namespace to avoid collisions.
+> - Verified all functions and classes use the `donasai_` prefix or `Donasai` namespace to avoid collisions.
 > - Removed the `includes/gateways/stripe.php` file mentioned in the potential library conflict warning (we are not using Stripe in this version).
 
 

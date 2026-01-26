@@ -79,7 +79,7 @@ export function useCampaignTemplate() {
 	// Save mutation - saves to same settings API
 	const saveMutation = useMutation({
 		mutationFn: async (newTemplate: CampaignTemplate) => {
-			const response = await fetch("/wp-json/wpd/v1/settings", {
+			const response = await fetch("/wp-json/donasai/v1/settings", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

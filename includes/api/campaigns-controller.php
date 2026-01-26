@@ -9,17 +9,17 @@ if (!defined('ABSPATH')) {
 
 add_action('rest_api_init', function () {
 	// POST /campaigns/{id}/donate
-	register_rest_route('wpd/v1', '/campaigns/(?P<id>\d+)/donate', array(
+	register_rest_route('donasai/v1', '/campaigns/(?P<id>\d+)/donate', array(
 		'methods' => 'POST',
-		'callback' => 'wpd_api_create_donation',
+		'callback' => 'donasai_api_create_donation',
 		'permission_callback' => function () {
 			return true; // Public endpoint for creating donations
 		},
 	));
 	// GET /campaigns/list (For Dropdowns)
-	register_rest_route('wpd/v1', '/campaigns/list', array(
+	register_rest_route('donasai/v1', '/campaigns/list', array(
 		'methods' => 'GET',
-		'callback' => 'wpd_api_get_campaigns_list',
+		'callback' => 'donasai_api_get_campaigns_list',
 		'permission_callback' => function () {
 			// Allow logged in users with capability (e.g. admins/donors?) 
 			// For now restricted to manage_options for admin usage
@@ -27,19 +27,19 @@ add_action('rest_api_init', function () {
 		},
 	));
 	// GET /campaigns/{id}/donors (New Endpoint)
-	register_rest_route('wpd/v1', '/campaigns/(?P<id>\d+)/donors', array(
+	register_rest_route('donasai/v1', '/campaigns/(?P<id>\d+)/donors', array(
 		'methods' => 'GET',
-		'callback' => 'wpd_api_get_campaign_donors',
+		'callback' => 'donasai_api_get_campaign_donors',
 		'permission_callback' => function () {
 			return true; // Public endpoint for listing donors
 		},
 	));
 });
 
-function wpd_api_get_campaigns_list()
+function donasai_api_get_campaigns_list()
 {
 	$args = array(
-		'post_type' => 'wpd_campaign',
+		'post_type' => 'donasai_campaign',
 		'post_status' => 'publish',
 		'posts_per_page' => -1,
 		'fields' => 'ids'
@@ -60,7 +60,7 @@ function wpd_api_get_campaigns_list()
 	return rest_ensure_response($campaigns);
 }
 
-function wpd_api_create_donation($request)
+function donasai_api_create_donation($request)
 {
 	global $wpdb;
 	$campaign_id = isset($request['id']) ? intval($request['id']) : 0;
@@ -84,7 +84,7 @@ function wpd_api_create_donation($request)
 	// 1. Handle Recurring Subscription
 	$subscription_id = 0;
 	if ($is_recurring && is_user_logged_in()) {
-		$sub_service = new WPD_Subscription_Service();
+		$sub_service = new DONASAI_Subscription_Service();
 		$subscription_id = $sub_service->create_subscription(
 			get_current_user_id(),
 			$campaign_id,
@@ -94,7 +94,7 @@ function wpd_api_create_donation($request)
 	}
 
 	// 2. Insert Donation
-	$table_donations = $wpdb->prefix . 'wpd_donations';
+	$table_donations = $wpdb->prefix . 'donasai_donations';
 	$data = array(
 		'campaign_id' => $campaign_id,
 		'user_id' => get_current_user_id() ? get_current_user_id() : null,
@@ -136,10 +136,10 @@ function wpd_api_create_donation($request)
 	$donation_id = $wpdb->insert_id;
 
 	// 3. Process Payment Gateway
-	$gateway = WPD_Gateway_Registry::get_gateway($method);
+	$gateway = DONASAI_Gateway_Registry::get_gateway($method);
 
 	// Trigger Action
-	do_action('wpd_donation_created', $donation_id);
+	do_action('donasai_donation_created', $donation_id);
 
 	if ($gateway) {
 		$result = $gateway->process_payment(array(
@@ -160,7 +160,7 @@ function wpd_api_create_donation($request)
 	));
 }
 
-function wpd_api_get_campaign_donors($request)
+function donasai_api_get_campaign_donors($request)
 {
 	global $wpdb;
 	$campaign_id = isset($request['id']) ? intval($request['id']) : 0;
@@ -172,9 +172,9 @@ function wpd_api_get_campaign_donors($request)
 
 	// Get Donors
 	// Get Donors
-	$table = esc_sql($wpdb->prefix . 'wpd_donations');
-	$cache_key = 'wpd_campaign_donors_' . $campaign_id . '_p' . $page . '_pp' . $per_page;
-	$cache_group = 'wpd_donations';
+	$table = esc_sql($wpdb->prefix . 'donasai_donations');
+	$cache_key = 'donasai_campaign_donors_' . $campaign_id . '_p' . $page . '_pp' . $per_page;
+	$cache_group = 'donasai_donations';
 	$results = wp_cache_get($cache_key, $cache_group);
 
 	if (false === $results) {

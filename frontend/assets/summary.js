@@ -2,10 +2,10 @@
  * Summary JS
  */
 function showToast(message) {
-    let toast = document.getElementById('wpd-toast');
+    let toast = document.getElementById('donasai-toast');
     if (!toast) {
         toast = document.createElement('div');
-        toast.id = 'wpd-toast';
+        toast.id = 'donasai-toast';
         document.body.appendChild(toast);
     }
     toast.textContent = message;
@@ -58,7 +58,7 @@ function handleConfirmPayment(confUrl, phone, donationId, amount) {
 
 document.addEventListener('DOMContentLoaded', () => {
     // Confetti
-    if (window.wpd_donation_status === 'complete' && typeof confetti === 'function') {
+    if (window.donasai_donation_status === 'complete' && typeof confetti === 'function') {
         var count = 200;
         var defaults = { origin: { y: 0.7 }, zIndex: 9999 };
 
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Confirmation Button
-    const confirmBtn = document.getElementById('wpd-confirm-btn');
+    const confirmBtn = document.getElementById('donasai-confirm-btn');
     if (confirmBtn) {
         confirmBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Copy Button (if any)
-    document.querySelectorAll('.wpd-copy-btn').forEach(btn => {
+    document.querySelectorAll('.donasai-copy-btn').forEach(btn => {
         btn.addEventListener('click', () => {
              const text = btn.getAttribute('data-copy');
              copyToClipboard(text, 'Disalin!');

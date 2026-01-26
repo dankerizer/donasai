@@ -161,7 +161,7 @@ export default function DonationsPage() {
 			if (recurringFilter) params.append("is_recurring", recurringFilter);
 
 			const response = await fetch(
-				`/wp-json/wpd/v1/donations?${params.toString()}`,
+				`/wp-json/donasai/v1/donations?${params.toString()}`,
 				{
 					headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
 				},
@@ -177,7 +177,7 @@ export default function DonationsPage() {
 	// Mutation for update
 	const mutation = useMutation({
 		mutationFn: async (vars: { id: number; data: Partial<Donation> }) => {
-			const response = await fetch(`/wp-json/wpd/v1/donations/${vars.id}`, {
+			const response = await fetch(`/wp-json/donasai/v1/donations/${vars.id}`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -209,7 +209,7 @@ export default function DonationsPage() {
 	const { data: campaigns } = useQuery({
 		queryKey: ["campaigns-list"],
 		queryFn: async () => {
-			const response = await fetch("/wp-json/wpd/v1/campaigns/list", {
+			const response = await fetch("/wp-json/donasai/v1/campaigns/list", {
 				headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
 			});
 			if (!response.ok) return [];
@@ -221,7 +221,7 @@ export default function DonationsPage() {
 	const expireMutation = useMutation({
 		mutationFn: async () => {
 			const formData = new FormData();
-			formData.append("action", "wpd_expire_donations_manual");
+			formData.append("action", "donasai_expire_donations_manual");
 			// formData.append('nonce', ...); // Optional if enforced
 
 			const ajaxUrl = (window as any).ajaxurl || "/wp-admin/admin-ajax.php";
@@ -247,7 +247,7 @@ export default function DonationsPage() {
 	});
 
 	const getExportUrl = () => {
-		let url = `/wp-json/wpd/v1/export/donations?_wpnonce=${(window as any).wpdSettings?.nonce}`;
+		let url = `/wp-json/donasai/v1/export/donations?_wpnonce=${(window as any).wpdSettings?.nonce}`;
 		if (startDate) url += `&start_date=${startDate}`;
 		if (endDate) url += `&end_date=${endDate}`;
 		if (selectedStatuses.length > 0)

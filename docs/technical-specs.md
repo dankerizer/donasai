@@ -18,10 +18,10 @@ Domain Path: /languages
 */
 
 Constants:
-- WPD_VERSION = '1.0.0'
-- WPD_PLUGIN_URL
-- WPD_PLUGIN_PATH
-- WPD_TABLE_PREFIX = 'wpd_'
+- DONASAI_VERSION = '1.0.0'
+- DONASAI_PLUGIN_URL
+- DONASAI_PLUGIN_PATH
+- DONASAI_TABLE_PREFIX = 'donasai_'
 ```
 
 **Requirements:**
@@ -83,8 +83,8 @@ donasai/
 ### 3.1 Custom Tables (via dbDelta)
 
 ```sql
--- wpd_donations
-CREATE TABLE {$wpdb->prefix}wpd_donations (
+-- donasai_donations
+CREATE TABLE {$wpdb->prefix}donasai_donations (
     id bigint(20) NOT NULL AUTO_INCREMENT,
     campaign_id bigint(20) NOT NULL,
     user_id bigint(20) NULL,
@@ -110,16 +110,16 @@ CREATE TABLE {$wpdb->prefix}wpd_donations (
     KEY created_at (created_at)
 ) {$wpdb->get_charset_collate()};
 
--- wpd_campaign_meta (optional for Pro)
-CREATE TABLE {$wpdb->prefix}wpd_campaign_meta (
+-- donasai_campaign_meta (optional for Pro)
+CREATE TABLE {$wpdb->prefix}donasai_campaign_meta (
     campaign_id bigint(20) NOT NULL,
     meta_key varchar(50) NOT NULL,
     meta_value longtext,
     PRIMARY KEY (campaign_id, meta_key)
 );
 
--- wpd_fundraisers (New: Affiliate/Fundraiser System)
-CREATE TABLE {$wpdb->prefix}wpd_fundraisers (
+-- donasai_fundraisers (New: Affiliate/Fundraiser System)
+CREATE TABLE {$wpdb->prefix}donasai_fundraisers (
     id bigint(20) NOT NULL AUTO_INCREMENT,
     user_id bigint(20) NOT NULL,
     campaign_id bigint(20) NOT NULL,
@@ -133,8 +133,8 @@ CREATE TABLE {$wpdb->prefix}wpd_fundraisers (
     KEY user_campaign (user_id, campaign_id)
 );
 
--- wpd_referral_logs (New: Tracking clicks/views)
-CREATE TABLE {$wpdb->prefix}wpd_referral_logs (
+-- donasai_referral_logs (New: Tracking clicks/views)
+CREATE TABLE {$wpdb->prefix}donasai_referral_logs (
     id bigint(20) NOT NULL AUTO_INCREMENT,
     fundraiser_id bigint(20) NOT NULL,
     campaign_id bigint(20) NOT NULL,
@@ -146,21 +146,21 @@ CREATE TABLE {$wpdb->prefix}wpd_referral_logs (
 );
 ```
 
-### 3.2 Custom Post Type: `wpd_campaign`
+### 3.2 Custom Post Type: `donasai_campaign`
 
 ```php
 // Meta fields (postmeta)
-- _wpd_target_amount (decimal)
-- _wpd_category (zakat,infak,wakaf,qurban,umum)
-- _wpd_deadline (date)
-- _wpd_status (active,closed)
-- _wpd_collected_amount (decimal, auto-updated)
+- _donasai_target_amount (decimal)
+- _donasai_category (zakat,infak,wakaf,qurban,umum)
+- _donasai_deadline (date)
+- _donasai_status (active,closed)
+- _donasai_collected_amount (decimal, auto-updated)
 - _featured (yes/no)
-- _wpd_type (donation, zakat, qurban, wakaf)
-- _wpd_packages (json: [{name, price}, ...]) -- for Qurban
-- _wpd_zakat_settings (json)
-- _wpd_pixel_ids (json: {fb, tiktok, gtm})
-- _wpd_whatsapp_settings (json: {number, message})
+- _donasai_type (donation, zakat, qurban, wakaf)
+- _donasai_packages (json: [{name, price}, ...]) -- for Qurban
+- _donasai_zakat_settings (json)
+- _donasai_pixel_ids (json: {fb, tiktok, gtm})
+- _donasai_whatsapp_settings (json: {number, message})
 ```
 
 ***
@@ -170,7 +170,7 @@ CREATE TABLE {$wpdb->prefix}wpd_referral_logs (
 ```php
 /register_rest_route('wpd/v1', '/campaigns', [
     'methods' => 'GET',
-    'callback' => 'wpd_get_campaigns',
+    'callback' => 'donasai_get_campaigns',
     'permission_callback' => '__return_true'  // Public read
 ]);
 
@@ -248,12 +248,12 @@ export default defineConfig({
 
 ```php
 // Development mode
-if (WP_DEBUG && defined('WPD_DEV_MODE')) {
+if (WP_DEBUG && defined('DONASAI_DEV_MODE')) {
     wp_enqueue_script('donasai-admin', 'http://localhost:3001/admin.js');
 } else {
     // Production
-    wp_enqueue_script('donasai-admin', WPD_PLUGIN_URL . 'build/admin.js', ['wp-element']);
-    wp_enqueue_style('donasai-admin', WPD_PLUGIN_URL . 'build/admin.css');
+    wp_enqueue_script('donasai-admin', DONASAI_PLUGIN_URL . 'build/admin.js', ['wp-element']);
+    wp_enqueue_style('donasai-admin', DONASAI_PLUGIN_URL . 'build/admin.css');
 }
 ```
 
@@ -264,9 +264,9 @@ if (WP_DEBUG && defined('WPD_DEV_MODE')) {
 ### 6.1 donation-form.php
 
 ```php
-<div class="wpd-form-container max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+<div class="donasai-form-container max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
   <form method="POST" class="space-y-4">
-    <?php wp_nonce_field('wpd_donate_nonce'); ?>
+    <?php wp_nonce_field('donasai_donate_nonce'); ?>
     
     <div>
       <label class="block text-sm font-medium mb-2">Pilih Nominal</label>
@@ -309,7 +309,7 @@ module.exports = {
 
 ```php
 // includes/gateways/interface.php
-interface WPD_Gateway {
+interface DONASAI_Gateway {
     public function get_id(): string;
     public function get_name(): string;
     public function is_active(): bool;
@@ -323,9 +323,9 @@ interface WPD_Gateway {
 
 ```php
 // Free gateways
-add_filter('wpd_gateways', function($gateways) {
-    $gateways[] = new WPD_Gateway_Offline();
-    $gateways[] = new WPD_Gateway_Stripe();  // Free global gateway
+add_filter('donasai_gateways', function($gateways) {
+    $gateways[] = new DONASAI_Gateway_Offline();
+    $gateways[] = new DONASAI_Gateway_Stripe();  // Free global gateway
     return $gateways;
 });
 ```
@@ -336,18 +336,18 @@ add_filter('wpd_gateways', function($gateways) {
 
 ```php
 // Campaigns
-do_action('wpd_campaign_created', $campaign_id, $campaign_data);
-apply_filters('wpd_campaign_form_html', $html, $campaign_id);
+do_action('donasai_campaign_created', $campaign_id, $campaign_data);
+apply_filters('donasai_campaign_form_html', $html, $campaign_id);
 
 // Donations
-do_action('wpd_donation_created', $donation_id, $donation_data);
-do_action('wpd_donation_status_updated', $donation_id, $old_status, $new_status);
+do_action('donasai_donation_created', $donation_id, $donation_data);
+do_action('donasai_donation_status_updated', $donation_id, $old_status, $new_status);
 
 // Templates
-apply_filters('wpd_template_path', $template_path, $template_name);
+apply_filters('donasai_template_path', $template_path, $template_name);
 
 // Gateways (Pro extensible)
-apply_filters('wpd_register_gateways', []);
+apply_filters('donasai_register_gateways', []);
 ```
 
 ***
@@ -356,15 +356,15 @@ apply_filters('wpd_register_gateways', []);
 
 ```php
 // Activation
-register_activation_hook(__FILE__, 'wpd_activate');
-function wpd_activate() {
-    wpd_create_tables();
+register_activation_hook(__FILE__, 'donasai_activate');
+function donasai_activate() {
+    donasai_create_tables();
     flush_rewrite_rules();
 }
 
 // Deactivation  
-register_deactivation_hook(__FILE__, 'wpd_deactivate');
-function wpd_deactivate() {
+register_deactivation_hook(__FILE__, 'donasai_deactivate');
+function donasai_deactivate() {
     flush_rewrite_rules();
 }
 ```
@@ -375,10 +375,10 @@ function wpd_deactivate() {
 
 ```
 WP Admin → Donasi (main menu)
-├── Dashboard (React SPA)          /admin.php?page=wpd-dashboard
-├── Campaigns (WP native + React)  /edit.php?post_type=wpd_campaign
-├── Donations (React SPA)          /admin.php?page=wpd-donations  
-└── Settings (React SPA)           /admin.php?page=wpd-settings
+├── Dashboard (React SPA)          /admin.php?page=donasai-dashboard
+├── Campaigns (WP native + React)  /edit.php?post_type=donasai_campaign
+├── Donations (React SPA)          /admin.php?page=donasai-donations  
+└── Settings (React SPA)           /admin.php?page=donasai-settings
 ```
 
 ***
@@ -387,9 +387,9 @@ WP Admin → Donasi (main menu)
 
 | Shortcode | Description | Attributes |
 |-----------|-------------|------------|
-| `[wpd_campaign id="123"]` | Embeds a donation form and progress bar for a specific campaign. | `id` (required): Campaign ID |
-| `[wpd_my_donations]` | Displays a dashboard for the logged-in user showing their donation history. | None |
-| `[wpd_fundraiser_stats]` | Displays the fundraiser dashboard (referral links, stats) for the logged-in user. | None |
+| `[donasai_campaign id="123"]` | Embeds a donation form and progress bar for a specific campaign. | `id` (required): Campaign ID |
+| `[donasai_my_donations]` | Displays a dashboard for the logged-in user showing their donation history. | None |
+| `[donasai_fundraiser_stats]` | Displays the fundraiser dashboard (referral links, stats) for the logged-in user. | None |
 
 ***
 

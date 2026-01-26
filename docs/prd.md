@@ -46,7 +46,7 @@ Berikut draft PRD untuk **donasai** (versi freemium: free di wp.org + Pro berbay
 
 **Deskripsi:**
 
-- Custom Post Type `wpd_campaign`.  
+- Custom Post Type `donasai_campaign`.  
 - Setiap campaign punya landing page dengan informasi lengkap + progress bar + form donasi.
 - **Support Tipe Campaign Khusus:**
     - **Zakat:** Kalkulator otomatis (Zakat Maal, Penghasilan, Fitrah) terintegrasi di form.
@@ -62,7 +62,7 @@ Berikut draft PRD untuk **donasai** (versi freemium: free di wp.org + Pro berbay
 
 **Deskripsi:**
 
-- Custom Post Type `wpd_campaign`.  
+- Custom Post Type `donasai_campaign`.  
 - Setiap campaign punya landing page dengan informasi lengkap + progress bar + form donasi.[6][1]
 
 **Data utama:**
@@ -135,7 +135,7 @@ Berikut draft PRD untuk **donasai** (versi freemium: free di wp.org + Pro berbay
 
 **Entity:**
 
-- `wpd_donations` (custom DB table):  
+- `donasai_donations` (custom DB table):  
   - `id`, `campaign_id`, `user_id`, `name`, `email`, `phone`.  
   - `amount`, `currency`, `payment_method`, `status` (pending, complete, failed, refunded).[1][7]
   - `gateway`, `transaction_id`, `metadata`, `created_at`, `updated_at`.[1][7]
@@ -240,7 +240,7 @@ Berikut draft PRD untuk **donasai** (versi freemium: free di wp.org + Pro berbay
 
 - Tailwind class bisa diubah melalui:  
   - Template override di theme (misal copy `templates/campaign-single.php`).[12][8]
-  - Filter PHP untuk HTML output (misal `wpd_campaign_form_html`).[12]
+  - Filter PHP untuk HTML output (misal `donasai_campaign_form_html`).[12]
 
 ***
 
@@ -268,7 +268,7 @@ Berikut draft PRD untuk **donasai** (versi freemium: free di wp.org + Pro berbay
 - REST API custom namespace `wpd/v1`:  
   - `/campaigns`, `/donations`, `/stats`.[19][10]
 - Payment gateway adapter pattern (class per gateway).[8][7]
-- Hooks/filters extensible untuk Pro/add-ons (cth: `wpd_register_gateway`, `wpd_after_donation_insert`).[20]
+- Hooks/filters extensible untuk Pro/add-ons (cth: `donasai_register_gateway`, `donasai_after_donation_insert`).[20]
 
 ### 5.4. Security & Compliance
 

@@ -2,7 +2,7 @@
  * Payment Page Scripts
  */
 function showToast(message) {
-	const toast = document.getElementById("wpd-toast");
+	const toast = document.getElementById("donasai-toast");
 	if (!toast) return;
 	toast.textContent = message;
 	toast.classList.add("show");
@@ -29,7 +29,7 @@ function updateAmountUI(rawValue) {
 function selectAmount(card, amount) {
 	updateAmountUI(amount);
 	document
-		.querySelectorAll(".wpd-preset-card")
+		.querySelectorAll(".donasai-preset-card")
 		.forEach((c) => {
 			c.classList.remove("active");
 		});
@@ -127,15 +127,15 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function initMidtransSnap() {
-    if (typeof wpd_payment_vars === 'undefined' || !wpd_payment_vars.is_midtrans_active) return;
+    if (typeof donasai_payment_vars === 'undefined' || !donasai_payment_vars.is_midtrans_active) return;
     
     // Inject Script if not present
-    if (wpd_payment_vars.snap_url) {
-        if (!document.querySelector('script[src="' + wpd_payment_vars.snap_url + '"]')) {
+    if (donasai_payment_vars.snap_url) {
+        if (!document.querySelector('script[src="' + donasai_payment_vars.snap_url + '"]')) {
            const script = document.createElement('script');
-           script.src = wpd_payment_vars.snap_url;
-           if (wpd_payment_vars.client_key) {
-               script.setAttribute('data-client-key', wpd_payment_vars.client_key);
+           script.src = donasai_payment_vars.snap_url;
+           if (donasai_payment_vars.client_key) {
+               script.setAttribute('data-client-key', donasai_payment_vars.client_key);
            }
            document.body.appendChild(script);
         }
@@ -151,13 +151,13 @@ function initMidtransSnap() {
         if (method !== 'midtrans') return;
 
         e.preventDefault(); 
-        const btn = document.querySelector('.wpd-btn-primary'); 
+        const btn = document.querySelector('.donasai-btn-primary'); 
         const originalText = btn.innerText; 
         btn.innerText = 'Memproses...'; 
         btn.disabled = true;
 
         const formData = new FormData(this); 
-        formData.append('wpd_ajax', '1');
+        formData.append('donasai_ajax', '1');
 
         fetch(window.location.href, { method: 'POST', body: formData })
         .then(response => response.json())
@@ -271,7 +271,7 @@ async function updateFeeCalculation() {
     }
 
     try {
-        const response = await fetch(`/wp-json/wpd-pro/v1/fee/calculate?amount=${baseAmount}&gateway=${gateway}`);
+        const response = await fetch(`/wp-json/donasai-pro/v1/fee/calculate?amount=${baseAmount}&gateway=${gateway}`);
         const data = await response.json();
 
         if (feeAmountDisplay) {

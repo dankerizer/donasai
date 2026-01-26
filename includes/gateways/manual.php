@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class WPD_Gateway_Manual implements WPD_Gateway
+class DONASAI_Gateway_Manual implements DONASAI_Gateway
 {
 
     public function get_id(): string
@@ -28,7 +28,7 @@ class WPD_Gateway_Manual implements WPD_Gateway
     public function process_payment($donation_data): array
     {
         global $wpdb;
-        $table_donations = $wpdb->prefix . 'wpd_donations';
+        $table_donations = $wpdb->prefix . 'donasai_donations';
 
         // Generate Unique Code (1-999) to ease verification
         $unique_code = wp_rand(1, 999);
@@ -86,11 +86,11 @@ class WPD_Gateway_Manual implements WPD_Gateway
     public function get_active_banks($campaign_id)
     {
         $banks_to_show = [];
-        $pro_accounts = get_option('wpd_pro_bank_accounts', []);
+        $pro_accounts = get_option('donasai_pro_bank_accounts', []);
 
         // 1. Check Campaign Specific
         if (!empty($pro_accounts)) {
-            $campaign_banks = get_post_meta($campaign_id, '_wpd_campaign_banks', true);
+            $campaign_banks = get_post_meta($campaign_id, '_donasai_campaign_banks', true);
 
             if (!empty($campaign_banks) && is_array($campaign_banks)) {
                 // Show ONLY selected banks
@@ -110,7 +110,7 @@ class WPD_Gateway_Manual implements WPD_Gateway
 
         // 2. Fallback to Free Settings if no Pro banks to show
         if (empty($banks_to_show)) {
-            $options = get_option('wpd_settings_bank', array());
+            $options = get_option('donasai_settings_bank', array());
             if (!empty($options['account_number'])) {
                 $banks_to_show[] = array(
                     'bank_name' => isset($options['bank_name']) ? $options['bank_name'] : 'BCA',
@@ -125,10 +125,10 @@ class WPD_Gateway_Manual implements WPD_Gateway
 
     public function get_payment_instructions($donation_id): string
     {
-        if (function_exists('wpd_get_donation')) {
-            $donation = wpd_get_donation($donation_id);
+        if (function_exists('donasai_get_donation')) {
+            $donation = donasai_get_donation($donation_id);
         } else {
-             $table = esc_sql($wpdb->prefix . 'wpd_donations');
+             $table = esc_sql($wpdb->prefix . 'donasai_donations');
              $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $donation_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
         }
 
@@ -173,18 +173,18 @@ class WPD_Gateway_Manual implements WPD_Gateway
 
             <div style='margin-bottom:10px; color:#475569; font-size:14px; font-weight:500;'>" . esc_html__('Silakan transfer ke rekening berikut:', 'donasai') . "</div>
             
-            <div class='wpd-bank-list' style='display:grid; gap:10px;'>";
+            <div class='donasai-bank-list' style='display:grid; gap:10px;'>";
 
         foreach ($banks_to_show as $bank) {
             $instructions .= "
-            <div class='wpd-bank-info' style='border:1px solid #e2e8f0; padding:12px; border-radius:8px; display:flex; justify-content:space-between; items-align:center; background:#fff;'>
+            <div class='donasai-bank-info' style='border:1px solid #e2e8f0; padding:12px; border-radius:8px; display:flex; justify-content:space-between; items-align:center; background:#fff;'>
                 <div style='display:flex; flex-direction:column; justify-content:center;'>
-                    <div class='wpd-bank-logo' style='font-weight:bold; font-size:16px; color:#1e293b;'>" . esc_html($bank['bank_name']) . "</div>
+                    <div class='donasai-bank-logo' style='font-weight:bold; font-size:16px; color:#1e293b;'>" . esc_html($bank['bank_name']) . "</div>
                     <div style='font-size:12px; color:#64748b;'>" . esc_html($bank['account_name']) . "</div>
                 </div>
                 <div style='text-align:right'>
-                    <div class='wpd-account-number' style='font-family:monospace; font-size:15px; font-weight:500; color:#334155; margin-bottom:4px;'>" . esc_html($bank['account_number']) . "</div>
-                    <button class='wpd-copy-btn' onclick='copyToClipboard(\"" . esc_attr($bank['account_number']) . "\")' style='font-size:11px; padding:2px 8px; border:1px solid #cbd5e1; border-radius:4px; background:#f8fafc; cursor:pointer;'>
+                    <div class='donasai-account-number' style='font-family:monospace; font-size:15px; font-weight:500; color:#334155; margin-bottom:4px;'>" . esc_html($bank['account_number']) . "</div>
+                    <button class='donasai-copy-btn' onclick='copyToClipboard(\"" . esc_attr($bank['account_number']) . "\")' style='font-size:11px; padding:2px 8px; border:1px solid #cbd5e1; border-radius:4px; background:#f8fafc; cursor:pointer;'>
                         " . esc_html__('Salin', 'donasai') . "
                     </button>
                 </div>

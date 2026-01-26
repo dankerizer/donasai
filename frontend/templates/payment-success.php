@@ -20,7 +20,7 @@ $gateway = isset($_GET['method']) ? sanitize_text_field(wp_unslash($_GET['method
 
 // Verify Nonce
 $nonce = isset($_GET['_wpnonce']) ? sanitize_text_field(wp_unslash($_GET['_wpnonce'])) : '';
-if (!wp_verify_nonce($nonce, 'wpd_payment_success')) {
+if (!wp_verify_nonce($nonce, 'donasai_payment_success')) {
     // If nonce invalid, maybe just show generic message or hide sensitive info?
     // But we need to allow viewing if it's public? 
     // Usually success page is semi-private.
@@ -42,7 +42,7 @@ if (!wp_verify_nonce($nonce, 'wpd_payment_success')) {
 
 ?>
 
-<div class="wpd-container"
+<div class="donasai-container"
     style="max-width:600px; margin:0 auto; padding:40px 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
 
     <div
@@ -88,8 +88,8 @@ if (!wp_verify_nonce($nonce, 'wpd_payment_success')) {
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
                 <?php if ($donation_id):
                     $receipt_url = add_query_arg([
-                        'wpd_receipt' => $donation_id,
-                        '_wpnonce' => wp_create_nonce('wpd_receipt_' . $donation_id)
+                        'donasai_receipt' => $donation_id,
+                        '_wpnonce' => wp_create_nonce('donasai_receipt_' . $donation_id)
                     ], home_url('/'));
                     ?>
                     <a href="<?php echo esc_url($receipt_url); ?>" target="_blank"
@@ -113,11 +113,11 @@ if (!wp_verify_nonce($nonce, 'wpd_payment_success')) {
     </div>
 
     <?php
-    $gen_settings = get_option('wpd_settings_general', []);
+    $gen_settings = get_option('donasai_settings_general', []);
     $is_branding_removed = !empty($gen_settings['remove_branding']);
 
     if (!$is_branding_removed): ?>
-        <div class="wpd-powered-by" style="text-align:center; padding-top: 20px; color:#9ca3af; font-size:13px;">
+        <div class="donasai-powered-by" style="text-align:center; padding-top: 20px; color:#9ca3af; font-size:13px;">
             Powered by <a href="https://donasai.com" target="_blank"
                 style="color:inherit; text-decoration:none; font-weight:600;">Donasai</a>
         </div>

@@ -77,7 +77,7 @@ export function useDonationFormTemplate() {
 	// Save mutation
 	const saveMutation = useMutation({
 		mutationFn: async (newTemplate: DonationFormTemplate) => {
-			const response = await fetch("/wp-json/wpd/v1/settings", {
+			const response = await fetch("/wp-json/donasai/v1/settings", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 $current_user = wp_get_current_user();
-$phone = get_user_meta($current_user->ID, '_wpd_phone', true);
+$phone = get_user_meta($current_user->ID, '_donasai_phone', true);
 
 // Handle Success/Error Messages
 $message = '';
@@ -17,13 +17,13 @@ if (isset($_GET['updated']) && '1' === sanitize_text_field(wp_unslash($_GET['upd
 }
 ?>
 
-<div class="wpd-profile-container max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+<div class="donasai-profile-container max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-sm border border-gray-100">
     <h2 class="text-2xl font-bold text-gray-800 mb-6"><?php esc_html_e('Edit Profil', 'donasai'); ?></h2>
 
     <?php echo wp_kses_post($message); ?>
 
     <form method="post" action="" class="space-y-4">
-        <?php wp_nonce_field('wpd_profile_update', 'wpd_profile_nonce'); ?>
+        <?php wp_nonce_field('donasai_profile_update', 'donasai_profile_nonce'); ?>
 
         <!-- Name -->
         <div>
@@ -83,7 +83,7 @@ if (isset($_GET['updated']) && '1' === sanitize_text_field(wp_unslash($_GET['upd
         <div class="flex items-center justify-end">
             <button
                 class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-200"
-                type="submit" name="wpd_profile_submit">
+                type="submit" name="donasai_profile_submit">
                 <?php esc_html_e('Simpan Perubahan', 'donasai'); ?>
             </button>
         </div>

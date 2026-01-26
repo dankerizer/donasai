@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class WPD_Gateway_Registry {
+class DONASAI_Gateway_Registry {
 
     private static $gateways = array();
 
@@ -16,16 +16,16 @@ class WPD_Gateway_Registry {
      */
     public static function init() {
         // Register default manual gateway
-        self::register_gateway( new WPD_Gateway_Manual() );
+        self::register_gateway( new DONASAI_Gateway_Manual() );
 
         // Allow others to register
-        do_action( 'wpd_register_gateways' );
+        do_action( 'donasai_register_gateways' );
     }
 
     /**
      * Register a new gateway
      */
-    public static function register_gateway( WPD_Gateway $gateway ) {
+    public static function register_gateway( DONASAI_Gateway $gateway ) {
         self::$gateways[ $gateway->get_id() ] = $gateway;
     }
 

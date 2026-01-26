@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
 /**
  * Filter Campaign Columns
  */
-function wpd_campaign_columns($columns)
+function donasai_campaign_columns($columns)
 {
     $new_columns = array();
 
@@ -24,33 +24,33 @@ function wpd_campaign_columns($columns)
     $new_columns['stats'] = __('Stats', 'donasai');
     $new_columns['dates'] = __('Campaign Dates', 'donasai');
     $new_columns['campaigner'] = __('Campaigner', 'donasai');
-    $new_columns['wpd_actions'] = __('Actions', 'donasai');
+    $new_columns['donasai_actions'] = __('Actions', 'donasai');
 
     // Optional: Keep date, author if needed, or remove to simplify
     // $new_columns['date'] = $columns['date']; 
 
     return $new_columns;
 }
-add_filter('manage_wpd_campaign_posts_columns', 'wpd_campaign_columns');
+add_filter('manage_donasai_campaign_posts_columns', 'donasai_campaign_columns');
 
 /**
  * Render Custom Columns
  */
-function wpd_campaign_custom_column($column, $post_id)
+function donasai_campaign_custom_column($column, $post_id)
 {
     switch ($column) {
         case 'thumb':
             if (has_post_thumbnail($post_id)) {
-                echo wp_kses_post(get_the_post_thumbnail($post_id, array(50, 50), array('class' => 'wpd-admin-thumb')));
+                echo wp_kses_post(get_the_post_thumbnail($post_id, array(50, 50), array('class' => 'donasai-admin-thumb')));
             } else {
-                echo '<span class="wpd-admin-thumb-placeholder"></span>';
+                echo '<span class="donasai-admin-thumb-placeholder"></span>';
             }
             break;
 
         case 'stats':
-            $target = get_post_meta($post_id, '_wpd_target_amount', true);
-            $collected = get_post_meta($post_id, '_wpd_collected_amount', true);
-            $donors = get_post_meta($post_id, '_wpd_donor_count', true);
+            $target = get_post_meta($post_id, '_donasai_target_amount', true);
+            $collected = get_post_meta($post_id, '_donasai_collected_amount', true);
+            $donors = get_post_meta($post_id, '_donasai_donor_count', true);
 
             if (!$target)
                 $target = 0;
@@ -60,28 +60,28 @@ function wpd_campaign_custom_column($column, $post_id)
                 $donors = 0;
 
             $percent = $target > 0 ? ($collected / $target) * 100 : 0;
-            $text_class = $percent >= 100 ? 'wpd-text-success' : 'wpd-text-primary';
-            $bg_class = $percent >= 100 ? 'wpd-bg-success' : 'wpd-bg-primary';
+            $text_class = $percent >= 100 ? 'donasai-text-success' : 'donasai-text-primary';
+            $bg_class = $percent >= 100 ? 'donasai-bg-success' : 'donasai-bg-primary';
 
-            echo '<div class="wpd-stat-row"><strong>Target:</strong> Rp ' . esc_html(number_format((float) $target, 0, ',', '.')) . '</div>';
-            echo '<div class="wpd-stat-row"><strong>Collected:</strong> <span class="' . esc_attr($text_class) . '">' . 'Rp ' . esc_html(number_format((float) $collected, 0, ',', '.')) . '</span></div>';
+            echo '<div class="donasai-stat-row"><strong>Target:</strong> Rp ' . esc_html(number_format((float) $target, 0, ',', '.')) . '</div>';
+            echo '<div class="donasai-stat-row"><strong>Collected:</strong> <span class="' . esc_attr($text_class) . '">' . 'Rp ' . esc_html(number_format((float) $collected, 0, ',', '.')) . '</span></div>';
             echo '<div><strong>Donors:</strong> ' . intval($donors) . '</div>';
 
             // Progress bar
-            echo '<div class="wpd-progress-bar">';
-            echo '<div class="wpd-progress-fill ' . esc_attr($bg_class) . '" style="width:' . esc_attr(min(100, $percent)) . '%;"></div>';
+            echo '<div class="donasai-progress-bar">';
+            echo '<div class="donasai-progress-fill ' . esc_attr($bg_class) . '" style="width:' . esc_attr(min(100, $percent)) . '%;"></div>';
             echo '</div>';
             break;
 
         case 'dates':
-            $deadline = get_post_meta($post_id, '_wpd_deadline', true);
+            $deadline = get_post_meta($post_id, '_donasai_deadline', true);
             $published = get_the_date('d M Y', $post_id);
 
             echo '<div><strong>Start:</strong> ' . esc_html($published) . '</div>';
             if ($deadline) {
                 $days_left = ceil((strtotime($deadline) - time()) / 86400);
                 if ($days_left < 0) {
-                    echo '<div class="wpd-text-danger"><strong>End:</strong> ' . esc_html(date_i18n('d M Y', strtotime($deadline))) . ' (Expired)</div>';
+                    echo '<div class="donasai-text-danger"><strong>End:</strong> ' . esc_html(date_i18n('d M Y', strtotime($deadline))) . ' (Expired)</div>';
                 } else {
                     echo '<div><strong>End:</strong> ' . esc_html(date_i18n('d M Y', strtotime($deadline))) . '</div>';
                 }
@@ -100,37 +100,37 @@ function wpd_campaign_custom_column($column, $post_id)
             }
             break;
 
-        case 'wpd_actions':
+        case 'donasai_actions':
             // Link to Donation Detail (Filtered by Campaign)
             // Just linking to main donations page with ?campaign_id query (needs implementation in React or standard WC-like filtering)
             // For now, let's link to the standard edit page or a custom export link.
 
             // Download CSV
             $nonce = wp_create_nonce('wp_rest');
-            $export_url = home_url('/wp-json/wpd/v1/export/donations');
+            $export_url = home_url('/wp-json/donasai/v1/export/donations');
             $export_url = add_query_arg(array('campaign_id' => $post_id, '_wpnonce' => $nonce), $export_url);
 
             // Recalculate Stats Action
-            $recalc_nonce = wp_create_nonce('wpd_recalc_stats_' . $post_id);
+            $recalc_nonce = wp_create_nonce('donasai_recalc_stats_' . $post_id);
             $recalc_url = admin_url('admin-post.php');
             $recalc_url = add_query_arg(array(
-                'action' => 'wpd_recalc_stats',
+                'action' => 'donasai_recalc_stats',
                 'post_id' => $post_id,
                 '_wpnonce' => $recalc_nonce
             ), $recalc_url);
 
-            echo '<details class="wpd-actions-details">';
+            echo '<details class="donasai-actions-details">';
             echo '<summary class="button button-small">Actions <span class="dashicons dashicons-arrow-down-alt2"></span></summary>';
-            echo '<div class="wpd-actions-dropdown">';
+            echo '<div class="donasai-actions-dropdown">';
 
             // Edit
-            echo '<a href="' . esc_url(get_edit_post_link($post_id)) . '" class="wpd-action-link">Edit Campaign</a>';
+            echo '<a href="' . esc_url(get_edit_post_link($post_id)) . '" class="donasai-action-link">Edit Campaign</a>';
 
             // Download Donors
-            echo '<a href="' . esc_url($export_url) . '" target="_blank" class="wpd-action-link">Download Donors</a>';
+            echo '<a href="' . esc_url($export_url) . '" target="_blank" class="donasai-action-link">Download Donors</a>';
 
             // Recalc Stats
-            echo '<a href="' . esc_url($recalc_url) . '" class="wpd-action-link is-danger">Recalculate Stats</a>';
+            echo '<a href="' . esc_url($recalc_url) . '" class="donasai-action-link is-danger">Recalculate Stats</a>';
 
             echo '</div>';
             echo '</details>';
@@ -141,19 +141,19 @@ function wpd_campaign_custom_column($column, $post_id)
             break;
     }
 }
-add_action('manage_wpd_campaign_posts_custom_column', 'wpd_campaign_custom_column', 10, 2);
+add_action('manage_donasai_campaign_posts_custom_column', 'donasai_campaign_custom_column', 10, 2);
 
 /**
  * Handle Recalculate Stats Action
  */
-function wpd_handle_recalc_stats()
+function donasai_handle_recalc_stats()
 {
     if (!isset($_GET['post_id']) || !isset($_GET['_wpnonce'])) {
         return;
     }
 
     $post_id = intval($_GET['post_id']);
-    if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'wpd_recalc_stats_' . $post_id)) {
+    if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'donasai_recalc_stats_' . $post_id)) {
         wp_die('Invalid nonce');
     }
 
@@ -162,47 +162,47 @@ function wpd_handle_recalc_stats()
     }
 
     // Force recalculate
-    wpd_update_campaign_stats($post_id);
+    donasai_update_campaign_stats($post_id);
 
     // Redirect back
-    wp_safe_redirect(admin_url('edit.php?post_type=wpd_campaign&updated=true'));
+    wp_safe_redirect(admin_url('edit.php?post_type=donasai_campaign&updated=true'));
     exit;
 }
-add_action('admin_post_wpd_recalc_stats', 'wpd_handle_recalc_stats');
+add_action('admin_post_donasai_recalc_stats', 'donasai_handle_recalc_stats');
 
 /**
  * Make Columns Sortable
  */
-function wpd_campaign_sortable_columns($columns)
+function donasai_campaign_sortable_columns($columns)
 {
     $columns['stats'] = 'collected_amount';
     $columns['dates'] = 'date';
     return $columns;
 }
-add_filter('manage_edit-wpd_campaign_sortable_columns', 'wpd_campaign_sortable_columns');
+add_filter('manage_edit-donasai_campaign_sortable_columns', 'donasai_campaign_sortable_columns');
 
 /**
  * Handle Sorting
  */
-function wpd_campaign_column_orderby($vars)
+function donasai_campaign_column_orderby($vars)
 {
     if (isset($vars['orderby']) && 'collected_amount' === $vars['orderby']) {
         $vars = array_merge($vars, array(
-            'meta_key' => '_wpd_collected_amount',
+            'meta_key' => '_donasai_collected_amount',
             'orderby' => 'meta_value_num'
         ));
     }
     return $vars;
 }
-add_filter('request', 'wpd_campaign_column_orderby');
+add_filter('request', 'donasai_campaign_column_orderby');
 
 /**
  * Enqueue Admin Assets
  */
-function wpd_campaign_admin_enqueue($hook) {
+function donasai_campaign_admin_enqueue($hook) {
     global $typenow;
-    if ('edit.php' === $hook && 'wpd_campaign' === $typenow) {
-        wp_enqueue_style('wpd-admin-columns', WPD_PLUGIN_URL . 'includes/admin/assets/admin-columns.css', array(), WPD_VERSION);
+    if ('edit.php' === $hook && 'donasai_campaign' === $typenow) {
+        wp_enqueue_style('donasai-admin-columns', DONASAI_PLUGIN_URL . 'includes/admin/assets/admin-columns.css', array(), DONASAI_VERSION);
     }
 }
-add_action('admin_enqueue_scripts', 'wpd_campaign_admin_enqueue');
+add_action('admin_enqueue_scripts', 'donasai_campaign_admin_enqueue');

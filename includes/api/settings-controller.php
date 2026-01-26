@@ -8,46 +8,46 @@ if (!defined('ABSPATH')) {
 }
 
 add_action('rest_api_init', function () {
-    register_rest_route('wpd/v1', '/settings', array(
+    register_rest_route('donasai/v1', '/settings', array(
         'methods' => 'GET',
-        'callback' => 'wpd_api_get_settings',
-        'permission_callback' => 'wpd_api_settings_permission',
+        'callback' => 'donasai_api_get_settings',
+        'permission_callback' => 'donasai_api_settings_permission',
     ));
 
-    register_rest_route('wpd/v1', '/settings', array(
+    register_rest_route('donasai/v1', '/settings', array(
         'methods' => 'POST',
-        'callback' => 'wpd_api_update_settings',
-        'permission_callback' => 'wpd_api_settings_permission',
+        'callback' => 'donasai_api_update_settings',
+        'permission_callback' => 'donasai_api_settings_permission',
     ));
 });
 
-function wpd_api_settings_permission()
+function donasai_api_settings_permission()
 {
     return current_user_can('manage_options');
 }
 
-function wpd_api_get_settings()
+function donasai_api_get_settings()
 {
-    $bank = get_option('wpd_settings_bank', array('bank_name' => '', 'account_number' => '', 'account_name' => ''));
-    $midtrans = get_option('wpd_settings_midtrans', array('enabled' => false, 'is_production' => false, 'server_key' => ''));
+    $bank = get_option('donasai_settings_bank', array('bank_name' => '', 'account_number' => '', 'account_name' => ''));
+    $midtrans = get_option('donasai_settings_midtrans', array('enabled' => false, 'is_production' => false, 'server_key' => ''));
     $xendit = array('api_key' => '');
     $tripay = array('api_key' => '', 'private_key' => '', 'merchant_code' => '', 'is_production' => false);
-    $license = get_option('wpd_license', array('key' => '', 'status' => 'inactive'));
+    $license = get_option('donasai_license', array('key' => '', 'status' => 'inactive'));
 
     // Check real Pro License from Pro Plugin if available
-    if (defined('WPD_PRO_VERSION')) {
-        $real_license_status = get_option('wpd_pro_license_status');
+    if (defined('DONASAI_PRO_VERSION')) {
+        $real_license_status = get_option('donasai_pro_license_status');
         if ($real_license_status === 'valid') {
             $license['status'] = 'active';
-            $license['key'] = get_option('wpd_pro_license_key', '');
+            $license['key'] = get_option('donasai_pro_license_key', '');
         }
     }
 
-    $organization = get_option('wpd_settings_organization', array('org_name' => '', 'org_address' => '', 'org_phone' => '', 'org_email' => '', 'org_logo' => ''));
-    $notifications = get_option('wpd_settings_notifications', array('opt_in_email' => get_option('admin_email'), 'opt_in_whatsapp' => ''));
+    $organization = get_option('donasai_settings_organization', array('org_name' => '', 'org_address' => '', 'org_phone' => '', 'org_email' => '', 'org_logo' => ''));
+    $notifications = get_option('donasai_settings_notifications', array('opt_in_email' => get_option('admin_email'), 'opt_in_whatsapp' => ''));
 
     // New Settings
-    $general = get_option('wpd_settings_general', array(
+    $general = get_option('donasai_settings_general', array(
         'campaign_slug' => 'campaign',
         'payment_slug' => 'pay',
         'remove_branding' => true,
@@ -63,8 +63,8 @@ function wpd_api_get_settings()
         'webhook_secret' => '',
         'webhook_enabled' => false,
     ));
-    $donation = get_option('wpd_settings_donation', array('min_amount' => 10000, 'presets' => '50000,100000,200000,500000', 'anonymous_label' => 'Hamba Allah', 'create_user' => false, 'preset_emoji' => '💖'));
-    $appearance = get_option('wpd_settings_appearance', array(
+    $donation = get_option('donasai_settings_donation', array('min_amount' => 10000, 'presets' => '50000,100000,200000,500000', 'anonymous_label' => 'Hamba Allah', 'create_user' => false, 'preset_emoji' => '💖'));
+    $appearance = get_option('donasai_settings_appearance', array(
         'brand_color' => '#059669',
         'button_color' => '#ec4899',
         'container_width' => '1100px',
@@ -93,10 +93,10 @@ function wpd_api_get_settings()
 
     // Pro Settings (Midtrans Override)
     if ($license['status'] === 'active') {
-        $pro_server = get_option('wpd_pro_midtrans_server_key');
-        $pro_client = get_option('wpd_pro_midtrans_client_key');
-        $pro_is_prod = get_option('wpd_pro_midtrans_is_production');
-        $pro_intervals = get_option('wpd_pro_recurring_intervals', ['month', 'year']);
+        $pro_server = get_option('donasai_pro_midtrans_server_key');
+        $pro_client = get_option('donasai_pro_midtrans_client_key');
+        $pro_is_prod = get_option('donasai_pro_midtrans_is_production');
+        $pro_intervals = get_option('donasai_pro_recurring_intervals', ['month', 'year']);
 
         if ($pro_server)
             $midtrans['pro_server_key'] = $pro_server;
@@ -107,21 +107,21 @@ function wpd_api_get_settings()
 
         $donation['recurring_intervals'] = $pro_intervals;
 
-        $bank['pro_accounts'] = get_option('wpd_pro_bank_accounts', []);
+        $bank['pro_accounts'] = get_option('donasai_pro_bank_accounts', []);
 
-        $xendit['api_key'] = get_option('wpd_pro_xendit_api_key', '');
+        $xendit['api_key'] = get_option('donasai_pro_xendit_api_key', '');
 
         $tripay = array(
-            'api_key' => get_option('wpd_pro_tripay_api_key', ''),
-            'private_key' => get_option('wpd_pro_tripay_private_key', ''),
-            'merchant_code' => get_option('wpd_pro_tripay_merchant_code', ''),
-            'is_production' => get_option('wpd_pro_tripay_is_production') == '1'
+            'api_key' => get_option('donasai_pro_tripay_api_key', ''),
+            'private_key' => get_option('donasai_pro_tripay_private_key', ''),
+            'merchant_code' => get_option('donasai_pro_tripay_merchant_code', ''),
+            'is_production' => get_option('donasai_pro_tripay_is_production') == '1'
         );
 
-        $donation['pending_expiry_hours'] = (int) get_option('wpd_pending_expiry_hours', 48);
-        $donation['email_reminder_enabled'] = get_option('wpd_email_reminder_enabled') == '1';
-        $donation['email_reminder_delay'] = (int) get_option('wpd_email_reminder_delay', 24);
-        $donation['enable_pdf_download'] = get_option('wpd_enable_pdf_download', '1') == '1';
+        $donation['pending_expiry_hours'] = (int) get_option('donasai_pending_expiry_hours', 48);
+        $donation['email_reminder_enabled'] = get_option('donasai_email_reminder_enabled') == '1';
+        $donation['email_reminder_delay'] = (int) get_option('donasai_email_reminder_delay', 24);
+        $donation['enable_pdf_download'] = get_option('donasai_enable_pdf_download', '1') == '1';
     }
 
     // Get all pages for dropdown
@@ -146,11 +146,11 @@ function wpd_api_get_settings()
         'donation' => $donation,
         'appearance' => $appearance,
         'pages' => $pages_list, // Return pages list
-        'is_pro_installed' => defined('WPD_PRO_VERSION')
+        'is_pro_installed' => defined('DONASAI_PRO_VERSION')
     ));
 }
 
-function wpd_api_update_settings($request)
+function donasai_api_update_settings($request)
 {
     $params = $request->get_json_params();
 
@@ -160,7 +160,7 @@ function wpd_api_update_settings($request)
             'account_number' => sanitize_text_field($params['bank']['account_number'] ?? ''),
             'account_name' => sanitize_text_field($params['bank']['account_name'] ?? ''),
         );
-        update_option('wpd_settings_bank', $bank_data);
+        update_option('donasai_settings_bank', $bank_data);
 
         if (isset($params['bank']['pro_accounts']) && is_array($params['bank']['pro_accounts'])) {
             $accounts = [];
@@ -173,7 +173,7 @@ function wpd_api_update_settings($request)
                     'is_default' => !empty($acc['is_default']),
                 );
             }
-            update_option('wpd_pro_bank_accounts', $accounts);
+            update_option('donasai_pro_bank_accounts', $accounts);
         }
     }
 
@@ -183,28 +183,28 @@ function wpd_api_update_settings($request)
             'is_production' => !empty($params['midtrans']['is_production']),
             'server_key' => sanitize_text_field($params['midtrans']['server_key'] ?? ''),
         );
-        update_option('wpd_settings_midtrans', $mid_data);
+        update_option('donasai_settings_midtrans', $mid_data);
 
         // Save Pro fields if present
         if (isset($params['midtrans']['pro_server_key']))
-            update_option('wpd_pro_midtrans_server_key', sanitize_text_field($params['midtrans']['pro_server_key']));
+            update_option('donasai_pro_midtrans_server_key', sanitize_text_field($params['midtrans']['pro_server_key']));
         if (isset($params['midtrans']['pro_client_key']))
-            update_option('wpd_pro_midtrans_client_key', sanitize_text_field($params['midtrans']['pro_client_key']));
+            update_option('donasai_pro_midtrans_client_key', sanitize_text_field($params['midtrans']['pro_client_key']));
         if (isset($params['midtrans']['pro_is_production']))
-            update_option('wpd_pro_midtrans_is_production', !empty($params['midtrans']['pro_is_production']) ? '1' : '0');
+            update_option('donasai_pro_midtrans_is_production', !empty($params['midtrans']['pro_is_production']) ? '1' : '0');
     }
 
     if (isset($params['xendit'])) {
         if (isset($params['xendit']['api_key'])) {
-            update_option('wpd_pro_xendit_api_key', sanitize_text_field($params['xendit']['api_key']));
+            update_option('donasai_pro_xendit_api_key', sanitize_text_field($params['xendit']['api_key']));
         }
     }
 
     if (isset($params['tripay'])) {
-        update_option('wpd_pro_tripay_api_key', sanitize_text_field($params['tripay']['api_key'] ?? ''));
-        update_option('wpd_pro_tripay_private_key', sanitize_text_field($params['tripay']['private_key'] ?? ''));
-        update_option('wpd_pro_tripay_merchant_code', sanitize_text_field($params['tripay']['merchant_code'] ?? ''));
-        update_option('wpd_pro_tripay_is_production', !empty($params['tripay']['is_production']) ? '1' : '0');
+        update_option('donasai_pro_tripay_api_key', sanitize_text_field($params['tripay']['api_key'] ?? ''));
+        update_option('donasai_pro_tripay_private_key', sanitize_text_field($params['tripay']['private_key'] ?? ''));
+        update_option('donasai_pro_tripay_merchant_code', sanitize_text_field($params['tripay']['merchant_code'] ?? ''));
+        update_option('donasai_pro_tripay_is_production', !empty($params['tripay']['is_production']) ? '1' : '0');
     }
 
     if (isset($params['organization'])) {
@@ -215,7 +215,7 @@ function wpd_api_update_settings($request)
             'org_email' => sanitize_email($params['organization']['org_email'] ?? ''),
             'org_logo' => esc_url_raw($params['organization']['org_logo'] ?? ''),
         );
-        update_option('wpd_settings_organization', $org_data);
+        update_option('donasai_settings_organization', $org_data);
     }
 
     if (isset($params['general'])) {
@@ -237,12 +237,12 @@ function wpd_api_update_settings($request)
         );
 
         // Check if slugs changed, flush rewrite rules might be needed (handled via option update hook or manual flush hint)
-        $old_gen = get_option('wpd_settings_general', []);
+        $old_gen = get_option('donasai_settings_general', []);
         if (($old_gen['campaign_slug'] ?? '') !== $gen_data['campaign_slug'] || ($old_gen['payment_slug'] ?? '') !== $gen_data['payment_slug']) {
-            update_option('wpd_rewrite_flush_needed', true);
+            update_option('donasai_rewrite_flush_needed', true);
         }
 
-        update_option('wpd_settings_general', $gen_data);
+        update_option('donasai_settings_general', $gen_data);
     }
 
     if (isset($params['donation'])) {
@@ -253,26 +253,26 @@ function wpd_api_update_settings($request)
             'anonymous_label' => sanitize_text_field($params['donation']['anonymous_label'] ?? 'Hamba Allah'),
             'create_user' => !empty($params['donation']['create_user']), // Pro
         );
-        update_option('wpd_settings_donation', $don_data);
+        update_option('donasai_settings_donation', $don_data);
 
         if (isset($params['donation']['recurring_intervals']) && is_array($params['donation']['recurring_intervals'])) {
-            update_option('wpd_pro_recurring_intervals', array_map('sanitize_text_field', $params['donation']['recurring_intervals']));
+            update_option('donasai_pro_recurring_intervals', array_map('sanitize_text_field', $params['donation']['recurring_intervals']));
         }
     
         if (isset($params['donation']['pending_expiry_hours'])) {
-             update_option('wpd_pending_expiry_hours', intval($params['donation']['pending_expiry_hours']));
+             update_option('donasai_pending_expiry_hours', intval($params['donation']['pending_expiry_hours']));
         }
 
         if (isset($params['donation']['email_reminder_enabled'])) {
-            update_option('wpd_email_reminder_enabled', !empty($params['donation']['email_reminder_enabled']) ? '1' : '0');
+            update_option('donasai_email_reminder_enabled', !empty($params['donation']['email_reminder_enabled']) ? '1' : '0');
         }
 
         if (isset($params['donation']['email_reminder_delay'])) {
-            update_option('wpd_email_reminder_delay', intval($params['donation']['email_reminder_delay']));
+            update_option('donasai_email_reminder_delay', intval($params['donation']['email_reminder_delay']));
         }
 
         if (isset($params['donation']['enable_pdf_download'])) {
-            update_option('wpd_enable_pdf_download', !empty($params['donation']['enable_pdf_download']) ? '1' : '0');
+            update_option('donasai_enable_pdf_download', !empty($params['donation']['enable_pdf_download']) ? '1' : '0');
         }
     }
 
@@ -281,7 +281,7 @@ function wpd_api_update_settings($request)
             'opt_in_email' => sanitize_email($params['notifications']['opt_in_email'] ?? ''),
             'opt_in_whatsapp' => sanitize_text_field($params['notifications']['opt_in_whatsapp'] ?? ''),
         );
-        update_option('wpd_settings_notifications', $notif_data);
+        update_option('donasai_settings_notifications', $notif_data);
     }
 
     if (isset($params['appearance'])) {
@@ -310,29 +310,29 @@ function wpd_api_update_settings($request)
             'social_proof_duration' => intval($params['appearance']['social_proof_duration'] ?? 5),
             'social_proof_limit' => intval($params['appearance']['social_proof_limit'] ?? 10),
         );
-        update_option('wpd_settings_appearance', $appearance_data);
+        update_option('donasai_settings_appearance', $appearance_data);
     }
 
     if (isset($params['license'])) {
         $key = sanitize_text_field($params['license']['key'] ?? '');
 
         // If Pro Plugin is active, use its real validation stub
-        if (defined('WPD_PRO_VERSION')) {
-            update_option('wpd_pro_license_key', $key);
+        if (defined('DONASAI_PRO_VERSION')) {
+            update_option('donasai_pro_license_key', $key);
             // Simulate Validation for now (or call Pro class)
             if (!empty($key)) {
-                update_option('wpd_pro_license_status', 'valid');
+                update_option('donasai_pro_license_status', 'valid');
                 $status = 'active';
             } else {
-                update_option('wpd_pro_license_status', 'invalid');
+                update_option('donasai_pro_license_status', 'invalid');
                 $status = 'inactive';
             }
         } else {
             // Legacy Stub from Free
             $status = (strpos($key, 'PRO-') === 0) ? 'active' : 'inactive';
-            update_option('wpd_license', array('key' => $key, 'status' => $status));
+            update_option('donasai_license', array('key' => $key, 'status' => $status));
         }
     }
 
-    return wpd_api_get_settings();
+    return donasai_api_get_settings();
 }

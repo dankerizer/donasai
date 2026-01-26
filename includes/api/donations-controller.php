@@ -9,59 +9,59 @@ if (!defined('ABSPATH')) {
 
 add_action('rest_api_init', function () {
     // GET /donations
-    register_rest_route('wpd/v1', '/donations', array(
+    register_rest_route('donasai/v1', '/donations', array(
         'methods' => 'GET',
-        'callback' => 'wpd_api_get_donations',
+        'callback' => 'donasai_api_get_donations',
         'permission_callback' => function () {
             return current_user_can('manage_options');
         },
     ));
 
     // POST /donations/{id} (Update Status)
-    register_rest_route('wpd/v1', '/donations/(?P<id>\d+)', array(
+    register_rest_route('donasai/v1', '/donations/(?P<id>\d+)', array(
         'methods' => 'POST',
-        'callback' => 'wpd_api_update_donation',
+        'callback' => 'donasai_api_update_donation',
         'permission_callback' => function () {
             return current_user_can('manage_options');
         },
     ));
 
     // GET /export/donations
-    register_rest_route('wpd/v1', '/export/donations', array(
+    register_rest_route('donasai/v1', '/export/donations', array(
         'methods' => 'GET',
-        'callback' => 'wpd_api_export_donations',
+        'callback' => 'donasai_api_export_donations',
         'permission_callback' => function () {
             return current_user_can('manage_options');
         },
     ));
 
     // GET /stats
-    register_rest_route('wpd/v1', '/stats', array(
+    register_rest_route('donasai/v1', '/stats', array(
         'methods' => 'GET',
-        'callback' => 'wpd_api_get_stats',
+        'callback' => 'donasai_api_get_stats',
         'permission_callback' => function () {
             return current_user_can('manage_options');
         },
     ));
 
     // GET /stats/chart
-    register_rest_route('wpd/v1', '/stats/chart', array(
+    register_rest_route('donasai/v1', '/stats/chart', array(
         'methods' => 'GET',
-        'callback' => 'wpd_api_get_chart_stats',
+        'callback' => 'donasai_api_get_chart_stats',
         'permission_callback' => function () {
             return current_user_can('manage_options');
         },
     ));
 });
 
-function wpd_api_get_chart_stats()
+function donasai_api_get_chart_stats()
 {
     global $wpdb;
 
     // Get last 30 days data
     // Get last 30 days data
-    $cache_key = 'wpd_chart_stats_daily';
-    $results = wp_cache_get($cache_key, 'wpd_stats');
+    $cache_key = 'donasai_chart_stats_daily';
+    $results = wp_cache_get($cache_key, 'donasai_stats');
 
     if (false === $results) {
         $results = $wpdb->get_results($wpdb->prepare("
@@ -69,13 +69,13 @@ function wpd_api_get_chart_stats()
                 DATE(created_at) as date, 
                 SUM(amount) as total_amount,
                 COUNT(id) as total_count
-            FROM {$wpdb->prefix}wpd_donations 
+            FROM {$wpdb->prefix}donasai_donations 
             WHERE status = %s 
             AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
             GROUP BY DATE(created_at)
             ORDER BY date ASC
         ", 'complete'));
-        wp_cache_set($cache_key, $results, 'wpd_stats', 3600);
+        wp_cache_set($cache_key, $results, 'donasai_stats', 3600);
     }
 
     // Fill missing dates with 0
@@ -111,7 +111,7 @@ function wpd_api_get_chart_stats()
     // --- Payment Methods ---
     $payment_methods = $wpdb->get_results($wpdb->prepare("
         SELECT payment_method, COUNT(*) as count 
-        FROM {$wpdb->prefix}wpd_donations 
+        FROM {$wpdb->prefix}donasai_donations 
         WHERE status = %s 
         GROUP BY payment_method
     ", 'complete'));
@@ -119,7 +119,7 @@ function wpd_api_get_chart_stats()
     // --- Top Campaigns ---
     $top_campaigns = $wpdb->get_results($wpdb->prepare("
         SELECT p.post_title as name, SUM(d.amount) as value
-        FROM {$wpdb->prefix}wpd_donations d
+        FROM {$wpdb->prefix}donasai_donations d
         LEFT JOIN {$wpdb->prefix}posts p ON d.campaign_id = p.ID
         WHERE d.status = %s AND d.campaign_id > 0
         GROUP BY d.campaign_id
@@ -134,25 +134,25 @@ function wpd_api_get_chart_stats()
     ));
 }
 
-function wpd_api_get_stats()
+function donasai_api_get_stats()
 {
     global $wpdb;
 
     // Total Connected Amount (Completed)
-    $cache_key = 'wpd_stats_overview';
-    $cached_stats = wp_cache_get($cache_key, 'wpd_stats');
+    $cache_key = 'donasai_stats_overview';
+    $cached_stats = wp_cache_get($cache_key, 'donasai_stats');
 
     if (false === $cached_stats) {
-        $total_collected = $wpdb->get_var("SELECT SUM(amount) FROM {$wpdb->prefix}wpd_donations WHERE status = 'complete'");
-        $total_donors = $wpdb->get_var("SELECT COUNT(DISTINCT email) FROM {$wpdb->prefix}wpd_donations WHERE status = 'complete'");
-        $active_campaigns = wp_count_posts('wpd_campaign')->publish;
+        $total_collected = $wpdb->get_var("SELECT SUM(amount) FROM {$wpdb->prefix}donasai_donations WHERE status = 'complete'");
+        $total_donors = $wpdb->get_var("SELECT COUNT(DISTINCT email) FROM {$wpdb->prefix}donasai_donations WHERE status = 'complete'");
+        $active_campaigns = wp_count_posts('donasai_campaign')->publish;
 
         $cached_stats = array(
             'total_collected' => $total_collected,
             'total_donors' => $total_donors,
             'active_campaigns' => $active_campaigns
         );
-        wp_cache_set($cache_key, $cached_stats, 'wpd_stats', 3600);
+        wp_cache_set($cache_key, $cached_stats, 'donasai_stats', 3600);
     }
 
     $total_collected = $cached_stats['total_collected'];
@@ -167,12 +167,12 @@ function wpd_api_get_stats()
     $last_month_end = wp_date('Y-m-t', strtotime('-1 month'));
 
     $current_month_amount = $wpdb->get_var($wpdb->prepare(
-        "SELECT SUM(amount) FROM {$wpdb->prefix}wpd_donations WHERE status = 'complete' AND created_at >= %s",
+        "SELECT SUM(amount) FROM {$wpdb->prefix}donasai_donations WHERE status = 'complete' AND created_at >= %s",
         $current_month_start
     )) ?: 0;
 
     $last_month_amount = $wpdb->get_var($wpdb->prepare(
-        "SELECT SUM(amount) FROM {$wpdb->prefix}wpd_donations WHERE status = 'complete' AND created_at >= %s AND created_at <= %s",
+        "SELECT SUM(amount) FROM {$wpdb->prefix}donasai_donations WHERE status = 'complete' AND created_at >= %s AND created_at <= %s",
         $last_month_start,
         $last_month_end
     )) ?: 0;
@@ -187,15 +187,15 @@ function wpd_api_get_stats()
     // 2. Recurring Revenue (Monthly Recurring Revenue - MRR)
     // Check if subscription table exists first to avoid error if Pro not fully setup
     $recurring_revenue = 0;
-    if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}wpd_subscriptions'") == $wpdb->prefix . 'wpd_subscriptions') {
-        $recurring_revenue = $wpdb->get_var("SELECT SUM(amount) FROM {$wpdb->prefix}wpd_subscriptions WHERE status = 'active'") ?: 0;
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}donasai_subscriptions'") == $wpdb->prefix . 'donasai_subscriptions') {
+        $recurring_revenue = $wpdb->get_var("SELECT SUM(amount) FROM {$wpdb->prefix}donasai_subscriptions WHERE status = 'active'") ?: 0;
     }
 
     // 3. Retention Rate
     // Donors who donated more than once
     $repeat_donors = $wpdb->get_var("
         SELECT COUNT(*) FROM (
-            SELECT email FROM {$wpdb->prefix}wpd_donations 
+            SELECT email FROM {$wpdb->prefix}donasai_donations 
             WHERE status = 'complete' 
             GROUP BY email 
             HAVING COUNT(id) > 1
@@ -219,7 +219,7 @@ function wpd_api_get_stats()
 }
 
 // Helper to build WHERE clause
-function wpd_build_donations_where_clause($params)
+function donasai_build_donations_where_clause($params)
 {
     $where = "1=1";
     $args = array();
@@ -278,7 +278,7 @@ function wpd_build_donations_where_clause($params)
     return array('where' => $where, 'args' => $args);
 }
 
-function wpd_api_export_donations($request)
+function donasai_api_export_donations($request)
 {
     global $wpdb;
 
@@ -298,15 +298,15 @@ function wpd_api_export_donations($request)
         'is_recurring' => isset($_GET['is_recurring']) ? sanitize_text_field(wp_unslash($_GET['is_recurring'])) : '',
     );
 
-    $query_parts = wpd_build_donations_where_clause($params);
+    $query_parts = donasai_build_donations_where_clause($params);
 
     if (!empty($query_parts['args'])) {
-        $table_name = esc_sql($wpdb->prefix . 'wpd_donations');
+        $table_name = esc_sql($wpdb->prefix . 'donasai_donations');
         // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
         $sql = "SELECT * FROM {$table_name} WHERE " . $query_parts['where'] . " ORDER BY created_at DESC";
         $query = $wpdb->prepare($sql, $query_parts['args']);
     } else {
-        $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}wpd_donations ORDER BY created_at DESC LIMIT %d", 10000);
+        $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}donasai_donations ORDER BY created_at DESC LIMIT %d", 10000);
     }
 
     $results = $wpdb->get_results($query, ARRAY_A); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -350,7 +350,7 @@ function wpd_api_export_donations($request)
     exit;
 }
 
-function wpd_api_update_donation($request)
+function donasai_api_update_donation($request)
 {
     global $wpdb;
     $id = isset($request['id']) ? intval($request['id']) : 0;
@@ -380,7 +380,7 @@ function wpd_api_update_donation($request)
     }
 
     $updated = $wpdb->update(
-        $wpdb->prefix . 'wpd_donations',
+        $wpdb->prefix . 'donasai_donations',
         $data_to_update,
         array('id' => $id),
         $format,
@@ -393,19 +393,19 @@ function wpd_api_update_donation($request)
 
     // Check for status change to 'complete' if status was in the payload
     if (isset($data_to_update['status']) && 'complete' === $data_to_update['status']) {
-        do_action('wpd_donation_completed', $id);
+        do_action('donasai_donation_completed', $id);
 
         // Update Campaign Collected Amount
-        $campaign_id = $wpdb->get_var($wpdb->prepare("SELECT campaign_id FROM {$wpdb->prefix}wpd_donations WHERE id = %d", $id));
+        $campaign_id = $wpdb->get_var($wpdb->prepare("SELECT campaign_id FROM {$wpdb->prefix}donasai_donations WHERE id = %d", $id));
         if ($campaign_id) {
-            if (function_exists('wpd_update_campaign_stats')) {
-                wpd_update_campaign_stats($campaign_id);
+            if (function_exists('donasai_update_campaign_stats')) {
+                donasai_update_campaign_stats($campaign_id);
             }
         }
     }
 
     // Return updated data
-    $updated_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wpd_donations WHERE id = %d", $id));
+    $updated_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}donasai_donations WHERE id = %d", $id));
 
     return rest_ensure_response(array(
         'success' => true,
@@ -426,7 +426,7 @@ function wpd_api_update_donation($request)
     ));
 }
 
-function wpd_api_get_donations($request)
+function donasai_api_get_donations($request)
 {
     global $wpdb;
 
@@ -450,17 +450,18 @@ function wpd_api_get_donations($request)
         'is_recurring' => $request->get_param('is_recurring'),
     );
 
-    $query_parts = wpd_build_donations_where_clause($params);
-    $table_name = esc_sql($wpdb->prefix . 'wpd_donations');
+    $query_parts = donasai_build_donations_where_clause($params);
+    $table_name = esc_sql($wpdb->prefix . 'donasai_donations');
     $where_sql = $query_parts['where'];
     $args = $query_parts['args'];
 
     // 1. Get Total Count
     if (!empty($args)) {
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
-        $count_query = $wpdb->prepare("SELECT COUNT(*) FROM {$table_name} WHERE {$where_sql}", $args);
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $count_query = $wpdb->prepare("SELECT COUNT(*) FROM {$table_name} WHERE " . $where_sql, $args);
     } else {
-        $count_query = "SELECT COUNT(*) FROM {$table_name}"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $count_query = "SELECT COUNT(*) FROM {$table_name}";
     }
     $total_items = (int) $wpdb->get_var($count_query); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
     $total_pages = ceil($total_items / $per_page);
@@ -472,7 +473,7 @@ function wpd_api_get_donations($request)
     if (!empty($query_parts['args'])) {
         // We need to re-merge args because we added LIMIT/OFFSET
         // $args already contains WHERE params + LIMIT + OFFSET 
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $query = $wpdb->prepare(
             "SELECT * FROM {$table_name} WHERE " . $where_sql . " ORDER BY created_at DESC LIMIT %d OFFSET %d",
             $args

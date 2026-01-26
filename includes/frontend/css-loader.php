@@ -8,10 +8,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-add_action( 'wp_head', 'wpd_inject_custom_styles' );
+add_action( 'wp_head', 'donasai_inject_custom_styles' );
 
-function wpd_inject_custom_styles() {
-    $appearance = get_option( 'wpd_settings_appearance', array() );
+function donasai_inject_custom_styles() {
+    $appearance = get_option( 'donasai_settings_appearance', array() );
     
     // Defaults
     $brand_color   = !empty($appearance['brand_color']) ? $appearance['brand_color'] : '#059669';
@@ -19,7 +19,7 @@ function wpd_inject_custom_styles() {
     $border_radius = !empty($appearance['border_radius']) ? $appearance['border_radius'] : '12px';
     $font_family   = !empty($appearance['font_family']) ? $appearance['font_family'] : 'Inter';
     $font_size     = !empty($appearance['font_size']) ? $appearance['font_size'] : '16px';
-    $dark_mode     = !empty($appearance['dark_mode']) && defined('WPD_PRO_VERSION');
+    $dark_mode     = !empty($appearance['dark_mode']) && defined('DONASAI_PRO_VERSION');
 
     // Font Loading (if not 'Inter' which might be default or cached, but best to load if specific)
     $fonts_map = [
@@ -32,67 +32,67 @@ function wpd_inject_custom_styles() {
     
     if ( isset($fonts_map[$font_family]) ) {
         // Enqueue Google Fonts properly
-        wp_enqueue_style( 'wpd-google-fonts', 'https://fonts.googleapis.com/css2?family=' . $fonts_map[$font_family] . '&display=swap', array(), WPD_VERSION );
+        wp_enqueue_style( 'donasai-google-fonts', 'https://fonts.googleapis.com/css2?family=' . $fonts_map[$font_family] . '&display=swap', array(), DONASAI_VERSION );
     }
     ?>
-    <style id="wpd-global-styles">
+    <style id="donasai-global-styles">
         /* Preconnects for performance (optional, but good) */
         /* Note: wp_resource_hints is cleaner but this is simple inline */
         :root {
             /* Branding */
-            --wpd-primary:   <?php echo esc_attr( $brand_color ); ?>;
-            --wpd-btn:       <?php echo esc_attr( $button_color ); ?>;
-            --wpd-btn-hover: <?php echo esc_attr( wpd_adjust_brightness( $button_color, -10 ) ); ?>;
+            --donasai-primary:   <?php echo esc_attr( $brand_color ); ?>;
+            --donasai-btn:       <?php echo esc_attr( $button_color ); ?>;
+            --donasai-btn-hover: <?php echo esc_attr( donasai_adjust_brightness( $button_color, -10 ) ); ?>;
             
             /* UI Config */
-            --wpd-radius:    <?php echo esc_attr( $border_radius ); ?>;
-            --wpd-font-family: '<?php echo esc_attr( $font_family ); ?>', sans-serif;
-            --wpd-font-size: <?php echo esc_attr( $font_size ); ?>;
+            --donasai-radius:    <?php echo esc_attr( $border_radius ); ?>;
+            --donasai-font-family: '<?php echo esc_attr( $font_family ); ?>', sans-serif;
+            --donasai-font-size: <?php echo esc_attr( $font_size ); ?>;
 
             /* Light Theme Defaults */
-            --wpd-bg:        #f3f4f6;
-            --wpd-card-bg:   #ffffff;
-            --wpd-text-main: #1f2937; /* Gray-900 approx */
-            --wpd-text-muted: #6b7280; /* Gray-500 */
-            --wpd-border:    #e5e7eb; /* Gray-200 */
-            --wpd-bg-soft:   #eff6ff; /* Blue-50 approx for active states */
+            --donasai-bg:        #f3f4f6;
+            --donasai-card-bg:   #ffffff;
+            --donasai-text-main: #1f2937; /* Gray-900 approx */
+            --donasai-text-muted: #6b7280; /* Gray-500 */
+            --donasai-border:    #e5e7eb; /* Gray-200 */
+            --donasai-bg-soft:   #eff6ff; /* Blue-50 approx for active states */
             
             /* Component Specific Helpers */
-            --wpd-input-bg:  #fdfdfd;
-            --wpd-input-border: #d1d5db;
+            --donasai-input-bg:  #fdfdfd;
+            --donasai-input-border: #d1d5db;
         }
 
         <?php if ( $dark_mode ): ?>
         /* Dark Mode Overrides - Applied to body.dark or standard dark preference media query if desired, 
            but usually controlled by class on body for standardized toggle */
         :root.dark, body.dark {
-            --wpd-bg:        #111827; /* Gray-900 */
-            --wpd-card-bg:   #1f2937; /* Gray-800 */
-            --wpd-text-main: #f3f4f6; /* Gray-100 */
-            --wpd-text-muted: #9ca3af; /* Gray-400 */
-            --wpd-border:    #374151; /* Gray-700 */
-            --wpd-bg-soft:   #374151; /* Gray-700 match for soft active */
+            --donasai-bg:        #111827; /* Gray-900 */
+            --donasai-card-bg:   #1f2937; /* Gray-800 */
+            --donasai-text-main: #f3f4f6; /* Gray-100 */
+            --donasai-text-muted: #9ca3af; /* Gray-400 */
+            --donasai-border:    #374151; /* Gray-700 */
+            --donasai-bg-soft:   #374151; /* Gray-700 match for soft active */
             
-            --wpd-input-bg:  #374151;
-            --wpd-input-border: #4b5563;
+            --donasai-input-bg:  #374151;
+            --donasai-input-border: #4b5563;
         }
         <?php endif; ?>
 
         /* Global Helpers */
         body {
-            font-family: var(--wpd-font-family);
-            font-size: var(--wpd-font-size);
-            color: var(--wpd-text-main);
+            font-family: var(--donasai-font-family);
+            font-size: var(--donasai-font-size);
+            color: var(--donasai-text-main);
         }
 
         /* Helper to override specific components dynamically */
-        .wpd-text-primary { color: var(--wpd-primary) !important; }
-        .wpd-bg-primary { background-color: var(--wpd-primary) !important; }
-        .wpd-btn-action { background-color: var(--wpd-btn) !important; color: white !important; }
-        .wpd-btn-action:hover { background-color: var(--wpd-btn-hover) !important; }
+        .donasai-text-primary { color: var(--donasai-primary) !important; }
+        .donasai-bg-primary { background-color: var(--donasai-primary) !important; }
+        .donasai-btn-action { background-color: var(--donasai-btn) !important; color: white !important; }
+        .donasai-btn-action:hover { background-color: var(--donasai-btn-hover) !important; }
         
         /* Utility Classes for usage in templates */
-        .wpd-rounded { border-radius: var(--wpd-radius) !important; }
+        .donasai-rounded { border-radius: var(--donasai-radius) !important; }
     </style>
     <?php
 }
@@ -100,7 +100,7 @@ function wpd_inject_custom_styles() {
 /**
  * Utility to darken/lighten color for hover states
  */
-function wpd_adjust_brightness($hex, $steps) {
+function donasai_adjust_brightness($hex, $steps) {
     // Steps should be between -255 and 255. Negatives = darker, positives = lighter
     $steps = max(-255, min(255, $steps));
 

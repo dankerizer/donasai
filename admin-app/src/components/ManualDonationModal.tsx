@@ -48,7 +48,7 @@ export default function ManualDonationModal({
 	const { data: campaignsData } = useQuery({
 		queryKey: ["pro-campaigns-list"],
 		queryFn: async () => {
-			const res = await fetch("/wp-json/wpd-pro/v1/campaigns/list", {
+			const res = await fetch("/wp-json/donasai-pro/v1/campaigns/list", {
 				headers: {
 					// biome-ignore lint/suspicious/noExplicitAny: gak tahu apa aja
 					"X-WP-Nonce": (window as any).wpdSettings?.nonce,
@@ -64,7 +64,7 @@ export default function ManualDonationModal({
 		queryKey: ["pro-donors-search", searchQuery],
 		queryFn: async () => {
 			const res = await fetch(
-				`/wp-json/wpd-pro/v1/donors/search?q=${encodeURIComponent(searchQuery)}`,
+				`/wp-json/donasai-pro/v1/donors/search?q=${encodeURIComponent(searchQuery)}`,
 				{
 					headers: {
 						"X-WP-Nonce": (window as any).wpdSettings?.nonce,
@@ -79,7 +79,7 @@ export default function ManualDonationModal({
 	// Create donation mutation
 	const createMutation = useMutation({
 		mutationFn: async (data: typeof formData) => {
-			const res = await fetch("/wp-json/wpd-pro/v1/donations/manual", {
+			const res = await fetch("/wp-json/donasai-pro/v1/donations/manual", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

@@ -162,10 +162,10 @@ Tingkatkan kepercayaan calon donatur.
 
 Secara default, Donasai membuat halaman otomatis. Jika perlu manual:
 
-*   `[wpd_donation_form]` : Menampilkan formulir donasi di halaman apapun.
-*   `[wpd_campaign_list]` : Menampilkan daftar kampanye (Grid).
-*   `[wpd_donor_dashboard]` : Halaman area khusus donatur (Riwayat donasi, Download Kuitansi, Edit Profil).
-*   `[wpd_my_donations]` : Tabel riwayat donasi simpel.
+*   `[donasai_donation_form]` : Menampilkan formulir donasi di halaman apapun.
+*   `[donasai_campaign_list]` : Menampilkan daftar kampanye (Grid).
+*   `[donasai_donor_dashboard]` : Halaman area khusus donatur (Riwayat donasi, Download Kuitansi, Edit Profil).
+*   `[donasai_my_donations]` : Tabel riwayat donasi simpel.
 
 ---
 

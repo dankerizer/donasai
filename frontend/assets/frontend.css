@@ -1,6 +1,6 @@
 /* Basic Styling for donasai Frontend */
 
-.wpd-campaign-container {
+.donasai-campaign-container {
 	max-width: 1140px;
 	margin: 0 auto;
 	padding: 20px;
@@ -9,36 +9,36 @@
 		sans-serif;
 }
 
-.wpd-campaign-layout {
+.donasai-campaign-layout {
 	display: flex;
 	gap: 40px;
 	flex-wrap: wrap;
 }
 
-.wpd-campaign-content {
+.donasai-campaign-content {
 	flex: 1 1 60%;
 }
 
-.wpd-campaign-sidebar {
+.donasai-campaign-sidebar {
 	flex: 1 1 35%;
 	min-width: 300px;
 }
 
-.wpd-campaign-thumbnail img {
+.donasai-campaign-thumbnail img {
 	width: 100%;
 	height: auto;
 	border-radius: 8px;
 	margin-bottom: 20px;
 }
 
-.wpd-campaign-title {
+.donasai-campaign-title {
 	font-size: 2rem;
 	margin-bottom: 20px;
 	font-weight: 700;
 }
 
 /* Card & Form */
-.wpd-card {
+.donasai-card {
 	background: #fff;
 	padding: 20px;
 	border: 1px solid #e5e7eb;
@@ -49,11 +49,11 @@
 }
 
 /* Progress Bar */
-.wpd-progress-section {
+.donasai-progress-section {
 	margin-bottom: 24px;
 }
 
-.wpd-progress-stats {
+.donasai-progress-stats {
 	display: flex;
 	justify-content: space-between;
 	align-items: baseline;
@@ -61,18 +61,18 @@
 	flex-wrap: wrap;
 }
 
-.wpd-collected {
+.donasai-collected {
 	font-size: 1.5rem;
 	font-weight: 700;
 	color: lab(55.0481% -49.9246 15.93); /* emerald-600 */
 }
 
-.wpd-target {
+.donasai-target {
 	font-size: 0.875rem;
 	color: #6b7280;
 }
 
-.wpd-progress-bar-bg {
+.donasai-progress-bar-bg {
 	width: 100%;
 	height: 10px;
 	background-color: #e5e7eb;
@@ -80,7 +80,7 @@
 	overflow: hidden;
 }
 
-.wpd-progress-bar-fill {
+.donasai-progress-bar-fill {
 	height: 100%;
 	background-color: lab(55.0481% -49.9246 15.93); /* emerald-600 */
 	border-radius: 999px;
@@ -88,19 +88,19 @@
 }
 
 /* Form Styling */
-.wpd-form-group {
+.donasai-form-group {
 	margin-bottom: 16px;
 }
 
-.wpd-label {
+.donasai-label {
 	display: block;
 	margin-bottom: 6px;
 	font-weight: 500;
 	color: #374151;
 }
 
-.wpd-input,
-.wpd-textarea {
+.donasai-input,
+.donasai-textarea {
 	width: 100%;
 	padding: 10px 12px;
 	border: 1px solid #d1d5db;
@@ -108,14 +108,14 @@
 	font-size: 1rem;
 }
 
-.wpd-amount-presets {
+.donasai-amount-presets {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	gap: 8px;
 	margin-bottom: 8px;
 }
 
-.wpd-btn-preset {
+.donasai-btn-preset {
 	padding: 8px;
 	background: #fff;
 	border: 1px solid #d1d5db;
@@ -124,13 +124,13 @@
 	transition: all 0.2s;
 }
 
-.wpd-btn-preset:hover {
+.donasai-btn-preset:hover {
 	border-color: lab(55.0481% -49.9246 15.93);
 	color: lab(55.0481% -49.9246 15.93);
 	background: #ecfdf5;
 }
 
-.wpd-btn-submit {
+.donasai-btn-submit {
 	width: 100%;
 	padding: 12px;
 	background-color: lab(55.0481% -49.9246 15.93);
@@ -143,28 +143,28 @@
 	transition: background-color 0.2s;
 }
 
-.wpd-btn-submit:hover {
+.donasai-btn-submit:hover {
 	background-color: #047857;
 }
 
-.wpd-alert {
+.donasai-alert {
 	padding: 12px;
 	border-radius: 6px;
 	margin-bottom: 16px;
 	font-size: 0.9rem;
 }
 
-.wpd-alert-success {
+.donasai-alert-success {
 	background-color: #ecfdf5;
 	color: #065f46;
 	border: 1px solid #a7f3d0;
 }
 
 @media (max-width: 768px) {
-	.wpd-campaign-layout {
+	.donasai-campaign-layout {
 		flex-direction: column;
 	}
-	.wpd-card {
+	.donasai-card {
 		position: static;
 	}
 }

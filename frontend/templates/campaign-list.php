@@ -9,7 +9,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Get Appearance Settings
-$settings_app = get_option('wpd_settings_appearance', []);
+$settings_app = get_option('donasai_settings_appearance', []);
 $primary_color = $settings_app['brand_color'] ?? '#059669';
 $button_color = $settings_app['button_color'] ?? '#ec4899';
 $font_family = $settings_app['font_family'] ?? 'Inter';
@@ -17,7 +17,7 @@ $border_radius = $settings_app['border_radius'] ?? '12px';
 
 // Query Campaigns
 $args = array(
-    'post_type' => 'wpd_campaign',
+    'post_type' => 'donasai_campaign',
     'post_status' => 'publish',
     'posts_per_page' => 12, // Limitation to prevent overload
 );
@@ -26,28 +26,28 @@ $query = new WP_Query($args);
 ?>
 
     <!-- CSS Variables are now handled by css-loader.php -->
-    <div class="wpd-campaign-list-wrapper">
+    <div class="donasai-campaign-list-wrapper">
 
 
 
     <?php if ($query->have_posts()): ?>
-        <div class="wpd-campaign-grid">
+        <div class="donasai-campaign-grid">
             <?php while ($query->have_posts()):
                 $query->the_post();
                 $campaign_id = get_the_ID();
-                $progress = function_exists('wpd_get_campaign_progress') ? wpd_get_campaign_progress($campaign_id) : ['collected' => 0, 'target' => 0, 'percentage' => 0];
+                $progress = function_exists('donasai_get_campaign_progress') ? donasai_get_campaign_progress($campaign_id) : ['collected' => 0, 'target' => 0, 'percentage' => 0];
 
                 // Expiry Logic (Placeholder as meta isn't strictly defined yet for expiry, assume unlimited for mvp or until implemented)
-                // If you had an expiry date meta: $expiry = get_post_meta($campaign_id, '_wpd_expiry', true);
+                // If you had an expiry date meta: $expiry = get_post_meta($campaign_id, '_donasai_expiry', true);
                 $is_unlimited = true;
                 ?>
-                <div class="wpd-card">
-                    <div class="wpd-card-image">
+                <div class="donasai-card">
+                    <div class="donasai-card-image">
                         <a href="<?php echo esc_url(get_permalink()); ?>">
                             <?php if (has_post_thumbnail()): ?>
                                 <?php the_post_thumbnail('medium_large'); // Output trusted HTML ?>
                             <?php else: ?>
-                                <div class="wpd-no-image">
+                                <div class="donasai-no-image">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                         stroke="currentColor" style="width:40px;height:40px;">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -58,51 +58,51 @@ $query = new WP_Query($args);
                         </a>
                     </div>
 
-                    <div class="wpd-card-content">
-                        <h3 class="wpd-card-title">
+                    <div class="donasai-card-content">
+                        <h3 class="donasai-card-title">
                             <a href="<?php echo esc_url(get_permalink()); ?>">
                                 <?php the_title(); // Already safe, but typically get_the_title() + esc_html() is safer if we want full control. The_title() is fine. ?>
                             </a>
                         </h3>
 
-                        <div class="wpd-progress-wrap">
-                            <div class="wpd-progress-bar">
-                                <div class="wpd-progress-fill"
+                        <div class="donasai-progress-wrap">
+                            <div class="donasai-progress-bar">
+                                <div class="donasai-progress-fill"
                                     style="width: <?php echo esc_attr($progress['percentage']); ?>%;"></div>
                             </div>
                             <div
-                                style="display:flex; justify-content:flex-end; font-size:12px; font-weight:600; color:var(--wpd-primary);">
+                                style="display:flex; justify-content:flex-end; font-size:12px; font-weight:600; color:var(--donasai-primary);">
                                 <?php echo esc_html($progress['percentage']); ?>%
                             </div>
                         </div>
 
-                        <div class="wpd-stats-grid">
+                        <div class="donasai-stats-grid">
                             <div>
-                                <div class="wpd-stat-label"><?php esc_html_e('Terkumpul', 'donasai'); ?></div>
-                                <div class="wpd-stat-value">Rp
+                                <div class="donasai-stat-label"><?php esc_html_e('Terkumpul', 'donasai'); ?></div>
+                                <div class="donasai-stat-value">Rp
                                     <?php echo esc_html(number_format($progress['collected'], 0, ',', '.')); ?>
                                 </div>
                             </div>
                             <div style="text-align:right;">
-                                <div class="wpd-stat-label"><?php esc_html_e('Target', 'donasai'); ?></div>
-                                <div class="wpd-stat-value">Rp
+                                <div class="donasai-stat-label"><?php esc_html_e('Target', 'donasai'); ?></div>
+                                <div class="donasai-stat-value">Rp
                                     <?php echo esc_html(number_format($progress['target'], 0, ',', '.')); ?>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="wpd-card-footer">
+                    <div class="donasai-card-footer">
                         <div style="font-size:13px; color:#6b7280;">
                             <span
                                 style="display:block; margin-bottom:2px;"><?php esc_html_e('Batas Waktu', 'donasai'); ?></span>
                             <?php if ($is_unlimited): ?>
-                                <span class="wpd-infinity">∞</span>
+                                <span class="donasai-infinity">∞</span>
                             <?php else: ?>
                                 <!-- Add countdown logic here if needed -->
                             <?php endif; ?>
                         </div>
-                        <a href="<?php echo esc_url(get_permalink()); ?>" class="wpd-btn-donate">
+                        <a href="<?php echo esc_url(get_permalink()); ?>" class="donasai-btn-donate">
                             <?php esc_html_e('Donasi', 'donasai'); ?>
                         </a>
                     </div>

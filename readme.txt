@@ -49,7 +49,7 @@ This plugin supports various types of donations such as **Zakat Maal**, **Zakat 
 3.  The **Donasai** menu will appear in the admin sidebar.
 4.  Go to **Donasai > Settings** to configure Bank Accounts, appearance, and Your Organization Profile.
 5.  Create your first campaign in **Donasai > Campaigns**.
-6.  Use the shortcode `[wpd_donation_form]` (if manual) or let the plugin create pages automatically.
+6.  Use the shortcode `[donasai_donation_form]` (if manual) or let the plugin create pages automatically.
 
 == Screenshots ==
 
@@ -78,6 +78,25 @@ This plugin relies on the following external services to function:
    *   **Usage**: Loads font files (Inter, Roboto, Open Sans, etc.) for dashboard and frontend styling.
    *   **Privacy Policy**: https://policies.google.com/privacy
    *   **Terms of Service**: https://developers.google.com/fonts/terms
+
+2. **QR Server API**
+   *   **Service**: QR Server (goqr.me)
+   *   **Usage**: Generates QR codes for donation validation on receipts.
+   *   **Data Sent**: URL of the donation campaign.
+   *   **Privacy Policy**: https://goqr.me/privacy/
+   *   **Terms of Service**: https://goqr.me/tos/
+
+3. **Tailwind CSS (CDN)**
+   *   **Service**: Tailwind CSS
+   *   **Usage**: Loads Tailwind CSS framework for styling receipt templates.
+   *   **Privacy Policy**: https://tailwindcss.com/privacy
+   *   **Terms of Service**: https://tailwindcss.com/terms
+
+== Source Code ==
+
+This plugin includes minified JavaScript and CSS files in the `build/` directory for the admin application.
+The full source code for these assets is available in the `admin-app/` directory within this plugin.
+Developers can inspect, modify, and rebuild the assets using the provided `package.json` and build scripts.
 
 == Changelog ==
 

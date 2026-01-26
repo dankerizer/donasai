@@ -7,12 +7,12 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-class WPD_Email
+class DONASAI_Email
 {
 	public static function init()
 	{
-		add_action('wpd_donation_created', array(__CLASS__, 'send_pending_email'));
-		add_action('wpd_donation_completed', array(__CLASS__, 'send_success_email'));
+		add_action('donasai_donation_created', array(__CLASS__, 'send_pending_email'));
+		add_action('donasai_donation_completed', array(__CLASS__, 'send_success_email'));
 	}
 
 	public static function send_pending_email($donation_id)
@@ -28,17 +28,17 @@ class WPD_Email
 	public static function send_email($donation_id, $type = 'pending')
 	{
 		global $wpdb;
-		if (function_exists('wpd_get_donation')) {
-			$donation = wpd_get_donation($donation_id);
+		if (function_exists('donasai_get_donation')) {
+			$donation = donasai_get_donation($donation_id);
 		} else {
-			$table_donations = esc_sql($wpdb->prefix . 'wpd_donations');
-			$cache_key = 'wpd_donation_' . $donation_id;
-			$donation = wp_cache_get($cache_key, 'wpd_donations');
+			$table_donations = esc_sql($wpdb->prefix . 'donasai_donations');
+			$cache_key = 'donasai_donation_' . $donation_id;
+			$donation = wp_cache_get($cache_key, 'donasai_donations');
 
 			if (false === $donation) {
 				$donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_donations} WHERE id = %d", $donation_id)); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				if ($donation) {
-					wp_cache_set($cache_key, $donation, 'wpd_donations', 300);
+					wp_cache_set($cache_key, $donation, 'donasai_donations', 300);
 				}
 			}
 		}
@@ -51,8 +51,8 @@ class WPD_Email
 		$blog_name = get_bloginfo('name');
 
 		// Check if Pro Email Generator is available
-		if (class_exists('WPD_Pro_Email_Generator')) {
-			$generator = new WPD_Pro_Email_Generator();
+		if (class_exists('DONASAI_Pro_Email_Generator')) {
+			$generator = new DONASAI_Pro_Email_Generator();
 			$email_type = ($type === 'complete') ? 'success' : 'pending';
 			$message = $generator->generate($donation_id, $email_type);
 			$subject = $generator->get_subject($donation, $email_type);
@@ -164,7 +164,7 @@ class WPD_Email
 					</ul>
 
 					<?php if ($type === 'pending' && 'manual' === $donation->payment_method):
-						$bank_settings = get_option('wpd_settings_bank', array());
+						$bank_settings = get_option('donasai_settings_bank', array());
 						?>
 						<div style="background:#fef3c7; padding:15px; border-radius:5px; margin-top:15px;">
 							<strong><?php esc_html_e('Silakan Transfer ke:', 'donasai'); ?></strong><br>
@@ -179,7 +179,7 @@ class WPD_Email
 						$token_seed = $donation->id . ($donation->created_at ?? '') . wp_salt('auth');
 						$token = hash('sha256', $token_seed);
 						$receipt_url = add_query_arg([
-							'wpd_receipt' => $donation->id,
+							'donasai_receipt' => $donation->id,
 							'token' => $token
 						], home_url('/'));
 						?>

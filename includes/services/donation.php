@@ -10,36 +10,20 @@ if (!defined('ABSPATH')) {
 /**
  * Handle Donation Form Submission
  */
-function wpd_handle_donation_submission()
+function donasai_handle_donation_submission()
 {
-    // DEBUG LOG
-    if (isset($_POST['wpd_action'])) {
-        $action = sanitize_text_field(wp_unslash($_POST['wpd_action']));
-        $log = "Action: " . $action . "\n";
-
-        $nonce_status = 'FAIL';
-        if (isset($_POST['wpd_donate_nonce'])) {
-            $nonce = sanitize_text_field(wp_unslash($_POST['wpd_donate_nonce']));
-            if (wp_verify_nonce($nonce, 'wpd_donate_action')) {
-                $nonce_status = 'PASS';
-            }
-        }
-        $log .= "Nonce Check: " . $nonce_status . "\n";
-        file_put_contents(WP_CONTENT_DIR . '/wpd-debug.log', $log, FILE_APPEND);
-    }
-
-    if (!isset($_POST['wpd_donate_nonce'])) {
+    if (!isset($_POST['donasai_donate_nonce'])) {
         return;
     }
-    $nonce = sanitize_text_field(wp_unslash($_POST['wpd_donate_nonce']));
-    if (!wp_verify_nonce($nonce, 'wpd_donate_action')) {
+    $nonce = sanitize_text_field(wp_unslash($_POST['donasai_donate_nonce']));
+    if (!wp_verify_nonce($nonce, 'donasai_donate_action')) {
         return;
     }
 
-    if (!isset($_POST['wpd_action'])) {
+    if (!isset($_POST['donasai_action'])) {
         return;
     }
-    $action = sanitize_text_field(wp_unslash($_POST['wpd_action']));
+    $action = sanitize_text_field(wp_unslash($_POST['donasai_action']));
     if ('submit_donation' !== $action) {
         return;
     }
@@ -75,7 +59,7 @@ function wpd_handle_donation_submission()
         }
     }
 
-    $gateway = WPD_Gateway_Registry::get_gateway($gateway_id);
+    $gateway = DONASAI_Gateway_Registry::get_gateway($gateway_id);
 
     if (!$gateway) {
         wp_die('Invalid payment method.');
@@ -98,11 +82,11 @@ function wpd_handle_donation_submission()
     }
 
     // Check for Fundraiser Cookie
-    $fundraiser_id = isset($_COOKIE['wpd_ref']) ? intval($_COOKIE['wpd_ref']) : 0;
+    $fundraiser_id = isset($_COOKIE['donasai_ref']) ? intval($_COOKIE['donasai_ref']) : 0;
 
     // User Handling (Auto-Register if Setting Enabled)
     $user_id = get_current_user_id();
-    $donation_settings = get_option('wpd_settings_donation', []);
+    $donation_settings = get_option('donasai_settings_donation', []);
     $should_create_user = isset($donation_settings['create_user']) && ($donation_settings['create_user'] == '1' || $donation_settings['create_user'] === true);
 
     if (!$user_id && $should_create_user && email_exists($email)) {
@@ -126,7 +110,13 @@ function wpd_handle_donation_submission()
 
     // Apply Filter for Pro (Subscriptions, etc)
     // Allows Pro to create subscription and return subscription_id in the data
-    $donation_data = apply_filters('wpd_donation_data_before_insert', array(
+    // Only pass necessary POST data
+    $post_data = array();
+    if (isset($_POST['recurring_period'])) {
+        $post_data['recurring_period'] = sanitize_text_field(wp_unslash($_POST['recurring_period']));
+    }
+    
+    $donation_data = apply_filters('donasai_donation_data_before_insert', array(
         'campaign_id' => $campaign_id,
         'user_id' => $user_id,
         'amount' => $amount,
@@ -138,27 +128,27 @@ function wpd_handle_donation_submission()
         'fundraiser_id' => $fundraiser_id,
         'subscription_id' => 0, // Default
         'metadata' => json_encode($metadata),
-    ), $_POST);
+    ), $post_data);
 
     $result = $gateway->process_payment($donation_data);
 
     if ($result['success']) {
         // Update Campaign Collected Amount
-        wpd_update_campaign_stats($campaign_id);
+        donasai_update_campaign_stats($campaign_id);
 
         // Trigger Created Action (for Emails)
         if (isset($result['donation_id'])) {
-            do_action('wpd_donation_created', $result['donation_id']);
+            do_action('donasai_donation_created', $result['donation_id']);
         }
 
         // Update Fundraiser Stats if applicable
         if ($fundraiser_id > 0) {
-            $fundraiser_service = new WPD_Fundraiser_Service();
+            $fundraiser_service = new DONASAI_Fundraiser_Service();
             $fundraiser_service->record_donation($fundraiser_id, $amount);
         }
 
         // Handle AJAX/JSON Response
-        if (isset($_POST['wpd_ajax']) && $_POST['wpd_ajax'] == '1') {
+        if (isset($_POST['donasai_ajax']) && $_POST['donasai_ajax'] == '1') {
             wp_send_json_success($result);
         }
 
@@ -169,9 +159,9 @@ function wpd_handle_donation_submission()
         }
 
         // Default Redirect to Thank You Page
-        $thankyou_slug = get_option('wpd_settings_general')['thankyou_slug'] ?? 'thank-you';
+        $thankyou_slug = get_option('donasai_settings_general')['thankyou_slug'] ?? 'thank-you';
 
-        $campaign_slug = get_option('wpd_settings_general')['campaign_slug'] ?? 'campaign';
+        $campaign_slug = get_option('donasai_settings_general')['campaign_slug'] ?? 'campaign';
         $post_name = get_post_field('post_name', $campaign_id);
 
         if ($post_name) {
@@ -184,26 +174,26 @@ function wpd_handle_donation_submission()
         }
 
         // Add Nonce for security verification on success page
-        $redirect_url = add_query_arg('_wpnonce', wp_create_nonce('wpd_payment_success'), $redirect_url);
+        $redirect_url = add_query_arg('_wpnonce', wp_create_nonce('donasai_payment_success'), $redirect_url);
 
         wp_safe_redirect($redirect_url);
         exit;
     } else {
-        if (isset($_POST['wpd_ajax']) && $_POST['wpd_ajax'] == '1') {
+        if (isset($_POST['donasai_ajax']) && $_POST['donasai_ajax'] == '1') {
             wp_send_json_error(array('message' => $result['message']));
         }
         wp_die('Payment failed: ' . esc_html($result['message']));
     }
 }
-add_action('init', 'wpd_handle_donation_submission');
+add_action('init', 'donasai_handle_donation_submission');
 
 /**
  * Update Campaign Stats (Collected Amount)
  */
-function wpd_update_campaign_stats($campaign_id)
+function donasai_update_campaign_stats($campaign_id)
 {
     global $wpdb;
-    $table = esc_sql($wpdb->prefix . 'wpd_donations');
+    $table = esc_sql($wpdb->prefix . 'donasai_donations');
 
     // Sum only completed donations
     $total = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM {$table} WHERE campaign_id = %d AND status = 'complete'", $campaign_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
@@ -211,14 +201,14 @@ function wpd_update_campaign_stats($campaign_id)
     // Count Unique Donors (by email) for completed donations
     $donor_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM {$table} WHERE campaign_id = %d AND status = 'complete'", $campaign_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
 
-    update_post_meta($campaign_id, '_wpd_collected_amount', $total);
-    update_post_meta($campaign_id, '_wpd_donor_count', $donor_count);
+    update_post_meta($campaign_id, '_donasai_collected_amount', $total);
+    update_post_meta($campaign_id, '_donasai_donor_count', $donor_count);
 }
 
 /**
  * Get Donation by ID (Cached)
  */
-function wpd_get_donation($donation_id)
+function donasai_get_donation($donation_id)
 {
     global $wpdb;
     $donation_id = intval($donation_id);
@@ -226,14 +216,14 @@ function wpd_get_donation($donation_id)
         return null;
     }
 
-    $cache_key = 'wpd_donation_' . $donation_id;
-    $donation = wp_cache_get($cache_key, 'wpd_donations');
+    $cache_key = 'donasai_donation_' . $donation_id;
+    $donation = wp_cache_get($cache_key, 'donasai_donations');
 
     if (false === $donation) {
-        $table = esc_sql($wpdb->prefix . 'wpd_donations');
+        $table = esc_sql($wpdb->prefix . 'donasai_donations');
         $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $donation_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
         if ($donation) {
-            wp_cache_set($cache_key, $donation, 'wpd_donations', 3600);
+            wp_cache_set($cache_key, $donation, 'donasai_donations', 3600);
         }
     }
     return $donation;
@@ -242,10 +232,10 @@ function wpd_get_donation($donation_id)
 /**
  * Get Campaign Progress Data
  */
-function wpd_get_campaign_progress($campaign_id)
+function donasai_get_campaign_progress($campaign_id)
 {
-    $target = get_post_meta($campaign_id, '_wpd_target_amount', true);
-    $collected = get_post_meta($campaign_id, '_wpd_collected_amount', true);
+    $target = get_post_meta($campaign_id, '_donasai_target_amount', true);
+    $collected = get_post_meta($campaign_id, '_donasai_collected_amount', true);
 
     if (!$target)
         $target = 0;

@@ -66,7 +66,7 @@ export default function LicenseSection() {
 											)
 										) {
 											try {
-												await fetch("/wp-json/wpd/v1/pro/deactivate", {
+												await fetch("/wp-json/donasai/v1/pro/deactivate", {
 													method: "POST",
 													headers: {
 														"X-WP-Nonce": (window as any).wpdSettings?.nonce,

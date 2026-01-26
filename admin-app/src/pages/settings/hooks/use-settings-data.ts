@@ -13,7 +13,7 @@ export function useSettingsFetch() {
 	return useQuery({
 		queryKey: ["settings-data"],
 		queryFn: async (): Promise<SettingsDataResult> => {
-			const response = await fetch("/wp-json/wpd/v1/settings", {
+			const response = await fetch("/wp-json/donasai/v1/settings", {
 				headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
 			});
 			const data = await response.json();

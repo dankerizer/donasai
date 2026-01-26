@@ -8,7 +8,7 @@ You MUST strictly follow the documentation in `wp-content/plugins/donasai/docs/`
 *   **[prd.md](file:///Users/hsi/Dev/pribadi/donasai/wp-content/plugins/donasai/docs/prd.md)**: Product Requirements Document. Defines scope, features (Free vs Pro), and non-goals.
 *   **[technical-specs.md](file:///Users/hsi/Dev/pribadi/donasai/wp-content/plugins/donasai/docs/technical-specs.md)**: Technical Specifications. Defines:
     *   File & Folder Structure
-    *   Database Schema (tables: `wpd_donations`, `wpd_campaign_meta`)
+    *   Database Schema (tables: `donasai_donations`, `donasai_campaign_meta`)
     *   Technology Stack (PHP 7.4+, React + Vite + TS for Admin, Tailwind)
     *   API Endpoints
     *   Code Standards

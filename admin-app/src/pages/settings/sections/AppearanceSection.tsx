@@ -904,12 +904,12 @@ export default function AppearanceSection() {
 												onClick={() => {
 													// Show preview popup
 													const existingPreview = document.getElementById(
-														"wpd-sp-admin-preview",
+														"donasai-sp-admin-preview",
 													);
 													if (existingPreview) existingPreview.remove();
 
 													const previewHtml = `
-														<div id="wpd-sp-admin-preview" style="
+														<div id="donasai-sp-admin-preview" style="
 															position: fixed;
 															bottom: 20px;
 															${formData.social_proof_position === "bottom-right" ? "right: 20px;" : "left: 20px;"}
@@ -919,10 +919,10 @@ export default function AppearanceSection() {
 															padding: 16px 20px;
 															max-width: 340px;
 															z-index: 99999;
-															animation: wpd-sp-slide-in 0.3s ease-out;
+															animation: donasai-sp-slide-in 0.3s ease-out;
 														">
 															<style>
-																@keyframes wpd-sp-slide-in {
+																@keyframes donasai-sp-slide-in {
 																	from { opacity: 0; transform: translateY(20px); }
 																	to { opacity: 1; transform: translateY(0); }
 																}
@@ -969,7 +969,7 @@ export default function AppearanceSection() {
 													setTimeout(
 														() => {
 															const preview = document.getElementById(
-																"wpd-sp-admin-preview",
+																"donasai-sp-admin-preview",
 															);
 															if (preview) preview.remove();
 														},

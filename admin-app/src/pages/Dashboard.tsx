@@ -30,7 +30,7 @@ export default function Dashboard() {
 	const { data: stats } = useQuery({
 		queryKey: ["stats"],
 		queryFn: async () => {
-			const response = await fetch("/wp-json/wpd/v1/stats", {
+			const response = await fetch("/wp-json/donasai/v1/stats", {
 				headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
 			});
 			if (!response.ok)
@@ -42,7 +42,7 @@ export default function Dashboard() {
 	const { data: chartData } = useQuery({
 		queryKey: ["chart-stats"],
 		queryFn: async () => {
-			const response = await fetch("/wp-json/wpd/v1/stats/chart", {
+			const response = await fetch("/wp-json/donasai/v1/stats/chart", {
 				headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
 			});
 			if (!response.ok) return {};
@@ -54,7 +54,7 @@ export default function Dashboard() {
 	const { data: settings } = useQuery({
 		queryKey: ["settings"],
 		queryFn: async () => {
-			const response = await fetch("/wp-json/wpd/v1/settings", {
+			const response = await fetch("/wp-json/donasai/v1/settings", {
 				headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
 			});
 			if (!response.ok) return {};

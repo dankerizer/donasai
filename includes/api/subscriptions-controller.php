@@ -8,37 +8,37 @@ if (!defined('ABSPATH')) {
 }
 
 add_action('rest_api_init', function () {
-    // GET /wpd/v1/subscriptions (My Subscriptions)
-    register_rest_route('wpd/v1', '/subscriptions', array(
+    // GET /donasai/v1/subscriptions (My Subscriptions)
+    register_rest_route('donasai/v1', '/subscriptions', array(
         'methods' => 'GET',
-        'callback' => 'wpd_api_get_my_subscriptions',
+        'callback' => 'donasai_api_get_my_subscriptions',
         'permission_callback' => function () {
             return is_user_logged_in();
         },
     ));
 
-    // POST /wpd/v1/subscriptions/{id}/cancel
-    register_rest_route('wpd/v1', '/subscriptions/(?P<id>\d+)/cancel', array(
+    // POST /donasai/v1/subscriptions/{id}/cancel
+    register_rest_route('donasai/v1', '/subscriptions/(?P<id>\d+)/cancel', array(
         'methods' => 'POST',
-        'callback' => 'wpd_api_cancel_subscription',
+        'callback' => 'donasai_api_cancel_subscription',
         'permission_callback' => function () {
             return is_user_logged_in();
         },
     ));
 });
 
-function wpd_api_get_my_subscriptions($request)
+function donasai_api_get_my_subscriptions($request)
 {
-    $service = new WPD_Subscription_Service();
+    $service = new DONASAI_Subscription_Service();
     $subs = $service->get_user_subscriptions(get_current_user_id());
 
     return rest_ensure_response($subs);
 }
 
-function wpd_api_cancel_subscription($request)
+function donasai_api_cancel_subscription($request)
 {
     $id = isset($request['id']) ? intval($request['id']) : 0;
-    $service = new WPD_Subscription_Service();
+    $service = new DONASAI_Subscription_Service();
     $result = $service->cancel_subscription($id, get_current_user_id());
 
     if ($result === false) {

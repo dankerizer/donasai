@@ -7,16 +7,16 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-function wpd_create_tables()
+function donasai_create_tables()
 {
 	global $wpdb;
 
 	$charset_collate = $wpdb->get_charset_collate();
-	$table_donations = esc_sql($wpdb->prefix . 'wpd_donations');
-	$table_meta = esc_sql($wpdb->prefix . 'wpd_campaign_meta');
+	$table_donations = esc_sql($wpdb->prefix . 'donasai_donations');
+	$table_meta = esc_sql($wpdb->prefix . 'donasai_campaign_meta');
 
-	// wpd_donations
-	// wpd_donations
+	// donasai_donations
+	// donasai_donations
 	$sql_donations = "CREATE TABLE {$table_donations} (
 		id bigint(20) NOT NULL AUTO_INCREMENT,
 		campaign_id bigint(20) NOT NULL,
@@ -43,8 +43,8 @@ function wpd_create_tables()
 		KEY created_at (created_at)
 	) $charset_collate;";
 
-	// wpd_campaign_meta
-	// wpd_campaign_meta
+	// donasai_campaign_meta
+	// donasai_campaign_meta
 	$sql_meta = "CREATE TABLE {$table_meta} (
 		campaign_id bigint(20) NOT NULL,
 		meta_key varchar(50) NOT NULL,
@@ -57,8 +57,8 @@ function wpd_create_tables()
 	dbDelta($sql_meta);
 
 	// New Tables for Features (Fundraising & Tracking)
-	$table_fundraisers = $wpdb->prefix . 'wpd_fundraisers';
-	$table_logs = $wpdb->prefix . 'wpd_referral_logs';
+	$table_fundraisers = $wpdb->prefix . 'donasai_fundraisers';
+	$table_logs = $wpdb->prefix . 'donasai_referral_logs';
 
 	$sql_fundraisers = "CREATE TABLE $table_fundraisers (
 		id bigint(20) NOT NULL AUTO_INCREMENT,
@@ -85,8 +85,8 @@ function wpd_create_tables()
 		KEY fundraiser_id (fundraiser_id)
 	) $charset_collate;";
 
-	// wpd_subscriptions
-	$table_subscriptions = $wpdb->prefix . 'wpd_subscriptions';
+	// donasai_subscriptions
+	$table_subscriptions = $wpdb->prefix . 'donasai_subscriptions';
 	$sql_subscriptions = "CREATE TABLE $table_subscriptions (
 		id bigint(20) NOT NULL AUTO_INCREMENT,
 		user_id bigint(20) NOT NULL,

@@ -17,7 +17,7 @@ export default function FundraisersPage() {
 	const { data: fundraisers, isLoading } = useQuery({
 		queryKey: ["fundraisers"],
 		queryFn: async () => {
-			const response = await fetch("/wp-json/wpd/v1/fundraisers", {
+			const response = await fetch("/wp-json/donasai/v1/fundraisers", {
 				headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
 			});
 			if (!response.ok) return [];

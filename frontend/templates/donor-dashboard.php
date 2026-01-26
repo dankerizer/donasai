@@ -19,38 +19,38 @@ if (!$user_id) {
 
 global $wpdb;
 
-$cache_key = 'wpd_user_donations_' . $user_id;
-$donations = wp_cache_get($cache_key, 'wpd_donations');
+$cache_key = 'donasai_user_donations_' . $user_id;
+$donations = wp_cache_get($cache_key, 'donasai_donations');
 
 if (false === $donations) {
-    $table_donations = esc_sql($wpdb->prefix . 'wpd_donations');
+    $table_donations = esc_sql($wpdb->prefix . 'donasai_donations');
     $donations = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_donations} WHERE user_id = %d ORDER BY created_at DESC", $user_id));
-    wp_cache_set($cache_key, $donations, 'wpd_donations', 300);
+    wp_cache_set($cache_key, $donations, 'donasai_donations', 300);
 }
 ?>
 
-<div class="wpd-donor-dashboard">
+<div class="donasai-donor-dashboard">
     <h3><?php esc_html_e('Riwayat Donasi Saya', 'donasai'); ?></h3>
 
     <?php if (empty($donations)): ?>
-        <div style="background:var(--wpd-bg); padding:40px; text-align:center; border-radius:var(--wpd-radius); border:1px solid var(--wpd-border);">
-            <p style="color:var(--wpd-text-muted); font-size:16px; margin-bottom:20px;">
+        <div style="background:var(--donasai-bg); padding:40px; text-align:center; border-radius:var(--donasai-radius); border:1px solid var(--donasai-border);">
+            <p style="color:var(--donasai-text-muted); font-size:16px; margin-bottom:20px;">
                 <?php esc_html_e('Belum ada riwayat donasi.', 'donasai'); ?>
             </p>
             <a href="<?php echo esc_url(home_url('/campaigns')); ?>" class="button"
-                style="background:var(--wpd-btn); color:white; padding:10px 20px; text-decoration:none; border-radius:var(--wpd-radius);"><?php esc_html_e('Mulai Berdonasi', 'donasai'); ?></a>
+                style="background:var(--donasai-btn); color:white; padding:10px 20px; text-decoration:none; border-radius:var(--donasai-radius);"><?php esc_html_e('Mulai Berdonasi', 'donasai'); ?></a>
         </div>
     <?php else: ?>
         <div style="overflow-x:auto;">
-            <table class="wpd-table"
-                style="width:100%; border-collapse:separate; border-spacing:0; border:1px solid var(--wpd-border); border-radius:var(--wpd-radius); overflow:hidden;">
-                <thead style="background:var(--wpd-bg); color:var(--wpd-text-main);">
+            <table class="donasai-table"
+                style="width:100%; border-collapse:separate; border-spacing:0; border:1px solid var(--donasai-border); border-radius:var(--donasai-radius); overflow:hidden;">
+                <thead style="background:var(--donasai-bg); color:var(--donasai-text-main);">
                     <tr>
                         <th
                             style="padding:12px 16px; text-align:left; border-bottom:1px solid #e5e7eb; font-weight:600; font-size:14px;">
                             #ID</th>
                         <th
-                            style="padding:12px 16px; text-align:left; border-bottom:1px solid var(--wpd-border); font-weight:600; font-size:14px;">
+                            style="padding:12px 16px; text-align:left; border-bottom:1px solid var(--donasai-border); font-weight:600; font-size:14px;">
                             <?php esc_html_e('Tanggal', 'donasai'); ?>
                         </th>
                         <th
@@ -71,39 +71,39 @@ if (false === $donations) {
                         </th>
                     </tr>
                 </thead>
-                <tbody style="background:var(--wpd-card-bg);">
+                <tbody style="background:var(--donasai-card-bg);">
                     <?php foreach ($donations as $donation):
                         $campaign_title = get_the_title($donation->campaign_id);
                         ?>
-                        <tr style="border-bottom:1px solid var(--wpd-border);">
-                            <td style="padding:12px 16px; border-bottom:1px solid var(--wpd-bg); color:var(--wpd-text-muted); font-size:13px;">
+                        <tr style="border-bottom:1px solid var(--donasai-border);">
+                            <td style="padding:12px 16px; border-bottom:1px solid var(--donasai-bg); color:var(--donasai-text-muted); font-size:13px;">
                                 #<?php echo esc_html($donation->id); ?></td>
-                            <td style="padding:12px 16px; border-bottom:1px solid var(--wpd-bg); color:var(--wpd-text-main); font-size:14px;">
+                            <td style="padding:12px 16px; border-bottom:1px solid var(--donasai-bg); color:var(--donasai-text-main); font-size:14px;">
                                 <?php echo esc_html(date_i18n('d M Y', strtotime($donation->created_at))); ?>
                             </td>
-                            <td style="padding:12px 16px; border-bottom:1px solid var(--wpd-bg);">
+                            <td style="padding:12px 16px; border-bottom:1px solid var(--donasai-bg);">
                                 <a href="<?php echo esc_url(get_permalink($donation->campaign_id)); ?>"
-                                    style="color:var(--wpd-primary); text-decoration:none; font-weight:500; font-size:14px;"><?php echo esc_html($campaign_title); ?></a>
+                                    style="color:var(--donasai-primary); text-decoration:none; font-weight:500; font-size:14px;"><?php echo esc_html($campaign_title); ?></a>
                             </td>
-                            <td style="padding:12px 16px; border-bottom:1px solid var(--wpd-bg); font-weight:600; color:var(--wpd-text-main);">Rp
+                            <td style="padding:12px 16px; border-bottom:1px solid var(--donasai-bg); font-weight:600; color:var(--donasai-text-main);">Rp
                                 <?php echo esc_html(number_format($donation->amount, 0, ',', '.')); ?>
                             </td>
                             <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6;">
-                                <span class="wpd-status-badge wpd-status-<?php echo esc_attr($donation->status); ?>">
+                                <span class="donasai-status-badge donasai-status-<?php echo esc_attr($donation->status); ?>">
                                     <?php echo esc_html(ucfirst($donation->status)); ?>
                                 </span>
                             </td>
-                            <td style="padding:12px 16px; border-bottom:1px solid var(--wpd-bg); text-align:right;">
+                            <td style="padding:12px 16px; border-bottom:1px solid var(--donasai-bg); text-align:right;">
                                 <?php if ('pending' === $donation->status && 'midtrans' === $donation->payment_method): ?>
                                     <!-- Ideally link to payment -->
                                     <button disabled class="button-small"
                                         style="font-size:11px; padding:4px 8px; background:#e5e7eb; color:#9ca3af; border:none; border-radius:4px;">Pending</button>
                                 <?php else: ?>
-                                    <a href="<?php echo esc_url(add_query_arg('wpd_receipt', $donation->id, home_url('/'))); ?>"
+                                    <a href="<?php echo esc_url(add_query_arg('donasai_receipt', $donation->id, home_url('/'))); ?>"
                                         target="_blank" class="button-small"
-                                        style="font-size:12px; color:var(--wpd-primary); text-decoration:none; margin-right:5px;"><?php esc_html_e('Receipt', 'donasai'); ?></a>
+                                        style="font-size:12px; color:var(--donasai-primary); text-decoration:none; margin-right:5px;"><?php esc_html_e('Receipt', 'donasai'); ?></a>
                                     <a href="<?php echo esc_url(get_permalink($donation->campaign_id)); ?>" class="button-small"
-                                        style="font-size:12px; color:var(--wpd-text-muted); text-decoration:none;"><?php esc_html_e('View', 'donasai'); ?></a>
+                                        style="font-size:12px; color:var(--donasai-text-muted); text-decoration:none;"><?php esc_html_e('View', 'donasai'); ?></a>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -114,15 +114,15 @@ if (false === $donations) {
     <?php endif; ?>
 </div>
 
-<div class="wpd-subscription-dashboard" style="margin-top:40px;">
+<div class="donasai-subscription-dashboard" style="margin-top:40px;">
     <h3><?php esc_html_e('Langganan Rutin Saya', 'donasai'); ?></h3>
 
     <?php
-    $cache_key_subs = 'wpd_user_subscriptions_' . $user_id;
-    $subscriptions = wp_cache_get($cache_key_subs, 'wpd_subscriptions');
+    $cache_key_subs = 'donasai_user_subscriptions_' . $user_id;
+    $subscriptions = wp_cache_get($cache_key_subs, 'donasai_subscriptions');
 
     if (false === $subscriptions) {
-        $table_subs = esc_sql($wpdb->prefix . 'wpd_subscriptions');
+        $table_subs = esc_sql($wpdb->prefix . 'donasai_subscriptions');
         $table_posts = esc_sql($wpdb->prefix . 'posts');
         $subscriptions = $wpdb->get_results($wpdb->prepare(
             "SELECT s.*, p.post_title as campaign_title 
@@ -132,7 +132,7 @@ if (false === $donations) {
              ORDER BY s.created_at DESC",
             $user_id
         ));
-        wp_cache_set($cache_key_subs, $subscriptions, 'wpd_subscriptions', 300);
+        wp_cache_set($cache_key_subs, $subscriptions, 'donasai_subscriptions', 300);
     }
     ?>
 
@@ -140,7 +140,7 @@ if (false === $donations) {
         <p style="color:#6b7280; font-size:14px;"><?php esc_html_e('Belum ada donasi rutin aktif.', 'donasai'); ?></p>
     <?php else: ?>
         <div style="overflow-x:auto;">
-            <table class="wpd-table"
+            <table class="donasai-table"
                 style="width:100%; border-collapse:separate; border-spacing:0; border:1px solid #e5e7eb; border-radius:8px; overflow:hidden;">
                 <thead style="background:#f9fafb; color:#374151;">
                     <tr>
@@ -169,16 +169,16 @@ if (false === $donations) {
                         </th>
                     </tr>
                 </thead>
-                <tbody style="background:var(--wpd-card-bg);">
+                <tbody style="background:var(--donasai-card-bg);">
                     <?php foreach ($subscriptions as $sub): ?>
-                        <tr style="border-bottom:1px solid var(--wpd-border);">
-                            <td style="padding:12px 16px; border-bottom:1px solid var(--wpd-bg); color:var(--wpd-text-muted); font-size:13px;">
+                        <tr style="border-bottom:1px solid var(--donasai-border);">
+                            <td style="padding:12px 16px; border-bottom:1px solid var(--donasai-bg); color:var(--donasai-text-muted); font-size:13px;">
                                 #<?php echo esc_html($sub->id); ?></td>
                             <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6;">
                                 <a href="<?php echo esc_url(get_permalink($sub->campaign_id)); ?>"
-                                    style="color:var(--wpd-primary); text-decoration:none; font-weight:500; font-size:14px;"><?php echo esc_html($sub->campaign_title); ?></a>
+                                    style="color:var(--donasai-primary); text-decoration:none; font-weight:500; font-size:14px;"><?php echo esc_html($sub->campaign_title); ?></a>
                             </td>
-                            <td style="padding:12px 16px; border-bottom:1px solid var(--wpd-bg); font-weight:600; color:var(--wpd-text-main);">Rp
+                            <td style="padding:12px 16px; border-bottom:1px solid var(--donasai-bg); font-weight:600; color:var(--donasai-text-main);">Rp
                                 <?php echo esc_html(number_format($sub->amount, 0, ',', '.')); ?>
                             </td>
                             <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6; font-size:13px;">
@@ -187,7 +187,7 @@ if (false === $donations) {
                                     style="font-size:11px; color:#6b7280;"><?php echo esc_html__('Berikutnya:', 'donasai') . ' ' . esc_html(date_i18n('d M Y', strtotime($sub->next_payment_date))); ?></span>
                             </td>
                             <td style="padding:12px 16px; border-bottom:1px solid #f3f4f6;">
-                                <span class="wpd-status-badge wpd-status-<?php echo esc_attr($sub->status); ?>">
+                                <span class="donasai-status-badge donasai-status-<?php echo esc_attr($sub->status); ?>">
                                     <?php echo esc_html(ucfirst($sub->status)); ?>
                                 </span>
                             </td>

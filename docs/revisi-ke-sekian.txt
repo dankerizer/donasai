@@ -120,7 +120,7 @@ https://developer.wordpress.org/reference/functions/wp_handle_upload/
 https://developer.wordpress.org/reference/functions/wp_upload_dir/
 
 Example(s) from your plugin:
-includes/services/donation.php:28 file_put_contents(WP_CONTENT_DIR . '/wpd-debug.log', $log, FILE_APPEND);
+includes/services/donation.php:28 file_put_contents(WP_CONTENT_DIR . '/donasai-debug.log', $log, FILE_APPEND);
 # ↳ Detected: WP_CONTENT_DIR
 
 
@@ -157,7 +157,7 @@ In these cases, you should always implement proper permission checks.
 Possible cases found on this plugin's code:
 includes/api/fundraisers-controller.php:23 register_rest_route('wpd/v1', '/fundraisers', array(
     'methods' => 'GET',
-    'callback' => 'wpd_api_get_fundraisers',
+    'callback' => 'donasai_api_get_fundraisers',
     // Public route for leaderboard? Or admin only?
     // If accessing specific user stats -> auth required.
     // If accessing leaderboard -> public.
@@ -168,11 +168,11 @@ includes/api/fundraisers-controller.php:23 register_rest_route('wpd/v1', '/fundr
         return true;
     },
 ));
-includes/api/campaigns-controller.php:30 register_rest_route('wpd/v1', '/campaigns/(?P<id>\\d+)/donors', array('methods' => 'GET', 'callback' => 'wpd_api_get_campaign_donors', 'permission_callback' => function () {
+includes/api/campaigns-controller.php:30 register_rest_route('wpd/v1', '/campaigns/(?P<id>\\d+)/donors', array('methods' => 'GET', 'callback' => 'donasai_api_get_campaign_donors', 'permission_callback' => function () {
     return true;
     // Public endpoint for listing donors
 }));
-includes/api/campaigns-controller.php:12 register_rest_route('wpd/v1', '/campaigns/(?P<id>\\d+)/donate', array('methods' => 'POST', 'callback' => 'wpd_api_create_donation', 'permission_callback' => function () {
+includes/api/campaigns-controller.php:12 register_rest_route('wpd/v1', '/campaigns/(?P<id>\\d+)/donate', array('methods' => 'POST', 'callback' => 'donasai_api_create_donation', 'permission_callback' => function () {
     return true;
     // Public endpoint for creating donations
 }));
@@ -198,17 +198,17 @@ https://developer.wordpress.org/plugins/javascript/ajax/#nonce
 https://developer.wordpress.org/plugins/settings/settings-api/
 
 From your plugin:
-includes/functions-frontend.php:453 wpd_shortcode_profile() [function] No nonce check found validating input origin on lines 453-505
-# ↳ Line 505: echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">' . esc_html(sanitize_text_field(wp_unslash($_POST['wpd_profile_error']))) . '</div>';
+includes/functions-frontend.php:453 donasai_shortcode_profile() [function] No nonce check found validating input origin on lines 453-505
+# ↳ Line 505: echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">' . esc_html(sanitize_text_field(wp_unslash($_POST['donasai_profile_error']))) . '</div>';
 frontend/templates/payment-success.php:1 No nonce check found validating input origin on lines 1-40
 # ↳ Line 17: $donation_id = isset($_GET['donation_success']) ? intval($_GET['donation_success']) : 0;
 # ↳ Line 19: $gateway = isset($_GET['method']) ? sanitize_text_field(wp_unslash($_GET['method'])) : '';
-includes/functions-frontend.php:517 wpd_shortcode_confirmation_form() [function] No nonce check found validating input origin on lines 517-529
+includes/functions-frontend.php:517 donasai_shortcode_confirmation_form() [function] No nonce check found validating input origin on lines 517-529
 # ↳ Line 527: $d_id = intval($_GET['donation_id']);
-includes/functions-frontend.php:358 wpd_track_referral() [function] No nonce check found validating input origin on lines 358-366
+includes/functions-frontend.php:358 donasai_track_referral() [function] No nonce check found validating input origin on lines 358-366
 # ↳ Line 364: $ref_code = sanitize_text_field(wp_unslash($_GET['ref'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-includes/services/donation.php:13 wpd_handle_donation_submission() [function] No nonce check found validating input origin on lines 13-18
-# ↳ Line 17: $action = sanitize_text_field(wp_unslash($_POST['wpd_action']));
+includes/services/donation.php:13 donasai_handle_donation_submission() [function] No nonce check found validating input origin on lines 13-18
+# ↳ Line 17: $action = sanitize_text_field(wp_unslash($_POST['donasai_action']));
 ... out of a total of 6 incidences.
 
 
@@ -241,9 +241,9 @@ Example(s) from your plugin:
 includes/functions-frontend.php:475 $pass1 = isset($_POST['pass1']) ? wp_unslash($_POST['pass1']) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
  -----> $pass1 = isset($_POST['pass1']) ? wp_unslash($_POST['pass1']) : ''
 # ↳ Line 494: wp_update_user($user_data);
-# ↳ Line 509: include WPD_PLUGIN_PATH . 'frontend/templates/profile.php';
-# ↳ Line 509: include WPD_PLUGIN_PATH . 'frontend/templates/profile.php';
-includes/services/donation.php:129 $donation_data = apply_filters('wpd_donation_data_before_insert', array(
+# ↳ Line 509: include DONASAI_PLUGIN_PATH . 'frontend/templates/profile.php';
+# ↳ Line 509: include DONASAI_PLUGIN_PATH . 'frontend/templates/profile.php';
+includes/services/donation.php:129 $donation_data = apply_filters('donasai_donation_data_before_insert', array(
 'campaign_id' => $campaign_id,
 'user_id' => $user_id,
 'amount' => $amount,
@@ -256,18 +256,18 @@ includes/services/donation.php:129 $donation_data = apply_filters('wpd_donation_
 'subscription_id' => 0, // Default
 'metadata' => json_encode($metadata),
 ), $_POST);
-includes/metabox.php:272 $banks_post = wp_unslash($_POST['wpd_campaign_banks']);
+includes/metabox.php:272 $banks_post = wp_unslash($_POST['donasai_campaign_banks']);
 # ↳ Line 273: $banks = array_map(function ($val) {
 return sanitize_text_field($val);
 }, $banks_post);
 includes/functions-frontend.php:476 $pass2 = isset($_POST['pass2']) ? wp_unslash($_POST['pass2']) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-# ↳ Line 509: include WPD_PLUGIN_PATH . 'frontend/templates/profile.php';
+# ↳ Line 509: include DONASAI_PLUGIN_PATH . 'frontend/templates/profile.php';
 includes/functions-frontend.php:558 $uploadedfile = isset($_FILES['proof_file']) ? $_FILES['proof_file'] : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
  -----> $uploadedfile = isset($_FILES['proof_file']) ? $_FILES['proof_file'] : null
-# ↳ Line 607: include WPD_PLUGIN_PATH . 'frontend/templates/confirmation-form.php';
+# ↳ Line 607: include DONASAI_PLUGIN_PATH . 'frontend/templates/confirmation-form.php';
 includes/functions-frontend.php:542 $amount_post = isset($_POST['amount']) ? wp_unslash($_POST['amount']) : '0'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
  -----> $amount_post = isset($_POST['amount']) ? wp_unslash($_POST['amount']) : '0'
-# ↳ Line 607: include WPD_PLUGIN_PATH . 'frontend/templates/confirmation-form.php';
+# ↳ Line 607: include DONASAI_PLUGIN_PATH . 'frontend/templates/confirmation-form.php';
 
 
 ✔️ You can check this using Plugin Check.
@@ -304,7 +304,7 @@ Example(s) from your plugin:
 frontend/templates/campaign-single.php:769 fetch('<?php echo esc_url_raw(get_rest_url(null, 'wpd/v1/campaigns/')); ?>' + campaignId + '/donors?page=' + page + '&per_page=<?php echo esc_js($per_page_limit); ?>')
  -----> echo esc_url_raw(get_rest_url(null, 'wpd/v1/campaigns/'));
 includes/functions-frontend.php:185 wp_add_inline_style('donasai-frontend', $custom_css);
-# ↳ Detected origin: ...    --wpd-primary: {$primary_color};                 --wpd-primary-rgb: {$primary_rgb};                 --wpd-btn: {$button_color};                 --wpd-radius: {$radius};                 -...
+# ↳ Detected origin: ...    --donasai-primary: {$primary_color};                 --donasai-primary-rgb: {$primary_rgb};                 --donasai-btn: {$button_color};                 --donasai-radius: {$radius};                 -...
 # ↳ Remember to ALWAYS escape as LATE as possible as with a PROPER function for the context.
 
 
@@ -352,73 +352,73 @@ Analysis result:
 # This plugin is using the prefix "donasai" for 1 element(s).
 
 # The prefix "wpd" is too short, we require prefixes to be over 4 characters.
-donasai.php:22 define('WPD_VERSION', '1.0.2');
-donasai.php:23 define('WPD_PLUGIN_URL', plugin_dir_url(__FILE__));
-donasai.php:24 define('WPD_PLUGIN_PATH', plugin_dir_path(__FILE__));
-donasai.php:25 define('WPD_TABLE_PREFIX', 'wpd_');
-donasai.php:27 define('WPD_DEV_MODE', false);
-includes/cpt.php:62 register_post_type('wpd_campaign', $args);
-includes/frontend/css-loader.php:35 wp_enqueue_style('wpd-google-fonts', 'https://fonts.googleapis.com/css2?family=' . $fonts_map[$font_family] . '&display=swap', array(), WPD_VERSION);
-includes/admin/campaign-columns.php:205 wp_enqueue_style('wpd-admin-columns', WPD_PLUGIN_URL . 'includes/admin/assets/admin-columns.css', array(), WPD_VERSION);
-includes/admin/menu.php:71 add_submenu_page('wpd-dashboard', __('Settings', 'donasai'), __('Settings', 'donasai'), 'manage_options', 'wpd-settings', 'wpd_render_admin_app');
-includes/admin/menu.php:121 wp_enqueue_script('wpd-vite-client', 'http://localhost:3001/@vite/client', array(), null, true);
-includes/admin/menu.php:122 wp_enqueue_script('wpd-admin-dev', 'http://localhost:3001/src/main.tsx', array('wpd-vite-client'), null, true);
-includes/admin/menu.php:145 wp_enqueue_script('wpd-admin-app', WPD_PLUGIN_URL . 'build/' . $entry['file'], array(), WPD_VERSION, true);
-includes/admin/menu.php:174 wp_localize_script(defined('WPD_DEV_MODE') && WPD_DEV_MODE ? 'wpd-admin-dev' : 'wpd-admin-app', 'wpdSettings', array('root' => esc_url_raw(rest_url()), 'nonce' => wp_create_nonce('wp_rest'), 'initialPath' => $initial_path, 'isPro' => wpd_is_pro_installed(), 'version' => WPD_VERSION));
-includes/bootstrap.php:12 define('WPD_VERSION', '1.0.0');
-includes/bootstrap.php:15 define('WPD_PLUGIN_PATH', plugin_dir_path(__DIR__));
-includes/bootstrap.php:18 define('WPD_PLUGIN_URL', plugin_dir_url(__DIR__) . '/');
-includes/bootstrap.php:22 update_option('wpd_rewrite_flush_needed', true);
-includes/gateways/interface.php:10 interface WPD_Gateway
-includes/gateways/manual.php:10 class WPD_Gateway_Manual
-includes/api/settings-controller.php:159 update_option('wpd_settings_bank', $bank_data);
-includes/api/settings-controller.php:172 update_option('wpd_pro_bank_accounts', $accounts);
-includes/api/settings-controller.php:182 update_option('wpd_settings_midtrans', $mid_data);
-includes/api/settings-controller.php:186 update_option('wpd_pro_midtrans_server_key', sanitize_text_field($params['midtrans']['pro_server_key']));
-includes/api/settings-controller.php:188 update_option('wpd_pro_midtrans_client_key', sanitize_text_field($params['midtrans']['pro_client_key']));
-includes/api/settings-controller.php:190 update_option('wpd_pro_midtrans_is_production', !empty($params['midtrans']['pro_is_production']) ? '1' : '0');
-includes/api/settings-controller.php:195 update_option('wpd_pro_xendit_api_key', sanitize_text_field($params['xendit']['api_key']));
-includes/api/settings-controller.php:200 update_option('wpd_pro_tripay_api_key', sanitize_text_field($params['tripay']['api_key'] ?? ''));
-includes/api/settings-controller.php:201 update_option('wpd_pro_tripay_private_key', sanitize_text_field($params['tripay']['private_key'] ?? ''));
-includes/api/settings-controller.php:202 update_option('wpd_pro_tripay_merchant_code', sanitize_text_field($params['tripay']['merchant_code'] ?? ''));
-includes/api/settings-controller.php:203 update_option('wpd_pro_tripay_is_production', !empty($params['tripay']['is_production']) ? '1' : '0');
-includes/api/settings-controller.php:214 update_option('wpd_settings_organization', $org_data);
-includes/api/settings-controller.php:234 update_option('wpd_rewrite_flush_needed', true);
-includes/api/settings-controller.php:237 update_option('wpd_settings_general', $gen_data);
-includes/api/settings-controller.php:248 update_option('wpd_settings_donation', $don_data);
-includes/api/settings-controller.php:251 update_option('wpd_pro_recurring_intervals', array_map('sanitize_text_field', $params['donation']['recurring_intervals']));
-includes/api/settings-controller.php:255 update_option('wpd_pending_expiry_hours', intval($params['donation']['pending_expiry_hours']));
-includes/api/settings-controller.php:259 update_option('wpd_email_reminder_enabled', !empty($params['donation']['email_reminder_enabled']) ? '1' : '0');
-includes/api/settings-controller.php:263 update_option('wpd_email_reminder_delay', intval($params['donation']['email_reminder_delay']));
-includes/api/settings-controller.php:267 update_option('wpd_enable_pdf_download', !empty($params['donation']['enable_pdf_download']) ? '1' : '0');
-includes/api/settings-controller.php:276 update_option('wpd_settings_notifications', $notif_data);
-includes/api/settings-controller.php:305 update_option('wpd_settings_appearance', $appearance_data);
-includes/api/settings-controller.php:313 update_option('wpd_pro_license_key', $key);
-includes/api/settings-controller.php:316 update_option('wpd_pro_license_status', 'valid');
-includes/api/settings-controller.php:319 update_option('wpd_pro_license_status', 'invalid');
-includes/api/settings-controller.php:325 update_option('wpd_license', array('key' => $key, 'status' => $status));
-includes/functions-frontend.php:197 wp_enqueue_style('wpd-google-fonts', 'https://fonts.googleapis.com/css2?family=' . $fonts_map[$font_family] . '&display=swap', array(), WPD_VERSION);
-includes/functions-frontend.php:209 wp_enqueue_style('wpd-payment', WPD_PLUGIN_URL . 'frontend/assets/payment.css', array('donasai-frontend'), WPD_VERSION);
-includes/functions-frontend.php:210 wp_enqueue_script('wpd-payment', WPD_PLUGIN_URL . 'frontend/assets/payment.js', array('jquery'), WPD_VERSION, true);
-includes/functions-frontend.php:219 wp_localize_script('wpd-payment', 'wpd_payment_vars', array('is_midtrans_active' => $snap_active, 'snap_url' => $snap_url, 'client_key' => $client_key));
-includes/functions-frontend.php:229 wp_enqueue_script('wpd-confetti', WPD_PLUGIN_URL . 'frontend/assets/confetti.js', array(), '1.6.0', true);
-includes/functions-frontend.php:230 wp_enqueue_style('wpd-summary', WPD_PLUGIN_URL . 'frontend/assets/summary.css', array('donasai-frontend'), WPD_VERSION);
-includes/functions-frontend.php:231 wp_enqueue_script('wpd-summary', WPD_PLUGIN_URL . 'frontend/assets/summary.js', array('jquery', 'wpd-confetti'), WPD_VERSION, true);
-includes/functions-frontend.php:237 wp_enqueue_style('wpd-confirmation', WPD_PLUGIN_URL . 'frontend/assets/confirmation.css', array('donasai-frontend'), WPD_VERSION);
-includes/functions-frontend.php:238 wp_enqueue_script('wpd-confirmation', WPD_PLUGIN_URL . 'frontend/assets/confirmation.js', array('jquery'), WPD_VERSION, true);
-includes/functions-frontend.php:318 wp_enqueue_style('wpd-dashboard', WPD_PLUGIN_URL . 'frontend/assets/dashboard.css', array('donasai-frontend'), WPD_VERSION);
-includes/functions-frontend.php:319 wp_enqueue_script('wpd-dashboard', WPD_PLUGIN_URL . 'frontend/assets/dashboard.js', array(), WPD_VERSION, true);
-includes/functions-frontend.php:325 add_shortcode('wpd_my_donations', 'wpd_shortcode_my_donations');
-includes/functions-frontend.php:448 add_shortcode('wpd_fundraiser_stats', 'wpd_shortcode_fundraiser_stats');
-includes/functions-frontend.php:512 add_shortcode('wpd_profile', 'wpd_shortcode_profile');
-includes/functions-frontend.php:610 add_shortcode('wpd_confirmation_form', 'wpd_shortcode_confirmation_form');
-includes/functions-frontend.php:632 wp_enqueue_script('wpd-tailwind', 'https://cdn.tailwindcss.com', array(), '3.4.0', false);
-includes/functions-frontend.php:635 wp_enqueue_style('wpd-receipt-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap', array(), null);
-includes/services/email.php:10 class WPD_Email
-includes/services/subscription.php:10 class WPD_Subscription_Service
-includes/services/gateway-registry.php:10 class WPD_Gateway_Registry
-includes/services/fundraiser.php:11 class WPD_Fundraiser_Service
-includes/services/donation.php:129 apply_filters('wpd_donation_data_before_insert', array(
+donasai.php:22 define('DONASAI_VERSION', '1.0.2');
+donasai.php:23 define('DONASAI_PLUGIN_URL', plugin_dir_url(__FILE__));
+donasai.php:24 define('DONASAI_PLUGIN_PATH', plugin_dir_path(__FILE__));
+donasai.php:25 define('DONASAI_TABLE_PREFIX', 'donasai_');
+donasai.php:27 define('DONASAI_DEV_MODE', false);
+includes/cpt.php:62 register_post_type('donasai_campaign', $args);
+includes/frontend/css-loader.php:35 wp_enqueue_style('donasai-google-fonts', 'https://fonts.googleapis.com/css2?family=' . $fonts_map[$font_family] . '&display=swap', array(), DONASAI_VERSION);
+includes/admin/campaign-columns.php:205 wp_enqueue_style('donasai-admin-columns', DONASAI_PLUGIN_URL . 'includes/admin/assets/admin-columns.css', array(), DONASAI_VERSION);
+includes/admin/menu.php:71 add_submenu_page('donasai-dashboard', __('Settings', 'donasai'), __('Settings', 'donasai'), 'manage_options', 'donasai-settings', 'donasai_render_admin_app');
+includes/admin/menu.php:121 wp_enqueue_script('donasai-vite-client', 'http://localhost:3001/@vite/client', array(), null, true);
+includes/admin/menu.php:122 wp_enqueue_script('donasai-admin-dev', 'http://localhost:3001/src/main.tsx', array('donasai-vite-client'), null, true);
+includes/admin/menu.php:145 wp_enqueue_script('donasai-admin-app', DONASAI_PLUGIN_URL . 'build/' . $entry['file'], array(), DONASAI_VERSION, true);
+includes/admin/menu.php:174 wp_localize_script(defined('DONASAI_DEV_MODE') && DONASAI_DEV_MODE ? 'donasai-admin-dev' : 'donasai-admin-app', 'wpdSettings', array('root' => esc_url_raw(rest_url()), 'nonce' => wp_create_nonce('wp_rest'), 'initialPath' => $initial_path, 'isPro' => donasai_is_pro_installed(), 'version' => DONASAI_VERSION));
+includes/bootstrap.php:12 define('DONASAI_VERSION', '1.0.0');
+includes/bootstrap.php:15 define('DONASAI_PLUGIN_PATH', plugin_dir_path(__DIR__));
+includes/bootstrap.php:18 define('DONASAI_PLUGIN_URL', plugin_dir_url(__DIR__) . '/');
+includes/bootstrap.php:22 update_option('donasai_rewrite_flush_needed', true);
+includes/gateways/interface.php:10 interface DONASAI_Gateway
+includes/gateways/manual.php:10 class DONASAI_Gateway_Manual
+includes/api/settings-controller.php:159 update_option('donasai_settings_bank', $bank_data);
+includes/api/settings-controller.php:172 update_option('donasai_pro_bank_accounts', $accounts);
+includes/api/settings-controller.php:182 update_option('donasai_settings_midtrans', $mid_data);
+includes/api/settings-controller.php:186 update_option('donasai_pro_midtrans_server_key', sanitize_text_field($params['midtrans']['pro_server_key']));
+includes/api/settings-controller.php:188 update_option('donasai_pro_midtrans_client_key', sanitize_text_field($params['midtrans']['pro_client_key']));
+includes/api/settings-controller.php:190 update_option('donasai_pro_midtrans_is_production', !empty($params['midtrans']['pro_is_production']) ? '1' : '0');
+includes/api/settings-controller.php:195 update_option('donasai_pro_xendit_api_key', sanitize_text_field($params['xendit']['api_key']));
+includes/api/settings-controller.php:200 update_option('donasai_pro_tripay_api_key', sanitize_text_field($params['tripay']['api_key'] ?? ''));
+includes/api/settings-controller.php:201 update_option('donasai_pro_tripay_private_key', sanitize_text_field($params['tripay']['private_key'] ?? ''));
+includes/api/settings-controller.php:202 update_option('donasai_pro_tripay_merchant_code', sanitize_text_field($params['tripay']['merchant_code'] ?? ''));
+includes/api/settings-controller.php:203 update_option('donasai_pro_tripay_is_production', !empty($params['tripay']['is_production']) ? '1' : '0');
+includes/api/settings-controller.php:214 update_option('donasai_settings_organization', $org_data);
+includes/api/settings-controller.php:234 update_option('donasai_rewrite_flush_needed', true);
+includes/api/settings-controller.php:237 update_option('donasai_settings_general', $gen_data);
+includes/api/settings-controller.php:248 update_option('donasai_settings_donation', $don_data);
+includes/api/settings-controller.php:251 update_option('donasai_pro_recurring_intervals', array_map('sanitize_text_field', $params['donation']['recurring_intervals']));
+includes/api/settings-controller.php:255 update_option('donasai_pending_expiry_hours', intval($params['donation']['pending_expiry_hours']));
+includes/api/settings-controller.php:259 update_option('donasai_email_reminder_enabled', !empty($params['donation']['email_reminder_enabled']) ? '1' : '0');
+includes/api/settings-controller.php:263 update_option('donasai_email_reminder_delay', intval($params['donation']['email_reminder_delay']));
+includes/api/settings-controller.php:267 update_option('donasai_enable_pdf_download', !empty($params['donation']['enable_pdf_download']) ? '1' : '0');
+includes/api/settings-controller.php:276 update_option('donasai_settings_notifications', $notif_data);
+includes/api/settings-controller.php:305 update_option('donasai_settings_appearance', $appearance_data);
+includes/api/settings-controller.php:313 update_option('donasai_pro_license_key', $key);
+includes/api/settings-controller.php:316 update_option('donasai_pro_license_status', 'valid');
+includes/api/settings-controller.php:319 update_option('donasai_pro_license_status', 'invalid');
+includes/api/settings-controller.php:325 update_option('donasai_license', array('key' => $key, 'status' => $status));
+includes/functions-frontend.php:197 wp_enqueue_style('donasai-google-fonts', 'https://fonts.googleapis.com/css2?family=' . $fonts_map[$font_family] . '&display=swap', array(), DONASAI_VERSION);
+includes/functions-frontend.php:209 wp_enqueue_style('donasai-payment', DONASAI_PLUGIN_URL . 'frontend/assets/payment.css', array('donasai-frontend'), DONASAI_VERSION);
+includes/functions-frontend.php:210 wp_enqueue_script('donasai-payment', DONASAI_PLUGIN_URL . 'frontend/assets/payment.js', array('jquery'), DONASAI_VERSION, true);
+includes/functions-frontend.php:219 wp_localize_script('donasai-payment', 'donasai_payment_vars', array('is_midtrans_active' => $snap_active, 'snap_url' => $snap_url, 'client_key' => $client_key));
+includes/functions-frontend.php:229 wp_enqueue_script('donasai-confetti', DONASAI_PLUGIN_URL . 'frontend/assets/confetti.js', array(), '1.6.0', true);
+includes/functions-frontend.php:230 wp_enqueue_style('donasai-summary', DONASAI_PLUGIN_URL . 'frontend/assets/summary.css', array('donasai-frontend'), DONASAI_VERSION);
+includes/functions-frontend.php:231 wp_enqueue_script('donasai-summary', DONASAI_PLUGIN_URL . 'frontend/assets/summary.js', array('jquery', 'donasai-confetti'), DONASAI_VERSION, true);
+includes/functions-frontend.php:237 wp_enqueue_style('donasai-confirmation', DONASAI_PLUGIN_URL . 'frontend/assets/confirmation.css', array('donasai-frontend'), DONASAI_VERSION);
+includes/functions-frontend.php:238 wp_enqueue_script('donasai-confirmation', DONASAI_PLUGIN_URL . 'frontend/assets/confirmation.js', array('jquery'), DONASAI_VERSION, true);
+includes/functions-frontend.php:318 wp_enqueue_style('donasai-dashboard', DONASAI_PLUGIN_URL . 'frontend/assets/dashboard.css', array('donasai-frontend'), DONASAI_VERSION);
+includes/functions-frontend.php:319 wp_enqueue_script('donasai-dashboard', DONASAI_PLUGIN_URL . 'frontend/assets/dashboard.js', array(), DONASAI_VERSION, true);
+includes/functions-frontend.php:325 add_shortcode('donasai_my_donations', 'donasai_shortcode_my_donations');
+includes/functions-frontend.php:448 add_shortcode('donasai_fundraiser_stats', 'donasai_shortcode_fundraiser_stats');
+includes/functions-frontend.php:512 add_shortcode('donasai_profile', 'donasai_shortcode_profile');
+includes/functions-frontend.php:610 add_shortcode('donasai_confirmation_form', 'donasai_shortcode_confirmation_form');
+includes/functions-frontend.php:632 wp_enqueue_script('donasai-tailwind', 'https://cdn.tailwindcss.com', array(), '3.4.0', false);
+includes/functions-frontend.php:635 wp_enqueue_style('donasai-receipt-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap', array(), null);
+includes/services/email.php:10 class DONASAI_Email
+includes/services/subscription.php:10 class DONASAI_Subscription_Service
+includes/services/gateway-registry.php:10 class DONASAI_Gateway_Registry
+includes/services/fundraiser.php:11 class DONASAI_Fundraiser_Service
+includes/services/donation.php:129 apply_filters('donasai_donation_data_before_insert', array(
     'campaign_id' => $campaign_id,
     'user_id' => $user_id,
     'amount' => $amount,
@@ -434,7 +434,7 @@ includes/services/donation.php:129 apply_filters('wpd_donation_data_before_inser
 ), $_POST);
 
 # Looks like there is an element not using common prefixes.
-includes/cpt.php:88 register_taxonomy('donation_category', array('wpd_campaign'), $tax_args);
+includes/cpt.php:88 register_taxonomy('donation_category', array('donasai_campaign'), $tax_args);
 
 
 Note: Custom Post Types (CPTs) and Taxonomies identifiers must be prefixed.
@@ -444,7 +444,7 @@ Both of them are stored in a shared location under the identifier / name you hav
 Also, once your plugin has active users, changing the identifier / name of a CPT or a taxonomy is going to be really tricky, so let's make it robust from the very beginning.
 
 Example(s) from your plugin:
-includes/cpt.php:88 register_taxonomy('donation_category', array('wpd_campaign'), $tax_args);
+includes/cpt.php:88 register_taxonomy('donation_category', array('donasai_campaign'), $tax_args);
 
 
 

@@ -13,7 +13,7 @@ get_header();
 $campaign_id = get_the_ID();
 ?>
 
-<div class="wpd-container"
+<div class="donasai-container"
     style="max-width:600px; margin:0 auto; padding:40px 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
 
     <!-- Back Button -->
@@ -42,9 +42,9 @@ $campaign_id = get_the_ID();
 
         <?php
         // Ensure the form output is properly handled. 
-        // wpd_get_donation_form_html should ideally return escaped/sanitized HTML, or we trust it as internal function.
+        // donasai_get_donation_form_html should ideally return escaped/sanitized HTML, or we trust it as internal function.
         // Given it likely contains form inputs, standard escaping might break it.
-        echo wp_kses_post(wpd_get_donation_form_html($campaign_id));
+        echo wp_kses_post(donasai_get_donation_form_html($campaign_id));
         ?>
 
     </div>

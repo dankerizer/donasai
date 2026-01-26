@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class WPD_Subscription_Service
+class DONASAI_Subscription_Service
 {
 
     /**
@@ -31,7 +31,7 @@ class WPD_Subscription_Service
             'created_at' => current_time('mysql')
         );
 
-        $inserted = $wpdb->insert($wpdb->prefix . 'wpd_subscriptions', $data);
+        $inserted = $wpdb->insert($wpdb->prefix . 'donasai_subscriptions', $data);
 
         if ($inserted) {
             return $wpdb->insert_id;
@@ -47,19 +47,19 @@ class WPD_Subscription_Service
     {
         global $wpdb;
 
-        $cache_key = 'wpd_user_subscriptions_' . $user_id;
-        $subscriptions = wp_cache_get($cache_key, 'wpd_subscriptions');
+        $cache_key = 'donasai_user_subscriptions_' . $user_id;
+        $subscriptions = wp_cache_get($cache_key, 'donasai_subscriptions');
 
         if (false === $subscriptions) {
             $subscriptions = $wpdb->get_results($wpdb->prepare(
                 "SELECT s.*, p.post_title as campaign_title 
-                 FROM {$wpdb->prefix}wpd_subscriptions s
+                 FROM {$wpdb->prefix}donasai_subscriptions s
                  JOIN {$wpdb->prefix}posts p ON s.campaign_id = p.ID
                  WHERE s.user_id = %d 
                  ORDER BY s.created_at DESC",
                 $user_id
             )); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            wp_cache_set($cache_key, $subscriptions, 'wpd_subscriptions', 300);
+            wp_cache_set($cache_key, $subscriptions, 'donasai_subscriptions', 300);
         }
         return $subscriptions;
     }
@@ -72,13 +72,13 @@ class WPD_Subscription_Service
         global $wpdb;
 
         $updated = $wpdb->update(
-            $wpdb->prefix . 'wpd_subscriptions',
+            $wpdb->prefix . 'donasai_subscriptions',
             array('status' => 'cancelled'),
             array('id' => $subscription_id, 'user_id' => $user_id)
         );
 
         // Invalidate cache
-        wp_cache_delete('wpd_user_subscriptions_' . $user_id, 'wpd_subscriptions');
+        wp_cache_delete('donasai_user_subscriptions_' . $user_id, 'donasai_subscriptions');
 
         return $updated;
     }
@@ -92,7 +92,7 @@ class WPD_Subscription_Service
         global $wpdb;
 
         // Find active subscriptions due today or earlier
-        $due = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}wpd_subscriptions WHERE status = %s AND next_payment_date <= NOW()", 'active'));
+        $due = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}donasai_subscriptions WHERE status = %s AND next_payment_date <= NOW()", 'active'));
 
         foreach ($due as $sub) {
             // Logic to create a new pending donation
@@ -104,7 +104,7 @@ class WPD_Subscription_Service
                 ? wp_date('Y-m-d H:i:s', strtotime('+1 year'))
                 : wp_date('Y-m-d H:i:s', strtotime('+1 month'));
 
-            $wpdb->update($wpdb->prefix . 'wpd_subscriptions', array('next_payment_date' => $next_date), array('id' => $sub->id));
+            $wpdb->update($wpdb->prefix . 'donasai_subscriptions', array('next_payment_date' => $next_date), array('id' => $sub->id));
 
             // Log/Create Pending Donation (Stub)
             // error_log( "Processed renewal for Subscription #{$sub->id}" );

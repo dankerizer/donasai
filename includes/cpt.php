@@ -7,7 +7,7 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-function wpd_register_cpt()
+function donasai_register_cpt()
 {
 	$labels = array(
 		'name' => _x('Campaigns', 'Post Type General Name', 'donasai'),
@@ -57,9 +57,9 @@ function wpd_register_cpt()
 		'publicly_queryable' => true,
 		'capability_type' => 'post',
 		'show_in_rest' => true,
-		'rewrite' => array('slug' => (get_option('wpd_settings_general')['campaign_slug'] ?? 'campaign')),
+		'rewrite' => array('slug' => (get_option('donasai_settings_general')['campaign_slug'] ?? 'campaign')),
 	);
-	register_post_type('wpd_campaign', $args);
+	register_post_type('donasai_campaign', $args);
 
 	// Register Taxonomy
 	$tax_labels = array(
@@ -85,20 +85,20 @@ function wpd_register_cpt()
 		'rewrite' => array('slug' => 'donation-category'),
 	);
 
-	register_taxonomy('donation_category', array('wpd_campaign'), $tax_args);
+	register_taxonomy('donation_category', array('donasai_campaign'), $tax_args);
 }
 
 /**
  * Add Rewrite Endpoints
  */
-add_action('init', 'wpd_add_rewrite_endpoints');
-function wpd_add_rewrite_endpoints()
+add_action('init', 'donasai_add_rewrite_endpoints');
+function donasai_add_rewrite_endpoints()
 {
-	$payment_slug = get_option('wpd_settings_general')['payment_slug'] ?? 'pay';
+	$payment_slug = get_option('donasai_settings_general')['payment_slug'] ?? 'pay';
 	add_rewrite_endpoint($payment_slug, EP_PERMALINK | EP_PAGES);
 
 	// Thank You Page Endpoint
-	$thankyou_slug = get_option('wpd_settings_general')['thankyou_slug'] ?? 'thank-you';
+	$thankyou_slug = get_option('donasai_settings_general')['thankyou_slug'] ?? 'thank-you';
 	add_rewrite_endpoint($thankyou_slug, EP_PERMALINK | EP_PAGES);
 }
 
@@ -106,15 +106,15 @@ function wpd_add_rewrite_endpoints()
  * Maybe Flush Rewrite Rules
  * Runs on admin_init to ensure all init hooks (CPT/Endpoints) are registered first.
  */
-add_action('admin_init', 'wpd_maybe_flush_rewrites');
-function wpd_maybe_flush_rewrites()
+add_action('admin_init', 'donasai_maybe_flush_rewrites');
+function donasai_maybe_flush_rewrites()
 {
 	// Check if rewrite rules need flushing (e.g. after plugin update or endpoint change)
 	// For development/debugging: force flush if we are just setting this up
-	if (get_option('wpd_rewrite_flush_needed')) {
+	if (get_option('donasai_rewrite_flush_needed')) {
 		flush_rewrite_rules();
-		delete_option('wpd_rewrite_flush_needed');
+		delete_option('donasai_rewrite_flush_needed');
 	}
 }
 // Hook to init as well for frontend flushes if really needed during dev
-add_action('init', 'wpd_maybe_flush_rewrites', 99);
+add_action('init', 'donasai_maybe_flush_rewrites', 99);

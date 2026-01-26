@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-interface WPD_Gateway {
+interface DONASAI_Gateway {
     /**
      * Get unique gateway ID (e.g. 'manual', 'midtrans')
      */

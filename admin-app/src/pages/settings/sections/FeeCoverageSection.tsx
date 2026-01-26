@@ -47,7 +47,7 @@ export default function FeeCoverageSection() {
 	const { data: fetchedSettings, isLoading } = useQuery<FeeCoverageSettings>({
 		queryKey: ["fee-coverage-settings"],
 		queryFn: async () => {
-			const res = await fetch("/wp-json/wpd-pro/v1/settings/fee-coverage", {
+			const res = await fetch("/wp-json/donasai-pro/v1/settings/fee-coverage", {
 				headers: {
 					"X-WP-Nonce": (isPro?.nonce as string) || "",
 				},
@@ -66,7 +66,7 @@ export default function FeeCoverageSection() {
 	// Save mutation
 	const saveMutation = useMutation({
 		mutationFn: async (data: FeeCoverageSettings) => {
-			const res = await fetch("/wp-json/wpd-pro/v1/settings/fee-coverage", {
+			const res = await fetch("/wp-json/donasai-pro/v1/settings/fee-coverage", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
