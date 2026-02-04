@@ -28,15 +28,18 @@ add_action('rest_api_init', function () {
 		// If accessing leaderboard -> public.
 		'permission_callback' => function ($request) {
 			$params = $request->get_params();
-			// Public for Leaderboard (campaign_id)
+			
+			// Public for Leaderboard (campaign_id is provided)
 			if (isset($params['campaign_id'])) {
 				return true;
 			}
-			// Private for 'mine' (checked in callback)
+			
+			// Auth required for viewing personal statistics
 			if (isset($params['mine'])) {
 				return is_user_logged_in();
 			}
-			// Admin for full list (checked in callback)
+			
+			// Admin required for full list
 			return current_user_can('manage_options');
 		},
 	));

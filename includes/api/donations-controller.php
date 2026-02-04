@@ -301,14 +301,18 @@ function donasai_api_export_donations($request)
     );
 
     $query_parts = donasai_build_donations_where_clause($params);
+    $table_name = $wpdb->prefix . 'donasai_donations';
+    $where_sql = $query_parts['where'];
+    $args = $query_parts['args'];
 
-    if (!empty($query_parts['args'])) {
-        $table_name = esc_sql($wpdb->prefix . 'donasai_donations');
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
-        $sql = "SELECT * FROM {$table_name} WHERE " . $query_parts['where'] . " ORDER BY created_at DESC";
-        $query = $wpdb->prepare($sql, $query_parts['args']);
+    // Construct the SQL with placeholders
+    $sql = "SELECT * FROM {$table_name} WHERE {$where_sql} ORDER BY created_at DESC";
+    
+    if (!empty($args)) {
+        $query = $wpdb->prepare($sql, $args);
     } else {
-        $query = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}donasai_donations ORDER BY created_at DESC LIMIT %d", 10000);
+        // If no dynamic args, still use prepare for any static values or just to be safe
+        $query = $wpdb->prepare("SELECT * FROM {$table_name} WHERE 1=1 ORDER BY created_at DESC LIMIT %d", 10000);
     }
 
     $results = $wpdb->get_results($query, ARRAY_A); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -457,43 +461,30 @@ function donasai_api_get_donations($request)
     );
 
     $query_parts = donasai_build_donations_where_clause($params);
-    $table_name = esc_sql($wpdb->prefix . 'donasai_donations');
+    $table_name = $wpdb->prefix . 'donasai_donations';
     $where_sql = $query_parts['where'];
     $args = $query_parts['args'];
 
     // 1. Get Total Count
+    $count_sql = "SELECT COUNT(*) FROM {$table_name} WHERE {$where_sql}";
     if (!empty($args)) {
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        $count_query = $wpdb->prepare("SELECT COUNT(*) FROM {$table_name} WHERE " . $where_sql, $args);
+        $count_query = $wpdb->prepare($count_sql, $args);
     } else {
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $count_query = "SELECT COUNT(*) FROM {$table_name}";
     }
-    $total_items = (int) $wpdb->get_var($count_query); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+    $total_items = (int) $wpdb->get_var($count_query);
     $total_pages = ceil($total_items / $per_page);
 
     // 2. Get Data
-    $args[] = $per_page;
-    $args[] = $offset;
+    $data_sql = "SELECT * FROM {$table_name} WHERE {$where_sql} ORDER BY created_at DESC LIMIT %d OFFSET %d";
+    
+    // Add pagination args
+    $data_args = $args;
+    $data_args[] = $per_page;
+    $data_args[] = $offset;
 
-    if (!empty($query_parts['args'])) {
-        // We need to re-merge args because we added LIMIT/OFFSET
-        // $args already contains WHERE params + LIMIT + OFFSET 
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        $query = $wpdb->prepare(
-            "SELECT * FROM {$table_name} WHERE " . $where_sql . " ORDER BY created_at DESC LIMIT %d OFFSET %d",
-            $args
-        );
-    } else {
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        $query = $wpdb->prepare(
-            "SELECT * FROM {$table_name} ORDER BY created_at DESC LIMIT %d OFFSET %d",
-            $per_page,
-            $offset
-        );
-    }
-
-    $results = $wpdb->get_results($query); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+    $query = $wpdb->prepare($data_sql, $data_args);
+    $results = $wpdb->get_results($query);
 
     // Format data for frontend
     $data = array_map(function ($row) {

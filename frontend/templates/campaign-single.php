@@ -347,6 +347,77 @@ if (!$is_pro) {
 
                 <!-- Countdown Timer (Pro) -->
                 <?php
+                $donate_rest_url = esc_url(get_rest_url(null, 'donasai/v1/campaigns/'));
+
+                $campaign_js = "
+                    function wpdRegisterFundraiser(campaignId) {
+                        var nonce = '" . esc_js(wp_create_nonce('wp_rest')) . "';
+                        if (typeof wpdRegisterFundraiserHelper === 'function') {
+                            wpdRegisterFundraiserHelper(campaignId, nonce);
+                        }
+                    }
+
+                    function wpdLoadMoreDonors() {
+                        var btn = document.getElementById('donasai-load-more-donors');
+                        var loading = document.getElementById('donasai-donors-loading');
+                        if (!btn) return;
+                        var campaignId = btn.getAttribute('data-campaign');
+                        var page = parseInt(btn.getAttribute('data-page')) + 1;
+
+                        btn.style.display = 'none';
+                        loading.style.display = 'inline-block';
+
+                        fetch('" . esc_js($donate_rest_url) . "' + campaignId + '/donors?page=' + page + '&per_page=" . (int)$per_page_limit . "')
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success && data.donors.length > 0) {
+                                    var donorList = document.getElementById('donasai-all-donors-list');
+                                    data.donors.forEach(donor => {
+                                        var name = donor.is_anonymous ? 'Hamba Allah' : donor.name;
+                                        var time = donor.time_ago; // Assuming time_ago is returned by API
+                                        var initial = name.charAt(0).toUpperCase();
+                                        var amount = new Intl.NumberFormat('id-ID').format(donor.amount);
+                                        var noteHtml = donor.note ? `<p style=\"margin:8px 0 0; font-size:14px; color:var(--donasai-text-body); background:var(--donasai-bg-tertiary); padding:10px; border-radius:8px;\">\"${donor.note}\"</p>` : '';
+
+                                        donorList.innerHTML += `
+                                            <div style=\"display:flex; gap:15px; margin-bottom:20px; border-bottom:1px solid var(--donasai-border); padding-bottom:20px;\">
+                                                <div style=\"width:40px; height:40px; background:var(--donasai-bg-blue-accent); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;\">
+                                                    ${initial}
+                                                </div>
+                                                <div>
+                                                    <h4 style=\"margin:0; font-size:16px; font-weight:600; color:var(--donasai-text-main);\">
+                                                        ${name}
+                                                    </h4>
+                                                    <div style=\"font-size:12px; color:var(--donasai-text-muted); margin-top:2px;\">
+                                                        Berdonasi <span style=\"font-weight:600; color:var(--donasai-primary);\">Rp ${amount}</span> &bull;
+                                                        ${time}
+                                                    </div>
+                                                    ${noteHtml}
+                                                </div>
+                                            </div>
+                                        `;
+                                    });
+                                    btn.setAttribute('data-page', page);
+                                    if (data.donors.length < " . (int)$per_page_limit . ") {
+                                        btn.style.display = 'none';
+                                    } else {
+                                        btn.style.display = 'block';
+                                    }
+                                } else {
+                                    btn.style.display = 'none';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error loading more donors:', error);
+                                btn.style.display = 'block';
+                            })
+                            .finally(() => {
+                                loading.style.display = 'none';
+                            });
+                    }
+                ";
+                wp_add_inline_script('donasai-public-script', $campaign_js);
+
                 if ($show_countdown) {
                     $deadline_str = get_post_meta($campaign_id, '_donasai_deadline', true);
                     if (!empty($deadline_str)) {

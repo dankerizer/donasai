@@ -161,11 +161,11 @@ function donasai_enqueue_frontend_assets()
 
         $custom_css = "
             :root {
-                --donasai-primary: {$primary_color};
-                --donasai-primary-rgb: {$primary_rgb};
-                --donasai-btn: {$button_color};
-                --donasai-radius: {$radius};
-                --donasai-bg: #f3f4f6; /* Default BG */
+                --donasai-primary: " . sanitize_hex_color($primary_color) . ";
+                --donasai-primary-rgb: " . esc_attr($primary_rgb) . ";
+                --donasai-btn: " . sanitize_hex_color($button_color) . ";
+                --donasai-radius: " . esc_attr($radius) . ";
+                --donasai-bg: #f3f4f6;
                 --donasai-card-bg: #ffffff;
                 --donasai-text-main: #1f2937;
                 --donasai-text-muted: #6b7280;
@@ -205,7 +205,7 @@ function donasai_enqueue_frontend_assets()
             
             // Localize Campaign Script
             wp_localize_script('donasai-campaign', 'donasaiSettings', array(
-                'root' => esc_url_raw(rest_url()),
+                'root' => esc_url(rest_url()),
                 'nonce' => wp_create_nonce('wp_rest')
             ));
 
@@ -225,9 +225,9 @@ function donasai_enqueue_frontend_assets()
 
                 wp_localize_script('donasai-payment', 'donasai_payment_vars', array(
                     'is_midtrans_active' => $snap_active,
-                    'snap_url' => $snap_url,
-                    'client_key' => $client_key,
-                    'root' => esc_url_raw(rest_url()),
+                    'snap_url' => esc_url($snap_url),
+                    'client_key' => esc_attr($client_key),
+                    'root' => esc_url(rest_url()),
                     'nonce' => wp_create_nonce('wp_rest')
                 ));
             }
@@ -297,7 +297,7 @@ function donasai_enqueue_frontend_assets()
             wp_add_inline_style('donasai-campaign', $campaign_css);
 
             $per_page_limit = isset($settings_app['donor_per_page']) ? intval($settings_app['donor_per_page']) : 10;
-            $donate_rest_url = esc_url_raw(get_rest_url(null, 'donasai/v1/campaigns/'));
+            $donate_rest_url = esc_url(get_rest_url(null, 'donasai/v1/campaigns/'));
 
             $campaign_js = "
                 function wpdRegisterFundraiser(campaignId) {

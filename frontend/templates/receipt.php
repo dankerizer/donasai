@@ -293,7 +293,7 @@ $brand_900 = donasai_receipt_adjust_brightness($brand_color, -80);
                     <!-- QR Code & Validation -->
                     <div class="text-left">
                         <div class="bg-white p-2 rounded inline-block">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=<?php echo urlencode(get_permalink($donation->campaign_id)); ?>"
+                            <img src="<?php echo esc_url("https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=" . urlencode(get_permalink($donation->campaign_id))); ?>"
                                 alt="QR Validation" class="w-24 h-24 opacity-90">
                         </div>
                         <p class="text-[10px] text-gray-400 mt-3 max-w-[200px] leading-tight">

@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
 }
 
 add_action('rest_api_init', function () {
-	// POST /campaigns/{id}/donate
+	// Public endpoint for creating donations from the frontend.
 	register_rest_route('donasai/v1', '/campaigns/(?P<id>\d+)/donate', array(
 		'methods' => 'POST',
 		'callback' => 'donasai_api_create_donation',
@@ -24,7 +24,7 @@ add_action('rest_api_init', function () {
 			return current_user_can('manage_options');
 		},
 	));
-	// GET /campaigns/{id}/donors (New Endpoint)
+	// Public endpoint for listing donors on the campaign page.
 	register_rest_route('donasai/v1', '/campaigns/(?P<id>\d+)/donors', array(
 		'methods' => 'GET',
 		'callback' => 'donasai_api_get_campaign_donors',
