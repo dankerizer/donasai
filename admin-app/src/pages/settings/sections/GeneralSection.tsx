@@ -72,7 +72,7 @@ export default function GeneralSection() {
 			org_name: newOrgData.name,
 			org_email: newOrgData.email,
 			org_phone: newOrgData.phone,
-			org_address: newOrgData.address,
+			org_address: newOrgData.address_line_1,
 			org_logo:
 				typeof newOrgData.logo === "string"
 					? newOrgData.logo
@@ -86,7 +86,7 @@ export default function GeneralSection() {
 		name: formData.org_name,
 		email: formData.org_email,
 		phone: formData.org_phone,
-		address: formData.org_address,
+		address_line_1: formData.org_address,
 		logo: formData.org_logo,
 		website: "", // Not used in General
 	} as unknown as ReceiptTemplate["organization"];
