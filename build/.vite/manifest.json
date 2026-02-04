@@ -1,40 +1,42 @@
 {
-  "_charts-D2vB_iPc.js": {
-    "file": "assets/charts-D2vB_iPc.js",
+  "_charts-EbHX9sFn.js": {
+    "file": "assets/charts-EbHX9sFn.js",
     "name": "charts",
     "imports": [
-      "_vendor-B_GUbWGN.js",
-      "_ui-DE_hrd3e.js"
+      "_query-CzIcDSu_.js",
+      "_vendor-Bm_ob1a7.js",
+      "_ui-CcVrQ53x.js"
     ]
   },
-  "_query-Do7EvRJQ.js": {
-    "file": "assets/query-Do7EvRJQ.js",
-    "name": "query",
-    "imports": [
-      "_vendor-B_GUbWGN.js"
-    ]
+  "_query-CzIcDSu_.js": {
+    "file": "assets/query-CzIcDSu_.js",
+    "name": "query"
   },
-  "_ui-DE_hrd3e.js": {
-    "file": "assets/ui-DE_hrd3e.js",
+  "_ui-CcVrQ53x.js": {
+    "file": "assets/ui-CcVrQ53x.js",
     "name": "ui",
     "imports": [
-      "_vendor-B_GUbWGN.js"
+      "_query-CzIcDSu_.js",
+      "_vendor-Bm_ob1a7.js"
     ]
   },
-  "_vendor-B_GUbWGN.js": {
-    "file": "assets/vendor-B_GUbWGN.js",
-    "name": "vendor"
+  "_vendor-Bm_ob1a7.js": {
+    "file": "assets/vendor-Bm_ob1a7.js",
+    "name": "vendor",
+    "imports": [
+      "_query-CzIcDSu_.js"
+    ]
   },
   "src/main.tsx": {
-    "file": "assets/main-CnOM6S1m.js",
+    "file": "assets/main-BteFp_GI.js",
     "name": "main",
     "src": "src/main.tsx",
     "isEntry": true,
     "imports": [
-      "_query-Do7EvRJQ.js",
-      "_vendor-B_GUbWGN.js",
-      "_ui-DE_hrd3e.js",
-      "_charts-D2vB_iPc.js"
+      "_query-CzIcDSu_.js",
+      "_vendor-Bm_ob1a7.js",
+      "_ui-CcVrQ53x.js",
+      "_charts-EbHX9sFn.js"
     ],
     "css": [
       "assets/main-qG5GhvGE.css"

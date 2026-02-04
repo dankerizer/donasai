@@ -1,0 +1,556 @@
+Continuing with the plugin review for "hadie-danker". Let’s dive in!
+
+Your plugin is not yet ready to be approved, you are receiving this email because the volunteers have manually checked it and have found some issues in the code / functionality of your plugin.
+
+Please check this email thoroughly, address any issues listed, test your changes, and upload a corrected version of your code if all is well.
+
+List of issues found
+
+
+## No publicly documented resource for your generated/compressed content
+
+In reviewing your plugin, we cannot find a non-compiled version of your javascript and/or css related source code.
+
+In order to comply with our guidelines of human-readable code, we require you to include the source code and / or a link to the source code, this is true for your own code and for developer libraries you’ve included in your plugin. If you include a link, this may be in your source code, however we require you to also have it in your readme.
+
+https://developer.wordpress.org/plugins/wordpress-org/detailed-plugin-guidelines/#4-code-must-be-mostly-human-readable
+
+We strongly feel that one of the strengths of open source is the ability to review, observe, and adapt code. By maintaining a public directory of freely available code, we encourage and welcome future developers to engage with WordPress and push it forward.
+
+That said, with the advent of larger and larger plugins using more complex libraries, people are making good use of build tools (such as composer or npm) to generate their distributed production code. In order to balance the need to keep plugin sizes smaller while still encouraging open source development, we require plugins to make the source code to any compressed files available to the public in an easy to find location, by documenting it in the readme.
+
+For example, if you’ve made a Gutenberg plugin and used npm and webpack to compress and minify it, you must either include the source code within the published plugin or provide access to a public maintained source that can be reviewed, studied, and yes, forked.
+
+We strongly recommend you include directions on the use of any build tools to encourage future developers.
+
+From your plugin:
+
+build/assets/vendor-DikV-oFV.js:3  ...l,key:"default",...E},navigationType:"POP"}},g):g}function Jt(){let e=ar(),t=It(e)?`${e.status} ${e.statusText}`:e instanceof Error?e.message:JSON.stringify(e),r=e instanceof Error?e.stack:null,n="rgb... 
+build/assets/charts-Df-mEm4e.js:4  ...,size:it,sizeType:"diameter",type:l})}function vw(e){var{payload:t,iconSize:r,layout:n,formatter:i,inactiveColor:a,iconType:o}=e,u={x:0,y:0,width:it,height:it},l={display:n==="horizontal"?"inline-bloc... 
+build/assets/query-BtS3wHaB.js:1  ...import{r as y}from"./vendor-DikV-oFV.js";var H={exports:{}},A={};var X;function wt(){if(X)return A;X=1;var t=Symbol.for("react.transitional.element"),e=Symbol.for("react.fragment");function s(i,r,a){v... 
+build/assets/main-BBrxGXSl.js:1  ...import{j as l,u as Bt,a as ra,b as ba,Q as rf,c as sf}from"./query-BtS3wHaB.js";import{b as df,e as cf,g as of,r as U,L as ps,R as Zd,H as uf,f as pm,h as nt,u as mf,i as gf}from"./vendor-DikV-oFV.js"... 
+build/assets/ui-YnBeBcQD.js:1  ...import{r as Ct,R as s,a as Re}from"./vendor-DikV-oFV.js";function se(t){var o,e,r="";if(typeof t=="string"||typeof t=="number")r+=t;else if(typeof t=="object")if(Array.isArray(t)){var l=t.length;for(o... 
+build/assets/vendor-DikV-oFV.js:1  ...function ut(e,t){for(var r=0;r<t.length;r++){const n=t[r];if(typeof n!="string"&&!Array.isArray(n)){for(const u in n)if(u!=="default"&&!(u in e)){const a=Object.getOwnPropertyDescriptor(n,u);a&&Object... 
+build/assets/main-BBrxGXSl.js:6  ...e=t}return(t=e?e.displayName||e.name:"")?Ht(t):""}function Bm(e,a){switch(e.tag){case 26:case 27:case 5:return Ht(e.type);case 16:return Ht("Lazy");case 13:return e.child!==a&&a!==null?Ht("Suspense Fa... 
+build/assets/charts-Df-mEm4e.js:1  ...import{r as h,g as nr,b as Yl,c as Vl,d as Yb}from"./vendor-DikV-oFV.js";import{c as U}from"./ui-YnBeBcQD.js";var Vb=["dangerouslySetInnerHTML","onCopy","onCopyCapture","onCut","onCutCapture","onPaste... 
+
+
+
+
+## Use wp_enqueue commands
+
+Your plugin is not correctly including JS and/or CSS. You should be using the built in functions for this:
+
+When including JavaScript code you can use:
+
+    wp_register_script() and wp_enqueue_script() to add JavaScript code from a file.
+    wp_add_inline_script() to add inline JavaScript code to previous declared scripts.
+
+
+When including CSS you can use:
+
+    wp_register_style() and wp_enqueue_style() to add CSS from a file.
+    wp_add_inline_style() to add inline CSS to previously declared CSS.
+
+
+Note that as of WordPress 6.3, you can easily pass attributes like defer or async: https://make.wordpress.org/core/2023/07/14/registering-scripts-with-async-and-defer-attributes-in-wordpress-6-3/
+
+Also, as of WordPress 5.7, you can pass other attributes by using this functions and filters: https://make.wordpress.org/core/2021/02/23/introducing-script-attributes-related-functions-in-wordpress-5-7/
+
+If you're trying to enqueue on the admin pages you'll want to use the admin enqueues.
+
+    https://developer.wordpress.org/reference/hooks/admin_enqueue_scripts/
+    https://developer.wordpress.org/reference/hooks/admin_print_scripts/
+    https://developer.wordpress.org/reference/hooks/admin_print_styles/
+
+
+Example(s) from your plugin:
+
+frontend/templates/receipt.php:448 <script>
+frontend/templates/receipt.php:132 <script>
+frontend/templates/campaign-single.php:114 <style>
+frontend/templates/receipt.php:156 <style>
+includes/metabox.php:97 <script>
+frontend/templates/campaign-single.php:752 <script>
+frontend/templates/campaign-single.php:23 <style>
+frontend/templates/donation-form.php:358 <style>
+
+... out of a total of 9 incidences.
+
+
+## Undocumented use of a 3rd Party / external service
+
+Plugins are permitted to require the use of third party/external services as long as they are clearly documented.
+
+When your plugin reach out to external services, you must disclose it. This is true even if you are the one providing that service.
+
+You are required to document it in a clear and plain language, so users are aware of: what data is sent, why, where and under which conditions.
+
+To do this, you must update your readme file to clearly explain that your plugin relies on third party/external services, and include at least the following information for each third party/external service that this plugin uses:
+
+    What the service is and what it is used for.
+    What data is sent and when.
+    Provide links to the service's terms of service and privacy policy.
+
+Remember, this is for your own legal protection. Use of services must be upfront and well documented. This allows users to ensure that any legal issues with data transmissions are covered.
+
+Example:
+
+== External services ==
+
+This plugin connects to an API to obtain weather information, it's needed to show the weather information and forecasts in the included widget.
+
+It sends the user's location every time the widget is loaded (If the location isn't available and/or the user hasn't given their consent, it displays a configurable default location).
+This service is provided by "PRT Weather INC": terms of use, privacy policy.
+
+
+
+Example(s) from your plugin:
+
+# Domain(s) not mentioned in the readme file.
+frontend/templates/receipt.php:409 <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=<?php echo urlencode(get_permalink($donation->campaign_id)); ?>"
+
+
+
+
+## Saving data in the plugin folder and/or asking users to edit/write to plugin.
+
+We cannot accept a plugin that forces (or tells) users to edit the plugin files in order to function, or saves data in the plugin folder.
+
+Plugin folders are deleted when upgraded, so using them to store any data is problematic. Also bear in mind, any data saved in a plugin folder is accessible by the public. This means anyone can read it and use it without the site-owner’s permission.
+
+It is preferable that you save your information to the database, via the Settings API, especially if it’s privileged data.
+
+If that’s not possible, because you’re uploading media files, you should use the media uploader.
+
+If you can’t do either of those, you must save the data outside the plugins folder. We recommend using the uploads directory, creating a folder there with the slug of your plugin as name, as that will make your plugin compatible with multisite and other one-off configurations.
+
+Please refer to the following links:
+
+    https://developer.wordpress.org/plugins/settings/
+    https://developer.wordpress.org/reference/functions/media_handle_upload/
+    https://developer.wordpress.org/reference/functions/wp_handle_upload/
+    https://developer.wordpress.org/reference/functions/wp_upload_dir/
+
+
+Example(s) from your plugin:
+
+includes/services/donation.php:28 file_put_contents(WP_CONTENT_DIR . '/wpd-debug.log', $log, FILE_APPEND);
+# ↳ Detected: WP_CONTENT_DIR
+
+
+
+
+## Review: Missing permission_callback in REST API Route
+
+When using register_rest_route() or wp_register_ability() to define custom REST API endpoints, it is crucial to include a proper permission_callback .
+
+🔒 This callback function ensures that only authorized users can access or modify data through your endpoint.
+
+Code example, checking that the user can change options:
+
+register_rest_route( 'donasai/v1', '/my-endpoint', array(
+    'methods' => 'GET',
+    'callback' => 'donasai_callback_function',
+    'permission_callback' => function() {
+        return current_user_can( 'manage_options' );
+    }
+) );
+
+
+Please check the register_rest_route() documentation and the current_user_can() documentation.
+
+✅ When a permission_callback is NOT Required:
+
+There are valid use cases for public endpoints, such as publicly available data (e.g., posts, public metadata) or endpoints designed for unauthenticated access (e.g., fetching public stats or information).
+
+In these cases, you should use __return_true as the permission_callback to indicate that the endpoint is intentionally public.
+
+🔒 When a permission_callback IS Required:
+
+For endpoints that involve sensitive data or actions (e.g., getting not public data, creating, updating, or deleting content).
+
+In these cases, you should always implement proper permission checks.
+
+Possible cases found on this plugin's code:
+
+includes/api/fundraisers-controller.php:23 register_rest_route('wpd/v1', '/fundraisers', array(
+    'methods' => 'GET',
+    'callback' => 'wpd_api_get_fundraisers',
+    // Public route for leaderboard? Or admin only?
+    // If accessing specific user stats -> auth required.
+    // If accessing leaderboard -> public.
+    'permission_callback' => function () {
+        // Public for Leaderboard (campaign_id)
+        // Private for 'mine' (checked in callback)
+        // Admin for full list (checked in callback)
+        return true;
+    },
+));
+includes/api/campaigns-controller.php:30 register_rest_route('wpd/v1', '/campaigns/(?P<id>\\d+)/donors', array('methods' => 'GET', 'callback' => 'wpd_api_get_campaign_donors', 'permission_callback' => function () {
+    return true;
+    // Public endpoint for listing donors
+}));
+includes/api/campaigns-controller.php:12 register_rest_route('wpd/v1', '/campaigns/(?P<id>\\d+)/donate', array('methods' => 'POST', 'callback' => 'wpd_api_create_donation', 'permission_callback' => function () {
+    return true;
+    // Public endpoint for creating donations
+}));
+
+
+
+
+## Nonces and User Permissions Needed for Security
+
+Please add a nonce check to your input calls ($_POST, $_GET, $REQUEST) to prevent unauthorized access.
+
+If you use wp_ajax_ to trigger submission checks, remember they also need a nonce check.
+
+👮 Checking permissions: Keep in mind, a nonce check alone is not bulletproof security. Do not rely on nonces for authorization purposes. When needed, use it together with current_user_can() in order to prevent users without the right permissions from accessing things they shouldn't.
+
+Also make sure that the nonce logic is correct by making sure it cannot be bypassed. Checking the nonce with current_user_can() is great, but mixing it with other checks can make the condition more complex and, without realising it, bypassable, remember that anything can be sent through an input, don't trust any input.
+
+Keep performance in mind. Don't check for post submission outside of functions. Doing so means that the check will run on every single load of the plugin, which means that every single person who views any page on a site using your plugin will be checking for a submission. This will make your code slow and unwieldy for users on any high traffic site, leading to instability and eventually crashes.
+
+The following links may assist you in development:
+
+    https://developer.wordpress.org/plugins/security/nonces/
+    https://developer.wordpress.org/plugins/javascript/ajax/#nonce
+    https://developer.wordpress.org/plugins/settings/settings-api/
+
+
+From your plugin:
+
+includes/functions-frontend.php:453 wpd_shortcode_profile() [function] No nonce check found validating input origin on lines 453-505
+# ↳ Line 505: echo '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">' . esc_html(sanitize_text_field(wp_unslash($_POST['wpd_profile_error']))) . '</div>';
+frontend/templates/payment-success.php:1 No nonce check found validating input origin on lines 1-40
+# ↳ Line 17: $donation_id = isset($_GET['donation_success']) ? intval($_GET['donation_success']) : 0;
+# ↳ Line 19: $gateway = isset($_GET['method']) ? sanitize_text_field(wp_unslash($_GET['method'])) : '';
+includes/functions-frontend.php:517 wpd_shortcode_confirmation_form() [function] No nonce check found validating input origin on lines 517-529
+# ↳ Line 527: $d_id = intval($_GET['donation_id']);
+includes/functions-frontend.php:358 wpd_track_referral() [function] No nonce check found validating input origin on lines 358-366
+# ↳ Line 364: $ref_code = sanitize_text_field(wp_unslash($_GET['ref'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+includes/services/donation.php:13 wpd_handle_donation_submission() [function] No nonce check found validating input origin on lines 13-18
+# ↳ Line 17: $action = sanitize_text_field(wp_unslash($_POST['wpd_action']));
+
+... out of a total of 6 incidences.
+
+
+## Data Must be Sanitized, Escaped, and Validated
+
+When you include POST/GET/REQUEST/FILE calls in your plugin, it's important to sanitize, validate, and escape them. The goal here is to prevent a user from accidentally sending trash data through the system, as well as protecting them from potential security issues.
+
+SANITIZE: Data that is input (either by a user or automatically) must be sanitized as soon as possible. This lessens the possibility of XSS vulnerabilities and MITM attacks where posted data is subverted.
+
+VALIDATE: All data should be validated, no matter what. Even when you sanitize, remember that you don’t want someone putting in ‘dog’ when the only valid values are numbers.
+
+ESCAPE: Data that is output must be escaped properly when it is echo'd, so it can't hijack admin screens. There are many esc_*() functions you can use to make sure you don't show people the wrong data.
+
+To help you with this, WordPress comes with a number of sanitization and escaping functions. You can read about those here:
+
+    https://developer.wordpress.org/apis/security/sanitizing/
+    https://developer.wordpress.org/apis/security/escaping/
+
+
+Remember: You must use the most appropriate functions for the context. If you’re sanitizing email, use sanitize_email() , if you’re outputting HTML, use wp_kses_post() , and so on.
+
+An easy mantra here is this:
+
+Sanitize early
+Escape Late
+Always Validate
+
+Clean everything, check everything, escape everything, and never trust the users to always have input sane data. After all, users come from all walks of life.
+
+Example(s) from your plugin:
+
+includes/functions-frontend.php:475 $pass1 = isset($_POST['pass1']) ? wp_unslash($_POST['pass1']) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+ -----> $pass1 = isset($_POST['pass1']) ? wp_unslash($_POST['pass1']) : ''
+# ↳ Line 494: wp_update_user($user_data);
+# ↳ Line 509: include WPD_PLUGIN_PATH . 'frontend/templates/profile.php';
+# ↳ Line 509: include WPD_PLUGIN_PATH . 'frontend/templates/profile.php';
+includes/services/donation.php:129 $donation_data = apply_filters('wpd_donation_data_before_insert', array(
+'campaign_id' => $campaign_id,
+'user_id' => $user_id,
+'amount' => $amount,
+'name' => $name,
+'email' => $email,
+'phone' => $phone,
+'note' => $note,
+'is_anonymous' => $is_anon,
+'fundraiser_id' => $fundraiser_id,
+'subscription_id' => 0, // Default
+'metadata' => json_encode($metadata),
+), $_POST);
+includes/metabox.php:272 $banks_post = wp_unslash($_POST['wpd_campaign_banks']);
+# ↳ Line 273: $banks = array_map(function ($val) {
+return sanitize_text_field($val);
+}, $banks_post);
+includes/functions-frontend.php:476 $pass2 = isset($_POST['pass2']) ? wp_unslash($_POST['pass2']) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+# ↳ Line 509: include WPD_PLUGIN_PATH . 'frontend/templates/profile.php';
+includes/functions-frontend.php:558 $uploadedfile = isset($_FILES['proof_file']) ? $_FILES['proof_file'] : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+ -----> $uploadedfile = isset($_FILES['proof_file']) ? $_FILES['proof_file'] : null
+# ↳ Line 607: include WPD_PLUGIN_PATH . 'frontend/templates/confirmation-form.php';
+includes/functions-frontend.php:542 $amount_post = isset($_POST['amount']) ? wp_unslash($_POST['amount']) : '0'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+ -----> $amount_post = isset($_POST['amount']) ? wp_unslash($_POST['amount']) : '0'
+# ↳ Line 607: include WPD_PLUGIN_PATH . 'frontend/templates/confirmation-form.php';
+
+
+
+✔️ You can check this using Plugin Check.
+
+
+## Processing the whole input
+
+We strongly recommend you never attempt to process the whole $_POST/$_REQUEST/$_GET stack. This makes your plugin slower as you're needlessly cycling through data you don't need. Instead, you should only be attempting to process the items within that are required for your plugin to function.
+
+Example(s) from your plugin:
+
+includes/services/donation.php:141 ), $_POST);
+
+
+
+
+## Variables and options must be escaped when echo'd
+
+Much related to sanitizing everything, all variables that are echoed need to be escaped when they're echoed, so it can't hijack users or (worse) admin screens. There are many esc_*() functions you can use to make sure you don't show people the wrong data, as well as some that will allow you to echo HTML safely.
+
+At this time, we ask you escape all $-variables, options, and any sort of generated data when it is being echoed. That means you should not be escaping when you build a variable, but when you output it at the end. We call this 'escaping late.'
+
+Besides protecting yourself from a possible XSS vulnerability, escaping late makes sure that you're keeping the future you safe. While today your code may be only outputted hardcoded content, that may not be true in the future. By taking the time to properly escape when you echo, you prevent a mistake in the future from becoming a critical security issue.
+
+This remains true of options you've saved to the database. Even if you've properly sanitized when you saved, the tools for sanitizing and escaping aren't interchangeable. Sanitizing makes sure it's safe for processing and storing in the database. Escaping makes it safe to output.
+
+Also keep in mind that sometimes a function is echoing when it should really be returning content instead. This is a common mistake when it comes to returning JSON encoded content. Very rarely is that actually something you should be echoing at all. Echoing is because it needs to be on the screen, read by a human. Returning (which is what you would do with an API) can be json encoded, though remember to sanitize when you save to that json object!
+
+There are a number of options to secure all types of content (html, email, etc). Yes, even HTML needs to be properly escaped.
+
+https://developer.wordpress.org/apis/security/escaping/
+
+Remember: You must use the most appropriate functions for the context. There is pretty much an option for everything you could echo. Even echoing HTML safely.
+
+Example(s) from your plugin:
+
+frontend/templates/campaign-single.php:769 fetch('<?php echo esc_url_raw(get_rest_url(null, 'wpd/v1/campaigns/')); ?>' + campaignId + '/donors?page=' + page + '&per_page=<?php echo esc_js($per_page_limit); ?>')
+ -----> echo esc_url_raw(get_rest_url(null, 'wpd/v1/campaigns/'));
+includes/functions-frontend.php:185 wp_add_inline_style('donasai-frontend', $custom_css);
+# ↳ Detected origin: ...    --wpd-primary: {$primary_color};                 --wpd-primary-rgb: {$primary_rgb};                 --wpd-btn: {$button_color};                 --wpd-radius: {$radius};                 -...
+# ↳ Remember to ALWAYS escape as LATE as possible as with a PROPER function for the context.
+
+
+
+
+Note: We know this is confusing, the esc_url_raw function is not an escaping function, but a sanitizing function similar to sanitize_url . Specifically it is used to sanitize a URL for use in a database or a redirection.
+
+The appropriate function to escape a URL is esc_url .
+
+Example(s) from your plugin:
+
+frontend/templates/campaign-single.php:769 fetch('<?php echo esc_url_raw(get_rest_url(null, 'wpd/v1/campaigns/')); ?>' + campaignId + '/donors?page=' + page + '&per_page=<?php echo esc_js($per_page_limit); ?>')
+ -----> esc_url_raw(get_rest_url(null, 'wpd/v1/campaigns/'))
+
+
+
+✔️ You can check this using Plugin Check.
+
+
+## Generic function/class/define/namespace/option names
+
+All plugins must have unique function names, namespaces, defines, class and option names. This prevents your plugin from conflicting with other plugins or themes. We need you to update your plugin to use more unique and distinct names.
+
+A good way to do this is with a prefix. For example, if your plugin is called "Donasai – Platform Donasi & Penggalangan Dana" then you could use names like these:
+
+    function dona82pl_save_post(){ ... }
+    class DONA82PL_Admin { ... }
+    update_option( 'dona82pl_options', $options );
+    register_setting( 'dona82pl_settings', 'dona82pl_user_id', ... );
+    define( 'DONA82PL_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+    global $dona82pl_options;
+    add_action('wp_ajax_dona82pl_save_data', ... );
+    namespace hadiedanker\donasai;
+
+
+Disclaimer: These are just examples that may have been self-generated from your plugin name, we trust you can find better options. If you have a good alternative, please use it instead, this is just an example.
+
+The prefix should be at least four (4) characters long (don't try to use two- or three-letter prefixes anymore). We host almost 100,000 plugins on WordPress.org alone. There are tens of thousands more outside our servers. Believe us, you're likely to encounter conflicts.
+
+You also need to avoid the use of __ (double underscores), wp_ , or _ (single underscore) as a prefix. Those are reserved for WordPress itself. You can use them inside your classes, but not as stand-alone function.
+
+Please remember, if you're using _n() or __() for translation, that's fine. We're only talking about functions you've created for your plugin, not the core functions from WordPress. In fact, those core features are why you need to not use those prefixes in your own plugin! You don't want to break WordPress for your users.
+
+Related to this, using if (!function_exists('NAME')) { around all your functions and classes sounds like a great idea until you realize the fatal flaw. If something else has a function with the same name and their code loads first, your plugin will break. Using if-exists should be reserved for shared libraries only.
+
+Remember: Good prefix names are unique and distinct to your plugin. This will help you and the next person in debugging, as well as prevent conflicts.
+
+Analysis result:
+
+# This plugin is using the prefix "wpd" for 60 element(s).
+# This plugin is using the prefix "donasai" for 1 element(s).
+
+# The prefix "wpd" is too short, we require prefixes to be over 4 characters.
+donasai.php:22 define('WPD_VERSION', '1.0.2');
+donasai.php:23 define('WPD_PLUGIN_URL', plugin_dir_url(__FILE__));
+donasai.php:24 define('WPD_PLUGIN_PATH', plugin_dir_path(__FILE__));
+donasai.php:25 define('WPD_TABLE_PREFIX', 'wpd_');
+donasai.php:27 define('WPD_DEV_MODE', false);
+includes/cpt.php:62 register_post_type('wpd_campaign', $args);
+includes/frontend/css-loader.php:35 wp_enqueue_style('wpd-google-fonts', 'https://fonts.googleapis.com/css2?family=' . $fonts_map[$font_family] . '&display=swap', array(), WPD_VERSION);
+includes/admin/campaign-columns.php:205 wp_enqueue_style('wpd-admin-columns', WPD_PLUGIN_URL . 'includes/admin/assets/admin-columns.css', array(), WPD_VERSION);
+includes/admin/menu.php:71 add_submenu_page('wpd-dashboard', __('Settings', 'donasai'), __('Settings', 'donasai'), 'manage_options', 'wpd-settings', 'wpd_render_admin_app');
+includes/admin/menu.php:121 wp_enqueue_script('wpd-vite-client', 'http://localhost:3001/@vite/client', array(), null, true);
+includes/admin/menu.php:122 wp_enqueue_script('wpd-admin-dev', 'http://localhost:3001/src/main.tsx', array('wpd-vite-client'), null, true);
+includes/admin/menu.php:145 wp_enqueue_script('wpd-admin-app', WPD_PLUGIN_URL . 'build/' . $entry['file'], array(), WPD_VERSION, true);
+includes/admin/menu.php:174 wp_localize_script(defined('WPD_DEV_MODE') && WPD_DEV_MODE ? 'wpd-admin-dev' : 'wpd-admin-app', 'wpdSettings', array('root' => esc_url_raw(rest_url()), 'nonce' => wp_create_nonce('wp_rest'), 'initialPath' => $initial_path, 'isPro' => wpd_is_pro_installed(), 'version' => WPD_VERSION));
+includes/bootstrap.php:12 define('WPD_VERSION', '1.0.0');
+includes/bootstrap.php:15 define('WPD_PLUGIN_PATH', plugin_dir_path(__DIR__));
+includes/bootstrap.php:18 define('WPD_PLUGIN_URL', plugin_dir_url(__DIR__) . '/');
+includes/bootstrap.php:22 update_option('wpd_rewrite_flush_needed', true);
+includes/gateways/interface.php:10 interface WPD_Gateway
+includes/gateways/manual.php:10 class WPD_Gateway_Manual
+includes/api/settings-controller.php:159 update_option('wpd_settings_bank', $bank_data);
+includes/api/settings-controller.php:172 update_option('wpd_pro_bank_accounts', $accounts);
+includes/api/settings-controller.php:182 update_option('wpd_settings_midtrans', $mid_data);
+includes/api/settings-controller.php:186 update_option('wpd_pro_midtrans_server_key', sanitize_text_field($params['midtrans']['pro_server_key']));
+includes/api/settings-controller.php:188 update_option('wpd_pro_midtrans_client_key', sanitize_text_field($params['midtrans']['pro_client_key']));
+includes/api/settings-controller.php:190 update_option('wpd_pro_midtrans_is_production', !empty($params['midtrans']['pro_is_production']) ? '1' : '0');
+includes/api/settings-controller.php:195 update_option('wpd_pro_xendit_api_key', sanitize_text_field($params['xendit']['api_key']));
+includes/api/settings-controller.php:200 update_option('wpd_pro_tripay_api_key', sanitize_text_field($params['tripay']['api_key'] ?? ''));
+includes/api/settings-controller.php:201 update_option('wpd_pro_tripay_private_key', sanitize_text_field($params['tripay']['private_key'] ?? ''));
+includes/api/settings-controller.php:202 update_option('wpd_pro_tripay_merchant_code', sanitize_text_field($params['tripay']['merchant_code'] ?? ''));
+includes/api/settings-controller.php:203 update_option('wpd_pro_tripay_is_production', !empty($params['tripay']['is_production']) ? '1' : '0');
+includes/api/settings-controller.php:214 update_option('wpd_settings_organization', $org_data);
+includes/api/settings-controller.php:234 update_option('wpd_rewrite_flush_needed', true);
+includes/api/settings-controller.php:237 update_option('wpd_settings_general', $gen_data);
+includes/api/settings-controller.php:248 update_option('wpd_settings_donation', $don_data);
+includes/api/settings-controller.php:251 update_option('wpd_pro_recurring_intervals', array_map('sanitize_text_field', $params['donation']['recurring_intervals']));
+includes/api/settings-controller.php:255 update_option('wpd_pending_expiry_hours', intval($params['donation']['pending_expiry_hours']));
+includes/api/settings-controller.php:259 update_option('wpd_email_reminder_enabled', !empty($params['donation']['email_reminder_enabled']) ? '1' : '0');
+includes/api/settings-controller.php:263 update_option('wpd_email_reminder_delay', intval($params['donation']['email_reminder_delay']));
+includes/api/settings-controller.php:267 update_option('wpd_enable_pdf_download', !empty($params['donation']['enable_pdf_download']) ? '1' : '0');
+includes/api/settings-controller.php:276 update_option('wpd_settings_notifications', $notif_data);
+includes/api/settings-controller.php:305 update_option('wpd_settings_appearance', $appearance_data);
+includes/api/settings-controller.php:313 update_option('wpd_pro_license_key', $key);
+includes/api/settings-controller.php:316 update_option('wpd_pro_license_status', 'valid');
+includes/api/settings-controller.php:319 update_option('wpd_pro_license_status', 'invalid');
+includes/api/settings-controller.php:325 update_option('wpd_license', array('key' => $key, 'status' => $status));
+includes/functions-frontend.php:197 wp_enqueue_style('wpd-google-fonts', 'https://fonts.googleapis.com/css2?family=' . $fonts_map[$font_family] . '&display=swap', array(), WPD_VERSION);
+includes/functions-frontend.php:209 wp_enqueue_style('wpd-payment', WPD_PLUGIN_URL . 'frontend/assets/payment.css', array('donasai-frontend'), WPD_VERSION);
+includes/functions-frontend.php:210 wp_enqueue_script('wpd-payment', WPD_PLUGIN_URL . 'frontend/assets/payment.js', array('jquery'), WPD_VERSION, true);
+includes/functions-frontend.php:219 wp_localize_script('wpd-payment', 'wpd_payment_vars', array('is_midtrans_active' => $snap_active, 'snap_url' => $snap_url, 'client_key' => $client_key));
+includes/functions-frontend.php:229 wp_enqueue_script('wpd-confetti', WPD_PLUGIN_URL . 'frontend/assets/confetti.js', array(), '1.6.0', true);
+includes/functions-frontend.php:230 wp_enqueue_style('wpd-summary', WPD_PLUGIN_URL . 'frontend/assets/summary.css', array('donasai-frontend'), WPD_VERSION);
+includes/functions-frontend.php:231 wp_enqueue_script('wpd-summary', WPD_PLUGIN_URL . 'frontend/assets/summary.js', array('jquery', 'wpd-confetti'), WPD_VERSION, true);
+includes/functions-frontend.php:237 wp_enqueue_style('wpd-confirmation', WPD_PLUGIN_URL . 'frontend/assets/confirmation.css', array('donasai-frontend'), WPD_VERSION);
+includes/functions-frontend.php:238 wp_enqueue_script('wpd-confirmation', WPD_PLUGIN_URL . 'frontend/assets/confirmation.js', array('jquery'), WPD_VERSION, true);
+includes/functions-frontend.php:318 wp_enqueue_style('wpd-dashboard', WPD_PLUGIN_URL . 'frontend/assets/dashboard.css', array('donasai-frontend'), WPD_VERSION);
+includes/functions-frontend.php:319 wp_enqueue_script('wpd-dashboard', WPD_PLUGIN_URL . 'frontend/assets/dashboard.js', array(), WPD_VERSION, true);
+includes/functions-frontend.php:325 add_shortcode('wpd_my_donations', 'wpd_shortcode_my_donations');
+includes/functions-frontend.php:448 add_shortcode('wpd_fundraiser_stats', 'wpd_shortcode_fundraiser_stats');
+includes/functions-frontend.php:512 add_shortcode('wpd_profile', 'wpd_shortcode_profile');
+includes/functions-frontend.php:610 add_shortcode('wpd_confirmation_form', 'wpd_shortcode_confirmation_form');
+includes/functions-frontend.php:632 wp_enqueue_script('wpd-tailwind', 'https://cdn.tailwindcss.com', array(), '3.4.0', false);
+includes/functions-frontend.php:635 wp_enqueue_style('wpd-receipt-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap', array(), null);
+includes/services/email.php:10 class WPD_Email
+includes/services/subscription.php:10 class WPD_Subscription_Service
+includes/services/gateway-registry.php:10 class WPD_Gateway_Registry
+includes/services/fundraiser.php:11 class WPD_Fundraiser_Service
+includes/services/donation.php:129 apply_filters('wpd_donation_data_before_insert', array(
+    'campaign_id' => $campaign_id,
+    'user_id' => $user_id,
+    'amount' => $amount,
+    'name' => $name,
+    'email' => $email,
+    'phone' => $phone,
+    'note' => $note,
+    'is_anonymous' => $is_anon,
+    'fundraiser_id' => $fundraiser_id,
+    'subscription_id' => 0,
+    // Default
+    'metadata' => json_encode($metadata),
+), $_POST);
+
+# Looks like there is an element not using common prefixes.
+includes/cpt.php:88 register_taxonomy('donation_category', array('wpd_campaign'), $tax_args);
+
+
+
+Note: Custom Post Types (CPTs) and Taxonomies identifiers must be prefixed.
+
+Both of them are stored in a shared location under the identifier / name you have set. If two plugins use the same name for them, they will find an interesting conflict when trying to read information not inserted by them.
+
+Also, once your plugin has active users, changing the identifier / name of a CPT or a taxonomy is going to be really tricky, so let's make it robust from the very beginning.
+
+Example(s) from your plugin:
+
+includes/cpt.php:88 register_taxonomy('donation_category', array('wpd_campaign'), $tax_args);
+
+
+
+
+## Unsafe SQL calls
+
+When making database calls, it's highly important to protect your code from SQL injection vulnerabilities. You need to update your code to use wpdb calls and prepare() with your queries to protect them.
+
+Please review the following:
+
+    https://developer.wordpress.org/reference/classes/wpdb/#protect-queries-against-sql-injection-attacks
+    https://codex.wordpress.org/Data_Validation#Database
+    https://make.wordpress.org/core/2012/12/12/php-warning-missing-argument-2-for-wpdb-prepare/
+    https://ottopress.com/2013/better-know-a-vulnerability-sql-injection/
+
+Example(s) from your plugin:
+
+includes/api/donations-controller.php:482 $query = $wpdb->prepare(
+"SELECT * FROM {$table_name} ORDER BY created_at DESC LIMIT %d OFFSET %d",
+$per_page,
+$offset
+);
+includes/api/donations-controller.php:455 $where_sql = $query_parts['where'];
+includes/api/donations-controller.php:476 $query = $wpdb->prepare(
+"SELECT * FROM {$table_name} WHERE " . $where_sql . " ORDER BY created_at DESC LIMIT %d OFFSET %d",
+$args
+);
+includes/api/donations-controller.php:489 $results = $wpdb->get_results($query); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+ -----> $wpdb->get_results($query)
+# There is a call to a wpdb::prepare() function, but it's not in the same execution context as the query call.
+# You cannot add variables like "$query_parts['where']" directly to the SQL query.
+# Using wpdb::prepare($query, $args) you will need to include placeholders for each variable within the query and include the variables in the second parameter.
+
+includes/api/donations-controller.php:463 $count_query = "SELECT COUNT(*) FROM {$table_name}"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+ -----> "SELECT COUNT(*) FROM {$table_name}"
+includes/api/donations-controller.php:455 $where_sql = $query_parts['where'];
+includes/api/donations-controller.php:461 $count_query = $wpdb->prepare("SELECT COUNT(*) FROM {$table_name} WHERE {$where_sql}", $args);
+includes/api/donations-controller.php:465 $total_items = (int) $wpdb->get_var($count_query); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+ -----> $wpdb->get_var($count_query)
+# There is a call to a wpdb::prepare() function, but it's not in the same execution context as the query call.
+# You cannot add variables like "$query_parts['where']" directly to the SQL query.
+# Using wpdb::prepare($query, $args) you will need to include placeholders for each variable within the query and include the variables in the second parameter.
+
+... out of a total of 3 incidences.
+
+
+👉 Continue with the review process.
+
+Read this email thoroughly.
+
+Please, take the time to fully understand the issues we've raised. Review the examples provided, read the relevant documentation, and research as needed. Our goal is for you to gain a clear understanding of the problems so you can address them effectively and avoid similar issues when maintaining your plugin in the future.
+Note that there may be false positives - we are humans and make mistakes, we apologize if there is anything we have gotten wrong. If you have doubts you can ask us for clarification, when asking us please be clear, concise, direct and include an example.
+
+📋 Complete your checklist.
+
+✔️ I fixed all the issues in my plugin based on the feedback I received and my own review, as I know that the Plugins Team may not share all cases of the same issue. I am familiar with tools such as Plugin Check, PHPCS + WPCS, and similar utilities to help me identify problems in my code.
+✔️ I tested my updated plugin on a clean WordPress installation with WP_DEBUG set to true.
+
+    ⚠️ Do not skip this step. Testing is essential to make sure your fixes actually work and that you haven’t introduced new issues.
+
+
+✔️ I acknowledge that this review will be rejected if I overlook the issues or fail to test my code.
+✔️ I went to "Add your plugin" and uploaded the updated version. I can continue updating the code there throughout the review process — the team will always check the latest version.
+✔️ I replied to this email. I was concise and shared any clarifications or important context that the team needed to know.
+I didn't list all the changes, as the team will review the entire plugin again and that is not necessary at all.
+
+ℹ️ To make this process as quick as possible and to avoid burden on the volunteers devoting their time to review this plugin's code, we ask you to thoroughly check all shared issues and fix them before sending the code back to us. I know we already asked you to do so, and it is because we are really trying to make it very clear.
+
+While we try to make our reviews as exhaustive as possible we, like you, are humans and may have missed things. We appreciate your patience and understanding.
+
+Review ID: R donasai/hadie-danker/14Jan26/T3 22Jan26/3.7.1
+
