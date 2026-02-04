@@ -33,7 +33,7 @@ function donasai_admin_scripts($hook) {
          
          $packages = get_post_meta($post->ID, '_donasai_packages', true);
          $packages_array = json_decode($packages, true);
-         wp_localize_script('donasai-metabox', 'wpdPackagesData', is_array($packages_array) ? $packages_array : []);
+         wp_localize_script('donasai-metabox', 'donasai_packages_data', is_array($packages_array) ? $packages_array : []);
     }
 }
 add_action('admin_enqueue_scripts', 'donasai_admin_scripts');
@@ -101,7 +101,7 @@ function donasai_campaign_options_callback($post)
 
 			<div id="donasai_packages_container"></div>
 
-			<button type="button" class="button" onclick="wpdAddPackage()">+ Add Package</button>
+			<button type="button" class="button" onclick="donasai_add_package()">+ Add Package</button>
 
 			<!-- Hidden input to store the JSON -->
 			<?php $packages = get_post_meta($post->ID, '_donasai_packages', true); ?>
