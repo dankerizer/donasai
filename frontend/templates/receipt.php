@@ -119,67 +119,7 @@ $brand_700 = donasai_receipt_adjust_brightness($brand_color, -30);
 $brand_800 = donasai_receipt_adjust_brightness($brand_color, -50);
 $brand_900 = donasai_receipt_adjust_brightness($brand_color, -80);
 
-// Inject Tailwind Config
-$tailwind_config = "
-    tailwind.config = {
-        darkMode: 'class',
-        theme: {
-            extend: {
-                fontFamily: {
-                    sans: ['Inter', 'sans-serif'],
-                    serif: ['Playfair Display', 'serif'],
-                },
-                colors: {
-                    brand: {
-                        50: '" . esc_js($brand_50) . "',
-                        100: '" . esc_js($brand_100) . "',
-                        500: '" . esc_js($brand_500) . "', 
-                        600: '" . esc_js($brand_600) . "', 
-                        700: '" . esc_js($brand_700) . "', 
-                        800: '" . esc_js($brand_800) . "', 
-                        900: '" . esc_js($brand_900) . "', 
-                    }
-                }
-            }
-        }
-    }
-";
-wp_add_inline_script('donasai-tailwind', $tailwind_config);
-
-// Inject Custom CSS
-$custom_css = "
-    /* Print Overrides */
-    @media print {
-        @page { margin: 0; size: auto; }
-        body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-        .no-print { display: none !important; }
-        .print-container { box-shadow: none !important; max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; border: none !important; }
-        .wave-decoration, .header-curve { z-index: -1; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-        canvas { display: none !important; }
-        html.dark body { background: white !important; color: black !important; }
-        html.dark .print-container { background: white !important; color: black !important; }
-        html.dark .text-gray-100 { color: #f3f4f6 !important; }
-    }
-
-    /* Decorative Curve CSS */
-    .header-curve {
-        position: absolute; top: 0; left: 0; width: 100%; height: 120px;
-        background: linear-gradient(135deg, " . esc_attr($brand_50) . " 0%, #ffffff 100%);
-        border-bottom-right-radius: 50% 20px; border-bottom-left-radius: 50% 20px; z-index: 0;
-    }
-    .dark .header-curve {
-        background: linear-gradient(135deg, " . esc_attr($brand_900) . " 0%, #0f172a 100%);
-    }
-    .wave-decoration {
-        position: absolute; top: -50px; left: -50px; width: 200px; height: 200px;
-        background: radial-gradient(circle, " . esc_attr($brand_100) . " 0%, rgba(255, 255, 255, 0) 70%);
-        border-radius: 50%; z-index: 0;
-    }
-    .dark .wave-decoration {
-        background: radial-gradient(circle, " . esc_attr($brand_900) . " 0%, rgba(15, 23, 42, 0) 70%);
-    }
-";
-wp_add_inline_style('donasai-receipt-fonts', $custom_css);
+// Inject Custom CSS & Tailwind - Moved to functions-frontend.php donasai_enqueue_receipt_assets
 ?>
 <!DOCTYPE html>
 <html lang="id" class="<?php echo $dark_mode ? 'dark' : ''; ?>">
@@ -389,42 +329,8 @@ wp_add_inline_style('donasai-receipt-fonts', $custom_css);
 
     </div>
 
-    <!-- Screen-only Confetti -->
+    <!-- Screen-only Confetti Canvas - Logic moved to functions-frontend.php -->
     <canvas id="confetti" class="fixed top-0 left-0 w-full h-full pointer-events-none z-50 no-print"></canvas>
-
-    <?php
-    $confetti_script = "
-            (function () {
-                if ('" . esc_js($donation->status) . "' !== 'complete') return;
-                // Simple confetti script
-                const canvas = document.getElementById('confetti');
-                const ctx = canvas.getContext('2d');
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                const pieces = [];
-                const colors = ['#0ea5e9', '#0284c7', '#38bdf8', '#f0f9ff'];
-                for (let i = 0; i < 80; i++) pieces.push({
-                    x: Math.random() * canvas.width, y: Math.random() * canvas.height - canvas.height,
-                    color: colors[Math.floor(Math.random() * colors.length)],
-                    size: Math.random() * 6 + 4, speed: Math.random() * 4 + 2
-                });
-                function draw() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    for (let i = 0; i < pieces.length; i++) {
-                        const p = pieces[i];
-                        ctx.fillStyle = p.color;
-                        ctx.fillRect(p.x, p.y, p.size, p.size);
-                        p.y += p.speed;
-                        if (p.y > canvas.height) p.y = -20;
-                    }
-                    requestAnimationFrame(draw);
-                }
-                draw();
-                setTimeout(() => { canvas.style.display = 'none'; }, 4000);
-            })();
-    ";
-    wp_add_inline_script('donasai-tailwind', $confetti_script);
-    ?>
     
     <?php wp_footer(); ?>
 </body>

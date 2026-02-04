@@ -530,7 +530,7 @@ function donasai_track_referral()
     if (is_admin())
         return;
 
-    if (isset($_GET['ref'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+    if (isset($_GET['ref'])) {
         $ref_code = sanitize_text_field(wp_unslash($_GET['ref']));
         $service = new DONASAI_Fundraiser_Service();
         $fundraiser = $service->get_by_code($ref_code);
@@ -644,8 +644,8 @@ function donasai_shortcode_profile()
         $user_id = get_current_user_id();
         $name = isset($_POST['display_name']) ? sanitize_text_field(wp_unslash($_POST['display_name'])) : '';
         $phone = isset($_POST['phone']) ? sanitize_text_field(wp_unslash($_POST['phone'])) : '';
-        $pass1 = isset($_POST['pass1']) ? wp_unslash($_POST['pass1']) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-        $pass2 = isset($_POST['pass2']) ? wp_unslash($_POST['pass2']) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+        $pass1 = isset($_POST['pass1']) ? sanitize_text_field(wp_unslash($_POST['pass1'])) : '';
+        $pass2 = isset($_POST['pass2']) ? sanitize_text_field(wp_unslash($_POST['pass2'])) : '';
 
         // Update User
         $user_data = array(
@@ -710,7 +710,7 @@ function donasai_shortcode_confirmation_form()
         } else {
             global $wpdb;
             $donation_id = isset($_POST['donation_id']) ? intval($_POST['donation_id']) : 0;
-            $amount_post = isset($_POST['amount']) ? wp_unslash($_POST['amount']) : '0'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+            $amount_post = isset($_POST['amount']) ? sanitize_text_field(wp_unslash($_POST['amount'])) : '0';
             $amount = intval(str_replace('.', '', $amount_post)); // Remove dots
 
             // Verify Donation Exists
@@ -726,7 +726,10 @@ function donasai_shortcode_confirmation_form()
                         require_once(ABSPATH . 'wp-admin/includes/file.php');
                     }
 
-                    $uploadedfile = isset($_FILES['proof_file']) ? $_FILES['proof_file'] : null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+                    $uploadedfile = isset($_FILES['proof_file']) ? $_FILES['proof_file'] : null;
+                    if ($uploadedfile && !isset($uploadedfile['tmp_name'])) {
+                        $uploadedfile = null;
+                    }
 
                     if ($uploadedfile) {
                         $upload_overrides = array('test_form' => false);
@@ -794,16 +797,135 @@ function donasai_shortcode_campaign_list($atts)
 }
 add_shortcode('donasai_campaign_list', 'donasai_shortcode_campaign_list');
 
-/**
- * Enqueue assets for receipt page
- */
 function donasai_enqueue_receipt_assets() {
     if (isset($_GET['donasai_receipt'])) {
-        // Tailwind (CDN for now, or local if built)
+        $donation_id = intval($_GET['donasai_receipt']);
+        
+        // Tailwind (CDN for now, as disclosed in readme)
         wp_enqueue_script('donasai-tailwind', 'https://cdn.tailwindcss.com', array(), '3.4.0', false);
         
         // Google Fonts
         wp_enqueue_style('donasai-receipt-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap', array(), null);
+
+        // Dynamic Receipt Data
+        $appearance = get_option('donasai_settings_appearance', []);
+        $brand_color = !empty($appearance['brand_color']) ? $appearance['brand_color'] : '#0ea5e9';
+        
+        if (!function_exists('donasai_receipt_adjust_brightness')) {
+            function donasai_receipt_adjust_brightness($hex, $steps) {
+                $steps = max(-255, min(255, $steps));
+                $hex = str_replace('#', '', $hex);
+                if (strlen($hex) == 3) {
+                    $hex = str_repeat(substr($hex, 0, 1), 2) . str_repeat(substr($hex, 1, 1), 2) . str_repeat(substr($hex, 2, 1), 2);
+                }
+                $color_parts = str_split($hex, 2);
+                $return = '#';
+                foreach ($color_parts as $color) {
+                    $color   = hexdec($color);
+                    $color   = max(0, min(255, $color + $steps));
+                    $return .= str_pad(dechex($color), 2, '0', STR_PAD_LEFT);
+                }
+                return $return;
+            }
+        }
+
+        $brand_50  = donasai_receipt_adjust_brightness($brand_color, 180);
+        $brand_100 = donasai_receipt_adjust_brightness($brand_color, 150);
+        $brand_900 = donasai_receipt_adjust_brightness($brand_color, -80);
+
+        $tailwind_config = "
+            tailwind.config = {
+                darkMode: 'class',
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['Inter', 'sans-serif'],
+                        },
+                        colors: {
+                            brand: {
+                                50: '" . esc_js($brand_50) . "',
+                                100: '" . esc_js($brand_100) . "',
+                                500: '" . esc_js($brand_color) . "', 
+                                600: '" . esc_js(donasai_receipt_adjust_brightness($brand_color, -10)) . "', 
+                                700: '" . esc_js(donasai_receipt_adjust_brightness($brand_color, -30)) . "', 
+                                800: '" . esc_js(donasai_receipt_adjust_brightness($brand_color, -50)) . "', 
+                                900: '" . esc_js($brand_900) . "', 
+                            }
+                        }
+                    }
+                }
+            }
+        ";
+        wp_add_inline_script('donasai-tailwind', $tailwind_config);
+
+        $custom_css = "
+            @media print {
+                @page { margin: 0; size: auto; }
+                body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                .no-print { display: none !important; }
+                .print-container { box-shadow: none !important; max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; border: none !important; }
+                .wave-decoration, .header-curve { z-index: -1; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+                canvas { display: none !important; }
+                html.dark body { background: white !important; color: black !important; }
+                html.dark .print-container { background: white !important; color: black !important; }
+            }
+            .header-curve {
+                position: absolute; top: 0; left: 0; width: 100%; height: 120px;
+                background: linear-gradient(135deg, " . esc_attr($brand_50) . " 0%, #ffffff 100%);
+                border-bottom-right-radius: 50% 20px; border-bottom-left-radius: 50% 20px; z-index: 0;
+            }
+            .dark .header-curve {
+                background: linear-gradient(135deg, " . esc_attr($brand_900) . " 0%, #0f172a 100%);
+            }
+            .wave-decoration {
+                position: absolute; top: -50px; left: -50px; width: 200px; height: 200px;
+                background: radial-gradient(circle, " . esc_attr($brand_100) . " 0%, rgba(255, 255, 255, 0) 70%);
+                border-radius: 50%; z-index: 0;
+            }
+            .dark .wave-decoration {
+                background: radial-gradient(circle, " . esc_attr($brand_900) . " 0%, rgba(15, 23, 42, 0) 70%);
+            }
+        ";
+        wp_add_inline_style('donasai-receipt-fonts', $custom_css);
+
+        // Confetti Script
+        $donation_status = 'pending';
+        global $wpdb;
+        $table = $wpdb->prefix . 'donasai_donations';
+        $status = $wpdb->get_var($wpdb->prepare("SELECT status FROM {$table} WHERE id = %d", $donation_id));
+        
+        if ($status === 'complete') {
+            $confetti_script = "
+                (function () {
+                    const canvas = document.getElementById('confetti');
+                    if (!canvas) return;
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                    const pieces = [];
+                    const colors = ['#0ea5e9', '#0284c7', '#38bdf8', '#f0f9ff'];
+                    for (let i = 0; i < 80; i++) pieces.push({
+                        x: Math.random() * canvas.width, y: Math.random() * canvas.height - canvas.height,
+                        color: colors[Math.floor(Math.random() * colors.length)],
+                        size: Math.random() * 6 + 4, speed: Math.random() * 4 + 2
+                    });
+                    function draw() {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        for (let i = 0; i < pieces.length; i++) {
+                            const p = pieces[i];
+                            ctx.fillStyle = p.color;
+                            ctx.fillRect(p.x, p.y, p.size, p.size);
+                            p.y += p.speed;
+                            if (p.y > canvas.height) p.y = -20;
+                        }
+                        requestAnimationFrame(draw);
+                    }
+                    draw();
+                    setTimeout(() => { canvas.style.display = 'none'; }, 4000);
+                })();
+            ";
+            wp_add_inline_script('donasai-tailwind', $confetti_script);
+        }
     }
 }
 add_action('wp_enqueue_scripts', 'donasai_enqueue_receipt_assets');
