@@ -94,8 +94,10 @@ function donasai_api_get_fundraisers($request)
 		$results = wp_cache_get($cache_key, 'donasai_fundraisers');
 
 		if (false === $results) {
+			$table_fundraisers = $wpdb->prefix . 'donasai_fundraisers';
 			$results = $wpdb->get_results($wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}donasai_fundraisers WHERE user_id = %d",
+				"SELECT * FROM %i WHERE user_id = %d",
+				$table_fundraisers,
 				$user_id
 			));
 			wp_cache_set($cache_key, $results, 'donasai_fundraisers', 300);
@@ -113,7 +115,8 @@ function donasai_api_get_fundraisers($request)
 		$results = wp_cache_get($cache_key, 'donasai_fundraisers');
 
 		if (false === $results) {
-			$results = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}donasai_fundraisers ORDER BY created_at DESC LIMIT %d", 50));
+			$table_fundraisers = $wpdb->prefix . 'donasai_fundraisers';
+			$results = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i ORDER BY created_at DESC LIMIT %d", $table_fundraisers, 50));
 			wp_cache_set($cache_key, $results, 'donasai_fundraisers', 60);
 		}
 		return rest_ensure_response($results);

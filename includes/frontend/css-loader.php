@@ -21,23 +21,10 @@ function donasai_inject_custom_styles() {
     $font_size     = !empty($appearance['font_size']) ? $appearance['font_size'] : '16px';
     $dark_mode     = !empty($appearance['dark_mode']) && defined('DONASAI_PRO_VERSION');
 
-    // Font Loading (if not 'Inter' which might be default or cached, but best to load if specific)
-    $fonts_map = [
-        'Inter'     => 'Inter:wght@400;500;600;700',
-        'Roboto'    => 'Roboto:wght@400;500;700',
-        'Open Sans' => 'Open+Sans:wght@400;600;700',
-        'Poppins'   => 'Poppins:wght@400;500;600;700',
-        'Lato'      => 'Lato:wght@400;700'
-    ];
-    
-    if ( isset($fonts_map[$font_family]) ) {
-        // Enqueue Google Fonts properly
-        wp_enqueue_style( 'donasai-google-fonts', 'https://fonts.googleapis.com/css2?family=' . $fonts_map[$font_family] . '&display=swap', array(), DONASAI_VERSION );
-    }
+    $font_family_stack = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif";
     ?>
     <style id="donasai-global-styles">
-        /* Preconnects for performance (optional, but good) */
-        /* Note: wp_resource_hints is cleaner but this is simple inline */
+        /* Third-party fonts (like Google Fonts) are removed to comply with WordPress.org guidelines. */
         :root {
             /* Branding */
             --donasai-primary:   <?php echo esc_attr( $brand_color ); ?>;
@@ -46,7 +33,7 @@ function donasai_inject_custom_styles() {
             
             /* UI Config */
             --donasai-radius:    <?php echo esc_attr( $border_radius ); ?>;
-            --donasai-font-family: '<?php echo esc_attr( $font_family ); ?>', sans-serif;
+            --donasai-font-family: <?php echo esc_attr( $font_family_stack ); ?>;
             --donasai-font-size: <?php echo esc_attr( $font_size ); ?>;
 
             /* Light Theme Defaults */

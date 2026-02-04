@@ -144,14 +144,14 @@ function donasai_api_get_stats()
 
     if (false === $cached_stats) {
         $table_donations = $wpdb->prefix . 'donasai_donations';
-        $total_collected = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM {$table_donations} WHERE status = %s", 'complete'));
-        $total_donors = $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM {$table_donations} WHERE status = %s", 'complete'));
+        $total_collected = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM %i WHERE status = %s", $table_donations, 'complete'));
+        $total_donors = $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM %i WHERE status = %s", $table_donations, 'complete'));
         $active_campaigns = wp_count_posts('donasai_campaign')->publish;
 
         $cached_stats = array(
-            'total_collected' => $total_collected,
-            'total_donors' => $total_donors,
-            'active_campaigns' => $active_campaigns
+            'total_collected' => (float) $total_collected,
+            'total_donors' => (int) $total_donors,
+            'active_campaigns' => (int) $active_campaigns
         );
         wp_cache_set($cache_key, $cached_stats, 'donasai_stats', 3600);
     }
@@ -188,21 +188,37 @@ function donasai_api_get_stats()
     // 2. Recurring Revenue (Monthly Recurring Revenue - MRR)
     // Check if subscription table exists first to avoid error if Pro not fully setup
     $recurring_revenue = 0;
-    if ($wpdb->get_var("SHOW TABLES LIKE '{$wpdb->prefix}donasai_subscriptions'") == $wpdb->prefix . 'donasai_subscriptions') {
-        $recurring_revenue = $wpdb->get_var("SELECT SUM(amount) FROM {$wpdb->prefix}donasai_subscriptions WHERE status = 'active'") ?: 0;
+    $cache_key_mrr = 'donasai_stats_mrr';
+    $cached_mrr = wp_cache_get($cache_key_mrr, 'donasai_stats');
+
+    if (false === $cached_mrr) {
+        $table_subscriptions = $wpdb->prefix . 'donasai_subscriptions';
+        if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table_subscriptions)) == $table_subscriptions) {
+            $cached_mrr = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM %i WHERE status = %s", $table_subscriptions, 'active')) ?: 0;
+        } else {
+            $cached_mrr = 0;
+        }
+        wp_cache_set($cache_key_mrr, $cached_mrr, 'donasai_stats', 3600);
     }
+    $recurring_revenue = $cached_mrr;
 
     // 3. Retention Rate
     // Donors who donated more than once
-    $table_donations = $wpdb->prefix . 'donasai_donations';
-    $repeat_donors = $wpdb->get_var($wpdb->prepare("
-        SELECT COUNT(*) FROM (
-            SELECT email FROM {$table_donations} 
-            WHERE status = %s 
-            GROUP BY email 
-            HAVING COUNT(id) > 1
-        ) as repeaters
-    ", 'complete'));
+    $cache_key_repeat = 'donasai_stats_repeat_donors';
+    $repeat_donors = wp_cache_get($cache_key_repeat, 'donasai_stats');
+
+    if (false === $repeat_donors) {
+        $table_donations = $wpdb->prefix . 'donasai_donations';
+        $repeat_donors = $wpdb->get_var($wpdb->prepare("
+            SELECT COUNT(*) FROM (
+                SELECT email FROM %i 
+                WHERE status = %s 
+                GROUP BY email 
+                HAVING COUNT(id) > 1
+            ) as repeaters
+        ", $table_donations, 'complete'));
+        wp_cache_set($cache_key_repeat, $repeat_donors, 'donasai_stats', 3600);
+    }
 
     $retention_rate = 0;
     if ($total_donors > 0) {
@@ -306,16 +322,16 @@ function donasai_api_export_donations($request)
     $args = $query_parts['args'];
 
     // Construct the SQL with placeholders
-    $sql = "SELECT * FROM {$table_name} WHERE {$where_sql} ORDER BY created_at DESC";
-    
     if (!empty($args)) {
-        $query = $wpdb->prepare($sql, $args);
+        // Use %i for table name and interpolate the sanitized WHERE clause structure
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $sql = "SELECT * FROM %i WHERE {$where_sql} ORDER BY created_at DESC";
+        $query = $wpdb->prepare($sql, array_merge(array($table_name), $args));
     } else {
-        // If no dynamic args, still use prepare for any static values or just to be safe
-        $query = $wpdb->prepare("SELECT * FROM {$table_name} WHERE 1=1 ORDER BY created_at DESC LIMIT %d", 10000);
+        $query = $wpdb->prepare("SELECT * FROM %i WHERE 1=1 ORDER BY created_at DESC LIMIT %d", $table_name, 10000);
     }
 
-    $results = $wpdb->get_results($query, ARRAY_A); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+    $results = $wpdb->get_results($query, ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
     $filename = 'donations-export-' . wp_date('Y-m-d') . '.csv';
     header('Content-Type: text/csv');
@@ -406,7 +422,7 @@ function donasai_api_update_donation($request)
         do_action('donasai_donation_completed', $id);
 
         // Update Campaign Collected Amount
-        $campaign_id = $wpdb->get_var($wpdb->prepare("SELECT campaign_id FROM {$wpdb->prefix}donasai_donations WHERE id = %d", $id));
+        $campaign_id = (int) $wpdb->get_var($wpdb->prepare("SELECT campaign_id FROM %i WHERE id = %d", $wpdb->prefix . 'donasai_donations', $id));
         if ($campaign_id) {
             if (function_exists('donasai_update_campaign_stats')) {
                 donasai_update_campaign_stats($campaign_id);
@@ -415,7 +431,7 @@ function donasai_api_update_donation($request)
     }
 
     // Return updated data
-    $updated_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}donasai_donations WHERE id = %d", $id));
+    $updated_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $wpdb->prefix . 'donasai_donations', $id));
 
     return rest_ensure_response(array(
         'success' => true,
@@ -465,31 +481,39 @@ function donasai_api_get_donations($request)
     $where_sql = $query_parts['where'];
     $args = $query_parts['args'];
 
-    // 1. Get Total Count
-    $count_sql = "SELECT COUNT(*) FROM {$table_name} WHERE {$where_sql}";
-    if (!empty($args)) {
-        $count_query = $wpdb->prepare($count_sql, $args);
-    } else {
-        $count_query = "SELECT COUNT(*) FROM {$table_name}";
+    // Caching for paginated results
+    $cache_key = 'donasai_donations_list_' . md5(serialize($params) . $page . $per_page);
+    $cached_response = wp_cache_get($cache_key, 'donasai_donations');
+    if (false !== $cached_response) {
+        return rest_ensure_response($cached_response);
     }
-    $total_items = (int) $wpdb->get_var($count_query);
+
+    // 1. Get Total Count
+    if (!empty($args)) {
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $count_query = $wpdb->prepare("SELECT COUNT(*) FROM %i WHERE {$where_sql}", array_merge(array($table_name), $args));
+    } else {
+        $count_query = $wpdb->prepare("SELECT COUNT(*) FROM %i", $table_name);
+    }
+    $total_items = (int) $wpdb->get_var($count_query); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching
     $total_pages = ceil($total_items / $per_page);
 
     // 2. Get Data
-    $data_sql = "SELECT * FROM {$table_name} WHERE {$where_sql} ORDER BY created_at DESC LIMIT %d OFFSET %d";
+    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+    $data_sql = "SELECT * FROM %i WHERE {$where_sql} ORDER BY created_at DESC LIMIT %d OFFSET %d";
     
     // Add pagination args
-    $data_args = $args;
+    $data_args = array_merge(array($table_name), $args);
     $data_args[] = $per_page;
     $data_args[] = $offset;
 
-    $query = $wpdb->prepare($data_sql, $data_args);
-    $results = $wpdb->get_results($query);
+    $query = $wpdb->prepare($data_sql, $data_args); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+    $results = $wpdb->get_results($query); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
     // Format data for frontend
     $data = array_map(function ($row) {
         return array(
-            'id' => $row->id,
+            'id' => (int) $row->id,
             'name' => $row->name,
             'email' => $row->email,
             'phone' => $row->phone,
@@ -503,7 +527,7 @@ function donasai_api_get_donations($request)
         );
     }, $results);
 
-    return rest_ensure_response(array(
+    $response = array(
         'data' => $data,
         'meta' => array(
             'current_page' => $page,
@@ -511,5 +535,9 @@ function donasai_api_get_donations($request)
             'total' => $total_items,
             'total_pages' => $total_pages
         )
-    ));
+    );
+
+    wp_cache_set($cache_key, $response, 'donasai_donations', 300);
+
+    return rest_ensure_response($response);
 }

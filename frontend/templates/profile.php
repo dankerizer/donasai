@@ -7,20 +7,20 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$current_user = wp_get_current_user();
-$phone = get_user_meta($current_user->ID, '_donasai_phone', true);
+$donasai_current_user = wp_get_current_user();
+$donasai_phone = get_user_meta($donasai_current_user->ID, '_donasai_phone', true);
 
 // Handle Success/Error Messages
-$message = '';
+$donasai_message = '';
 if (isset($_GET['updated']) && '1' === sanitize_text_field(wp_unslash($_GET['updated']))) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-    $message = '<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">Profil berhasil diperbarui.</div>';
+    $donasai_message = '<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">Profil berhasil diperbarui.</div>';
 }
 ?>
 
 <div class="donasai-profile-container max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-sm border border-gray-100">
     <h2 class="text-2xl font-bold text-gray-800 mb-6"><?php esc_html_e('Edit Profil', 'donasai'); ?></h2>
 
-    <?php echo wp_kses_post($message); ?>
+    <?php echo wp_kses_post($donasai_message); ?>
 
     <form method="post" action="" class="space-y-4">
         <?php wp_nonce_field('donasai_profile_update', 'donasai_profile_nonce'); ?>
@@ -33,7 +33,7 @@ if (isset($_GET['updated']) && '1' === sanitize_text_field(wp_unslash($_GET['upd
             <input
                 class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 id="display_name" type="text" name="display_name"
-                value="<?php echo esc_attr($current_user->display_name); ?>" required>
+                value="<?php echo esc_attr($donasai_current_user->display_name); ?>" required>
         </div>
 
         <!-- Email -->
@@ -43,7 +43,7 @@ if (isset($_GET['updated']) && '1' === sanitize_text_field(wp_unslash($_GET['upd
             </label>
             <input
                 class="bg-gray-100 shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight cursor-not-allowed"
-                id="user_email" type="email" value="<?php echo esc_attr($current_user->user_email); ?>" disabled>
+                id="user_email" type="email" value="<?php echo esc_attr($donasai_current_user->user_email); ?>" disabled>
             <p class="text-xs text-gray-500 mt-1">Email tidak dapat diubah.</p>
         </div>
 
@@ -54,7 +54,7 @@ if (isset($_GET['updated']) && '1' === sanitize_text_field(wp_unslash($_GET['upd
             </label>
             <input
                 class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                id="phone" type="text" name="phone" value="<?php echo esc_attr($phone); ?>" placeholder="0812...">
+                id="phone" type="text" name="phone" value="<?php echo esc_attr($donasai_phone); ?>" placeholder="0812...">
         </div>
 
         <!-- Password (Optional) -->

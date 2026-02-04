@@ -177,7 +177,8 @@ function donasai_api_get_campaign_donors($request)
 
 	if (false === $results) {
 		$results = $wpdb->get_results($wpdb->prepare(
-			"SELECT * FROM {$table} WHERE campaign_id = %d AND status = 'complete' ORDER BY created_at DESC LIMIT %d OFFSET %d",
+			"SELECT * FROM %i WHERE campaign_id = %d AND status = 'complete' ORDER BY created_at DESC LIMIT %d OFFSET %d",
+			$table,
 			$campaign_id,
 			$per_page,
 			$offset
@@ -185,11 +186,34 @@ function donasai_api_get_campaign_donors($request)
 		wp_cache_set($cache_key, $results, $cache_group, 300);
 	}
 
-	// Get Total for this campaign
-	$total = (int) $wpdb->get_var($wpdb->prepare(
-		"SELECT COUNT(id) FROM {$table} WHERE campaign_id = %d AND status = 'complete'",
-		$campaign_id
-	));
+	// Get totals
+	$table_donations = $wpdb->prefix . 'donasai_donations';
+	$total_collected_cache_key = 'donasai_campaign_total_collected_' . $campaign_id;
+	$total_donors_cache_key = 'donasai_campaign_total_donors_' . $campaign_id;
+
+	$total_collected = wp_cache_get($total_collected_cache_key, $cache_group);
+	if (false === $total_collected) {
+		$total_collected = (float) $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM %i WHERE campaign_id = %d AND status = %s", $table_donations, $campaign_id, 'complete'));
+		wp_cache_set($total_collected_cache_key, $total_collected, $cache_group, 300);
+	}
+
+	$total_donors = wp_cache_get($total_donors_cache_key, $cache_group);
+	if (false === $total_donors) {
+		$total_donors = (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM %i WHERE campaign_id = %d AND status = %s", $table_donations, $campaign_id, 'complete'));
+		wp_cache_set($total_donors_cache_key, $total_donors, $cache_group, 300);
+	}
+
+	// Get Total for this campaign (total count of donations for pagination)
+	$total_donations_count_cache_key = 'donasai_campaign_donations_count_' . $campaign_id;
+	$total = wp_cache_get($total_donations_count_cache_key, $cache_group);
+	if (false === $total) {
+		$total = (int) $wpdb->get_var($wpdb->prepare(
+			"SELECT COUNT(id) FROM %i WHERE campaign_id = %d AND status = 'complete'",
+			$table,
+			$campaign_id
+		));
+		wp_cache_set($total_donations_count_cache_key, $total, $cache_group, 300);
+	}
 	$total_pages = ceil($total / $per_page);
 
 	// Format Response

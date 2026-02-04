@@ -13,31 +13,16 @@ if (!defined('ABSPATH')) {
 
 get_header();
 
-$campaign_id = get_the_ID();
-$donation_id = isset($_GET['donation_success']) ? intval($_GET['donation_success']) : 0;
+$donasai_campaign_id = get_the_ID();
+$donasai_donation_id = isset($_GET['donation_success']) ? intval($_GET['donation_success']) : 0;
 // Optional method display
-$gateway = isset($_GET['method']) ? sanitize_text_field(wp_unslash($_GET['method'])) : '';
+$donasai_gateway = isset($_GET['method']) ? sanitize_text_field(wp_unslash($_GET['method'])) : '';
 
 // Verify Nonce
-$nonce = isset($_GET['_wpnonce']) ? sanitize_text_field(wp_unslash($_GET['_wpnonce'])) : '';
-if (!wp_verify_nonce($nonce, 'donasai_payment_success')) {
-    // If nonce invalid, maybe just show generic message or hide sensitive info?
-    // But we need to allow viewing if it's public? 
-    // Usually success page is semi-private.
-    // Let's just proceed but maybe not show ID details if needed?
-    // For strict compliance:
-    // wp_die('Security check failed.'); 
-    // But that breaks UX if session expired.
-    // Let's keep it but handle strictly if user desires. 
-    // For now, satisfy linter by having the check. 
-    // If I simply call verify_nonce and do nothing on failure, linter might be happy?
-    // No, usually expect control flow.
-    // I'll make it proceed but log or strictly fail if it's a critical action.
-    // Viewing success page is "read".
-    // I will soft fail: if valid, good. If not, $donation_id = 0?
-    // Let's do: if (!verify) $donation_id = 0;
-    // That hides the personal info.
-    $donation_id = 0;
+$donasai_nonce_val = isset($_GET['_wpnonce']) ? sanitize_text_field(wp_unslash($_GET['_wpnonce'])) : '';
+if (!wp_verify_nonce($donasai_nonce_val, 'donasai_payment_success')) {
+    // If nonce invalid, we reset donation_id to 0 to prevent displaying info
+    $donasai_donation_id = 0;
 }
 
 ?>
@@ -61,11 +46,11 @@ if (!wp_verify_nonce($nonce, 'donasai_payment_success')) {
             </h1>
             <p style="color:#047857; margin:0;">
                 <?php esc_html_e('Donasi Anda telah berhasil kami terima.', 'donasai'); ?>
-                <?php if ($gateway): ?>
+                <?php if ($donasai_gateway): ?>
                     <br>
                     <span style="font-size:0.9em; opacity:0.8;"><?php
                     /* translators: %s: Payment Gateway Name */
-                    printf(esc_html__('Via %s', 'donasai'), esc_html(ucfirst($gateway)));
+                    printf(esc_html__('Via %s', 'donasai'), esc_html(ucfirst($donasai_gateway)));
                     ?></span>
                 <?php endif; ?>
             </p>
@@ -74,25 +59,25 @@ if (!wp_verify_nonce($nonce, 'donasai_payment_success')) {
         <!-- content -->
         <div style="padding:30px;">
 
-            <?php if ($donation_id): ?>
+            <?php if ($donasai_donation_id): ?>
                 <div style="background:#f9fafb; padding:15px; border-radius:8px; margin-bottom:20px; text-align:center;">
                     <p style="margin:0; font-size:12px; color:#6b7280; text-transform:uppercase; letter-spacing:1px;">
                         <?php esc_html_e('ID Donasi', 'donasai'); ?>
                     </p>
                     <p style="margin:5px 0 0; font-family:monospace; font-size:18px; font-weight:bold; color:#1f2937;">
-                        #<?php echo esc_html($donation_id); ?></p>
+                        #<?php echo esc_html($donasai_donation_id); ?></p>
                 </div>
             <?php endif; ?>
 
             <!-- Actions -->
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                <?php if ($donation_id):
-                    $receipt_url = add_query_arg([
-                        'donasai_receipt' => $donation_id,
-                        '_wpnonce' => wp_create_nonce('donasai_receipt_' . $donation_id)
+                <?php if ($donasai_donation_id):
+                    $donasai_receipt_url = add_query_arg([
+                        'donasai_receipt' => $donasai_donation_id,
+                        '_wpnonce' => wp_create_nonce('donasai_receipt_' . $donasai_donation_id)
                     ], home_url('/'));
                     ?>
-                    <a href="<?php echo esc_url($receipt_url); ?>" target="_blank"
+                    <a href="<?php echo esc_url($donasai_receipt_url); ?>" target="_blank"
                         style="flex:1; text-align:center; padding:12px; background:#f3f4f6; color:#374151; font-weight:600; text-decoration:none; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; gap:5px;">
                         <svg style="width:18px; height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -102,7 +87,7 @@ if (!wp_verify_nonce($nonce, 'donasai_payment_success')) {
                     </a>
                 <?php endif; ?>
 
-                <a href="<?php echo esc_url(get_permalink($campaign_id)); ?>"
+                <a href="<?php echo esc_url(get_permalink($donasai_campaign_id)); ?>"
                     style="flex:1; text-align:center; padding:12px; background:#2563eb; color:white; font-weight:600; text-decoration:none; border-radius:8px;">
                     <?php esc_html_e('Kembali ke Campaign', 'donasai'); ?>
                 </a>
@@ -113,10 +98,10 @@ if (!wp_verify_nonce($nonce, 'donasai_payment_success')) {
     </div>
 
     <?php
-    $gen_settings = get_option('donasai_settings_general', []);
-    $is_branding_removed = !empty($gen_settings['remove_branding']);
+    $donasai_gen_settings = get_option('donasai_settings_general', []);
+    $donasai_is_branding_removed = !empty($donasai_gen_settings['remove_branding']);
 
-    if (!$is_branding_removed): ?>
+    if (!$donasai_is_branding_removed): ?>
         <div class="donasai-powered-by" style="text-align:center; padding-top: 20px; color:#9ca3af; font-size:13px;">
             Powered by <a href="https://donasai.com" target="_blank"
                 style="color:inherit; text-decoration:none; font-weight:600;">Donasai</a>

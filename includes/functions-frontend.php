@@ -165,6 +165,7 @@ function donasai_enqueue_frontend_assets()
                 --donasai-primary-rgb: " . esc_attr($primary_rgb) . ";
                 --donasai-btn: " . sanitize_hex_color($button_color) . ";
                 --donasai-radius: " . esc_attr($radius) . ";
+                --donasai-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
                 --donasai-bg: #f3f4f6;
                 --donasai-card-bg: #ffffff;
                 --donasai-text-main: #1f2937;
@@ -185,18 +186,8 @@ function donasai_enqueue_frontend_assets()
         ";
         wp_add_inline_style('donasai-frontend', $custom_css);
 
-        // Google Fonts
-        $font_family = $settings_app['font_family'] ?? 'Inter';
-        $fonts_map = [
-            'Inter' => 'Inter:wght@400;500;600;700',
-            'Roboto' => 'Roboto:wght@400;500;700',
-            'Open Sans' => 'Open+Sans:wght@400;600;700',
-            'Poppins' => 'Poppins:wght@400;500;600;700',
-            'Lato' => 'Lato:wght@400;700'
-        ];
-        if (isset($fonts_map[$font_family])) {
-            wp_enqueue_style('donasai-google-fonts', 'https://fonts.googleapis.com/css2?family=' . $fonts_map[$font_family] . '&display=swap', array(), DONASAI_VERSION);
-        }
+        // Third-party fonts (like Google Fonts) are removed to comply with WordPress.org guidelines.
+        // We use a modern system font stack that looks great on all platforms.
 
         // Campaign Specific Assets
         if (is_singular('donasai_campaign')) {
@@ -273,7 +264,7 @@ function donasai_enqueue_frontend_assets()
                     --donasai-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
                 }
                 .donasai-container {
-                    font-family: '" . esc_attr($font_family) . "', sans-serif;
+                    font-family: var(--donasai-font-family);
                     font-size: " . esc_attr($font_size) . ";
                 }
             ";
@@ -419,10 +410,11 @@ function donasai_get_recent_donors($campaign_id, $limit = 10)
 
     if (false === $results) {
         $results = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM {$table} WHERE campaign_id = %d AND status = 'complete' ORDER BY created_at DESC LIMIT %d",
+            "SELECT * FROM %i WHERE campaign_id = %d AND status = 'complete' ORDER BY created_at DESC LIMIT %d",
+            $table,
             $campaign_id,
             $limit
-        )); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        ));
         wp_cache_set($cache_key, $results, 'donasai_donations', 300);
     }
 
@@ -442,9 +434,10 @@ function donasai_get_donor_count($campaign_id)
 
     if (false === $count) {
         $count = (int) $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(id) FROM {$table} WHERE campaign_id = %d AND status = 'complete'",
+            "SELECT COUNT(id) FROM %i WHERE campaign_id = %d AND status = 'complete'",
+            $table,
             $campaign_id
-        )); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        ));
         wp_cache_set($cache_key, $count, 'donasai_donations', 300);
     }
 
@@ -565,12 +558,14 @@ function donasai_shortcode_fundraiser_stats()
     // Get all campaigns user is fundraising for
     $results = $wpdb->get_results($wpdb->prepare(
         "SELECT f.*, p.post_title 
-         FROM {$table_fundraisers} f
-         JOIN {$wpdb->posts} p ON f.campaign_id = p.ID
+         FROM %i f
+         JOIN %i p ON f.campaign_id = p.ID
          WHERE f.user_id = %d
-         ORDER BY f.created_at DESC", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+         ORDER BY f.created_at DESC",
+        $table_fundraisers,
+        $wpdb->posts,
         $user_id
-    )); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+    ));
 
     if (empty($results)) {
         return '<p>' . __('Anda belum mendaftar sebagai fundraiser untuk campaign apapun.', 'donasai') . '</p>';
@@ -593,8 +588,8 @@ function donasai_shortcode_fundraiser_stats()
             <tbody>
                 <?php foreach ($results as $row):
                     // Get visit count (lazy query, ideally should act stored count or cached)
-                    $table_logs = esc_sql($wpdb->prefix . 'donasai_referral_logs');
-                    $visit_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(id) FROM {$table_logs} WHERE fundraiser_id = %d", $row->id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                    $table_logs = $wpdb->prefix . 'donasai_referral_logs';
+                    $visit_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(id) FROM %i WHERE fundraiser_id = %d", $table_logs, $row->id));
                     $link = add_query_arg('ref', $row->referral_code, get_permalink($row->campaign_id));
                     ?>
                     <tr style="border-bottom:1px solid #eee;">
@@ -696,8 +691,8 @@ function donasai_shortcode_confirmation_form()
     if (isset($_GET['donation_id'])) {
         global $wpdb;
         $d_id = intval($_GET['donation_id']);
-        $table_donations = esc_sql($wpdb->prefix . 'donasai_donations');
-        $donation_row = $wpdb->get_row($wpdb->prepare("SELECT amount FROM {$table_donations} WHERE id = %d", $d_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        $table_donations = $wpdb->prefix . 'donasai_donations';
+        $donation_row = $wpdb->get_row($wpdb->prepare("SELECT amount FROM %i WHERE id = %d", $table_donations, $d_id));
         if ($donation_row) {
             $donation_id_val = $d_id;
             $amount_val = $donation_row->amount;
@@ -715,8 +710,8 @@ function donasai_shortcode_confirmation_form()
 
             // Verify Donation Exists
             if ($donation_id > 0) {
-                $table_donations = esc_sql($wpdb->prefix . 'donasai_donations');
-                $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_donations} WHERE id = %d", $donation_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                $table_donations = $wpdb->prefix . 'donasai_donations';
+                $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $table_donations, $donation_id));
 
                 if (!$donation) {
                     $error = 'ID Donasi tidak ditemukan.';
@@ -726,8 +721,15 @@ function donasai_shortcode_confirmation_form()
                         require_once(ABSPATH . 'wp-admin/includes/file.php');
                     }
 
-                    $uploadedfile = isset($_FILES['proof_file']) ? $_FILES['proof_file'] : null;
-                    if ($uploadedfile && !isset($uploadedfile['tmp_name'])) {
+                    if ( isset( $_FILES['proof_file'] ) ) {
+                        $uploadedfile = array(
+                            'name'     => sanitize_file_name( wp_unslash( $_FILES['proof_file']['name'] ) ),
+                            'type'     => sanitize_mime_type( wp_unslash( $_FILES['proof_file']['type'] ) ),
+                            'tmp_name' => sanitize_text_field( wp_unslash( $_FILES['proof_file']['tmp_name'] ) ),
+                            'error'    => intval( $_FILES['proof_file']['error'] ),
+                            'size'     => intval( $_FILES['proof_file']['size'] ),
+                        );
+                    } else {
                         $uploadedfile = null;
                     }
 
@@ -799,20 +801,15 @@ add_shortcode('donasai_campaign_list', 'donasai_shortcode_campaign_list');
 
 function donasai_enqueue_receipt_assets() {
     if (isset($_GET['donasai_receipt'])) {
-        $donation_id = intval($_GET['donasai_receipt']);
+        $donasai_donation_id = intval($_GET['donasai_receipt']);
         
-        // Tailwind (CDN for now, as disclosed in readme)
-        wp_enqueue_script('donasai-tailwind', 'https://cdn.tailwindcss.com', array(), '3.4.0', false);
+        // Dynamic Receipt Data for styling
+        $donasai_appearance = get_option('donasai_settings_appearance', []);
+        $donasai_brand_color = !empty($donasai_appearance['brand_color']) ? $donasai_appearance['brand_color'] : '#0ea5e9';
         
-        // Google Fonts
-        wp_enqueue_style('donasai-receipt-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap', array(), null);
-
-        // Dynamic Receipt Data
-        $appearance = get_option('donasai_settings_appearance', []);
-        $brand_color = !empty($appearance['brand_color']) ? $appearance['brand_color'] : '#0ea5e9';
-        
-        if (!function_exists('donasai_receipt_adjust_brightness')) {
-            function donasai_receipt_adjust_brightness($hex, $steps) {
+        // Helper to adjust brightness for shades
+        if (!function_exists('donasai_get_shade')) {
+            function donasai_get_shade($hex, $steps) {
                 $steps = max(-255, min(255, $steps));
                 $hex = str_replace('#', '', $hex);
                 if (strlen($hex) == 3) {
@@ -829,36 +826,29 @@ function donasai_enqueue_receipt_assets() {
             }
         }
 
-        $brand_50  = donasai_receipt_adjust_brightness($brand_color, 180);
-        $brand_100 = donasai_receipt_adjust_brightness($brand_color, 150);
-        $brand_900 = donasai_receipt_adjust_brightness($brand_color, -80);
+        $donasai_brand_50  = donasai_get_shade($donasai_brand_color, 180);
+        $donasai_brand_100 = donasai_get_shade($donasai_brand_color, 150);
+        $donasai_brand_900 = donasai_get_shade($donasai_brand_color, -80);
 
-        $tailwind_config = "
-            tailwind.config = {
-                darkMode: 'class',
-                theme: {
-                    extend: {
-                        fontFamily: {
-                            sans: ['Inter', 'sans-serif'],
-                        },
-                        colors: {
-                            brand: {
-                                50: '" . esc_js($brand_50) . "',
-                                100: '" . esc_js($brand_100) . "',
-                                500: '" . esc_js($brand_color) . "', 
-                                600: '" . esc_js(donasai_receipt_adjust_brightness($brand_color, -10)) . "', 
-                                700: '" . esc_js(donasai_receipt_adjust_brightness($brand_color, -30)) . "', 
-                                800: '" . esc_js(donasai_receipt_adjust_brightness($brand_color, -50)) . "', 
-                                900: '" . esc_js($brand_900) . "', 
-                            }
-                        }
-                    }
-                }
+        // Core Receipt Styles - Replacing Tailwind CDN with native CSS
+        $donasai_receipt_css = "
+            :root {
+                --donasai-brand-50: " . esc_attr($donasai_brand_50) . ";
+                --donasai-brand-100: " . esc_attr($donasai_brand_100) . ";
+                --donasai-brand-500: " . esc_attr($donasai_brand_color) . ";
+                --donasai-brand-900: " . esc_attr($donasai_brand_900) . ";
             }
-        ";
-        wp_add_inline_script('donasai-tailwind', $tailwind_config);
-
-        $custom_css = "
+            body { 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+                margin: 0; padding: 0; background-color: #f3f4f6;
+            }
+            .print-container { background: white; max-width: 800px; margin: 40px auto; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow: hidden; position: relative; }
+            .bg-brand-600 { background-color: var(--donasai-brand-500); }
+            .hover\:bg-brand-700:hover { background-color: var(--donasai-brand-900); }
+            .text-brand-600 { color: var(--donasai-brand-500); }
+            .border-brand-500 { border-color: var(--donasai-brand-500); }
+            
+            /* Print Specifics */
             @media print {
                 @page { margin: 0; size: auto; }
                 body { background: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -866,33 +856,25 @@ function donasai_enqueue_receipt_assets() {
                 .print-container { box-shadow: none !important; max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; border: none !important; }
                 .wave-decoration, .header-curve { z-index: -1; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
                 canvas { display: none !important; }
-                html.dark body { background: white !important; color: black !important; }
-                html.dark .print-container { background: white !important; color: black !important; }
             }
             .header-curve {
                 position: absolute; top: 0; left: 0; width: 100%; height: 120px;
-                background: linear-gradient(135deg, " . esc_attr($brand_50) . " 0%, #ffffff 100%);
+                background: linear-gradient(135deg, var(--donasai-brand-50) 0%, #ffffff 100%);
                 border-bottom-right-radius: 50% 20px; border-bottom-left-radius: 50% 20px; z-index: 0;
-            }
-            .dark .header-curve {
-                background: linear-gradient(135deg, " . esc_attr($brand_900) . " 0%, #0f172a 100%);
             }
             .wave-decoration {
                 position: absolute; top: -50px; left: -50px; width: 200px; height: 200px;
-                background: radial-gradient(circle, " . esc_attr($brand_100) . " 0%, rgba(255, 255, 255, 0) 70%);
+                background: radial-gradient(circle, var(--donasai-brand-100) 0%, rgba(255, 255, 255, 0) 70%);
                 border-radius: 50%; z-index: 0;
             }
-            .dark .wave-decoration {
-                background: radial-gradient(circle, " . esc_attr($brand_900) . " 0%, rgba(15, 23, 42, 0) 70%);
-            }
         ";
-        wp_add_inline_style('donasai-receipt-fonts', $custom_css);
+        wp_add_inline_style('donasai-frontend', $donasai_receipt_css);
 
         // Confetti Script
         $donation_status = 'pending';
         global $wpdb;
         $table = $wpdb->prefix . 'donasai_donations';
-        $status = $wpdb->get_var($wpdb->prepare("SELECT status FROM {$table} WHERE id = %d", $donation_id));
+        $status = $wpdb->get_var($wpdb->prepare("SELECT status FROM %i WHERE id = %d", $table, $donasai_donation_id));
         
         if ($status === 'complete') {
             $confetti_script = "
@@ -924,7 +906,7 @@ function donasai_enqueue_receipt_assets() {
                     setTimeout(() => { canvas.style.display = 'none'; }, 4000);
                 })();
             ";
-            wp_add_inline_script('donasai-tailwind', $confetti_script);
+            wp_add_inline_script('donasai-frontend', $confetti_script);
         }
     }
 }

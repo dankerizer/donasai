@@ -9,19 +9,19 @@ if (!defined('ABSPATH')) {
 }
 
 // Get Appearance Settings
-$settings_app = get_option('donasai_settings_appearance', []);
-$primary_color = $settings_app['brand_color'] ?? '#059669';
-$button_color = $settings_app['button_color'] ?? '#ec4899';
-$font_family = $settings_app['font_family'] ?? 'Inter';
-$border_radius = $settings_app['border_radius'] ?? '12px';
+$donasai_settings_app = get_option('donasai_settings_appearance', []);
+$donasai_primary_color = $donasai_settings_app['brand_color'] ?? '#059669';
+$donasai_button_color = $donasai_settings_app['button_color'] ?? '#ec4899';
+$donasai_font_family = $donasai_settings_app['font_family'] ?? 'Inter';
+$donasai_border_radius = $donasai_settings_app['border_radius'] ?? '12px';
 
 // Query Campaigns
-$args = array(
+$donasai_args = array(
     'post_type' => 'donasai_campaign',
     'post_status' => 'publish',
     'posts_per_page' => 12, // Limitation to prevent overload
 );
-$query = new WP_Query($args);
+$donasai_query = new WP_Query($donasai_args);
 
 ?>
 
@@ -30,16 +30,16 @@ $query = new WP_Query($args);
 
 
 
-    <?php if ($query->have_posts()): ?>
+    <?php if ($donasai_query->have_posts()): ?>
         <div class="donasai-campaign-grid">
-            <?php while ($query->have_posts()):
-                $query->the_post();
-                $campaign_id = get_the_ID();
-                $progress = function_exists('donasai_get_campaign_progress') ? donasai_get_campaign_progress($campaign_id) : ['collected' => 0, 'target' => 0, 'percentage' => 0];
+            <?php while ($donasai_query->have_posts()):
+                $donasai_query->the_post();
+                $donasai_campaign_id = get_the_ID();
+                $donasai_progress = function_exists('donasai_get_campaign_progress') ? donasai_get_campaign_progress($donasai_campaign_id) : ['collected' => 0, 'target' => 0, 'percentage' => 0];
 
                 // Expiry Logic (Placeholder as meta isn't strictly defined yet for expiry, assume unlimited for mvp or until implemented)
-                // If you had an expiry date meta: $expiry = get_post_meta($campaign_id, '_donasai_expiry', true);
-                $is_unlimited = true;
+                // If you had an expiry date meta: $expiry = get_post_meta($donasai_campaign_id, '_donasai_expiry', true);
+                $donasai_is_unlimited = true;
                 ?>
                 <div class="donasai-card">
                     <div class="donasai-card-image">
@@ -68,11 +68,11 @@ $query = new WP_Query($args);
                         <div class="donasai-progress-wrap">
                             <div class="donasai-progress-bar">
                                 <div class="donasai-progress-fill"
-                                    style="width: <?php echo esc_attr($progress['percentage']); ?>%;"></div>
+                                    style="width: <?php echo esc_attr($donasai_progress['percentage']); ?>%;"></div>
                             </div>
                             <div
                                 style="display:flex; justify-content:flex-end; font-size:12px; font-weight:600; color:var(--donasai-primary);">
-                                <?php echo esc_html($progress['percentage']); ?>%
+                                <?php echo esc_html($donasai_progress['percentage']); ?>%
                             </div>
                         </div>
 
@@ -80,13 +80,13 @@ $query = new WP_Query($args);
                             <div>
                                 <div class="donasai-stat-label"><?php esc_html_e('Terkumpul', 'donasai'); ?></div>
                                 <div class="donasai-stat-value">Rp
-                                    <?php echo esc_html(number_format($progress['collected'], 0, ',', '.')); ?>
+                                    <?php echo esc_html(number_format($donasai_progress['collected'], 0, ',', '.')); ?>
                                 </div>
                             </div>
                             <div style="text-align:right;">
                                 <div class="donasai-stat-label"><?php esc_html_e('Target', 'donasai'); ?></div>
                                 <div class="donasai-stat-value">Rp
-                                    <?php echo esc_html(number_format($progress['target'], 0, ',', '.')); ?>
+                                    <?php echo esc_html(number_format($donasai_progress['target'], 0, ',', '.')); ?>
                                 </div>
                             </div>
                         </div>
@@ -96,7 +96,7 @@ $query = new WP_Query($args);
                         <div style="font-size:13px; color:#6b7280;">
                             <span
                                 style="display:block; margin-bottom:2px;"><?php esc_html_e('Batas Waktu', 'donasai'); ?></span>
-                            <?php if ($is_unlimited): ?>
+                            <?php if ($donasai_is_unlimited): ?>
                                 <span class="donasai-infinity">∞</span>
                             <?php else: ?>
                                 <!-- Add countdown logic here if needed -->
