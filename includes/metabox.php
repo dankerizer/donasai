@@ -204,11 +204,10 @@ function donasai_save_campaign_options($post_id)
 
 
 	if (isset($_POST['donasai_whatsapp_settings']) && is_array($_POST['donasai_whatsapp_settings'])) {
-		$wa_settings = wp_unslash($_POST['donasai_whatsapp_settings']);
+		$wa_post = wp_unslash($_POST['donasai_whatsapp_settings']); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$wa = array();
-		foreach ($wa_settings as $key => $value) {
+		foreach ($wa_post as $key => $value) {
 			$clean_key = sanitize_key($key);
-			// Message might need textarea sanitization
 			if ($clean_key === 'message') {
 				$wa[$clean_key] = sanitize_textarea_field($value);
 			} else {
@@ -221,13 +220,10 @@ function donasai_save_campaign_options($post_id)
 	// Save Campaign Banks
 	if (defined('DONASAI_PRO_VERSION')) {
 		if (isset($_POST['donasai_campaign_banks']) && is_array($_POST['donasai_campaign_banks'])) {
-			$banks_post = wp_unslash($_POST['donasai_campaign_banks']);
-			$banks = array_map(function ($val) {
-				return sanitize_text_field($val);
-			}, $banks_post);
+			$banks_post = wp_unslash($_POST['donasai_campaign_banks']); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$banks = array_map('sanitize_text_field', $banks_post);
 			update_post_meta($post_id, '_donasai_campaign_banks', $banks);
 		} else {
-			// If not set but defined DONASAI_PRO_VERSION (and nonce valid), it means user unchecked all.
 			delete_post_meta($post_id, '_donasai_campaign_banks');
 		}
 	}

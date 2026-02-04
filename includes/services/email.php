@@ -36,7 +36,8 @@ class DONASAI_Email
 			$donation = wp_cache_get($cache_key, 'donasai_donations');
 
 			if (false === $donation) {
-				$donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_donations} WHERE id = %d", $donation_id)); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$table_donations = $wpdb->prefix . 'donasai_donations';
+				$donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $table_donations, $donation_id));
 				if ($donation) {
 					wp_cache_set($cache_key, $donation, 'donasai_donations', 300);
 				}

@@ -69,12 +69,12 @@ function donasai_api_get_chart_stats()
                 DATE(created_at) as date, 
                 SUM(amount) as total_amount,
                 COUNT(id) as total_count
-            FROM {$wpdb->prefix}donasai_donations 
+            FROM %i 
             WHERE status = %s 
             AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
             GROUP BY DATE(created_at)
             ORDER BY date ASC
-        ", 'complete'));
+        ", $wpdb->prefix . 'donasai_donations', 'complete'));
         wp_cache_set($cache_key, $results, 'donasai_stats', 3600);
     }
 
@@ -111,21 +111,21 @@ function donasai_api_get_chart_stats()
     // --- Payment Methods ---
     $payment_methods = $wpdb->get_results($wpdb->prepare("
         SELECT payment_method, COUNT(*) as count 
-        FROM {$wpdb->prefix}donasai_donations 
+        FROM %i 
         WHERE status = %s 
         GROUP BY payment_method
-    ", 'complete'));
+    ", $wpdb->prefix . 'donasai_donations', 'complete'));
 
     // --- Top Campaigns ---
     $top_campaigns = $wpdb->get_results($wpdb->prepare("
         SELECT p.post_title as name, SUM(d.amount) as value
-        FROM {$wpdb->prefix}donasai_donations d
-        LEFT JOIN {$wpdb->prefix}posts p ON d.campaign_id = p.ID
+        FROM %i d
+        LEFT JOIN %i p ON d.campaign_id = p.ID
         WHERE d.status = %s AND d.campaign_id > 0
         GROUP BY d.campaign_id
         ORDER BY value DESC
         LIMIT 5
-    ", 'complete'));
+    ", $wpdb->prefix . 'donasai_donations', $wpdb->prefix . 'posts', 'complete'));
 
     return rest_ensure_response(array(
         'daily_stats' => $daily_stats,
@@ -168,12 +168,14 @@ function donasai_api_get_stats()
     $last_month_end = wp_date('Y-m-t', strtotime('-1 month'));
 
     $current_month_amount = $wpdb->get_var($wpdb->prepare(
-        "SELECT SUM(amount) FROM {$wpdb->prefix}donasai_donations WHERE status = 'complete' AND created_at >= %s",
+        "SELECT SUM(amount) FROM %i WHERE status = 'complete' AND created_at >= %s",
+        $wpdb->prefix . 'donasai_donations',
         $current_month_start
     )) ?: 0;
 
     $last_month_amount = $wpdb->get_var($wpdb->prepare(
-        "SELECT SUM(amount) FROM {$wpdb->prefix}donasai_donations WHERE status = 'complete' AND created_at >= %s AND created_at <= %s",
+        "SELECT SUM(amount) FROM %i WHERE status = 'complete' AND created_at >= %s AND created_at <= %s",
+        $wpdb->prefix . 'donasai_donations',
         $last_month_start,
         $last_month_end
     )) ?: 0;
@@ -321,17 +323,19 @@ function donasai_api_export_donations($request)
     $where_sql = $query_parts['where'];
     $args = $query_parts['args'];
 
-    // Construct the SQL with placeholders
+    // Construct the SQL with placeholders and execute
     if (!empty($args)) {
-        // Use %i for table name and interpolate the sanitized WHERE clause structure
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        $sql = "SELECT * FROM %i WHERE {$where_sql} ORDER BY created_at DESC";
-        $query = $wpdb->prepare($sql, array_merge(array($table_name), $args));
+        $results = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM %i WHERE " . $where_sql . " ORDER BY created_at DESC", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+            array_merge(array($table_name), $args)
+        ), ARRAY_A);
     } else {
-        $query = $wpdb->prepare("SELECT * FROM %i WHERE 1=1 ORDER BY created_at DESC LIMIT %d", $table_name, 10000);
+        $results = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM %i WHERE 1=1 ORDER BY created_at DESC LIMIT %d",
+            $table_name,
+            10000
+        ), ARRAY_A);
     }
-
-    $results = $wpdb->get_results($query, ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
     $filename = 'donations-export-' . wp_date('Y-m-d') . '.csv';
     header('Content-Type: text/csv');
@@ -490,25 +494,24 @@ function donasai_api_get_donations($request)
 
     // 1. Get Total Count
     if (!empty($args)) {
-        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-        $count_query = $wpdb->prepare("SELECT COUNT(*) FROM %i WHERE {$where_sql}", array_merge(array($table_name), $args));
+        $total_items = (int) $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM %i WHERE " . $where_sql, // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+            array_merge(array($table_name), $args)
+        ));
     } else {
-        $count_query = $wpdb->prepare("SELECT COUNT(*) FROM %i", $table_name);
+        $total_items = (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM %i", $table_name));
     }
-    $total_items = (int) $wpdb->get_var($count_query); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching
     $total_pages = ceil($total_items / $per_page);
 
     // 2. Get Data
-    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-    $data_sql = "SELECT * FROM %i WHERE {$where_sql} ORDER BY created_at DESC LIMIT %d OFFSET %d";
-    
-    // Add pagination args
     $data_args = array_merge(array($table_name), $args);
     $data_args[] = $per_page;
     $data_args[] = $offset;
 
-    $query = $wpdb->prepare($data_sql, $data_args); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-    $results = $wpdb->get_results($query); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+    $results = $wpdb->get_results($wpdb->prepare(
+        "SELECT * FROM %i WHERE " . $where_sql . " ORDER BY created_at DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+        $data_args
+    ));
 
     // Format data for frontend
     $data = array_map(function ($row) {

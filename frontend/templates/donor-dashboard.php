@@ -2,9 +2,6 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-if (!defined('ABSPATH')) {
-    exit;
-}
 
 /**
  * Donor Dashboard Template
@@ -24,7 +21,7 @@ $donasai_donations = wp_cache_get($donasai_cache_key, 'donasai_donations');
 
 if (false === $donasai_donations) {
     $donasai_table_name = $wpdb->prefix . 'donasai_donations';
-    $donasai_donations = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i WHERE user_id = %d ORDER BY created_at DESC", $donasai_table_name, $donasai_user_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    $donasai_donations = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i WHERE user_id = %d ORDER BY created_at DESC", $donasai_table_name, $donasai_user_id));
     wp_cache_set($donasai_cache_key, $donasai_donations, 'donasai_donations', 300);
 }
 ?>

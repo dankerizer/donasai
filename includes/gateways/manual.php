@@ -128,8 +128,9 @@ class DONASAI_Gateway_Manual implements DONASAI_Gateway
         if (function_exists('donasai_get_donation')) {
             $donation = donasai_get_donation($donation_id);
         } else {
-             $table = esc_sql($wpdb->prefix . 'donasai_donations');
-             $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $donation_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+             global $wpdb;
+             $table = $wpdb->prefix . 'donasai_donations';
+             $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $table, $donation_id));
         }
 
         $total_amount = $donation ? $donation->amount : 0;

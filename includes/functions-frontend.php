@@ -402,7 +402,7 @@ add_action('wp_enqueue_scripts', 'donasai_enqueue_frontend_assets');
 function donasai_get_recent_donors($campaign_id, $limit = 10)
 {
     global $wpdb;
-    $table = esc_sql($wpdb->prefix . 'donasai_donations');
+    $table = $wpdb->prefix . 'donasai_donations';
 
     // Only completed donations
     $cache_key = 'donasai_recent_donors_' . $campaign_id . '_limit_' . $limit;
@@ -427,7 +427,7 @@ function donasai_get_recent_donors($campaign_id, $limit = 10)
 function donasai_get_donor_count($campaign_id)
 {
     global $wpdb;
-    $table = esc_sql($wpdb->prefix . 'donasai_donations');
+    $table = $wpdb->prefix . 'donasai_donations';
 
     $cache_key = 'donasai_donor_count_' . $campaign_id;
     $count = wp_cache_get($cache_key, 'donasai_donations');
@@ -553,7 +553,7 @@ function donasai_shortcode_fundraiser_stats()
 
     global $wpdb;
     $user_id = get_current_user_id();
-    $table_fundraisers = esc_sql($wpdb->prefix . 'donasai_fundraisers');
+    $table_fundraisers = $wpdb->prefix . 'donasai_fundraisers';
 
     // Get all campaigns user is fundraising for
     $results = $wpdb->get_results($wpdb->prepare(
@@ -762,7 +762,7 @@ function donasai_shortcode_confirmation_form()
                                     'status' => 'processing' // Mark as Processing (Enum matches DB)
                                 ),
                                 array('id' => $donation_id)
-                            ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                            );
 
                             $success = true;
                         } else {

@@ -196,14 +196,15 @@ function donasai_update_campaign_stats($campaign_id)
     $table = esc_sql($wpdb->prefix . 'donasai_donations');
 
     // Sum only completed donations
-    $total = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM {$table} WHERE campaign_id = %d AND status = 'complete'", $campaign_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+    $total = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM %i WHERE campaign_id = %d AND status = 'complete'", $table, $campaign_id));
 
     // Count Unique Donors (by email) for completed donations
-    $donor_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM {$table} WHERE campaign_id = %d AND status = 'complete'", $campaign_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+    $donor_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM %i WHERE campaign_id = %d AND status = 'complete'", $table, $campaign_id));
 
     update_post_meta($campaign_id, '_donasai_collected_amount', $total);
     update_post_meta($campaign_id, '_donasai_donor_count', $donor_count);
 }
+
 
 /**
  * Get Donation by ID (Cached)
@@ -220,8 +221,8 @@ function donasai_get_donation($donation_id)
     $donation = wp_cache_get($cache_key, 'donasai_donations');
 
     if (false === $donation) {
-        $table = esc_sql($wpdb->prefix . 'donasai_donations');
-        $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $donation_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        $table = $wpdb->prefix . 'donasai_donations';
+        $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $table, $donation_id));
         if ($donation) {
             wp_cache_set($cache_key, $donation, 'donasai_donations', 3600);
         }

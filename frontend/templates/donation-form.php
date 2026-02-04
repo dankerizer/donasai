@@ -6,51 +6,51 @@ if (!defined('ABSPATH')) {
  * Donation Form Template (Modern Redesign)
  */
 
-$campaign_id = isset($campaign_id) ? $campaign_id : get_the_ID();
-$title = get_the_title($campaign_id);
-$thumbnail = get_the_post_thumbnail_url($campaign_id, 'medium');
-$type = get_post_meta($campaign_id, '_donasai_type', true);
-$packages = get_post_meta($campaign_id, '_donasai_packages', true);
-$packages = json_decode($packages, true);
+$donasai_campaign_id = isset($campaign_id) ? $campaign_id : get_the_ID();
+$donasai_title = get_the_title($donasai_campaign_id);
+$donasai_thumbnail = get_the_post_thumbnail_url($donasai_campaign_id, 'medium');
+$donasai_type = get_post_meta($donasai_campaign_id, '_donasai_type', true);
+$donasai_packages = get_post_meta($donasai_campaign_id, '_donasai_packages', true);
+$donasai_packages = json_decode($donasai_packages, true);
 
 // Get User Data
-$current_user = wp_get_current_user();
-$default_name = $current_user->ID ? $current_user->display_name : '';
-$default_email = $current_user->ID ? $current_user->user_email : '';
+$donasai_current_user = wp_get_current_user();
+$donasai_default_name = $donasai_current_user->ID ? $donasai_current_user->display_name : '';
+$donasai_default_email = $donasai_current_user->ID ? $donasai_current_user->user_email : '';
 
 // Settings
-$settings = get_option('donasai_settings_donation', []);
-$min_amount = $settings['min_amount'] ?? 10000;
-$presets = explode(',', $settings['presets'] ?? '50000,100000,200000,500000');
-$presets = array_map('intval', $presets);
-$preset_emoji = $settings['preset_emoji'] ?? '💖';
+$donasai_settings = get_option('donasai_settings_donation', []);
+$donasai_min_amount = $donasai_settings['min_amount'] ?? 10000;
+$donasai_presets = explode(',', $donasai_settings['presets'] ?? '50000,100000,200000,500000');
+$donasai_presets = array_map('intval', $donasai_presets);
+$donasai_preset_emoji = $donasai_settings['preset_emoji'] ?? '💖';
 
 // Layout Settings
-$settings_app = get_option('donasai_settings_appearance', []);
+$donasai_settings_app = get_option('donasai_settings_appearance', []);
 // Pro Check for Dark Mode
-$is_pro = defined('DONASAI_PRO_VERSION'); 
-$dark_mode = ($settings_app['dark_mode'] ?? false) && $is_pro;
+$donasai_is_pro = defined('DONASAI_PRO_VERSION'); 
+$donasai_dark_mode = ($donasai_settings_app['dark_mode'] ?? false) && $donasai_is_pro;
 
-$donation_layout = $settings_app['donation_layout'] ?? 'default';
-if (!$is_pro) {
-    $donation_layout = 'default';
+$donasai_donation_layout = $donasai_settings_app['donation_layout'] ?? 'default';
+if (!$donasai_is_pro) {
+    $donasai_donation_layout = 'default';
 }
 
-$body_classes = 'donasai-payment-page';
-if ($dark_mode) $body_classes .= ' dark';
-if ($donation_layout === 'split') $body_classes .= ' donasai-layout-split';
+$donasai_body_classes = 'donasai-payment-page';
+if ($donasai_dark_mode) $donasai_body_classes .= ' dark';
+if ($donasai_donation_layout === 'split') $donasai_body_classes .= ' donasai-layout-split';
 
 // If this is included in a standalone layout (like from campaign-single.php),
 // we don't want the body class to be duplicated if the caller already added it.
 // However, donation-form.php uses $body_classes for its wrapper div.
 ?>
 
-<div class="donasai-payment-container <?php echo esc_attr($body_classes); ?>">
+<div class="donasai-payment-container <?php echo esc_attr($donasai_body_classes); ?>">
     <div class="donasai-layout-wrapper">
 
         <!-- Header (Mobile Sticky) -->
         <div class="donasai-header-mobile">
-            <a href="<?php echo esc_url(get_permalink($campaign_id)); ?>" class="donasai-back-btn">
+            <a href="<?php echo esc_url(get_permalink($donasai_campaign_id)); ?>" class="donasai-back-btn">
                 <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
@@ -63,12 +63,12 @@ if ($donation_layout === 'split') $body_classes .= ' donasai-layout-split';
 
             <!-- Campaign Summary -->
             <div class="donasai-campaign-summary">
-                <?php if ($thumbnail): ?>
-                    <img src="<?php echo esc_url($thumbnail); ?>" alt="Campaign" class="donasai-campaign-thumb">
+                <?php if ($donasai_thumbnail): ?>
+                    <img src="<?php echo esc_url($donasai_thumbnail); ?>" alt="Campaign" class="donasai-campaign-thumb">
                 <?php endif; ?>
                 <div class="donasai-campaign-info">
                     <div class="donasai-campaign-label">Anda akan berdonasi untuk program:</div>
-                    <h3 class="donasai-campaign-title"><?php echo esc_html($title); ?></h3>
+                    <h3 class="donasai-campaign-title"><?php echo esc_html($donasai_title); ?></h3>
                 </div>
             </div>
 
@@ -76,7 +76,7 @@ if ($donation_layout === 'split') $body_classes .= ' donasai-layout-split';
                 <!-- Correct Nonce & Action for Service Handler -->
                 <?php wp_nonce_field('donasai_donate_action', 'donasai_donate_nonce'); ?>
                 <input type="hidden" name="donasai_action" value="submit_donation">
-                <input type="hidden" name="campaign_id" value="<?php echo esc_attr($campaign_id); ?>">
+                <input type="hidden" name="campaign_id" value="<?php echo esc_attr($donasai_campaign_id); ?>">
 
                 <!-- Alert Success -->
                 <?php if (isset($_GET['donation_success']) && '1' === sanitize_text_field(wp_unslash($_GET['donation_success']))): // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
@@ -91,10 +91,10 @@ if ($donation_layout === 'split') $body_classes .= ' donasai-layout-split';
 
                 <!-- SECTION: NOMINAL -->
                 <div class="donasai-section ">
-                    <?php do_action('donasai_form_before_amount', $campaign_id); ?>
+                    <?php do_action('donasai_form_before_amount', $donasai_campaign_id); ?>
                     <label class="donasai-label-heading">Masukkan Nominal Donasi</label>
 
-                    <?php if ($type === 'zakat'): ?>
+                    <?php if ($donasai_type === 'zakat'): ?>
                         <!-- Zakat Logic Placeholder (Simplified for Redesign) -->
                         <div class="donasai-callout-blue ">
                             <div class="donasai-form-row">
@@ -111,17 +111,17 @@ if ($donation_layout === 'split') $body_classes .= ' donasai-layout-split';
                                 <input type="hidden" id="zakat_calc_input">
                             </div>
                         </div>
-                    <?php elseif ($type === 'qurban' && !empty($packages)): ?>
+                    <?php elseif ($donasai_type === 'qurban' && !empty($donasai_packages)): ?>
                         <!-- Qurban List -->
                         <div class="donasai-qurban-list donasai-form-row">
-                            <?php foreach ($packages as $pkg): ?>
+                            <?php foreach ($donasai_packages as $donasai_pkg): ?>
                                 <label class="donasai-radio-card">
-                                    <input type="radio" name="qurban_package" value="<?php echo esc_attr($pkg['price']); ?>"
+                                    <input type="radio" name="qurban_package" value="<?php echo esc_attr($donasai_pkg['price']); ?>"
                                         onclick="selectQurbanPackage(this.value)">
                                     <div class="donasai-radio-check"></div>
                                     <div class="donasai-radio-content">
-                                        <div class="donasai-pkg-name"><?php echo esc_html($pkg['name']); ?></div>
-                                        <div class="donasai-pkg-price">Rp <?php echo esc_html(number_format($pkg['price'], 0, ',', '.')); ?>
+                                        <div class="donasai-pkg-name"><?php echo esc_html($donasai_pkg['name']); ?></div>
+                                        <div class="donasai-pkg-price">Rp <?php echo esc_html(number_format($donasai_pkg['price'], 0, ',', '.')); ?>
                                         </div>
                                     </div>
                                 </label>
@@ -139,10 +139,10 @@ if ($donation_layout === 'split') $body_classes .= ' donasai-layout-split';
                     <?php else: ?>
                         <!-- Standard Donation Presets -->
                         <div class="donasai-grid-presets">
-                            <?php foreach ($presets as $val): ?>
-                                <div class="donasai-preset-card" data-amount="<?php echo esc_attr($val); ?>">
-                                    <div class="donasai-preset-emoji"><?php echo esc_html($preset_emoji); ?></div>
-                                    <div class="donasai-preset-val">Rp <?php echo esc_html(number_format($val / 1000, 0)); ?>rb
+                            <?php foreach ($donasai_presets as $donasai_val): ?>
+                                <div class="donasai-preset-card" data-amount="<?php echo esc_attr($donasai_val); ?>">
+                                    <div class="donasai-preset-emoji"><?php echo esc_html($donasai_preset_emoji); ?></div>
+                                    <div class="donasai-preset-val">Rp <?php echo esc_html(number_format($donasai_val / 1000, 0)); ?>rb
                                     </div>
                                 </div>
                             <?php endforeach; ?>
@@ -154,10 +154,10 @@ if ($donation_layout === 'split') $body_classes .= ' donasai-layout-split';
                         <input type="text" id="amount_display" class="donasai-input-money" placeholder="0"
                             autocomplete="off">
                         <!-- Hidden input for actual submission -->
-                        <input type="hidden" name="amount" id="amount" min="<?php echo esc_attr($min_amount); ?>">
+                        <input type="hidden" name="amount" id="amount" min="<?php echo esc_attr($donasai_min_amount); ?>">
                     </div>
                     <div class="donasai-helper-text">Minimal donasi sebesar Rp
-                        <?php echo esc_html(number_format($min_amount, 0, ',', '.')); ?>
+                        <?php echo esc_html(number_format($donasai_min_amount, 0, ',', '.')); ?>
                     </div>
                 </div>
 
@@ -168,10 +168,10 @@ if ($donation_layout === 'split') $body_classes .= ' donasai-layout-split';
                     <div class="donasai-user-option">
                         <?php if (is_user_logged_in()): ?>
                             <div class="donasai-user-profile">
-                                <img src="<?php echo esc_url(get_avatar_url($current_user->ID)); ?>" alt="">
+                                <img src="<?php echo esc_url(get_avatar_url($donasai_current_user->ID)); ?>" alt="">
                                 <div>
-                                    <div class="name"><?php echo esc_html($default_name); ?></div>
-                                    <div class="email"><?php echo esc_html($default_email); ?></div>
+                                    <div class="name"><?php echo esc_html($donasai_default_name); ?></div>
+                                    <div class="email"><?php echo esc_html($donasai_default_email); ?></div>
                                 </div>
                             </div>
                         <?php else: ?>
@@ -186,12 +186,12 @@ if ($donation_layout === 'split') $body_classes .= ' donasai-layout-split';
 
                     <div class="donasai-form-row">
                         <input type="text" name="donor_name" class="donasai-input" placeholder="Nama Lengkap"
-                            value="<?php echo esc_attr($default_name); ?>" required>
+                            value="<?php echo esc_attr($donasai_default_name); ?>" required>
                     </div>
 
                     <div class="donasai-form-row">
                         <input type="text" name="donor_email" class="donasai-input" placeholder="Nomor WhatsApp atau Email"
-                            value="<?php echo esc_attr($default_email); ?>" required>
+                            value="<?php echo esc_attr($donasai_default_email); ?>" required>
                     </div>
 
                     <div class="donasai-switch-wrapper">
@@ -217,30 +217,30 @@ if ($donation_layout === 'split') $body_classes .= ' donasai-layout-split';
                     <div class="donasai-payment-list">
                         <!-- Manual Banks Loop -->
                         <?php
-                        $manual_gateway = new DONASAI_Gateway_Manual();
-                        $active_banks = $manual_gateway->get_active_banks($campaign_id);
+                        $donasai_manual_gateway = new DONASAI_Gateway_Manual();
+                        $donasai_active_banks = $donasai_manual_gateway->get_active_banks($donasai_campaign_id);
 
-                        if (defined('DONASAI_PRO_VERSION') && !empty($active_banks)) {
-                            $first = true;
-                            foreach ($active_banks as $bank) {
+                        if (defined('DONASAI_PRO_VERSION') && !empty($donasai_active_banks)) {
+                            $donasai_first = true;
+                            foreach ($donasai_active_banks as $donasai_bank) {
                                 // If ID exists (Pro), use manual_ID. If not (Legacy), use manual.
-                                $p_val = isset($bank['id']) ? 'manual_' . $bank['id'] : 'manual';
+                                $donasai_p_val = isset($donasai_bank['id']) ? 'manual_' . $donasai_bank['id'] : 'manual';
                                 ?>
                                 <label class="donasai-payment-item">
-                                    <input type="radio" name="payment_method" value="<?php echo esc_attr($p_val); ?>" <?php echo $first ? 'checked' : ''; ?>>
+                                    <input type="radio" name="payment_method" value="<?php echo esc_attr($donasai_p_val); ?>" <?php echo $donasai_first ? 'checked' : ''; ?>>
                                     <div class="donasai-payment-box">
                                         <div class="donasai-payment-icon">🏦</div>
                                         <div class="donasai-payment-details">
-                                            <div class="title">Transfer <?php echo esc_html($bank['bank_name']); ?></div>
-                                            <div class="desc"><?php echo esc_html($bank['account_number']); ?> a.n
-                                                <?php echo esc_html($bank['account_name']); ?>
+                                            <div class="title">Transfer <?php echo esc_html($donasai_bank['bank_name']); ?></div>
+                                            <div class="desc"><?php echo esc_html($donasai_bank['account_number']); ?> a.n
+                                                <?php echo esc_html($donasai_bank['account_name']); ?>
                                             </div>
                                         </div>
                                         <div class="donasai-check-icon"></div>
                                     </div>
                                 </label>
                                 <?php
-                                $first = false;
+                                $donasai_first = false;
                             }
                         } else {
                             // Fallback if no banks configured (should rarely happen as active_banks defaults to legacy)
@@ -281,16 +281,16 @@ if ($donation_layout === 'split') $body_classes .= ' donasai-layout-split';
                 <?php
                 // Fee Coverage (Pro Only)
                 if (defined('DONASAI_PRO_VERSION')) {
-                    $fee_settings = get_option('donasai_pro_fee_coverage', []);
-                    $fee_enabled = !empty($fee_settings['enabled']);
-                    $fee_default_checked = !empty($fee_settings['default_checked']);
+                    $donasai_fee_settings = get_option('donasai_pro_fee_coverage', []);
+                    $donasai_fee_enabled = !empty($donasai_fee_settings['enabled']);
+                    $donasai_fee_default_checked = !empty($donasai_fee_settings['default_checked']);
 
-                    if ($fee_enabled):
+                    if ($donasai_fee_enabled):
                         ?>
                         <div class="donasai-section donasai-fee-coverage-section" id="fee-coverage-section" style="display:none;">
                             <div class="donasai-fee-wrapper">
                                 <label class="donasai-fee-checkbox">
-                                    <input type="checkbox" name="cover_fee" value="1" id="cover_fee_checkbox" <?php echo $fee_default_checked ? 'checked' : ''; ?>>
+                                    <input type="checkbox" name="cover_fee" value="1" id="cover_fee_checkbox" <?php echo $donasai_fee_default_checked ? 'checked' : ''; ?>>
                                     <span class="donasai-fee-check-icon"></span>
                                     <div class="donasai-fee-text">
                                         <span class="donasai-fee-label">Saya ingin menanggung biaya admin</span>
@@ -336,10 +336,10 @@ if ($donation_layout === 'split') $body_classes .= ' donasai-layout-split';
             </form>
 
             <?php
-            $gen_settings = get_option('donasai_settings_general', []);
-            $is_branding_removed = !empty($gen_settings['remove_branding']);
+            $donasai_gen_settings = get_option('donasai_settings_general', []);
+            $donasai_is_branding_removed = !empty($donasai_gen_settings['remove_branding']);
 
-            if (!$is_branding_removed): ?>
+            if (!$donasai_is_branding_removed): ?>
                 <div class="donasai-powered-by">
                     Powered by <a href="https://donasai.com" target="_blank">Donasai</a>
                 </div>

@@ -51,14 +51,18 @@ class DONASAI_Subscription_Service
         $subscriptions = wp_cache_get($cache_key, 'donasai_subscriptions');
 
         if (false === $subscriptions) {
+            $donasai_table_subs = $wpdb->prefix . 'donasai_subscriptions';
+            $donasai_table_posts = $wpdb->prefix . 'posts';
             $subscriptions = $wpdb->get_results($wpdb->prepare(
                 "SELECT s.*, p.post_title as campaign_title 
-                 FROM {$wpdb->prefix}donasai_subscriptions s
-                 JOIN {$wpdb->prefix}posts p ON s.campaign_id = p.ID
+                 FROM %i s
+                 JOIN %i p ON s.campaign_id = p.ID
                  WHERE s.user_id = %d 
                  ORDER BY s.created_at DESC",
+                $donasai_table_subs,
+                $donasai_table_posts,
                 $user_id
-            )); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            ));
             wp_cache_set($cache_key, $subscriptions, 'donasai_subscriptions', 300);
         }
         return $subscriptions;
@@ -92,7 +96,8 @@ class DONASAI_Subscription_Service
         global $wpdb;
 
         // Find active subscriptions due today or earlier
-        $due = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$wpdb->prefix}donasai_subscriptions WHERE status = %s AND next_payment_date <= NOW()", 'active'));
+        $donasai_table_subs = $wpdb->prefix . 'donasai_subscriptions';
+        $due = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i WHERE status = %s AND next_payment_date <= NOW()", $donasai_table_subs, 'active'));
 
         foreach ($due as $sub) {
             // Logic to create a new pending donation

@@ -15,7 +15,7 @@ class DONASAI_Fundraiser_Service
 	public function __construct()
 	{
 		global $wpdb;
-		$this->table_name = esc_sql($wpdb->prefix . 'donasai_fundraisers');
+		$this->table_name = $wpdb->prefix . 'donasai_fundraisers';
 	}
 
 	/**
@@ -27,7 +27,8 @@ class DONASAI_Fundraiser_Service
 
 		// Check if already registered
 		$existing = $wpdb->get_row($wpdb->prepare(
-			"SELECT * FROM {$this->table_name} WHERE user_id = %d AND campaign_id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			"SELECT * FROM %i WHERE user_id = %d AND campaign_id = %d",
+			$this->table_name,
 			$user_id,
 			$campaign_id
 		));
@@ -68,9 +69,10 @@ class DONASAI_Fundraiser_Service
 
 		if (false === $found) {
 			$found = $wpdb->get_row($wpdb->prepare(
-				"SELECT * FROM {$this->table_name} WHERE referral_code = %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT * FROM %i WHERE referral_code = %s",
+				$this->table_name,
 				$code
-			)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			));
 			wp_cache_set($cache_key, $found, 'donasai_fundraisers', 3600);
 		}
 		return $found;
@@ -87,9 +89,10 @@ class DONASAI_Fundraiser_Service
 
 		if (false === $found) {
 			$found = $wpdb->get_row($wpdb->prepare(
-				"SELECT * FROM {$this->table_name} WHERE id = %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				"SELECT * FROM %i WHERE id = %d",
+				$this->table_name,
 				$id
-			)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			));
 			wp_cache_set($cache_key, $found, 'donasai_fundraisers', 3600);
 		}
 		return $found;
@@ -102,13 +105,14 @@ class DONASAI_Fundraiser_Service
 	{
 		global $wpdb;
 		$wpdb->query($wpdb->prepare(
-			"UPDATE {$this->table_name} 
+			"UPDATE %i 
 			 SET total_donations = total_donations + %f, 
 			     donation_count = donation_count + 1 
 			 WHERE id = %d",
+			$this->table_name,
 			$amount,
 			$fundraiser_id
-		)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		));
 		// Invalidate cache
 		wp_cache_delete('donasai_fundraiser_id_' . $fundraiser_id, 'donasai_fundraisers');
 	}
@@ -126,14 +130,16 @@ class DONASAI_Fundraiser_Service
 		if (false === $results) {
 			$results = $wpdb->get_results($wpdb->prepare(
 				"SELECT f.*, u.display_name, u.user_email 
-				 FROM {$this->table_name} f
-				 JOIN {$wpdb->users} u ON f.user_id = u.ID
+				 FROM %i f
+				 JOIN %i u ON f.user_id = u.ID
 				 WHERE f.campaign_id = %d AND f.total_donations > 0
 				 ORDER BY f.total_donations DESC
 				 LIMIT %d",
+				$this->table_name,
+				$wpdb->users,
 				$campaign_id,
 				$limit
-			)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			));
 			wp_cache_set($cache_key, $results, 'donasai_fundraisers', 300);
 		}
 		return $results;

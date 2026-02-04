@@ -9,9 +9,9 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 }
 
 // Check if user has opted to clean up data
-$general_settings = get_option('donasai_settings_general', []);
+$donasai_general_settings = get_option('donasai_settings_general', []);
 
-if (empty($general_settings)) {
+if (empty($donasai_general_settings)) {
     return;
 }
 
@@ -20,25 +20,25 @@ global $wpdb;
 /**
  * 1. Drop Tables if requested
  */
-if (!empty($general_settings['delete_on_uninstall_tables'])) {
-    $tables = array(
-        esc_sql($wpdb->prefix . 'donasai_donations'),
-        esc_sql($wpdb->prefix . 'donasai_campaign_meta'),
-        esc_sql($wpdb->prefix . 'donasai_fundraisers'),
-        esc_sql($wpdb->prefix . 'donasai_referral_logs'),
-        esc_sql($wpdb->prefix . 'donasai_subscriptions')
+if (!empty($donasai_general_settings['delete_on_uninstall_tables'])) {
+    $donasai_tables = array(
+        $wpdb->prefix . 'donasai_donations',
+        $wpdb->prefix . 'donasai_campaign_meta',
+        $wpdb->prefix . 'donasai_fundraisers',
+        $wpdb->prefix . 'donasai_referral_logs',
+        $wpdb->prefix . 'donasai_subscriptions'
     );
 
-    foreach ($tables as $table) {
-        $wpdb->query("DROP TABLE IF EXISTS {$table}");
+    foreach ($donasai_tables as $donasai_table) {
+        $wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS %i", $donasai_table));
     }
 }
 
 /**
  * 2. Delete Options if requested
  */
-if (!empty($general_settings['delete_on_uninstall_settings'])) {
-    $options = array(
+if (!empty($donasai_general_settings['delete_on_uninstall_settings'])) {
+    $donasai_options = array(
         'donasai_settings_general',
         'donasai_settings_donation',
         'donasai_settings_appearance',
@@ -49,12 +49,12 @@ if (!empty($general_settings['delete_on_uninstall_settings'])) {
     );
 
     // Pro specific options that might exist
-    $pro_options = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE 'donasai_pro_%'");
-    if (!empty($pro_options)) {
-        $options = array_merge($options, $pro_options);
+    $donasai_pro_options = $wpdb->get_col($wpdb->prepare("SELECT option_name FROM %i WHERE option_name LIKE %s", $wpdb->options, 'donasai_pro_%'));
+    if (!empty($donasai_pro_options)) {
+        $donasai_options = array_merge($donasai_options, $donasai_pro_options);
     }
 
-    foreach ($options as $option) {
-        delete_option($option);
+    foreach ($donasai_options as $donasai_option) {
+        delete_option($donasai_option);
     }
 }
