@@ -31,7 +31,7 @@ export default function Dashboard() {
 		queryKey: ["stats"],
 		queryFn: async () => {
 			const response = await fetch("/wp-json/donasai/v1/stats", {
-				headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
+				headers: { "X-WP-Nonce": (window as any).donasaiSettings?.nonce },
 			});
 			if (!response.ok)
 				return { total_donations: 0, total_donors: 0, active_campaigns: 0 };
@@ -43,7 +43,7 @@ export default function Dashboard() {
 		queryKey: ["chart-stats"],
 		queryFn: async () => {
 			const response = await fetch("/wp-json/donasai/v1/stats/chart", {
-				headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
+				headers: { "X-WP-Nonce": (window as any).donasaiSettings?.nonce },
 			});
 			if (!response.ok) return {};
 			return response.json();
@@ -55,7 +55,7 @@ export default function Dashboard() {
 		queryKey: ["settings"],
 		queryFn: async () => {
 			const response = await fetch("/wp-json/donasai/v1/settings", {
-				headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
+				headers: { "X-WP-Nonce": (window as any).donasaiSettings?.nonce },
 			});
 			if (!response.ok) return {};
 			return response.json();

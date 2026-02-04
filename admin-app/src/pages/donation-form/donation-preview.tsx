@@ -39,7 +39,7 @@ export function DonationPreview({
 			}
 		} else if (!isFetchingCampaigns && campaigns.length === 0 && !previewUrl) {
 			// Fallback if no campaigns found
-			setPreviewUrl((window as any).wpdSettings?.siteUrl || "/");
+			setPreviewUrl((window as any).donasaiSettings?.siteUrl || "/");
 		}
 	}, [
 		campaigns,

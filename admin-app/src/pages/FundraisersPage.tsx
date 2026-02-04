@@ -12,13 +12,13 @@ interface Fundraiser {
 }
 
 export default function FundraisersPage() {
-	const isPro = (window as any).wpdSettings?.isPro;
+	const isPro = (window as any).donasaiSettings?.isPro;
 
 	const { data: fundraisers, isLoading } = useQuery({
 		queryKey: ["fundraisers"],
 		queryFn: async () => {
 			const response = await fetch("/wp-json/donasai/v1/fundraisers", {
-				headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
+				headers: { "X-WP-Nonce": (window as any).donasaiSettings?.nonce },
 			});
 			if (!response.ok) return [];
 			return response.json();

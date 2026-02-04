@@ -3,7 +3,7 @@ Contributors: hadie-danker
 Tags: donation, fundraising, zakat, qurban, midtrans
 Requires at least: 6.4
 Tested up to: 6.7
-Stable tag: 1.0.0
+Stable tag: 1.0.2
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -100,7 +100,12 @@ Developers can inspect, modify, and rebuild the assets using the provided `packa
 
 == Changelog ==
 
+= 1.0.2 =
+*   Refactor prefixes for wp.org compliance.
+*   Hardened security (nonces, sanitization).
+*   Corrected asset enqueuing.
+*   Improved REST API permissions.
+
 = 1.0.0 =
 *   Initial release.
-*   Fitur dasar: Kampanye, Donasi, Zakat,  Transfer Manual.
 

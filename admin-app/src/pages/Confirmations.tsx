@@ -16,7 +16,7 @@ export default function Confirmations() {
 		queryKey: ["donations"],
 		queryFn: async () => {
 			const response = await fetch("/wp-json/donasai/v1/donations", {
-				headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
+				headers: { "X-WP-Nonce": (window as any).donasaiSettings?.nonce },
 			});
 			if (!response.ok) throw new Error("Failed to fetch donations");
 			return response.json();
@@ -59,7 +59,7 @@ export default function Confirmations() {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
-					"X-WP-Nonce": (window as any).wpdSettings?.nonce,
+					"X-WP-Nonce": (window as any).donasaiSettings?.nonce,
 				},
 				body: JSON.stringify({ status }),
 			});

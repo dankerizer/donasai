@@ -12,9 +12,7 @@ add_action('rest_api_init', function () {
 	register_rest_route('donasai/v1', '/campaigns/(?P<id>\d+)/donate', array(
 		'methods' => 'POST',
 		'callback' => 'donasai_api_create_donation',
-		'permission_callback' => function () {
-			return true; // Public endpoint for creating donations
-		},
+		'permission_callback' => '__return_true',
 	));
 	// GET /campaigns/list (For Dropdowns)
 	register_rest_route('donasai/v1', '/campaigns/list', array(
@@ -30,9 +28,7 @@ add_action('rest_api_init', function () {
 	register_rest_route('donasai/v1', '/campaigns/(?P<id>\d+)/donors', array(
 		'methods' => 'GET',
 		'callback' => 'donasai_api_get_campaign_donors',
-		'permission_callback' => function () {
-			return true; // Public endpoint for listing donors
-		},
+		'permission_callback' => '__return_true',
 	));
 });
 
@@ -104,6 +100,7 @@ function donasai_api_create_donation($request)
 		'amount' => $amount,
 		'payment_method' => $method,
 		'status' => 'pending',
+		'note' => isset($params['donor_note']) ? sanitize_textarea_field($params['donor_note']) : '',
 		'subscription_id' => $subscription_id,
 		'is_anonymous' => !empty($params['is_anonymous']) ? 1 : 0,
 		'fundraiser_id' => !empty($params['fundraiser_id']) ? intval($params['fundraiser_id']) : 0,
@@ -122,6 +119,7 @@ function donasai_api_create_donation($request)
 			'%f', // amount
 			'%s', // payment_method
 			'%s', // status
+			'%s', // note
 			'%d', // subscription_id
 			'%d', // is_anonymous
 			'%d', // fundraiser_id

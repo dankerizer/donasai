@@ -100,8 +100,8 @@ export default function DonationsPage() {
 	const perPage = 20;
 
 	// Check if Pro is active
-	const isPro = (window as any).wpdSettings?.isPro;
-	const proSettings = (window as any).wpdProSettings || {};
+	const isPro = (window as any).donasaiSettings?.isPro;
+	const proSettings = (window as any).donasaiProSettings || {};
 	const isProActive =
 		isPro &&
 		(proSettings.licenseStatus === "active" ||
@@ -163,7 +163,7 @@ export default function DonationsPage() {
 			const response = await fetch(
 				`/wp-json/donasai/v1/donations?${params.toString()}`,
 				{
-					headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
+					headers: { "X-WP-Nonce": (window as any).donasaiSettings?.nonce },
 				},
 			);
 			if (!response.ok) return { data: [], meta: { total: 0, total_pages: 0 } };
@@ -181,7 +181,7 @@ export default function DonationsPage() {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
-					"X-WP-Nonce": (window as any).wpdSettings?.nonce,
+					"X-WP-Nonce": (window as any).donasaiSettings?.nonce,
 				},
 				body: JSON.stringify(vars.data),
 			});
@@ -210,7 +210,7 @@ export default function DonationsPage() {
 		queryKey: ["campaigns-list"],
 		queryFn: async () => {
 			const response = await fetch("/wp-json/donasai/v1/campaigns/list", {
-				headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
+				headers: { "X-WP-Nonce": (window as any).donasaiSettings?.nonce },
 			});
 			if (!response.ok) return [];
 			return response.json();
@@ -247,7 +247,7 @@ export default function DonationsPage() {
 	});
 
 	const getExportUrl = () => {
-		let url = `/wp-json/donasai/v1/export/donations?_wpnonce=${(window as any).wpdSettings?.nonce}`;
+		let url = `/wp-json/donasai/v1/export/donations?_wpnonce=${(window as any).donasaiSettings?.nonce}`;
 		if (startDate) url += `&start_date=${startDate}`;
 		if (endDate) url += `&end_date=${endDate}`;
 		if (selectedStatuses.length > 0)

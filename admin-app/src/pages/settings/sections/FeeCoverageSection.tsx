@@ -33,11 +33,11 @@ export default function FeeCoverageSection() {
 	});
 
 	// Check Pro status
-	const isPro = (window as unknown as Record<string, unknown>).wpdSettings as
+	const isPro = (window as unknown as Record<string, unknown>).donasaiSettings as
 		| Record<string, unknown>
 		| undefined;
 	const proSettings = (window as unknown as Record<string, unknown>)
-		.wpdProSettings as Record<string, string> | undefined;
+		.donasaiProSettings as Record<string, string> | undefined;
 	const isProActive =
 		isPro?.isPro &&
 		(proSettings?.licenseStatus === "active" ||

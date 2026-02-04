@@ -69,7 +69,7 @@ export default function LicenseSection() {
 												await fetch("/wp-json/donasai/v1/pro/deactivate", {
 													method: "POST",
 													headers: {
-														"X-WP-Nonce": (window as any).wpdSettings?.nonce,
+														"X-WP-Nonce": (window as any).donasaiSettings?.nonce,
 													},
 												});
 												toast.success("Lisensi berhasil dinonaktifkan.");

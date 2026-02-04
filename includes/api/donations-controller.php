@@ -143,8 +143,9 @@ function donasai_api_get_stats()
     $cached_stats = wp_cache_get($cache_key, 'donasai_stats');
 
     if (false === $cached_stats) {
-        $total_collected = $wpdb->get_var("SELECT SUM(amount) FROM {$wpdb->prefix}donasai_donations WHERE status = 'complete'");
-        $total_donors = $wpdb->get_var("SELECT COUNT(DISTINCT email) FROM {$wpdb->prefix}donasai_donations WHERE status = 'complete'");
+        $table_donations = $wpdb->prefix . 'donasai_donations';
+        $total_collected = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM {$table_donations} WHERE status = %s", 'complete'));
+        $total_donors = $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM {$table_donations} WHERE status = %s", 'complete'));
         $active_campaigns = wp_count_posts('donasai_campaign')->publish;
 
         $cached_stats = array(
@@ -193,14 +194,15 @@ function donasai_api_get_stats()
 
     // 3. Retention Rate
     // Donors who donated more than once
-    $repeat_donors = $wpdb->get_var("
+    $table_donations = $wpdb->prefix . 'donasai_donations';
+    $repeat_donors = $wpdb->get_var($wpdb->prepare("
         SELECT COUNT(*) FROM (
-            SELECT email FROM {$wpdb->prefix}donasai_donations 
-            WHERE status = 'complete' 
+            SELECT email FROM {$table_donations} 
+            WHERE status = %s 
             GROUP BY email 
             HAVING COUNT(id) > 1
         ) as repeaters
-    ");
+    ", 'complete'));
 
     $retention_rate = 0;
     if ($total_donors > 0) {
@@ -369,7 +371,11 @@ function donasai_api_update_donation($request)
                 $data_to_update[$field] = (float) $value;
                 $format[] = '%f';
             } else {
-                $data_to_update[$field] = sanitize_text_field($value);
+                if ('note' === $field) {
+                    $data_to_update[$field] = sanitize_textarea_field($value);
+                } else {
+                    $data_to_update[$field] = sanitize_text_field($value);
+                }
                 $format[] = '%s';
             }
         }

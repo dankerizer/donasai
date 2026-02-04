@@ -16,6 +16,7 @@ function donasai_template_loader($template)
 
     // Check for Receipt
     if (isset($_GET['donasai_receipt'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $donation_id = intval($_GET['donasai_receipt']);
         $receipt_template = DONASAI_PLUGIN_PATH . 'frontend/templates/receipt.php';
         if (file_exists($receipt_template)) {
             return $receipt_template;
@@ -229,20 +230,170 @@ function donasai_enqueue_frontend_assets()
                     'root' => esc_url_raw(rest_url()),
                     'nonce' => wp_create_nonce('wp_rest')
                 ));
+            }
 
-                // Add Admin Bar Adjustment
-                if (is_admin_bar_showing()) {
-                    wp_add_inline_style('donasai-frontend', '.donasai-header-mobile { top: 32px; }');
+            // Add Admin Bar Adjustment
+            if (is_admin_bar_showing()) {
+                wp_add_inline_style('donasai-frontend', '.donasai-header-mobile { top: 32px; }');
+            }
+
+            // Move dynamic styles from campaign-single.php here
+            $settings_app = get_option('donasai_settings_appearance', []);
+            $font_family = $settings_app['font_family'] ?? 'Inter';
+            $font_size = $settings_app['font_size'] ?? '16px';
+            $layout_mode = $settings_app['campaign_layout'] ?? 'sidebar-right';
+            $hero_style = $settings_app['hero_style'] ?? 'standard';
+            
+            $campaign_css = "
+                :root {
+                    --donasai-bg-main: #f3f4f6;
+                    --donasai-bg-card: #ffffff;
+                    --donasai-bg-secondary: #f3f4f6;
+                    --donasai-bg-tertiary: #f9fafb;
+                    --donasai-bg-blue-light: #eff6ff;
+                    --donasai-bg-blue-accent: #e0e7ff;
+                    --donasai-text-main: #111827;
+                    --donasai-text-body: #374151;
+                    --donasai-text-muted: #6b7280;
+                    --donasai-text-inverse: #ffffff;
+                    --donasai-border: #e5e7eb;
+                    --donasai-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
                 }
+                .donasai-dark {
+                    --donasai-bg-main: #111827;
+                    --donasai-bg-card: #1f2937;
+                    --donasai-bg-secondary: #111827;
+                    --donasai-bg-tertiary: #374151;
+                    --donasai-bg-blue-light: #1e3a8a;
+                    --donasai-bg-blue-accent: #3730a3;
+                    --donasai-text-main: #f9fafb;
+                    --donasai-text-body: #d1d5db;
+                    --donasai-text-muted: #9ca3af;
+                    --donasai-border: #374151;
+                    --donasai-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+                }
+                .donasai-container {
+                    font-family: '" . esc_attr($font_family) . "', sans-serif;
+                    font-size: " . esc_attr($font_size) . ";
+                }
+            ";
+
+            if ($layout_mode === 'sidebar-left') {
+                $campaign_css .= ".donasai-sidebar-col { order: -1; }";
+            } elseif ($layout_mode === 'full-width') {
+                $campaign_css .= ".donasai-main-col { flex: 0 0 100%; max-width: 100%; } .donasai-sidebar-col { display: none !important; } .donasai-mobile-cta { display: flex !important; }";
             }
 
-            // Check for Thank You Page
-            $thankyou_slug = get_option('donasai_settings_general')['thankyou_slug'] ?? 'thank-you';
-            if (get_query_var($thankyou_slug)) {
-                wp_enqueue_script('donasai-confetti', DONASAI_PLUGIN_URL . 'frontend/assets/confetti.js', array(), '1.6.0', true);
-                wp_enqueue_style('donasai-summary', DONASAI_PLUGIN_URL . 'frontend/assets/summary.css', array('donasai-frontend'), DONASAI_VERSION);
-                wp_enqueue_script('donasai-summary', DONASAI_PLUGIN_URL . 'frontend/assets/summary.js', array('jquery', 'donasai-confetti'), DONASAI_VERSION, true);
+            if ($hero_style === 'overlay') {
+                $campaign_css .= "
+                    .donasai-hero-overlay { position: relative; border-radius: var(--donasai-radius); overflow: hidden; margin-bottom: 25px; color: white; box-shadow: var(--donasai-shadow); }
+                    .donasai-hero-overlay img { width: 100%; height: auto; display: block; }
+                    .donasai-hero-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 30px; background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent); }
+                    .donasai-hero-content .donasai-heading { color: white !important; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); }
+                    .donasai-hero-content .donasai-subheading { color: rgba(255, 255, 255, 0.9) !important; }
+                ";
             }
+
+            wp_add_inline_style('donasai-campaign', $campaign_css);
+
+            $per_page_limit = isset($settings_app['donor_per_page']) ? intval($settings_app['donor_per_page']) : 10;
+            $donate_rest_url = esc_url_raw(get_rest_url(null, 'donasai/v1/campaigns/'));
+
+            $campaign_js = "
+                function wpdRegisterFundraiser(campaignId) {
+                    var nonce = '" . esc_js(wp_create_nonce('wp_rest')) . "';
+                    if (typeof wpdRegisterFundraiserHelper === 'function') {
+                        wpdRegisterFundraiserHelper(campaignId, nonce);
+                    }
+                }
+
+                function wpdLoadMoreDonors() {
+                    var btn = document.getElementById('donasai-load-more-donors');
+                    var loading = document.getElementById('donasai-donors-loading');
+                    if (!btn) return;
+                    var campaignId = btn.getAttribute('data-campaign');
+                    var page = parseInt(btn.getAttribute('data-page')) + 1;
+
+                    btn.style.display = 'none';
+                    loading.style.display = 'inline-block';
+
+                    fetch('" . $donate_rest_url . "' + campaignId + '/donors?page=' + page + '&per_page=" . (int)$per_page_limit . "')
+                        .then(response => response.json())
+                        .then(data => {
+                            loading.style.display = 'none';
+                            if (data.data && data.data.length > 0) {
+                                var list = document.getElementById('donasai-all-donors-list');
+                                data.data.forEach(donor => {
+                                    var html = `
+                                     <div style='display:flex; gap:15px; margin-bottom:20px; border-bottom:1px solid var(--donasai-border); padding-bottom:20px;'>
+                                        <div style='width:40px; height:40px; background:var(--donasai-bg-blue-accent); color:white; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold; flex-shrink:0;'>
+                                            \${donor.initial}
+                                        </div>
+                                        <div>
+                                            <h4 style='margin:0; font-size:16px; font-weight:600; color:var(--donasai-text-main);'>
+                                                \${donor.name}
+                                            </h4>
+                                            <div style='font-size:12px; color:var(--donasai-text-muted); margin-top:2px;'>
+                                                Berdonasi <span style='font-weight:600; color:var(--donasai-primary);'>Rp \${donor.amount_fmt}</span> &bull; \${donor.time_ago}
+                                            </div>
+                                            \${donor.note ? `<p style='margin:8px 0 0; font-size:14px; color:var(--donasai-text-body); background:var(--donasai-bg-tertiary); padding:10px; border-radius:8px;'>\"\${donor.note}\"</p>` : ''}
+                                        </div>
+                                    </div>
+                                    `;
+                                    list.insertAdjacentHTML('beforeend', html);
+                                });
+
+                                btn.setAttribute('data-page', page);
+                                if (page < data.pagination.total_pages) {
+                                    btn.style.display = 'inline-block';
+                                }
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Donors error:', err);
+                            loading.style.display = 'none';
+                            btn.style.display = 'inline-block';
+                        });
+                }
+
+                function wpdCopyRef() {
+                    var copyText = document.getElementById('donasai-ref-link');
+                    if (!copyText) return;
+                    copyText.select();
+                    copyText.setSelectionRange(0, 99999);
+                    document.execCommand('copy');
+
+                    var x = document.getElementById('donasai-toast');
+                    if (x) {
+                        x.innerHTML = 'Link berhasil disalin!';
+                        x.className = 'show';
+                        setTimeout(function () { x.className = x.className.replace('show', ''); }, 3000);
+                    }
+                }
+
+                function openWpdTab(tabName) {
+                    var i, tabcontent, tablinks;
+                    tabcontent = document.getElementsByClassName('donasai-tab-content');
+                    for (i = 0; i < tabcontent.length; i++) {
+                        tabcontent[i].style.display = 'none';
+                    }
+                    tablinks = document.getElementsByClassName('donasai-tab-btn');
+                    for (i = 0; i < tablinks.length; i++) {
+                        tablinks[i].className = tablinks[i].className.replace(' active', '');
+                        tablinks[i].style.color = 'var(--donasai-text-muted)';
+                        tablinks[i].style.borderBottomColor = 'transparent';
+                    }
+                    var selectedTab = document.getElementById('donasai-tab-' + tabName);
+                    if (selectedTab) selectedTab.style.display = 'block';
+                    var selectedBtn = document.getElementById('tab-btn-' + tabName);
+                    if (selectedBtn) {
+                        selectedBtn.className += ' active';
+                        selectedBtn.style.color = 'var(--donasai-primary)';
+                        selectedBtn.style.borderBottomColor = 'var(--donasai-primary)';
+                    }
+                }
+            ";
+            wp_add_inline_script('donasai-campaign', $campaign_js);
         }
 
         // Confirmation Page Assets
@@ -380,7 +531,7 @@ function donasai_track_referral()
         return;
 
     if (isset($_GET['ref'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-        $ref_code = sanitize_text_field(wp_unslash($_GET['ref'])); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        $ref_code = sanitize_text_field(wp_unslash($_GET['ref']));
         $service = new DONASAI_Fundraiser_Service();
         $fundraiser = $service->get_by_code($ref_code);
 
@@ -582,7 +733,7 @@ function donasai_shortcode_confirmation_form()
                         $movefile = wp_handle_upload($uploadedfile, $upload_overrides);
 
                         if ($movefile && !isset($movefile['error'])) {
-                            $proof_url = $movefile['url'];
+                            $proof_url = esc_url_raw($movefile['url']);
 
                             // Sanitize New Fields
                             $sender_bank = isset($_POST['sender_bank']) ? sanitize_text_field(wp_unslash($_POST['sender_bank'])) : '';

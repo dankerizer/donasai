@@ -81,7 +81,7 @@ export function useDonationFormTemplate() {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
-					"X-WP-Nonce": (window as any).wpdSettings?.nonce,
+					"X-WP-Nonce": (window as any).donasaiSettings?.nonce,
 				},
 				body: JSON.stringify({
 					appearance: {

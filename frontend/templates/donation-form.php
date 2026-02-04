@@ -39,19 +39,13 @@ if (!$is_pro) {
 $body_classes = 'donasai-payment-page';
 if ($dark_mode) $body_classes .= ' dark';
 if ($donation_layout === 'split') $body_classes .= ' donasai-layout-split';
+
+// If this is included in a standalone layout (like from campaign-single.php),
+// we don't want the body class to be duplicated if the caller already added it.
+// However, donation-form.php uses $body_classes for its wrapper div.
 ?>
 
-<!DOCTYPE html>
-<html <?php language_attributes(); ?>>
-
-<head>
-    <meta charset="<?php bloginfo('charset'); ?>">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <?php wp_head(); ?>
-</head>
-
-<body <?php body_class($body_classes); ?>>
-
+<div class="donasai-payment-container <?php echo esc_attr($body_classes); ?>">
     <div class="donasai-layout-wrapper">
 
         <!-- Header (Mobile Sticky) -->

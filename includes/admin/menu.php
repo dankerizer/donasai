@@ -177,6 +177,7 @@ function donasai_enqueue_admin_assets($hook)
 		'initialPath' => $initial_path,
 		'isPro' => donasai_is_pro_installed(),
 		'version' => DONASAI_VERSION,
+		'siteUrl' => esc_url_raw(get_site_url()),
 	));
 	// Add type="module" to dev and production scripts
 	add_filter('script_loader_tag', function ($tag, $handle, $src) {

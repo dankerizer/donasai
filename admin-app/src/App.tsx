@@ -134,7 +134,7 @@ function AppLayout() {
 								</div>
 								<h1 className="text-lg font-bold text-gray-800 dark:text-white tracking-tight my-0! py-0! flex items-center">
 									<span>Donasai</span>
-									<span className="text-xs text-gray-500 dark:text-gray-400 inline-block relative wpd ml-1">
+									<span className="text-xs text-gray-500 dark:text-gray-400 inline-block relative donasai-v ml-1">
 										v01
 									</span>
 								</h1>

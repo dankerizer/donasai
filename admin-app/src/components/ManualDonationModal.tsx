@@ -51,7 +51,7 @@ export default function ManualDonationModal({
 			const res = await fetch("/wp-json/donasai-pro/v1/campaigns/list", {
 				headers: {
 					// biome-ignore lint/suspicious/noExplicitAny: gak tahu apa aja
-					"X-WP-Nonce": (window as any).wpdSettings?.nonce,
+					"X-WP-Nonce": (window as any).donasaiSettings?.nonce,
 				},
 			});
 			return res.json();
@@ -67,7 +67,7 @@ export default function ManualDonationModal({
 				`/wp-json/donasai-pro/v1/donors/search?q=${encodeURIComponent(searchQuery)}`,
 				{
 					headers: {
-						"X-WP-Nonce": (window as any).wpdSettings?.nonce,
+						"X-WP-Nonce": (window as any).donasaiSettings?.nonce,
 					},
 				},
 			);
@@ -83,7 +83,7 @@ export default function ManualDonationModal({
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
-					"X-WP-Nonce": (window as any).wpdSettings?.nonce,
+					"X-WP-Nonce": (window as any).donasaiSettings?.nonce,
 				},
 				body: JSON.stringify(data),
 			});

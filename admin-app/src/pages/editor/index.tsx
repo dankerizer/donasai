@@ -518,8 +518,8 @@ function EditorContent() {
 
 export function EditorPage() {
 	// Check Pro status
-	const isPro = (window as any).wpdSettings?.isPro;
-	const proSettings = (window as any).wpdProSettings || {};
+	const isPro = (window as any).donasaiSettings?.isPro;
+	const proSettings = (window as any).donasaiProSettings || {};
 	const isLicenseActive =
 		proSettings.licenseStatus === "active" ||
 		proSettings.licenseStatus === "valid";

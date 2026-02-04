@@ -47,8 +47,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
 	// Pro Settings from Localization
 	const proSettings: Record<string, unknown> =
-		(window as unknown as { wpdProSettings?: Record<string, unknown> })
-			.wpdProSettings || {};
+		(window as unknown as { donasaiProSettings?: Record<string, unknown> })
+			.donasaiProSettings || {};
 
 	// Pages State
 	const [pages, setPages] = useState<Page[]>([]);
@@ -162,8 +162,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 				headers: {
 					"Content-Type": "application/json",
 					"X-WP-Nonce":
-						(window as unknown as { wpdSettings?: { nonce?: string } })
-							.wpdSettings?.nonce ?? "",
+						(window as unknown as { donasaiSettings?: { nonce?: string } })
+							.donasaiSettings?.nonce ?? "",
 				},
 				body: JSON.stringify(payload),
 			});

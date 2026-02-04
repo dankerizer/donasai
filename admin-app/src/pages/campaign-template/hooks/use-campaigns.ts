@@ -11,7 +11,7 @@ export function useCampaigns() {
 		queryKey: ["campaigns-list"],
 		queryFn: async () => {
 			const response = await fetch("/wp-json/donasai/v1/campaigns/list", {
-				headers: { "X-WP-Nonce": (window as any).wpdSettings?.nonce },
+				headers: { "X-WP-Nonce": (window as any).donasaiSettings?.nonce },
 			});
 
 			if (!response.ok) {
