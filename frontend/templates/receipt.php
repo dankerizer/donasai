@@ -16,7 +16,15 @@ if ($donasai_donation_id) {
     } else {
         global $wpdb;
         $donasai_table = $wpdb->prefix . 'donasai_donations';
-        $donasai_donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $donasai_table, $donasai_donation_id)); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $donasai_cache_key = 'donasai_donation_' . $donasai_donation_id;
+        $donasai_donation = wp_cache_get($donasai_cache_key, 'donasai_donations');
+
+        if (false === $donasai_donation) {
+            $donasai_donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $donasai_table, $donasai_donation_id));
+            if ($donasai_donation) {
+                wp_cache_set($donasai_cache_key, $donasai_donation, 'donasai_donations', 3600);
+            }
+        }
     }
 }
 

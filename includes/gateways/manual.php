@@ -130,7 +130,19 @@ class DONASAI_Gateway_Manual implements DONASAI_Gateway
         } else {
              global $wpdb;
              $table = $wpdb->prefix . 'donasai_donations';
-             $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $table, $donation_id));
+        $cache_key = 'donasai_donation_' . $donation_id;
+        // Try to get from cache first
+        $donation = wp_cache_get($cache_key, 'donasai_donations');
+        if (false === $donation) {
+            $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $table, $donation_id));
+            if ($donation) {
+                wp_cache_set($cache_key, $donation, 'donasai_donations', 3600);
+            }
+        }
+        }
+        
+        if (!$donation) {
+            return '<p>' . esc_html__('Donation not found.', 'donasai') . '</p>';
         }
 
         $total_amount = $donation ? $donation->amount : 0;

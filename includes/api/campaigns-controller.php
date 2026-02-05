@@ -169,7 +169,6 @@ function donasai_api_get_campaign_donors($request)
 	$offset = ($page - 1) * $per_page;
 
 	// Get Donors
-	// Get Donors
 	$table = esc_sql($wpdb->prefix . 'donasai_donations');
 	$cache_key = 'donasai_campaign_donors_' . $campaign_id . '_p' . $page . '_pp' . $per_page;
 	$cache_group = 'donasai_donations';
@@ -187,21 +186,27 @@ function donasai_api_get_campaign_donors($request)
 	}
 
 	// Get totals
-	$table_donations = $wpdb->prefix . 'donasai_donations';
-	$total_collected_cache_key = 'donasai_campaign_total_collected_' . $campaign_id;
-	$total_donors_cache_key = 'donasai_campaign_total_donors_' . $campaign_id;
+    // Total Collected Current Campaign
+    $table = $wpdb->prefix . 'donasai_donations';
+    $cache_key_stats = 'donasai_campaign_stats_' . $campaign_id;
+    $stats = wp_cache_get($cache_key_stats, 'donasai_stats');
 
-	$total_collected = wp_cache_get($total_collected_cache_key, $cache_group);
-	if (false === $total_collected) {
-		$total_collected = (float) $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM %i WHERE campaign_id = %d AND status = %s", $table_donations, $campaign_id, 'complete'));
-		wp_cache_set($total_collected_cache_key, $total_collected, $cache_group, 300);
-	}
+    if (false === $stats) {
+        $total_collected = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM %i WHERE campaign_id = %d AND status = %s", $table, $campaign_id, 'complete'));
+        $total_donors = $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM %i WHERE campaign_id = %d AND status = %s", $table, $campaign_id, 'complete'));
+        
+        $stats = array(
+            'collected' => (float)$total_collected,
+            'donors' => (int)$total_donors
+        );
+        wp_cache_set($cache_key_stats, $stats, 'donasai_stats', 3600);
+    }
 
-	$total_donors = wp_cache_get($total_donors_cache_key, $cache_group);
-	if (false === $total_donors) {
-		$total_donors = (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM %i WHERE campaign_id = %d AND status = %s", $table_donations, $campaign_id, 'complete'));
-		wp_cache_set($total_donors_cache_key, $total_donors, $cache_group, 300);
-	}
+    $total_collected = $stats['collected'];
+    $total_donors = $stats['donors'];
+
+    $target = get_post_meta($campaign_id, '_donasai_target_amount', true);
+    $percentage = $target > 0 ? ($total_collected / $target) * 100 : 0;
 
 	// Get Total for this campaign (total count of donations for pagination)
 	$total_donations_count_cache_key = 'donasai_campaign_donations_count_' . $campaign_id;

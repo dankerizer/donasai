@@ -126,11 +126,12 @@ if (false === $donasai_donations) {
              FROM %i s
              JOIN %i p ON s.campaign_id = p.ID
              WHERE s.user_id = %d 
+             WHERE s.user_id = %d 
              ORDER BY s.created_at DESC",
             $donasai_table_subs,
             $donasai_table_posts,
             $donasai_user_id
-        )); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        ));
         wp_cache_set($donasai_cache_key_subs, $donasai_subscriptions, 'donasai_subscriptions', 300);
     }
     ?>

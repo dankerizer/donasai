@@ -26,12 +26,20 @@ class DONASAI_Fundraiser_Service
 		global $wpdb;
 
 		// Check if already registered
-		$existing = $wpdb->get_row($wpdb->prepare(
-			"SELECT * FROM %i WHERE user_id = %d AND campaign_id = %d",
-			$this->table_name,
-			$user_id,
-			$campaign_id
-		));
+		$cache_key = 'donasai_fundraiser_user_' . $user_id . '_' . $campaign_id;
+		$existing = wp_cache_get($cache_key, 'donasai_fundraisers');
+
+		if (false === $existing) {
+			$existing = $wpdb->get_row($wpdb->prepare(
+				"SELECT * FROM %i WHERE user_id = %d AND campaign_id = %d",
+				$this->table_name,
+				$user_id,
+				$campaign_id
+			));
+			if ($existing) {
+				wp_cache_set($cache_key, $existing, 'donasai_fundraisers', 3600);
+			}
+		}
 
 		if ($existing) {
 			return $existing;
@@ -53,9 +61,13 @@ class DONASAI_Fundraiser_Service
 			'campaign_id' => $campaign_id,
 			'referral_code' => $code,
 			'created_at' => current_time('mysql')
-		]); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		]);
 
-		return $this->get_by_id($wpdb->insert_id);
+		$inserted_id = $wpdb->insert_id;
+		// Invalidate caches
+		wp_cache_delete('donasai_fundraiser_user_' . $user_id . '_' . $campaign_id, 'donasai_fundraisers');
+		
+		return $this->get_by_id($inserted_id);
 	}
 
 	/**
@@ -165,6 +177,7 @@ class DONASAI_Fundraiser_Service
 			'ip_address' => substr($ip_address, 0, 100),
 			'user_agent' => substr($user_agent, 0, 255),
 			'created_at' => current_time('mysql')
-		]); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		]);
+		// Logs don't necessarily need caching as they are write-only for tracking
 	}
 }

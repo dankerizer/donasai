@@ -31,6 +31,7 @@ class DONASAI_Subscription_Service
             'created_at' => current_time('mysql')
         );
 
+        // Create a new subscription
         $inserted = $wpdb->insert($wpdb->prefix . 'donasai_subscriptions', $data);
 
         if ($inserted) {
@@ -97,7 +98,13 @@ class DONASAI_Subscription_Service
 
         // Find active subscriptions due today or earlier
         $donasai_table_subs = $wpdb->prefix . 'donasai_subscriptions';
-        $due = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i WHERE status = %s AND next_payment_date <= NOW()", $donasai_table_subs, 'active'));
+        $cache_key = 'donasai_due_subscriptions';
+        $due = wp_cache_get($cache_key, 'donasai_subscriptions');
+
+        if (false === $due) {
+            $due = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i WHERE status = %s AND next_payment_date <= NOW()", $donasai_table_subs, 'active'));
+            wp_cache_set($cache_key, $due, 'donasai_subscriptions', 300);
+        }
 
         foreach ($due as $sub) {
             // Logic to create a new pending donation

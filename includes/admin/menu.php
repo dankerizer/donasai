@@ -118,8 +118,8 @@ function donasai_enqueue_admin_assets($hook)
 	// Dev Mode (needs DONASAI_DEV_MODE constant)
 	if (defined('DONASAI_DEV_MODE') && DONASAI_DEV_MODE) {
 		// Vite Dev Server
-		wp_enqueue_script('donasai-vite-client', 'http://localhost:3001/@vite/client', array(), null, true);
-		wp_enqueue_script('donasai-admin-dev', 'http://localhost:3001/src/main.tsx', array('donasai-vite-client'), null, true);
+		wp_enqueue_script('donasai-vite-client', 'http://localhost:3001/@vite/client', array(), DONASAI_VERSION, true);
+		wp_enqueue_script('donasai-admin-dev', 'http://localhost:3001/src/main.tsx', array('donasai-vite-client'), DONASAI_VERSION, true);
 
 		// Need to inject React Refresh for Vite HMR
 		add_action('admin_head', function () {
@@ -153,7 +153,8 @@ function donasai_enqueue_admin_assets($hook)
 	}
 
 	// Determine Initial Path based on Page Slug
-	$current_page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : 'donasai-dashboard'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	global $plugin_page;
+	$current_page = $plugin_page ?: 'donasai-dashboard';
 	$initial_path = '/';
 
 	switch ($current_page) {

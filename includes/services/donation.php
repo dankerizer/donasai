@@ -77,8 +77,7 @@ function donasai_handle_donation_submission()
         $metadata['qurban_qty'] = intval($_POST['qurban_qty']);
     }
     if (isset($_POST['qurban_names']) && is_array($_POST['qurban_names'])) {
-        $names = wp_unslash($_POST['qurban_names']); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-        $metadata['qurban_names'] = array_map('sanitize_text_field', $names);
+        $metadata['qurban_names'] = map_deep(wp_unslash($_POST['qurban_names']), 'sanitize_text_field');
     }
 
     // Check for Fundraiser Cookie
@@ -196,13 +195,16 @@ function donasai_update_campaign_stats($campaign_id)
     $table = esc_sql($wpdb->prefix . 'donasai_donations');
 
     // Sum only completed donations
-    $total = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM %i WHERE campaign_id = %d AND status = 'complete'", $table, $campaign_id));
+    $total = (float) $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM %i WHERE campaign_id = %d AND status = 'complete'", $table, $campaign_id));
 
     // Count Unique Donors (by email) for completed donations
-    $donor_count = $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM %i WHERE campaign_id = %d AND status = 'complete'", $table, $campaign_id));
+    $donor_count = (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM %i WHERE campaign_id = %d AND status = 'complete'", $table, $campaign_id));
 
     update_post_meta($campaign_id, '_donasai_collected_amount', $total);
     update_post_meta($campaign_id, '_donasai_donor_count', $donor_count);
+    // Invalidate related caches
+    wp_cache_delete('donasai_stats_overview', 'donasai_stats');
+    wp_cache_delete('donasai_chart_stats_daily', 'donasai_stats');
 }
 
 

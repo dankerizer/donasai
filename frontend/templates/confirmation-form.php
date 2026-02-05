@@ -131,10 +131,10 @@ if (!defined('ABSPATH')) {
         </div>
     <?php endif; ?>
     <?php
-    $gen_settings = get_option('donasai_settings_general', []);
-    $is_branding_removed = !empty($gen_settings['remove_branding']);
+    $donasai_gen_settings = get_option('donasai_settings_general', []);
+    $donasai_is_branding_removed = !empty($donasai_gen_settings['remove_branding']);
 
-    if (!$is_branding_removed): ?>
+    if (!$donasai_is_branding_removed): ?>
         <div class="donasai-powered-by" style="text-align:center; padding: 20px 0; color:#9ca3af; font-size:13px;">
             Powered by <a href="https://donasai.com" target="_blank"
                 style="color:inherit; text-decoration:none; font-weight:600;">Donasai</a>

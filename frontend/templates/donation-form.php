@@ -79,7 +79,7 @@ if ($donasai_donation_layout === 'split') $donasai_body_classes .= ' donasai-lay
                 <input type="hidden" name="campaign_id" value="<?php echo esc_attr($donasai_campaign_id); ?>">
 
                 <!-- Alert Success -->
-                <?php if (isset($_GET['donation_success']) && '1' === sanitize_text_field(wp_unslash($_GET['donation_success']))): // phpcs:ignore WordPress.Security.NonceVerification.Recommended ?>
+                <?php if (get_query_var('donation_success') === '1'): ?>
                     <div class="donasai-alert-success">
                         <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

@@ -12,7 +12,7 @@ $donasai_phone = get_user_meta($donasai_current_user->ID, '_donasai_phone', true
 
 // Handle Success/Error Messages
 $donasai_message = '';
-if (isset($_GET['updated']) && '1' === sanitize_text_field(wp_unslash($_GET['updated']))) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+if (get_query_var('updated') === '1') {
     $donasai_message = '<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">Profil berhasil diperbarui.</div>';
 }
 ?>

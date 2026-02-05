@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
 
 get_header();
 
-$campaign_id = get_the_ID();
+$donasai_campaign_id = get_the_ID();
 ?>
 
 <div class="donasai-container"
@@ -44,7 +44,7 @@ $campaign_id = get_the_ID();
         // Ensure the form output is properly handled. 
         // donasai_get_donation_form_html should ideally return escaped/sanitized HTML, or we trust it as internal function.
         // Given it likely contains form inputs, standard escaping might break it.
-        echo wp_kses_post(donasai_get_donation_form_html($campaign_id));
+        echo wp_kses_post(donasai_get_donation_form_html($donasai_campaign_id));
         ?>
 
     </div>

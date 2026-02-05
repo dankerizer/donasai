@@ -8,6 +8,19 @@ if (!defined('ABSPATH')) {
 }
 
 /**
+ * Register Query Vars
+ */
+function donasai_register_query_vars($vars)
+{
+    $vars[] = 'donasai_receipt';
+    $vars[] = 'donation_success';
+    $vars[] = 'ref';
+    $vars[] = 'updated';
+    return $vars;
+}
+add_filter('query_vars', 'donasai_register_query_vars');
+
+/**
  * Template Loader for Custom Post Types
  */
 // Debugging Template Loader
@@ -15,8 +28,9 @@ function donasai_template_loader($template)
 {
 
     // Check for Receipt
-    if (isset($_GET['donasai_receipt'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-        $donation_id = intval($_GET['donasai_receipt']);
+    $receipt_id = get_query_var('donasai_receipt');
+    if ($receipt_id) {
+        $donation_id = intval($receipt_id);
         $receipt_template = DONASAI_PLUGIN_PATH . 'frontend/templates/receipt.php';
         if (file_exists($receipt_template)) {
             return $receipt_template;
@@ -29,7 +43,7 @@ function donasai_template_loader($template)
         // Payment Page (?donate=1 OR /slug/pay)
         // Payment Page (?donate=1 OR /slug/pay)
         global $wp_query;
-        if (isset($_GET['donate']) || isset($wp_query->query_vars[$payment_slug])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        if (get_query_var('donate') || isset($wp_query->query_vars[$payment_slug])) {
             $payment_template = DONASAI_PLUGIN_PATH . 'frontend/templates/donation-form.php';
             if (file_exists($payment_template)) {
                 return $payment_template;
@@ -48,7 +62,7 @@ function donasai_template_loader($template)
         }
 
         // Success Page (?donation_success=1)
-        if (isset($_GET['donation_success'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        if (get_query_var('donation_success')) {
             $success_template = DONASAI_PLUGIN_PATH . 'frontend/templates/payment-success.php';
             if (file_exists($success_template)) {
                 return $success_template;
@@ -203,7 +217,7 @@ function donasai_enqueue_frontend_assets()
             // Check for Payment Page
             global $wp_query;
             $payment_slug = get_option('donasai_settings_general')['payment_slug'] ?? 'pay';
-            if (isset($_GET['donate']) || isset($wp_query->query_vars[$payment_slug])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            if (get_query_var('donate') || isset($wp_query->query_vars[$payment_slug])) {
                 wp_enqueue_style('donasai-payment', DONASAI_PLUGIN_URL . 'frontend/assets/payment.css', array('donasai-frontend'), DONASAI_VERSION);
                 wp_enqueue_script('donasai-payment', DONASAI_PLUGIN_URL . 'frontend/assets/payment.js', array('jquery'), DONASAI_VERSION, true);
 
@@ -523,8 +537,9 @@ function donasai_track_referral()
     if (is_admin())
         return;
 
-    if (isset($_GET['ref'])) {
-        $ref_code = sanitize_text_field(wp_unslash($_GET['ref']));
+    $ref_code = get_query_var('ref');
+    if ($ref_code) {
+        $ref_code = sanitize_text_field($ref_code);
         $service = new DONASAI_Fundraiser_Service();
         $fundraiser = $service->get_by_code($ref_code);
 
@@ -721,13 +736,14 @@ function donasai_shortcode_confirmation_form()
                         require_once(ABSPATH . 'wp-admin/includes/file.php');
                     }
 
-                    if ( isset( $_FILES['proof_file'] ) ) {
+                    if ( isset( $_FILES['proof_file'] ) && !empty($_FILES['proof_file']['name']) ) {
+                        $file = $_FILES['proof_file'];
                         $uploadedfile = array(
-                            'name'     => sanitize_file_name( wp_unslash( $_FILES['proof_file']['name'] ) ),
-                            'type'     => sanitize_mime_type( wp_unslash( $_FILES['proof_file']['type'] ) ),
-                            'tmp_name' => sanitize_text_field( wp_unslash( $_FILES['proof_file']['tmp_name'] ) ),
-                            'error'    => intval( $_FILES['proof_file']['error'] ),
-                            'size'     => intval( $_FILES['proof_file']['size'] ),
+                            'name'     => isset($file['name']) ? sanitize_file_name( wp_unslash( (string) $file['name'] ) ) : '',
+                            'type'     => isset($file['type']) ? sanitize_mime_type( wp_unslash( (string) $file['type'] ) ) : '',
+                            'tmp_name' => isset($file['tmp_name']) ? sanitize_text_field( wp_unslash( (string) $file['tmp_name'] ) ) : '',
+                            'error'    => isset($file['error']) ? intval( $file['error'] ) : 0,
+                            'size'     => isset($file['size']) ? intval( $file['size'] ) : 0,
                         );
                     } else {
                         $uploadedfile = null;
@@ -800,8 +816,9 @@ function donasai_shortcode_campaign_list($atts)
 add_shortcode('donasai_campaign_list', 'donasai_shortcode_campaign_list');
 
 function donasai_enqueue_receipt_assets() {
-    if (isset($_GET['donasai_receipt'])) {
-        $donasai_donation_id = intval($_GET['donasai_receipt']);
+    $receipt_id = get_query_var('donasai_receipt');
+    if ($receipt_id) {
+        $donasai_donation_id = intval($receipt_id);
         
         // Dynamic Receipt Data for styling
         $donasai_appearance = get_option('donasai_settings_appearance', []);

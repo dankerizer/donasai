@@ -339,9 +339,9 @@ if (!$donasai_is_pro) {
 
                 <!-- Countdown Timer (Pro) -->
                 <?php
-                $donate_rest_url = esc_url(get_rest_url(null, 'donasai/v1/campaigns/'));
+                $donasai_donate_rest_url = esc_url(get_rest_url(null, 'donasai/v1/campaigns/'));
 
-                $campaign_js = "
+                $donasai_campaign_js = "
                     function wpdRegisterFundraiser(campaignId) {
                         var nonce = '" . esc_js(wp_create_nonce('wp_rest')) . "';
                         if (typeof wpdRegisterFundraiserHelper === 'function') {
@@ -359,7 +359,7 @@ if (!$donasai_is_pro) {
                         btn.style.display = 'none';
                         loading.style.display = 'inline-block';
 
-                        fetch('" . esc_js($donate_rest_url) . "' + campaignId + '/donors?page=' + page + '&per_page=" . (int)$per_page_limit . "')
+                        fetch('" . esc_js($donasai_donate_rest_url) . "' + campaignId + '/donors?page=' + page + '&per_page=" . (int)$donasai_per_page_limit . "')
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success && data.donors.length > 0) {
@@ -390,7 +390,7 @@ if (!$donasai_is_pro) {
                                         `;
                                     });
                                     btn.setAttribute('data-page', page);
-                                    if (data.donors.length < " . (int)$per_page_limit . ") {
+                                    if (data.donors.length < " . (int)$donasai_per_page_limit . ") {
                                         btn.style.display = 'none';
                                     } else {
                                         btn.style.display = 'block';
@@ -408,7 +408,7 @@ if (!$donasai_is_pro) {
                             });
                     }
                 ";
-                wp_add_inline_script('donasai-public-script', $campaign_js);
+                wp_add_inline_script('donasai-public-script', $donasai_campaign_js);
 
                 if ($donasai_show_countdown) {
                     $donasai_deadline_str = get_post_meta($donasai_campaign_id, '_donasai_deadline', true);
