@@ -27,20 +27,13 @@ class DONASAI_Email
 
 	public static function send_email($donation_id, $type = 'pending')
 	{
-		global $wpdb;
-		if (function_exists('donasai_get_donation')) {
-			$donation = donasai_get_donation($donation_id);
-		} else {
-			$table_donations = esc_sql($wpdb->prefix . 'donasai_donations');
-			$cache_key = 'donasai_donation_' . $donation_id;
-			$donation = wp_cache_get($cache_key, 'donasai_donations');
+		$cache_key = 'donasai_donation_' . $donation_id;
+		$donation = wp_cache_get($cache_key, 'donasai_donations');
 
-			if (false === $donation) {
-				$table_donations = $wpdb->prefix . 'donasai_donations';
-				$donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $table_donations, $donation_id));
-				if ($donation) {
-					wp_cache_set($cache_key, $donation, 'donasai_donations', 300);
-				}
+		if (false === $donation) {
+			$donation = DONASAI_Donation_Repository::get_donation($donation_id);
+			if ($donation) {
+				wp_cache_set($cache_key, $donation, 'donasai_donations', 300);
 			}
 		}
 

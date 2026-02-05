@@ -31,15 +31,6 @@ function donasai_admin_scripts($hook) {
     if (($hook == 'post-new.php' || $hook == 'post.php') && $post && $post->post_type == 'donasai_campaign') {
          wp_enqueue_script('donasai-metabox', DONASAI_PLUGIN_URL . 'includes/admin/assets/campaign-metabox.js', array(), DONASAI_VERSION, true);
          
-         global $wpdb;
-         $cache_key = 'donasai_campaign_meta_all';
-         $campaign_meta = wp_cache_get($cache_key, 'donasai_campaigns');
-
-         if (false === $campaign_meta) {
-             $table_meta = $wpdb->prefix . 'postmeta'; // Assuming this is the table for post meta
-             $campaign_meta = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i", $table_meta));
-             wp_cache_set($cache_key, $campaign_meta, 'donasai_campaigns', 3600);
-         }
          $packages = get_post_meta($post->ID, '_donasai_packages', true);
          $packages_array = json_decode($packages, true);
          wp_localize_script('donasai-metabox', 'donasai_packages_data', is_array($packages_array) ? $packages_array : []);

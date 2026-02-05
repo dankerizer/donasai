@@ -87,19 +87,13 @@ function donasai_api_get_fundraisers($request)
 		// return list of campaigns I am fundraising for
 		// Need a new method in Service for this.
 		// For now, return empty or implement later.
-		global $wpdb;
 		$user_id = get_current_user_id();
 
 		$cache_key = 'donasai_user_fundraisers_' . $user_id;
 		$results = wp_cache_get($cache_key, 'donasai_fundraisers');
 
 		if (false === $results) {
-			$table_fundraisers = $wpdb->prefix . 'donasai_fundraisers';
-			$results = $wpdb->get_results($wpdb->prepare(
-				"SELECT * FROM %i WHERE user_id = %d",
-				$table_fundraisers,
-				$user_id
-			));
+			$results = DONASAI_Fundraiser_Repository::get_by_user($user_id);
 			wp_cache_set($cache_key, $results, 'donasai_fundraisers', 300);
 		}
 		return rest_ensure_response($results);
@@ -107,16 +101,11 @@ function donasai_api_get_fundraisers($request)
 
 	// Admin view: List all (Requires auth)
 	if (current_user_can('manage_options')) {
-		// Implement full list logic here
-		// For now simple select all limited
-		global $wpdb;
-
 		$cache_key = 'donasai_admin_fundraisers_list';
 		$results = wp_cache_get($cache_key, 'donasai_fundraisers');
 
 		if (false === $results) {
-			$table_fundraisers = $wpdb->prefix . 'donasai_fundraisers';
-			$results = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i ORDER BY created_at DESC LIMIT %d", $table_fundraisers, 50));
+			$results = DONASAI_Fundraiser_Repository::get_recent(50);
 			wp_cache_set($cache_key, $results, 'donasai_fundraisers', 60);
 		}
 		return rest_ensure_response($results);

@@ -107,7 +107,9 @@ function donasai_create_tables()
 	dbDelta($sql_subscriptions);
 
 	// Update Donations Table with subscription_id
+	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Schema check and modification during activation.
 	if (!$wpdb->get_results($wpdb->prepare("SHOW COLUMNS FROM %i LIKE %s", $table_donations, 'subscription_id'))) {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange -- Intentional schema migration to support recurring donations.
 		$wpdb->query($wpdb->prepare("ALTER TABLE %i ADD COLUMN subscription_id bigint(20) DEFAULT 0 AFTER fundraiser_id", $table_donations));
 	}
 }

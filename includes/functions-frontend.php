@@ -415,20 +415,19 @@ add_action('wp_enqueue_scripts', 'donasai_enqueue_frontend_assets');
  */
 function donasai_get_recent_donors($campaign_id, $limit = 10)
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'donasai_donations';
-
     // Only completed donations
     $cache_key = 'donasai_recent_donors_' . $campaign_id . '_limit_' . $limit;
     $results = wp_cache_get($cache_key, 'donasai_donations');
 
     if (false === $results) {
-        $results = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM %i WHERE campaign_id = %d AND status = 'complete' ORDER BY created_at DESC LIMIT %d",
-            $table,
-            $campaign_id,
-            $limit
-        ));
+        $results = DONASAI_Donation_Repository::get_list(
+            "campaign_id = %d AND status = 'complete'",
+            array($campaign_id),
+            'created_at',
+            'DESC',
+            $limit,
+            0
+        );
         wp_cache_set($cache_key, $results, 'donasai_donations', 300);
     }
 
@@ -440,18 +439,14 @@ function donasai_get_recent_donors($campaign_id, $limit = 10)
  */
 function donasai_get_donor_count($campaign_id)
 {
-    global $wpdb;
-    $table = $wpdb->prefix . 'donasai_donations';
-
     $cache_key = 'donasai_donor_count_' . $campaign_id;
     $count = wp_cache_get($cache_key, 'donasai_donations');
 
     if (false === $count) {
-        $count = (int) $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(id) FROM %i WHERE campaign_id = %d AND status = 'complete'",
-            $table,
-            $campaign_id
-        ));
+        $count = DONASAI_Donation_Repository::get_count(
+            "campaign_id = %d AND status = 'complete'",
+            array($campaign_id)
+        );
         wp_cache_set($cache_key, $count, 'donasai_donations', 300);
     }
 
@@ -566,25 +561,14 @@ function donasai_shortcode_fundraiser_stats()
         return '<p>' . __('Silakan login untuk melihat statistik fundraiser Anda.', 'donasai') . '</p>';
     }
 
-    global $wpdb;
     $user_id = get_current_user_id();
-    $table_fundraisers = $wpdb->prefix . 'donasai_fundraisers';
 
     // Get all campaigns user is fundraising for
     $cache_key_fundraisers = 'donasai_user_fundraisers_stats_' . $user_id;
     $results = wp_cache_get($cache_key_fundraisers, 'donasai_fundraisers');
 
     if (false === $results) {
-        $results = $wpdb->get_results($wpdb->prepare(
-            "SELECT f.*, p.post_title 
-             FROM %i f
-             JOIN %i p ON f.campaign_id = p.ID
-             WHERE f.user_id = %d
-             ORDER BY f.created_at DESC",
-            $table_fundraisers,
-            $wpdb->posts,
-            $user_id
-        ));
+        $results = DONASAI_Fundraiser_Repository::get_by_user($user_id);
         wp_cache_set($cache_key_fundraisers, $results, 'donasai_fundraisers', 300);
     }
 
@@ -609,12 +593,11 @@ function donasai_shortcode_fundraiser_stats()
             <tbody>
                 <?php foreach ($results as $donasai_row):
                     // Get visit count (lazy query, ideally should act stored count or cached)
-                    $donasai_table_logs = $wpdb->prefix . 'donasai_referral_logs';
                     $donasai_cache_key_visits = 'donasai_referral_visits_' . $donasai_row->id;
                     $donasai_visit_count = wp_cache_get($donasai_cache_key_visits, 'donasai_referral');
 
                     if (false === $donasai_visit_count) {
-                        $donasai_visit_count = (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(id) FROM %i WHERE fundraiser_id = %d", $donasai_table_logs, $donasai_row->id));
+                        $donasai_visit_count = DONASAI_Fundraiser_Repository::get_visit_count($donasai_row->id);
                         wp_cache_set($donasai_cache_key_visits, $donasai_visit_count, 'donasai_referral', 300);
                     }
 
@@ -717,14 +700,12 @@ function donasai_shortcode_confirmation_form()
 
     // Pre-fill from URL
     if (isset($_GET['donation_id'])) {
-        global $wpdb;
         $donasai_d_id = intval($_GET['donation_id']);
         $donasai_cache_key = 'donasai_donation_confirm_fill_' . $donasai_d_id;
         $donasai_donation_row = wp_cache_get($donasai_cache_key, 'donasai_donations');
 
         if (false === $donasai_donation_row) {
-            $donasai_table_donations = $wpdb->prefix . 'donasai_donations';
-            $donasai_donation_row = $wpdb->get_row($wpdb->prepare("SELECT amount FROM %i WHERE id = %d", $donasai_table_donations, $donasai_d_id));
+            $donasai_donation_row = DONASAI_Donation_Repository::get_donation($donasai_d_id);
             if ($donasai_donation_row) {
                 wp_cache_set($donasai_cache_key, $donasai_donation_row, 'donasai_donations', 300);
             }
@@ -740,7 +721,6 @@ function donasai_shortcode_confirmation_form()
         if (!wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'donasai_confirm_payment')) {
             $error = 'Security check failed.';
         } else {
-            global $wpdb;
             $donation_id = isset($_POST['donation_id']) ? intval($_POST['donation_id']) : 0;
             $amount_post = isset($_POST['amount']) ? sanitize_text_field(wp_unslash($_POST['amount'])) : '0';
             $amount = intval(str_replace('.', '', $amount_post)); // Remove dots
@@ -751,8 +731,7 @@ function donasai_shortcode_confirmation_form()
                 $donasai_donation = wp_cache_get($donasai_cache_key, 'donasai_donations');
 
                 if (false === $donasai_donation) {
-                    $donasai_table_donations = $wpdb->prefix . 'donasai_donations';
-                    $donasai_donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $donasai_table_donations, $donation_id));
+                    $donasai_donation = DONASAI_Donation_Repository::get_donation($donation_id);
                     if ($donasai_donation) {
                         wp_cache_set($donasai_cache_key, $donasai_donation, 'donasai_donations', 3600);
                     }
@@ -767,13 +746,12 @@ function donasai_shortcode_confirmation_form()
                     }
 
                     if ( isset( $_FILES['proof_file'] ) && !empty($_FILES['proof_file']['name']) ) {
-                        $file = $_FILES['proof_file'];
                         $uploadedfile = array(
-                            'name'     => isset($file['name']) ? sanitize_file_name( wp_unslash( (string) $file['name'] ) ) : '',
-                            'type'     => isset($file['type']) ? sanitize_mime_type( wp_unslash( (string) $file['type'] ) ) : '',
-                            'tmp_name' => isset($file['tmp_name']) ? sanitize_text_field( wp_unslash( (string) $file['tmp_name'] ) ) : '',
-                            'error'    => isset($file['error']) ? intval( $file['error'] ) : 0,
-                            'size'     => isset($file['size']) ? intval( $file['size'] ) : 0,
+                            'name'     => isset($_FILES['proof_file']['name']) ? sanitize_file_name( wp_unslash( (string) $_FILES['proof_file']['name'] ) ) : '',
+                            'type'     => isset($_FILES['proof_file']['type']) ? sanitize_mime_type( wp_unslash( (string) $_FILES['proof_file']['type'] ) ) : '',
+                            'tmp_name' => isset($_FILES['proof_file']['tmp_name']) ? sanitize_text_field( wp_unslash( (string) $_FILES['proof_file']['tmp_name'] ) ) : '',
+                            'error'    => isset($_FILES['proof_file']['error']) ? intval( $_FILES['proof_file']['error'] ) : 0,
+                            'size'     => isset($_FILES['proof_file']['size']) ? intval( $_FILES['proof_file']['size'] ) : 0,
                         );
                     } else {
                         $uploadedfile = null;
@@ -801,13 +779,13 @@ function donasai_shortcode_confirmation_form()
                             $metadata['confirmed_at'] = current_time('mysql');
                             $metadata['confirmed_amount'] = $amount; // For verification
 
-                            $wpdb->update(
-                                $donasai_table_donations,
+                            DONASAI_Donation_Repository::update(
+                                $donation_id,
                                 array(
                                     'metadata' => json_encode($metadata),
                                     'status' => 'processing' // Mark as Processing (Enum matches DB)
                                 ),
-                                array('id' => $donation_id)
+                                array('%s', '%s')
                             );
 
                             // Invalidate Caches
@@ -922,14 +900,8 @@ function donasai_enqueue_receipt_assets() {
         wp_add_inline_style('donasai-frontend', $donasai_receipt_css);
 
         // Confetti Script
-        $donation_status = 'pending';
-        global $wpdb;
-        $donasai_table = $wpdb->prefix . 'donasai_donations';
-        $donasai_cache_key = 'donasai_donation_status_' . $donasai_donation_id;
-        $donasai_status = wp_cache_get($donasai_cache_key, 'donasai_donations');
-
         if (false === $donasai_status) {
-            $donasai_status = $wpdb->get_var($wpdb->prepare("SELECT status FROM %i WHERE id = %d", $donasai_table, $donasai_donation_id));
+            $donasai_status = DONASAI_Donation_Repository::get_status($donasai_donation_id);
             if ($donasai_status) {
                 wp_cache_set($donasai_cache_key, $donasai_status, 'donasai_donations', 300);
             }

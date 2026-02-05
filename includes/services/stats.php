@@ -12,14 +12,13 @@ if (!defined('ABSPATH')) {
  */
 function donasai_get_stats_overview()
 {
-    global $wpdb;
-
     $cache_key = 'donasai_stats_overview';
     $cached_stats = wp_cache_get($cache_key, 'donasai_stats');
 
     if (false === $cached_stats) {
-        $total_collected = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM %i WHERE status = %s", $wpdb->prefix . 'donasai_donations', 'complete'));
-        $total_donors = $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM %i WHERE status = %s", $wpdb->prefix . 'donasai_donations', 'complete'));
+        $overview = donasai_get_advanced_analytics(); // Advanced covers similar ground
+        $total_collected = DONASAI_Donation_Repository::get_campaign_total(0); // 0 = all
+        $total_donors = DONASAI_Donation_Repository::get_campaign_donor_count(0);
         $active_campaigns = wp_count_posts('donasai_campaign')->publish;
 
         $cached_stats = array(
@@ -38,29 +37,18 @@ function donasai_get_stats_overview()
  */
 function donasai_get_advanced_analytics()
 {
-    global $wpdb;
-    $table_donations = $wpdb->prefix . 'donasai_donations';
-
     // 1. Growth Rate (Month over Month)
     $cache_key_month = 'donasai_stats_month';
     $current_month_amount = wp_cache_get($cache_key_month, 'donasai_stats');
     if (false === $current_month_amount) {
-        $current_month_amount = (float) $wpdb->get_var($wpdb->prepare(
-            "SELECT SUM(amount) FROM %i WHERE status = %s AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)",
-            $wpdb->prefix . 'donasai_donations',
-            'complete'
-        ));
+        $current_month_amount = DONASAI_Stats_Repository::get_revenue_for_period(30);
         wp_cache_set($cache_key_month, $current_month_amount, 'donasai_stats', 3600);
     }
 
     $cache_key_last_month = 'donasai_stats_last_month';
     $last_month_amount = wp_cache_get($cache_key_last_month, 'donasai_stats');
     if (false === $last_month_amount) {
-        $last_month_amount = (float) $wpdb->get_var($wpdb->prepare(
-            "SELECT SUM(amount) FROM %i WHERE status = %s AND created_at BETWEEN DATE_SUB(NOW(), INTERVAL 60 DAY) AND DATE_SUB(NOW(), INTERVAL 30 DAY)",
-            $wpdb->prefix . 'donasai_donations',
-            'complete'
-        ));
+        $last_month_amount = DONASAI_Stats_Repository::get_revenue_for_period(30, 30);
         wp_cache_set($cache_key_last_month, $last_month_amount, 'donasai_stats', 3600);
     }
 
@@ -75,12 +63,7 @@ function donasai_get_advanced_analytics()
     $cache_key_mrr = 'donasai_stats_mrr';
     $cached_mrr = wp_cache_get($cache_key_mrr, 'donasai_stats');
     if (false === $cached_mrr) {
-        $table_subscriptions = $wpdb->prefix . 'donasai_subscriptions';
-        if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table_subscriptions)) == $table_subscriptions) {
-            $cached_mrr = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM %i WHERE status = %s", $table_subscriptions, 'active')) ?: 0;
-        } else {
-            $cached_mrr = 0;
-        }
+        $cached_mrr = DONASAI_Stats_Repository::get_mrr();
         wp_cache_set($cache_key_mrr, $cached_mrr, 'donasai_stats', 3600);
     }
 
@@ -88,18 +71,11 @@ function donasai_get_advanced_analytics()
     $cache_key_repeat = 'donasai_stats_repeat_donors';
     $repeat_donors = wp_cache_get($cache_key_repeat, 'donasai_stats');
     if (false === $repeat_donors) {
-        $repeat_donors = (int) $wpdb->get_var($wpdb->prepare("
-            SELECT COUNT(*) FROM (
-                SELECT email FROM %i 
-                WHERE status = %s 
-                GROUP BY email 
-                HAVING COUNT(id) > 1
-            ) as repeaters", $wpdb->prefix . 'donasai_donations', 'complete'));
+        $repeat_donors = DONASAI_Stats_Repository::get_repeat_donor_count();
         wp_cache_set($cache_key_repeat, $repeat_donors, 'donasai_stats', 3600);
     }
 
-    $overview = donasai_get_stats_overview();
-    $total_donors = $overview['total_donors'];
+    $total_donors = DONASAI_Donation_Repository::get_campaign_donor_count(0);
     $retention_rate = $total_donors > 0 ? ($repeat_donors / $total_donors) * 100 : 0;
 
     return array(
@@ -114,24 +90,11 @@ function donasai_get_advanced_analytics()
  */
 function donasai_get_chart_data()
 {
-    global $wpdb;
-    $table_donations = $wpdb->prefix . 'donasai_donations';
-
     $cache_key = 'donasai_chart_stats_daily';
     $results = wp_cache_get($cache_key, 'donasai_stats');
 
     if (false === $results) {
-        $results = $wpdb->get_results($wpdb->prepare("
-            SELECT 
-                DATE(created_at) as date, 
-                SUM(amount) as total_amount,
-                COUNT(id) as total_count
-            FROM %i 
-            WHERE status = %s 
-            AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-            GROUP BY DATE(created_at)
-            ORDER BY date ASC
-        ", $wpdb->prefix . 'donasai_donations', 'complete'));
+        $results = DONASAI_Stats_Repository::get_daily_chart_data();
         wp_cache_set($cache_key, $results, 'donasai_stats', 3600);
     }
 
@@ -168,12 +131,7 @@ function donasai_get_chart_data()
     $cache_key_pm = 'donasai_stats_payment_methods';
     $payment_methods = wp_cache_get($cache_key_pm, 'donasai_stats');
     if (false === $payment_methods) {
-        $payment_methods = $wpdb->get_results($wpdb->prepare("
-            SELECT payment_method, COUNT(*) as count 
-            FROM %i 
-            WHERE status = %s 
-            GROUP BY payment_method
-        ", $wpdb->prefix . 'donasai_donations', 'complete'));
+        $payment_methods = DONASAI_Stats_Repository::get_payment_method_stats();
         wp_cache_set($cache_key_pm, $payment_methods, 'donasai_stats', 3600);
     }
 
@@ -181,15 +139,7 @@ function donasai_get_chart_data()
     $cache_key_top = 'donasai_stats_top_campaigns';
     $top_campaigns = wp_cache_get($cache_key_top, 'donasai_stats');
     if (false === $top_campaigns) {
-        $top_campaigns = $wpdb->get_results($wpdb->prepare("
-            SELECT p.post_title as name, SUM(d.amount) as value
-            FROM %i d
-            LEFT JOIN %i p ON d.campaign_id = p.ID
-            WHERE d.status = %s AND d.campaign_id > 0
-            GROUP BY d.campaign_id
-            ORDER BY value DESC
-            LIMIT 5
-        ", $wpdb->prefix . 'donasai_donations', $wpdb->posts, 'complete'));
+        $top_campaigns = DONASAI_Stats_Repository::get_top_campaigns(5);
         wp_cache_set($cache_key_top, $top_campaigns, 'donasai_stats', 3600);
     }
 

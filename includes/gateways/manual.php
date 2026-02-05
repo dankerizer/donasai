@@ -27,8 +27,6 @@ class DONASAI_Gateway_Manual implements DONASAI_Gateway
 
     public function process_payment($donation_data): array
     {
-        global $wpdb;
-        $table_donations = $wpdb->prefix . 'donasai_donations';
 
         // Generate Unique Code (1-999) to ease verification
         $unique_code = wp_rand(1, 999);
@@ -61,17 +59,7 @@ class DONASAI_Gateway_Manual implements DONASAI_Gateway
 
         $format = array('%d', '%d', '%s', '%s', '%s', '%f', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%s');
 
-        $inserted = $wpdb->insert(
-            $table_donations,
-            $data,
-            $format
-        );
-
-        if (!$inserted) {
-            return array('success' => false, 'message' => 'Database error');
-        }
-
-        $donation_id = $wpdb->insert_id;
+        $donation_id = DONASAI_Donation_Repository::create($data, $format);
 
         return array(
             'success' => true,
@@ -128,13 +116,8 @@ class DONASAI_Gateway_Manual implements DONASAI_Gateway
         if (function_exists('donasai_get_donation')) {
             $donation = donasai_get_donation($donation_id);
         } else {
-             global $wpdb;
-             $table = $wpdb->prefix . 'donasai_donations';
-        $cache_key = 'donasai_donation_' . $donation_id;
-        // Try to get from cache first
-        $donation = wp_cache_get($cache_key, 'donasai_donations');
         if (false === $donation) {
-            $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $table, $donation_id));
+            $donation = DONASAI_Donation_Repository::get_donation($donation_id);
             if ($donation) {
                 wp_cache_set($cache_key, $donation, 'donasai_donations', 3600);
             }

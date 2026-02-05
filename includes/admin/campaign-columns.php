@@ -188,7 +188,7 @@ function donasai_campaign_column_orderby($vars)
 {
     if (isset($vars['orderby']) && 'collected_amount' === $vars['orderby']) {
         $vars = array_merge($vars, array(
-            'meta_key' => '_donasai_collected_amount',
+            'meta_key' => '_donasai_collected_amount', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Required for sorting campaigns by revenue in admin.
             'orderby' => 'meta_value_num'
         ));
     }

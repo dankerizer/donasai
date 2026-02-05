@@ -14,14 +14,8 @@ if (!$donasai_user_id) {
     return;
 }
 
-global $wpdb;
-
-$donasai_cache_key = 'donasai_user_donations_' . $donasai_user_id;
-$donasai_donations = wp_cache_get($donasai_cache_key, 'donasai_donations');
-
 if (false === $donasai_donations) {
-    $donasai_table_name = $wpdb->prefix . 'donasai_donations';
-    $donasai_donations = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i WHERE user_id = %d ORDER BY created_at DESC", $donasai_table_name, $donasai_user_id));
+    $donasai_donations = DONASAI_Donation_Repository::get_by_user($donasai_user_id);
     wp_cache_set($donasai_cache_key, $donasai_donations, 'donasai_donations', 300);
 }
 ?>
@@ -119,19 +113,7 @@ if (false === $donasai_donations) {
     $donasai_subscriptions = wp_cache_get($donasai_cache_key_subs, 'donasai_subscriptions');
 
     if (false === $donasai_subscriptions) {
-        $donasai_table_subs = $wpdb->prefix . 'donasai_subscriptions';
-        $donasai_table_posts = $wpdb->prefix . 'posts';
-        $donasai_subscriptions = $wpdb->get_results($wpdb->prepare(
-            "SELECT s.*, p.post_title as campaign_title 
-             FROM %i s
-             JOIN %i p ON s.campaign_id = p.ID
-             WHERE s.user_id = %d 
-             WHERE s.user_id = %d 
-             ORDER BY s.created_at DESC",
-            $donasai_table_subs,
-            $donasai_table_posts,
-            $donasai_user_id
-        ));
+        $donasai_subscriptions = DONASAI_Subscription_Repository::get_user_subscriptions($donasai_user_id);
         wp_cache_set($donasai_cache_key_subs, $donasai_subscriptions, 'donasai_subscriptions', 300);
     }
     ?>

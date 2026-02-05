@@ -58,7 +58,6 @@ function donasai_api_get_campaigns_list()
 
 function donasai_api_create_donation($request)
 {
-	global $wpdb;
 	$campaign_id = isset($request['id']) ? intval($request['id']) : 0;
 	$params = $request->get_json_params();
 
@@ -90,7 +89,6 @@ function donasai_api_create_donation($request)
 	}
 
 	// 2. Insert Donation
-	$table_donations = $wpdb->prefix . 'donasai_donations';
 	$data = array(
 		'campaign_id' => $campaign_id,
 		'user_id' => get_current_user_id() ? get_current_user_id() : null,
@@ -107,31 +105,25 @@ function donasai_api_create_donation($request)
 		'created_at' => current_time('mysql'),
 	);
 
-	$inserted = $wpdb->insert(
-		$table_donations,
-		$data,
-		array(
-			'%d', // campaign_id
-			'%d', // user_id
-			'%s', // name
-			'%s', // email
-			'%s', // phone
-			'%f', // amount
-			'%s', // payment_method
-			'%s', // status
-			'%s', // note
-			'%d', // subscription_id
-			'%d', // is_anonymous
-			'%d', // fundraiser_id
-			'%s', // created_at
-		)
-	);
+	$donation_id = DONASAI_Donation_Repository::create($data, array(
+		'%d', // campaign_id
+		'%d', // user_id
+		'%s', // name
+		'%s', // email
+		'%s', // phone
+		'%f', // amount
+		'%s', // payment_method
+		'%s', // status
+		'%s', // note
+		'%d', // subscription_id
+		'%d', // is_anonymous
+		'%d', // fundraiser_id
+		'%s', // created_at
+	));
 
-	if (!$inserted) {
+	if (!$donation_id) {
 		return new WP_Error('db_error', 'Failed to create donation', array('status' => 500));
 	}
-
-	$donation_id = $wpdb->insert_id;
 
 	// 3. Process Payment Gateway
 	$gateway = DONASAI_Gateway_Registry::get_gateway($method);
@@ -160,7 +152,6 @@ function donasai_api_create_donation($request)
 
 function donasai_api_get_campaign_donors($request)
 {
-	global $wpdb;
 	$campaign_id = isset($request['id']) ? intval($request['id']) : 0;
 
 	// Pagination params
@@ -169,31 +160,29 @@ function donasai_api_get_campaign_donors($request)
 	$offset = ($page - 1) * $per_page;
 
 	// Get Donors
-	$table = esc_sql($wpdb->prefix . 'donasai_donations');
 	$cache_key = 'donasai_campaign_donors_' . $campaign_id . '_p' . $page . '_pp' . $per_page;
 	$cache_group = 'donasai_donations';
 	$results = wp_cache_get($cache_key, $cache_group);
 
 	if (false === $results) {
-		$results = $wpdb->get_results($wpdb->prepare(
-			"SELECT * FROM %i WHERE campaign_id = %d AND status = 'complete' ORDER BY created_at DESC LIMIT %d OFFSET %d",
-			$table,
-			$campaign_id,
+		$results = DONASAI_Donation_Repository::get_list(
+			"campaign_id = %d AND status = 'complete'",
+			array($campaign_id),
+			'created_at',
+			'DESC',
 			$per_page,
 			$offset
-		));
+		);
 		wp_cache_set($cache_key, $results, $cache_group, 300);
 	}
 
-	// Get totals
     // Total Collected Current Campaign
-    $table = $wpdb->prefix . 'donasai_donations';
     $cache_key_stats = 'donasai_campaign_stats_' . $campaign_id;
     $stats = wp_cache_get($cache_key_stats, 'donasai_stats');
 
     if (false === $stats) {
-        $total_collected = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM %i WHERE campaign_id = %d AND status = %s", $table, $campaign_id, 'complete'));
-        $total_donors = $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM %i WHERE campaign_id = %d AND status = %s", $table, $campaign_id, 'complete'));
+        $total_collected = DONASAI_Donation_Repository::get_campaign_total($campaign_id);
+        $total_donors = DONASAI_Donation_Repository::get_campaign_donor_count($campaign_id);
         
         $stats = array(
             'collected' => (float)$total_collected,
@@ -212,11 +201,10 @@ function donasai_api_get_campaign_donors($request)
 	$total_donations_count_cache_key = 'donasai_campaign_donations_count_' . $campaign_id;
 	$total = wp_cache_get($total_donations_count_cache_key, $cache_group);
 	if (false === $total) {
-		$total = (int) $wpdb->get_var($wpdb->prepare(
-			"SELECT COUNT(id) FROM %i WHERE campaign_id = %d AND status = 'complete'",
-			$table,
-			$campaign_id
-		));
+		$total = DONASAI_Donation_Repository::get_count(
+			"campaign_id = %d AND status = 'complete'",
+			array($campaign_id)
+		);
 		wp_cache_set($total_donations_count_cache_key, $total, $cache_group, 300);
 	}
 	$total_pages = ceil($total / $per_page);

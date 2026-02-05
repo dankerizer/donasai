@@ -34,6 +34,10 @@ require_once DONASAI_PLUGIN_PATH . 'includes/gateways/interface.php';
 require_once DONASAI_PLUGIN_PATH . 'includes/gateways/manual.php';
 
 require_once DONASAI_PLUGIN_PATH . 'includes/services/gateway-registry.php';
+require_once DONASAI_PLUGIN_PATH . 'includes/services/donation-repository.php';
+require_once DONASAI_PLUGIN_PATH . 'includes/services/stats-repository.php';
+require_once DONASAI_PLUGIN_PATH . 'includes/services/subscription-repository.php';
+require_once DONASAI_PLUGIN_PATH . 'includes/services/fundraiser-repository.php';
 
 // Services
 require_once DONASAI_PLUGIN_PATH . 'includes/services/donation.php';

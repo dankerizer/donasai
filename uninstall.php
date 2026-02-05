@@ -30,6 +30,7 @@ if (!empty($donasai_general_settings['delete_on_uninstall_tables'])) {
     );
 
     foreach ($donasai_tables as $donasai_table) {
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Complete database cleanup on plugin uninstall as requested by user.
         $wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS %i", $donasai_table));
     }
 }
@@ -49,7 +50,7 @@ if (!empty($donasai_general_settings['delete_on_uninstall_settings'])) {
     );
 
     // Pro specific options that might exist
-    $donasai_pro_options = $wpdb->get_col($wpdb->prepare("SELECT option_name FROM %i WHERE option_name LIKE %s", $wpdb->options, 'donasai_pro_%'));
+    $donasai_pro_options = $wpdb->get_col($wpdb->prepare("SELECT option_name FROM %i WHERE option_name LIKE %s", $wpdb->options, 'donasai_pro_%')); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Administrative cleanup on plugin uninstall.
     if (!empty($donasai_pro_options)) {
         $donasai_options = array_merge($donasai_options, $donasai_pro_options);
     }

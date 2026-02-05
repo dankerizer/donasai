@@ -42,10 +42,6 @@ function donasai_handle_donation_submission()
         wp_die('Please provide valid amount, name, and email.');
     }
 
-    if ($amount <= 0 || empty($name) || empty($email)) {
-        wp_die('Please provide valid amount, name, and email.');
-    }
-
     // Get Gateway
     $gateway_id = isset($_POST['payment_method']) ? sanitize_text_field(wp_unslash($_POST['payment_method'])) : 'manual';
 
@@ -108,8 +104,6 @@ function donasai_handle_donation_submission()
     }
 
     // Apply Filter for Pro (Subscriptions, etc)
-    // Allows Pro to create subscription and return subscription_id in the data
-    // Only pass necessary POST data
     $post_data = array();
     if (isset($_POST['recurring_period'])) {
         $post_data['recurring_period'] = sanitize_text_field(wp_unslash($_POST['recurring_period']));
@@ -164,11 +158,9 @@ function donasai_handle_donation_submission()
         $post_name = get_post_field('post_name', $campaign_id);
 
         if ($post_name) {
-            // Force Pretty URL Construction: /campaign/post-slug/thank-you/donation-id/
-            $base_path = "$campaign_slug/$post_name/$thankyou_slug/" . $result['donation_id'];
+            $base_path = sprintf('%s/%s/%s/%d', $campaign_slug, $post_name, $thankyou_slug, $result['donation_id']);
             $redirect_url = home_url(user_trailingslashit($base_path));
         } else {
-            // Fallback to plain if post_name missing (rare)
             $redirect_url = add_query_arg($thankyou_slug, $result['donation_id'], get_permalink($campaign_id));
         }
 
@@ -191,14 +183,11 @@ add_action('init', 'donasai_handle_donation_submission');
  */
 function donasai_update_campaign_stats($campaign_id)
 {
-    global $wpdb;
-    $table = esc_sql($wpdb->prefix . 'donasai_donations');
-
     // Sum only completed donations
     $cache_key_total = 'donasai_campaign_total_' . $campaign_id;
     $total = wp_cache_get($cache_key_total, 'donasai_campaigns');
     if (false === $total) {
-        $total = (float) $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM %i WHERE campaign_id = %d AND status = 'complete'", $table, $campaign_id));
+        $total = DONASAI_Donation_Repository::get_campaign_total($campaign_id);
         wp_cache_set($cache_key_total, $total, 'donasai_campaigns', 300);
     }
 
@@ -206,7 +195,7 @@ function donasai_update_campaign_stats($campaign_id)
     $cache_key_donors = 'donasai_campaign_donors_' . $campaign_id;
     $donor_count = wp_cache_get($cache_key_donors, 'donasai_campaigns');
     if (false === $donor_count) {
-        $donor_count = (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM %i WHERE campaign_id = %d AND status = 'complete'", $table, $campaign_id));
+        $donor_count = DONASAI_Donation_Repository::get_campaign_donor_count($campaign_id);
         wp_cache_set($cache_key_donors, $donor_count, 'donasai_campaigns', 300);
     }
 
@@ -225,7 +214,6 @@ function donasai_update_campaign_stats($campaign_id)
  */
 function donasai_get_donation($donation_id)
 {
-    global $wpdb;
     $donation_id = intval($donation_id);
     if (!$donation_id) {
         return null;
@@ -235,8 +223,7 @@ function donasai_get_donation($donation_id)
     $donation = wp_cache_get($cache_key, 'donasai_donations');
 
     if (false === $donation) {
-        $table = $wpdb->prefix . 'donasai_donations';
-        $donation = $wpdb->get_row($wpdb->prepare("SELECT * FROM %i WHERE id = %d", $table, $donation_id));
+        $donation = DONASAI_Donation_Repository::get_donation($donation_id);
         if ($donation) {
             wp_cache_set($cache_key, $donation, 'donasai_donations', 3600);
         }
@@ -272,7 +259,6 @@ function donasai_get_campaign_progress($campaign_id)
  */
 function donasai_get_donations_list($args = array())
 {
-    global $wpdb;
     $defaults = array(
         'filters'  => array(),
         'per_page' => 20,
@@ -286,9 +272,8 @@ function donasai_get_donations_list($args = array())
     $results = wp_cache_get($cache_key, 'donasai_donations');
 
     if (false === $results) {
-        $table_name = $wpdb->prefix . 'donasai_donations';
         $where = " 1=1";
-        $prepare_args = array($table_name);
+        $prepare_args = array();
 
         $filters = $r['filters'];
 
@@ -296,7 +281,7 @@ function donasai_get_donations_list($args = array())
             $ids = array_map('intval', explode(',', $filters['campaign_id']));
             if (!empty($ids)) {
                 $placeholders = implode(',', array_fill(0, count($ids), '%d'));
-                $where .= " AND campaign_id IN ($placeholders)";
+                $where .= " AND campaign_id IN (" . esc_sql($placeholders) . ")";
                 $prepare_args = array_merge($prepare_args, $ids);
             }
         }
@@ -305,7 +290,7 @@ function donasai_get_donations_list($args = array())
             $statuses = array_map('sanitize_text_field', explode(',', $filters['status']));
             if (!empty($statuses)) {
                 $placeholders = implode(',', array_fill(0, count($statuses), '%s'));
-                $where .= " AND status IN ($placeholders)";
+                $where .= " AND status IN (" . esc_sql($placeholders) . ")";
                 $prepare_args = array_merge($prepare_args, $statuses);
             }
         }
@@ -314,7 +299,7 @@ function donasai_get_donations_list($args = array())
             $methods = array_map('sanitize_text_field', explode(',', $filters['payment_method']));
             if (!empty($methods)) {
                 $placeholders = implode(',', array_fill(0, count($methods), '%s'));
-                $where .= " AND payment_method IN ($placeholders)";
+                $where .= " AND payment_method IN (" . esc_sql($placeholders) . ")";
                 $prepare_args = array_merge($prepare_args, $methods);
             }
         }
@@ -329,12 +314,12 @@ function donasai_get_donations_list($args = array())
 
         if (!empty($filters['start_date'])) {
             $where .= " AND created_at >= %s";
-            $prepare_args[] = sanitize_text_field($filters['start_date']) . ' 00:00:00';
+            $prepare_args[] = sprintf('%s 00:00:00', sanitize_text_field($filters['start_date']));
         }
 
         if (!empty($filters['end_date'])) {
             $where .= " AND created_at <= %s";
-            $prepare_args[] = sanitize_text_field($filters['end_date']) . ' 23:59:59';
+            $prepare_args[] = sprintf('%s 23:59:59', sanitize_text_field($filters['end_date']));
         }
 
         // Ordering (Allow-list)
@@ -345,13 +330,7 @@ function donasai_get_donations_list($args = array())
         $limit = intval($r['per_page']);
         $offset = intval($r['offset']);
 
-        $prepare_args[] = $limit;
-        $prepare_args[] = $offset;
-
-        $results = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM %i WHERE $where ORDER BY $order_by $order LIMIT %d OFFSET %d",
-            ...$prepare_args
-        ));
+        $results = DONASAI_Donation_Repository::get_list($where, $prepare_args, $order_by, $order, $limit, $offset);
         wp_cache_set($cache_key, $results, 'donasai_donations', 3600);
     }
 
@@ -363,20 +342,18 @@ function donasai_get_donations_list($args = array())
  */
 function donasai_get_donations_count($filters = array())
 {
-    global $wpdb;
     $cache_key = 'donasai_donations_total_' . md5(json_encode($filters));
     $total = wp_cache_get($cache_key, 'donasai_donations');
 
     if (false === $total) {
-        $table_name = $wpdb->prefix . 'donasai_donations';
         $where = " 1=1";
-        $prepare_args = array($table_name);
+        $prepare_args = array();
 
         if (!empty($filters['campaign_id'])) {
             $ids = array_map('intval', explode(',', $filters['campaign_id']));
             if (!empty($ids)) {
                 $placeholders = implode(',', array_fill(0, count($ids), '%d'));
-                $where .= " AND campaign_id IN ($placeholders)";
+                $where .= " AND campaign_id IN (" . esc_sql($placeholders) . ")";
                 $prepare_args = array_merge($prepare_args, $ids);
             }
         }
@@ -385,7 +362,7 @@ function donasai_get_donations_count($filters = array())
             $statuses = array_map('sanitize_text_field', explode(',', $filters['status']));
             if (!empty($statuses)) {
                 $placeholders = implode(',', array_fill(0, count($statuses), '%s'));
-                $where .= " AND status IN ($placeholders)";
+                $where .= " AND status IN (" . esc_sql($placeholders) . ")";
                 $prepare_args = array_merge($prepare_args, $statuses);
             }
         }
@@ -394,7 +371,7 @@ function donasai_get_donations_count($filters = array())
             $methods = array_map('sanitize_text_field', explode(',', $filters['payment_method']));
             if (!empty($methods)) {
                 $placeholders = implode(',', array_fill(0, count($methods), '%s'));
-                $where .= " AND payment_method IN ($placeholders)";
+                $where .= " AND payment_method IN (" . esc_sql($placeholders) . ")";
                 $prepare_args = array_merge($prepare_args, $methods);
             }
         }
@@ -409,18 +386,15 @@ function donasai_get_donations_count($filters = array())
 
         if (!empty($filters['start_date'])) {
             $where .= " AND created_at >= %s";
-            $prepare_args[] = sanitize_text_field($filters['start_date']) . ' 00:00:00';
+            $prepare_args[] = sprintf('%s 00:00:00', sanitize_text_field($filters['start_date']));
         }
 
         if (!empty($filters['end_date'])) {
             $where .= " AND created_at <= %s";
-            $prepare_args[] = sanitize_text_field($filters['end_date']) . ' 23:59:59';
+            $prepare_args[] = sprintf('%s 23:59:59', sanitize_text_field($filters['end_date']));
         }
 
-        $total = (int) $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM %i WHERE $where",
-            ...$prepare_args
-        ));
+        $total = DONASAI_Donation_Repository::get_count($where, $prepare_args);
         wp_cache_set($cache_key, $total, 'donasai_donations', 3600);
     }
     return $total;
@@ -431,16 +405,7 @@ function donasai_get_donations_count($filters = array())
  */
 function donasai_update_donation($id, $data, $format = array())
 {
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'donasai_donations';
-
-    $updated = $wpdb->update(
-        $table_name,
-        $data,
-        array('id' => $id),
-        $format,
-        array('%d')
-    );
+    $updated = DONASAI_Donation_Repository::update($id, $data, $format);
 
     if ($updated !== false) {
         // Invalidate Caches
@@ -459,18 +424,11 @@ function donasai_update_donation($id, $data, $format = array())
  */
 function donasai_get_recent_donations($limit = 5)
 {
-    global $wpdb;
     $cache_key = 'donasai_donations_recent_' . $limit;
     $results = wp_cache_get($cache_key, 'donasai_donations');
 
     if (false === $results) {
-        $table_name = $wpdb->prefix . 'donasai_donations';
-        $results = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM %i WHERE status = %s ORDER BY created_at DESC LIMIT %d",
-            $table_name,
-            'complete',
-            $limit
-        ));
+        $results = DONASAI_Donation_Repository::get_recent($limit);
         wp_cache_set($cache_key, $results, 'donasai_donations', 300);
     }
 

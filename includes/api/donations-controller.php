@@ -156,7 +156,7 @@ function donasai_api_update_donation($request)
         return new WP_Error('no_data', 'No data to update', array('status' => 400));
     }
 
-    $updated = donasai_update_donation($id, $data_to_update, $format);
+    $updated = DONASAI_Donation_Repository::update($id, $data_to_update, $format);
 
     if ($updated === false) {
         return new WP_Error('db_error', 'Could not update donation', array('status' => 500));
