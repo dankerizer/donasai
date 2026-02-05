@@ -272,65 +272,13 @@ function donasai_get_donations_list($args = array())
     $results = wp_cache_get($cache_key, 'donasai_donations');
 
     if (false === $results) {
-        $where = " 1=1";
-        $prepare_args = array();
-
-        $filters = $r['filters'];
-
-        if (!empty($filters['campaign_id'])) {
-            $ids = array_map('intval', explode(',', $filters['campaign_id']));
-            if (!empty($ids)) {
-                $placeholders = implode(',', array_fill(0, count($ids), '%d'));
-                $where .= " AND campaign_id IN (" . esc_sql($placeholders) . ")";
-                $prepare_args = array_merge($prepare_args, $ids);
-            }
-        }
-
-        if (!empty($filters['status'])) {
-            $statuses = array_map('sanitize_text_field', explode(',', $filters['status']));
-            if (!empty($statuses)) {
-                $placeholders = implode(',', array_fill(0, count($statuses), '%s'));
-                $where .= " AND status IN (" . esc_sql($placeholders) . ")";
-                $prepare_args = array_merge($prepare_args, $statuses);
-            }
-        }
-
-        if (!empty($filters['payment_method'])) {
-            $methods = array_map('sanitize_text_field', explode(',', $filters['payment_method']));
-            if (!empty($methods)) {
-                $placeholders = implode(',', array_fill(0, count($methods), '%s'));
-                $where .= " AND payment_method IN (" . esc_sql($placeholders) . ")";
-                $prepare_args = array_merge($prepare_args, $methods);
-            }
-        }
-
-        if (!empty($filters['is_recurring'])) {
-            if ($filters['is_recurring'] === 'recurring') {
-                $where .= " AND subscription_id IS NOT NULL AND subscription_id > 0";
-            } elseif ($filters['is_recurring'] === 'one-time') {
-                $where .= " AND (subscription_id IS NULL OR subscription_id = 0)";
-            }
-        }
-
-        if (!empty($filters['start_date'])) {
-            $where .= " AND created_at >= %s";
-            $prepare_args[] = sprintf('%s 00:00:00', sanitize_text_field($filters['start_date']));
-        }
-
-        if (!empty($filters['end_date'])) {
-            $where .= " AND created_at <= %s";
-            $prepare_args[] = sprintf('%s 23:59:59', sanitize_text_field($filters['end_date']));
-        }
-
-        // Ordering (Allow-list)
-        $allowed_columns = array('id', 'campaign_id', 'amount', 'created_at', 'status', 'name', 'email');
-        $order_by = in_array($r['order_by'], $allowed_columns, true) ? $r['order_by'] : 'created_at';
-        $order = (strtoupper($r['order']) === 'ASC') ? 'ASC' : 'DESC';
-
-        $limit = intval($r['per_page']);
-        $offset = intval($r['offset']);
-
-        $results = DONASAI_Donation_Repository::get_list($where, $prepare_args, $order_by, $order, $limit, $offset);
+        $results = DONASAI_Donation_Repository::get_list_filtered(
+            $r['filters'],
+            $r['order_by'],
+            $r['order'],
+            $r['per_page'],
+            $r['offset']
+        );
         wp_cache_set($cache_key, $results, 'donasai_donations', 3600);
     }
 
@@ -346,55 +294,7 @@ function donasai_get_donations_count($filters = array())
     $total = wp_cache_get($cache_key, 'donasai_donations');
 
     if (false === $total) {
-        $where = " 1=1";
-        $prepare_args = array();
-
-        if (!empty($filters['campaign_id'])) {
-            $ids = array_map('intval', explode(',', $filters['campaign_id']));
-            if (!empty($ids)) {
-                $placeholders = implode(',', array_fill(0, count($ids), '%d'));
-                $where .= " AND campaign_id IN (" . esc_sql($placeholders) . ")";
-                $prepare_args = array_merge($prepare_args, $ids);
-            }
-        }
-
-        if (!empty($filters['status'])) {
-            $statuses = array_map('sanitize_text_field', explode(',', $filters['status']));
-            if (!empty($statuses)) {
-                $placeholders = implode(',', array_fill(0, count($statuses), '%s'));
-                $where .= " AND status IN (" . esc_sql($placeholders) . ")";
-                $prepare_args = array_merge($prepare_args, $statuses);
-            }
-        }
-
-        if (!empty($filters['payment_method'])) {
-            $methods = array_map('sanitize_text_field', explode(',', $filters['payment_method']));
-            if (!empty($methods)) {
-                $placeholders = implode(',', array_fill(0, count($methods), '%s'));
-                $where .= " AND payment_method IN (" . esc_sql($placeholders) . ")";
-                $prepare_args = array_merge($prepare_args, $methods);
-            }
-        }
-
-        if (!empty($filters['is_recurring'])) {
-            if ($filters['is_recurring'] === 'recurring') {
-                $where .= " AND subscription_id IS NOT NULL AND subscription_id > 0";
-            } elseif ($filters['is_recurring'] === 'one-time') {
-                $where .= " AND (subscription_id IS NULL OR subscription_id = 0)";
-            }
-        }
-
-        if (!empty($filters['start_date'])) {
-            $where .= " AND created_at >= %s";
-            $prepare_args[] = sprintf('%s 00:00:00', sanitize_text_field($filters['start_date']));
-        }
-
-        if (!empty($filters['end_date'])) {
-            $where .= " AND created_at <= %s";
-            $prepare_args[] = sprintf('%s 23:59:59', sanitize_text_field($filters['end_date']));
-        }
-
-        $total = DONASAI_Donation_Repository::get_count($where, $prepare_args);
+        $total = DONASAI_Donation_Repository::get_count_filtered($filters);
         wp_cache_set($cache_key, $total, 'donasai_donations', 3600);
     }
     return $total;

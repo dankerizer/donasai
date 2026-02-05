@@ -101,29 +101,45 @@ function donasai_api_export_donations($request)
     header('Pragma: no-cache');
     header('Expires: 0');
 
-    $output = fopen('php://output', 'w');
-    fputcsv($output, array('ID', 'Campaign ID', 'Date', 'Name', 'Email', 'Amount', 'Status', 'Payment Method'));
+    $csv_output = '';
+    
+    // Helper for CSV escaping
+    $esc_csv = function ($field) {
+        $field = str_replace('"', '""', (string)$field);
+        if (preg_match('/^[\=\+\-\@]/', $field)) {
+            $field = "'" . $field;
+        }
+        return '"' . $field . '"';
+    };
+
+    // Header
+    $header = array('ID', 'Campaign ID', 'Date', 'Name', 'Email', 'Amount', 'Status', 'Payment Method');
+    $csv_output .= implode(',', array_map($esc_csv, $header)) . "\r\n";
 
     foreach ($results as $row) {
-        $name = $row->name;
-        if (preg_match('/^[\=\+\-\@]/', $name)) {
-            $name = "'" . $name;
-        }
-
-        fputcsv($output, array(
+        $line = array(
             $row->id,
             $row->campaign_id,
             $row->created_at,
-            $name,
+            $row->name,
             $row->email,
             $row->amount,
             $row->status,
             $row->payment_method
-        ));
+        );
+        $csv_output .= implode(',', array_map($esc_csv, $line)) . "\r\n";
     }
 
-    fclose($output);
-    exit;
+    // Use WP_REST_Response to avoid direct echo and satisfy the linter.
+    $response = new WP_REST_Response($csv_output, 200);
+    $response->set_headers(array(
+        'Content-Type'        => 'text/csv',
+        'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        'Pragma'              => 'no-cache',
+        'Expires'             => '0',
+    ));
+
+    return $response;
 }
 
 function donasai_api_update_donation($request)

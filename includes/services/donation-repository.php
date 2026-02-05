@@ -25,11 +25,10 @@ class DONASAI_Donation_Repository
     public static function get_campaign_total($campaign_id)
     {
         global $wpdb;
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Caching is handled in the calling service layer (donation.php).
         return (float) $wpdb->get_var($wpdb->prepare(
             "SELECT SUM(amount) FROM %i WHERE campaign_id = %d AND status = 'complete'",
             self::get_table(),
-            $campaign_id
+            absint($campaign_id)
         ));
     }
 
@@ -39,11 +38,10 @@ class DONASAI_Donation_Repository
     public static function get_campaign_donor_count($campaign_id)
     {
         global $wpdb;
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Caching is handled in the calling service layer (donation.php).
         return (int) $wpdb->get_var($wpdb->prepare(
             "SELECT COUNT(DISTINCT email) FROM %i WHERE campaign_id = %d AND status = 'complete'",
             self::get_table(),
-            $campaign_id
+            absint($campaign_id)
         ));
     }
 
@@ -53,11 +51,10 @@ class DONASAI_Donation_Repository
     public static function get_donation($donation_id)
     {
         global $wpdb;
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Caching is handled in the calling service layer (donation.php).
         return $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM %i WHERE id = %d",
             self::get_table(),
-            $donation_id
+            absint($donation_id)
         ));
     }
 
@@ -67,39 +64,133 @@ class DONASAI_Donation_Repository
     public static function update($id, $data, $format)
     {
         global $wpdb;
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Cache invalidation is handled in the calling service layer (donation.php).
-        return $wpdb->update(self::get_table(), $data, array('id' => $id), $format, array('%d'));
+        return $wpdb->update(self::get_table(), $data, array('id' => absint($id)), $format, array('%d'));
     }
 
-    /**
-     * Get donations list with filters
-     */
-    public static function get_list($where, $prepare_args, $order_by, $order, $limit, $offset)
+    public static function get_list_filtered($filters = array(), $order_by = 'created_at', $order = 'DESC', $limit = 20, $offset = 0)
     {
         global $wpdb;
-        $prepare_args = array_merge(array(self::get_table()), $prepare_args);
-        $prepare_args[] = $limit;
-        $prepare_args[] = $offset;
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Dynamic query construction for filtered list. Arguments are validated and escaped in the calling service.
-        return $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM %i WHERE " . $where . " ORDER BY " . esc_sql($order_by) . " " . esc_sql($order) . " LIMIT %d OFFSET %d",
-            ...$prepare_args
-        ));
+        // Filters mapping
+        $campaign_id = !empty($filters['campaign_id']) ? absint($filters['campaign_id']) : 0;
+        $status = !empty($filters['status']) ? sanitize_text_field($filters['status']) : '';
+        $payment_method = !empty($filters['payment_method']) ? sanitize_text_field($filters['payment_method']) : '';
+        
+        $is_recurring = !empty($filters['is_recurring']) ? $filters['is_recurring'] : '';
+        $sub_filter = 0; // 0: all, 1: recurring, 2: one-time
+        if ($is_recurring === 'recurring') {
+            $sub_filter = 1;
+        } elseif ($is_recurring === 'one-time') {
+            $sub_filter = 2;
+        }
+
+        $start_date = !empty($filters['start_date']) ? sanitize_text_field($filters['start_date']) . ' 00:00:00' : '0000-00-00 00:00:00';
+        $end_date = !empty($filters['end_date']) ? sanitize_text_field($filters['end_date']) . ' 23:59:59' : '9999-12-31 23:59:59';
+
+        $order_dir = (strtoupper($order) === 'ASC') ? 'ASC' : 'DESC';
+        $limit_val = absint($limit);
+        $offset_val = absint($offset);
+
+        // To achieve Zero-Suppression, we MUST NOT use any variable concatenation or positional placeholders.
+        // POSITIONAL PLACEHOLDERS are NOT supported by $wpdb->prepare().
+        // We use a switch to provide a 100% literal query string for every column and direction combination.
+        switch ($order_by) {
+            case 'amount':
+                if ($order_dir === 'ASC') {
+                    return $wpdb->get_results($wpdb->prepare(
+                        "SELECT * FROM %i WHERE ( %d = 0 OR campaign_id = %d ) AND ( %s = '' OR status = %s ) AND ( %s = '' OR payment_method = %s ) AND ( %d = 0 OR ( %d = 1 AND subscription_id > 0 ) OR ( %d = 2 AND (subscription_id IS NULL OR subscription_id = 0) ) ) AND created_at >= %s AND created_at <= %s ORDER BY amount ASC LIMIT %d OFFSET %d",
+                        self::get_table(), $campaign_id, $campaign_id, $status, $status, $payment_method, $payment_method, $sub_filter, $sub_filter, $sub_filter, $start_date, $end_date, $limit_val, $offset_val
+                    ));
+                } else {
+                    return $wpdb->get_results($wpdb->prepare(
+                        "SELECT * FROM %i WHERE ( %d = 0 OR campaign_id = %d ) AND ( %s = '' OR status = %s ) AND ( %s = '' OR payment_method = %s ) AND ( %d = 0 OR ( %d = 1 AND subscription_id > 0 ) OR ( %d = 2 AND (subscription_id IS NULL OR subscription_id = 0) ) ) AND created_at >= %s AND created_at <= %s ORDER BY amount DESC LIMIT %d OFFSET %d",
+                        self::get_table(), $campaign_id, $campaign_id, $status, $status, $payment_method, $payment_method, $sub_filter, $sub_filter, $sub_filter, $start_date, $end_date, $limit_val, $offset_val
+                    ));
+                }
+            case 'status':
+                if ($order_dir === 'ASC') {
+                    return $wpdb->get_results($wpdb->prepare(
+                        "SELECT * FROM %i WHERE ( %d = 0 OR campaign_id = %d ) AND ( %s = '' OR status = %s ) AND ( %s = '' OR payment_method = %s ) AND ( %d = 0 OR ( %d = 1 AND subscription_id > 0 ) OR ( %d = 2 AND (subscription_id IS NULL OR subscription_id = 0) ) ) AND created_at >= %s AND created_at <= %s ORDER BY status ASC LIMIT %d OFFSET %d",
+                        self::get_table(), $campaign_id, $campaign_id, $status, $status, $payment_method, $payment_method, $sub_filter, $sub_filter, $sub_filter, $start_date, $end_date, $limit_val, $offset_val
+                    ));
+                } else {
+                    return $wpdb->get_results($wpdb->prepare(
+                        "SELECT * FROM %i WHERE ( %d = 0 OR campaign_id = %d ) AND ( %s = '' OR status = %s ) AND ( %s = '' OR payment_method = %s ) AND ( %d = 0 OR ( %d = 1 AND subscription_id > 0 ) OR ( %d = 2 AND (subscription_id IS NULL OR subscription_id = 0) ) ) AND created_at >= %s AND created_at <= %s ORDER BY status DESC LIMIT %d OFFSET %d",
+                        self::get_table(), $campaign_id, $campaign_id, $status, $status, $payment_method, $payment_method, $sub_filter, $sub_filter, $sub_filter, $start_date, $end_date, $limit_val, $offset_val
+                    ));
+                }
+            case 'name':
+                if ($order_dir === 'ASC') {
+                    return $wpdb->get_results($wpdb->prepare(
+                        "SELECT * FROM %i WHERE ( %d = 0 OR campaign_id = %d ) AND ( %s = '' OR status = %s ) AND ( %s = '' OR payment_method = %s ) AND ( %d = 0 OR ( %d = 1 AND subscription_id > 0 ) OR ( %d = 2 AND (subscription_id IS NULL OR subscription_id = 0) ) ) AND created_at >= %s AND created_at <= %s ORDER BY name ASC LIMIT %d OFFSET %d",
+                        self::get_table(), $campaign_id, $campaign_id, $status, $status, $payment_method, $payment_method, $sub_filter, $sub_filter, $sub_filter, $start_date, $end_date, $limit_val, $offset_val
+                    ));
+                } else {
+                    return $wpdb->get_results($wpdb->prepare(
+                        "SELECT * FROM %i WHERE ( %d = 0 OR campaign_id = %d ) AND ( %s = '' OR status = %s ) AND ( %s = '' OR payment_method = %s ) AND ( %d = 0 OR ( %d = 1 AND subscription_id > 0 ) OR ( %d = 2 AND (subscription_id IS NULL OR subscription_id = 0) ) ) AND created_at >= %s AND created_at <= %s ORDER BY name DESC LIMIT %d OFFSET %d",
+                        self::get_table(), $campaign_id, $campaign_id, $status, $status, $payment_method, $payment_method, $sub_filter, $sub_filter, $sub_filter, $start_date, $end_date, $limit_val, $offset_val
+                    ));
+                }
+            case 'email':
+                if ($order_dir === 'ASC') {
+                    return $wpdb->get_results($wpdb->prepare(
+                        "SELECT * FROM %i WHERE ( %d = 0 OR campaign_id = %d ) AND ( %s = '' OR status = %s ) AND ( %s = '' OR payment_method = %s ) AND ( %d = 0 OR ( %d = 1 AND subscription_id > 0 ) OR ( %d = 2 AND (subscription_id IS NULL OR subscription_id = 0) ) ) AND created_at >= %s AND created_at <= %s ORDER BY email ASC LIMIT %d OFFSET %d",
+                        self::get_table(), $campaign_id, $campaign_id, $status, $status, $payment_method, $payment_method, $sub_filter, $sub_filter, $sub_filter, $start_date, $end_date, $limit_val, $offset_val
+                    ));
+                } else {
+                    return $wpdb->get_results($wpdb->prepare(
+                        "SELECT * FROM %i WHERE ( %d = 0 OR campaign_id = %d ) AND ( %s = '' OR status = %s ) AND ( %s = '' OR payment_method = %s ) AND ( %d = 0 OR ( %d = 1 AND subscription_id > 0 ) OR ( %d = 2 AND (subscription_id IS NULL OR subscription_id = 0) ) ) AND created_at >= %s AND created_at <= %s ORDER BY email DESC LIMIT %d OFFSET %d",
+                        self::get_table(), $campaign_id, $campaign_id, $status, $status, $payment_method, $payment_method, $sub_filter, $sub_filter, $sub_filter, $start_date, $end_date, $limit_val, $offset_val
+                    ));
+                }
+            case 'created_at':
+            default:
+                if ($order_dir === 'ASC') {
+                    return $wpdb->get_results($wpdb->prepare(
+                        "SELECT * FROM %i WHERE ( %d = 0 OR campaign_id = %d ) AND ( %s = '' OR status = %s ) AND ( %s = '' OR payment_method = %s ) AND ( %d = 0 OR ( %d = 1 AND subscription_id > 0 ) OR ( %d = 2 AND (subscription_id IS NULL OR subscription_id = 0) ) ) AND created_at >= %s AND created_at <= %s ORDER BY created_at ASC LIMIT %d OFFSET %d",
+                        self::get_table(), $campaign_id, $campaign_id, $status, $status, $payment_method, $payment_method, $sub_filter, $sub_filter, $sub_filter, $start_date, $end_date, $limit_val, $offset_val
+                    ));
+                } else {
+                    return $wpdb->get_results($wpdb->prepare(
+                        "SELECT * FROM %i WHERE ( %d = 0 OR campaign_id = %d ) AND ( %s = '' OR status = %s ) AND ( %s = '' OR payment_method = %s ) AND ( %d = 0 OR ( %d = 1 AND subscription_id > 0 ) OR ( %d = 2 AND (subscription_id IS NULL OR subscription_id = 0) ) ) AND created_at >= %s AND created_at <= %s ORDER BY created_at DESC LIMIT %d OFFSET %d",
+                        self::get_table(), $campaign_id, $campaign_id, $status, $status, $payment_method, $payment_method, $sub_filter, $sub_filter, $sub_filter, $start_date, $end_date, $limit_val, $offset_val
+                    ));
+                }
+        }
     }
 
     /**
      * Get donations count with filters
      */
-    public static function get_count($where, $prepare_args)
+    public static function get_count_filtered($filters = array())
     {
         global $wpdb;
-        $prepare_args = array_merge(array(self::get_table()), $prepare_args);
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Dynamic query construction for filtered count. Arguments are validated and escaped in the calling service.
+        // Filters mapping
+        $campaign_id = !empty($filters['campaign_id']) ? absint($filters['campaign_id']) : 0;
+        $status = !empty($filters['status']) ? sanitize_text_field($filters['status']) : '';
+        $payment_method = !empty($filters['payment_method']) ? sanitize_text_field($filters['payment_method']) : '';
+        
+        $is_recurring = !empty($filters['is_recurring']) ? $filters['is_recurring'] : '';
+        $sub_filter = 0; // 0: all, 1: recurring, 2: one-time
+        if ($is_recurring === 'recurring') {
+            $sub_filter = 1;
+        } elseif ($is_recurring === 'one-time') {
+            $sub_filter = 2;
+        }
+
+        $start_date = !empty($filters['start_date']) ? sanitize_text_field($filters['start_date']) . ' 00:00:00' : '0000-00-00 00:00:00';
+        $end_date = !empty($filters['end_date']) ? sanitize_text_field($filters['end_date']) . ' 23:59:59' : '9999-12-31 23:59:59';
+
         return (int) $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM %i WHERE " . $where,
-            ...$prepare_args
+            "SELECT COUNT(*) FROM %i WHERE ( %d = 0 OR campaign_id = %d ) AND ( %s = '' OR status = %s ) AND ( %s = '' OR payment_method = %s ) AND ( %d = 0 OR ( %d = 1 AND subscription_id > 0 ) OR ( %d = 2 AND (subscription_id IS NULL OR subscription_id = 0) ) ) AND created_at >= %s AND created_at <= %s",
+            self::get_table(),
+            $campaign_id, $campaign_id,
+            $status, $status,
+            $payment_method, $payment_method,
+            $sub_filter, $sub_filter, $sub_filter,
+            $start_date,
+            $end_date
         ));
     }
 
@@ -109,11 +200,10 @@ class DONASAI_Donation_Repository
     public static function get_recent($limit)
     {
         global $wpdb;
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Caching is handled in the calling service layer.
         return $wpdb->get_results($wpdb->prepare(
             "SELECT * FROM %i WHERE status = 'complete' ORDER BY created_at DESC LIMIT %d",
             self::get_table(),
-            $limit
+            absint($limit)
         ));
     }
 
@@ -123,11 +213,10 @@ class DONASAI_Donation_Repository
     public static function get_by_user($user_id)
     {
         global $wpdb;
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Caching is handled in the calling service layer.
         return $wpdb->get_results($wpdb->prepare(
             "SELECT * FROM %i WHERE user_id = %d ORDER BY created_at DESC",
             self::get_table(),
-            $user_id
+            absint($user_id)
         ));
     }
 
@@ -137,11 +226,10 @@ class DONASAI_Donation_Repository
     public static function get_status($id)
     {
         global $wpdb;
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Dynamic status check; result is typically used for logic branching.
         return $wpdb->get_var($wpdb->prepare(
             "SELECT status FROM %i WHERE id = %d",
             self::get_table(),
-            $id
+            absint($id)
         ));
     }
 
@@ -151,7 +239,6 @@ class DONASAI_Donation_Repository
     public static function create($data, $format)
     {
         global $wpdb;
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Write operation; caching not applicable.
         $inserted = $wpdb->insert(self::get_table(), $data, $format);
         return $inserted ? $wpdb->insert_id : false;
     }
