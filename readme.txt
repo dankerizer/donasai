@@ -88,7 +88,9 @@ Service provided by Tailwind Labs Inc.: [Official Documentation](https://tailwin
 == Source Code ==
 
 This plugin includes minified JavaScript and CSS files in the `build/` directory for the admin application.
-The full source code for these assets is available in the `admin-app/` directory within this plugin.
+The full source code for these assets is available in the `admin-app/` directory within this plugin, and also publicly at:
+[https://github.com/dankerizer/donasai](https://github.com/dankerizer/donasai)
+
 Developers can inspect, modify, and rebuild the assets using the provided `package.json` and build scripts.
 
 == Changelog ==
