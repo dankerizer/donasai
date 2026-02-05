@@ -12,6 +12,11 @@ export default defineConfig({
 			"/src": path.resolve(__dirname, "./src"),
 		},
 	},
+	esbuild: {
+		loader: "tsx",
+		include: /src\/.*\.tsx?$/,
+		exclude: [],
+	},
 	build: {
 		outDir: "../build",
 		emptyOutDir: true,

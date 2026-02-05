@@ -1,6 +1,6 @@
 {
-  "_charts-EbHX9sFn.js": {
-    "file": "assets/charts-EbHX9sFn.js",
+  "_charts-CMF8ygkp.js": {
+    "file": "assets/charts-CMF8ygkp.js",
     "name": "charts",
     "imports": [
       "_query-CzIcDSu_.js",
@@ -28,7 +28,7 @@
     ]
   },
   "src/main.tsx": {
-    "file": "assets/main-BWaGf1-T.js",
+    "file": "assets/main-DSU4Uv9h.js",
     "name": "main",
     "src": "src/main.tsx",
     "isEntry": true,
@@ -36,7 +36,7 @@
       "_query-CzIcDSu_.js",
       "_vendor-Bm_ob1a7.js",
       "_ui-CcVrQ53x.js",
-      "_charts-EbHX9sFn.js"
+      "_charts-CMF8ygkp.js"
     ],
     "css": [
       "assets/main-qG5GhvGE.css"
