@@ -25,27 +25,18 @@ add_action('wp_dashboard_setup', 'donasai_add_dashboard_widgets');
  */
 function donasai_dashboard_widget_render()
 {
-    global $wpdb;
-    $table_donations = esc_sql($wpdb->prefix . 'donasai_donations');
-
     // Check Cache
-    $cache_key = 'donasai_dashboard_stats';
+    $cache_key = 'donasai_dashboard_stats_unified';
     $stats = wp_cache_get($cache_key, 'donasai_dashboard');
 
     if (false === $stats) {
         $stats = array();
-
-        // Total Collected (Complete)
-        $stats['total_collected'] = $wpdb->get_var($wpdb->prepare("SELECT SUM(amount) FROM %i WHERE status = %s", $table_donations, 'complete'));
-
-        // Total Donors
-        $stats['total_donors'] = $wpdb->get_var($wpdb->prepare("SELECT COUNT(DISTINCT email) FROM %i WHERE status = %s", $table_donations, 'complete'));
-
-        // Active Campaigns
-        $stats['active_campaigns'] = wp_count_posts('donasai_campaign')->publish;
-
-        // Recent Donations
-        $stats['recent'] = $wpdb->get_results($wpdb->prepare("SELECT * FROM %i WHERE status = %s ORDER BY created_at DESC LIMIT %d", $table_donations, 'complete', 5));
+        $overview = donasai_get_stats_overview();
+        
+        $stats['total_collected'] = $overview['total_collected'];
+        $stats['total_donors'] = $overview['total_donors'];
+        $stats['active_campaigns'] = $overview['active_campaigns'];
+        $stats['recent'] = donasai_get_recent_donations(5);
 
         wp_cache_set($cache_key, $stats, 'donasai_dashboard', 300); // 5 minutes
     }

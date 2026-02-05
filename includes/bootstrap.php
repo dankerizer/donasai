@@ -37,6 +37,7 @@ require_once DONASAI_PLUGIN_PATH . 'includes/services/gateway-registry.php';
 
 // Services
 require_once DONASAI_PLUGIN_PATH . 'includes/services/donation.php';
+require_once DONASAI_PLUGIN_PATH . 'includes/services/stats.php';
 require_once DONASAI_PLUGIN_PATH . 'includes/services/email.php';
 require_once DONASAI_PLUGIN_PATH . 'includes/frontend/css-loader.php'; // Load Dynamic CSS
 require_once DONASAI_PLUGIN_PATH . 'includes/functions-frontend.php';
