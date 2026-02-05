@@ -69,28 +69,21 @@ Go to **Donasai > Settings > Payment** to input your Bank Account details for ma
 = Does it support currencies other than Rupiah? =
 Currently, Donasai is focused on users in Indonesia with Rupiah (IDR) currency.
 
-== External Services ==
+== External services ==
 
-This plugin relies on the following external services to function:
+This plugin relies on external services to provide certain features. Below are the details of the third-party services used:
 
 1. **Google Fonts**
-   *   **Service**: Google Fonts (CDN)
-   *   **Usage**: Loads font files (Inter, Roboto, Open Sans, etc.) for dashboard and frontend styling.
-   *   **Privacy Policy**: https://policies.google.com/privacy
-   *   **Terms of Service**: https://developers.google.com/fonts/terms
+This plugin connects to Google Fonts (fonts.googleapis.com and fonts.gstatic.com) to load typography for the admin dashboard and donation templates. It is needed to provide a professional and consistent UI. It sends standard request headers (like IP address and User Agent) when font files are requested by the browser. 
+Service provided by Google LLC: [terms of service](https://developers.google.com/terms), [privacy policy](https://policies.google.com/privacy).
 
 2. **QR Server API**
-   *   **Service**: QR Server (goqr.me)
-   *   **Usage**: Generates QR codes for donation validation on receipts.
-   *   **Data Sent**: URL of the donation campaign.
-   *   **Privacy Policy**: https://goqr.me/privacy/
-   *   **Terms of Service**: https://goqr.me/tos/
+This plugin connects to api.qrserver.com to generate QR codes on donation receipts, allowing for easy validation of donation campaigns. It sends the campaign URL as a query parameter to generate the QR code graphic. No personal donor data is sent to this service.
+Service provided by "goQR.me": [privacy policy](https://goqr.me/de/rechtliches/datenschutz-goqrme.html).
 
 3. **Tailwind CSS (CDN)**
-   *   **Service**: Tailwind CSS
-   *   **Usage**: Loads Tailwind CSS framework for styling receipt templates.
-   *   **Privacy Policy**: https://tailwindcss.com/privacy
-   *   **Terms of Service**: https://tailwindcss.com/terms
+This plugin uses the Tailwind CSS CDN (cdn.tailwindcss.com) to style internal receipt templates. It is needed to render professional-looking printable receipts. It sends standard request headers when the CSS library is loaded in the donor's browser.
+Service provided by Tailwind Labs Inc.: [Official Documentation](https://tailwindcss.com/docs/installation/play-cdn).
 
 == Source Code ==
 
